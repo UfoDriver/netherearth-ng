@@ -105,7 +105,7 @@ int mainmenu_cycle(int width,int height)
 				WIN32_FIND_DATA finfo;
 				HANDLE h;
 
-				h=FindFirstFile("/usr/local/share/netherearth/maps/*.map",&finfo);
+				h=FindFirstFile("maps/*.map",&finfo);
 				if (h!=INVALID_HANDLE_VALUE) {
 					if (strcmp(finfo.cFileName,".")!=0 &&
 						strcmp(finfo.cFileName,"..")!=0) {
@@ -131,7 +131,7 @@ int mainmenu_cycle(int width,int height)
 				DIR *dp;
 				struct dirent *ep;
 				  
-				dp = opendir ("/usr/local/share/netherearth/maps/");
+				dp = opendir ("maps/");
 				if (dp != NULL)
 				 {
 				    while (ep = readdir (dp))
@@ -319,7 +319,7 @@ void mainmenu_draw(int width,int height)
     float ratio;
 
 	if (nethertittle==0) {
-		nethertittle=new C3DObject("/usr/local/share/netherearth/models/tittle.asc","/usr/local/share/netherearth/textures/");
+		nethertittle=new C3DObject("models/tittle.asc","textures/");
 		nethertittle->normalize(7.0);
 	} /* if */ 
 

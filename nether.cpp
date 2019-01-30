@@ -171,11 +171,11 @@ NETHER::NETHER(char *mapname)
 #endif
 
 	/* Load sounds: */ 
-	S_shot=Mix_LoadWAV("/usr/local/share/netherearth/sound/shot.wav");
-	S_explosion=Mix_LoadWAV("/usr/local/share/netherearth/sound/explosion.wav");
-	S_select=Mix_LoadWAV("/usr/local/share/netherearth/sound/select.wav");
-	S_wrong=Mix_LoadWAV("/usr/local/share/netherearth/sound/wrong.wav");
-	S_construction=Mix_LoadWAV("/usr/local/share/netherearth/sound/construction.wav");
+	S_shot=Mix_LoadWAV("sound/shot.wav");
+	S_explosion=Mix_LoadWAV("sound/explosion.wav");
+	S_select=Mix_LoadWAV("sound/select.wav");
+	S_wrong=Mix_LoadWAV("sound/wrong.wav");
+	S_construction=Mix_LoadWAV("sound/construction.wav");
 
 #ifdef _WRITE_REPORT_
 	fprintf(debug_fp,"Game created.\n");
@@ -244,22 +244,22 @@ NETHER::~NETHER()
 void NETHER::loadobjects(void)
 {
 	/* Load 3D objects: */ 
-	char *tnames[12]={"/usr/local/share/netherearth/models/grass1.ase","/usr/local/share/netherearth/models/rough.ase","/usr/local/share/netherearth/models/rocks.ase","/usr/local/share/netherearth/models/heavyrocks.ase",
-					  "/usr/local/share/netherearth/models/hole1.asc","/usr/local/share/netherearth/models/hole2.asc","/usr/local/share/netherearth/models/hole3.asc",
-					  "/usr/local/share/netherearth/models/hole4.asc","/usr/local/share/netherearth/models/hole5.asc","/usr/local/share/netherearth/models/hole6.asc",
-					  "/usr/local/share/netherearth/models/grass2.ase","/usr/local/share/netherearth/models/grass3.ase"};
-	char *bnames[9]={"/usr/local/share/netherearth/models/lowwall1.ase","/usr/local/share/netherearth/models/lowwall2.ase","/usr/local/share/netherearth/models/lowwall3.ase",
-					 "/usr/local/share/netherearth/models/highwall1.ase","/usr/local/share/netherearth/models/factory.ase","/usr/local/share/netherearth/models/fence.asc",
-					 "/usr/local/share/netherearth/models/flag.asc","/usr/local/share/netherearth/models/highwall2.ase","/usr/local/share/netherearth/models/warbase.ase"};
-	char *pnames[11]={"/usr/local/share/netherearth/models/h-bipod.ase","/usr/local/share/netherearth/models/h-tracks.ase","/usr/local/share/netherearth/models/h-antigrav.ase",
-					 "/usr/local/share/netherearth/models/h-cannon.ase","/usr/local/share/netherearth/models/h-missiles.ase","/usr/local/share/netherearth/models/h-phasers.ase",
-					 "/usr/local/share/netherearth/models/h-nuclear.ase","/usr/local/share/netherearth/models/h-electronics.ase",
-					 "/usr/local/share/netherearth/models/h-bipod-base.ase","/usr/local/share/netherearth/models/h-bipod-rleg.ase","/usr/local/share/netherearth/models/h-bipod-lleg.ase"};
-	char *pnames2[11]={"/usr/local/share/netherearth/models/e-bipod.ase","/usr/local/share/netherearth/models/e-tracks.ase","/usr/local/share/netherearth/models/e-antigrav.ase",
-					  "/usr/local/share/netherearth/models/e-cannon.ase","/usr/local/share/netherearth/models/e-missiles.ase","/usr/local/share/netherearth/models/e-phasers.ase",
-					  "/usr/local/share/netherearth/models/nuclear.asc","/usr/local/share/netherearth/models/e-electronics.ase",
-					  "/usr/local/share/netherearth/models/e-bipod-base.ase","/usr/local/share/netherearth/models/e-bipod-rleg.ase","/usr/local/share/netherearth/models/e-bipod-lleg.ase"};
-	char *bullnames[3]={"/usr/local/share/netherearth/models/bullet1.asc","/usr/local/share/netherearth/models/bullet2.asc","/usr/local/share/netherearth/models/bullet3.asc"};
+	char *tnames[12]={"models/grass1.ase","models/rough.ase","models/rocks.ase","models/heavyrocks.ase",
+					  "models/hole1.asc","models/hole2.asc","models/hole3.asc",
+					  "models/hole4.asc","models/hole5.asc","models/hole6.asc",
+					  "models/grass2.ase","models/grass3.ase"};
+	char *bnames[9]={"models/lowwall1.ase","models/lowwall2.ase","models/lowwall3.ase",
+					 "models/highwall1.ase","models/factory.ase","models/fence.asc",
+					 "models/flag.asc","models/highwall2.ase","models/warbase.ase"};
+	char *pnames[11]={"models/h-bipod.ase","models/h-tracks.ase","models/h-antigrav.ase",
+					 "models/h-cannon.ase","models/h-missiles.ase","models/h-phasers.ase",
+					 "models/h-nuclear.ase","models/h-electronics.ase",
+					 "models/h-bipod-base.ase","models/h-bipod-rleg.ase","models/h-bipod-lleg.ase"};
+	char *pnames2[11]={"models/e-bipod.ase","models/e-tracks.ase","models/e-antigrav.ase",
+					  "models/e-cannon.ase","models/e-missiles.ase","models/e-phasers.ase",
+					  "models/nuclear.asc","models/e-electronics.ase",
+					  "models/e-bipod-base.ase","models/e-bipod-rleg.ase","models/e-bipod-lleg.ase"};
+	char *bullnames[3]={"models/bullet1.asc","models/bullet2.asc","models/bullet3.asc"};
 	float pscale[11]={0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.45,0.375,0.375};
 	float bscale[9]={0.5,0.5,0.5,
 					 0.5,0.5,1.0,
@@ -277,7 +277,7 @@ void NETHER::loadobjects(void)
 	tile_g=new float[n_objs];
 	tile_b=new float[n_objs];
 	for(i=0;i<n_objs;i++) {
-		tile[i]=new C3DObject(tnames[i],"/usr/local/share/netherearth/textures/");
+		tile[i]=new C3DObject(tnames[i],"textures/");
 		tile[i]->normalize(0.50f);
 		tile[i]->makepositive();
 		tile_r[i]=r[i];
@@ -295,7 +295,7 @@ void NETHER::loadobjects(void)
 	n_buildings=9;
 	building_tile=new Shadow3DObject *[n_buildings];
 	for(i=0;i<n_buildings;i++) {
-		building_tile[i]=new Shadow3DObject(bnames[i],"/usr/local/share/netherearth/textures/");
+		building_tile[i]=new Shadow3DObject(bnames[i],"textures/");
 		building_tile[i]->normalize(bscale[i]);
 		building_tile[i]->makepositive();
 	} /* for */ 
@@ -306,10 +306,10 @@ void NETHER::loadobjects(void)
 	piece_tile[0]=new Piece3DObject *[n_pieces];
 	piece_tile[1]=new Piece3DObject *[n_pieces];
 	for(i=0;i<n_pieces;i++) {
-		piece_tile[0][i]=new Piece3DObject(pnames[i],"/usr/local/share/netherearth/textures/");
+		piece_tile[0][i]=new Piece3DObject(pnames[i],"textures/");
 		piece_tile[0][i]->normalize(pscale[i]);
 		piece_tile[0][i]->makepositive();
-		piece_tile[1][i]=new Piece3DObject(pnames2[i],"/usr/local/share/netherearth/textures/");
+		piece_tile[1][i]=new Piece3DObject(pnames2[i],"textures/");
 		piece_tile[1][i]->normalize(pscale[i]);
 		piece_tile[1][i]->makepositive();
 	} /* for */ 
@@ -337,14 +337,14 @@ void NETHER::loadobjects(void)
 	piece_tile[1][9]->moveobject(-0.4,-0.5,0.0);
 	piece_tile[1][10]->moveobject(-0.4,0.2,0.0);
 
-	ship=new Shadow3DObject("/usr/local/share/netherearth/models/ship.asc","/usr/local/share/netherearth/textures/");
+	ship=new Shadow3DObject("models/ship.asc","textures/");
 	ship->normalize(0.5f);
 	ship->makepositive();
 
 	n_bullets=3;
 	bullet_tile=new Piece3DObject *[n_bullets];
 	for(i=0;i<n_bullets;i++) {
-		bullet_tile[i]=new Piece3DObject(bullnames[i],"/usr/local/share/netherearth/textures/");
+		bullet_tile[i]=new Piece3DObject(bullnames[i],"textures/");
 		bullet_tile[i]->normalize(bullscale[i]);
 	} /* for */ 
 	
@@ -354,16 +354,16 @@ void NETHER::loadobjects(void)
 	for(i=0;i<n_pieces;i++) piece_tile[1][i]->ComputeFixedShadows(lightposv);
 	for(i=0;i<n_bullets;i++) bullet_tile[i]->ComputeFixedShadows(lightposv);
 
-	construction_tile[0]=new C3DObject("/usr/local/share/netherearth/models/construction1.asc","/usr/local/share/netherearth/textures/");
-	construction_tile[1]=new C3DObject("/usr/local/share/netherearth/models/construction2.asc","/usr/local/share/netherearth/textures/");
-	construction_tile[2]=new C3DObject("/usr/local/share/netherearth/models/construction3.asc","/usr/local/share/netherearth/textures/");
+	construction_tile[0]=new C3DObject("models/construction1.asc","textures/");
+	construction_tile[1]=new C3DObject("models/construction2.asc","textures/");
+	construction_tile[2]=new C3DObject("models/construction3.asc","textures/");
 	construction_tile[0]->normalize(10.0);
 	construction_tile[1]->normalize(9.0);
 	construction_tile[2]->normalize(7.0);
 
-	message_tile[0]=new C3DObject("/usr/local/share/netherearth/models/go.ase","/usr/local/share/netherearth/textures/");
-	message_tile[1]=new C3DObject("/usr/local/share/netherearth/models/youwin.ase","/usr/local/share/netherearth/textures/");
-	message_tile[2]=new C3DObject("/usr/local/share/netherearth/models/gameover.ase","/usr/local/share/netherearth/textures/");
+	message_tile[0]=new C3DObject("models/go.ase","textures/");
+	message_tile[1]=new C3DObject("models/youwin.ase","textures/");
+	message_tile[2]=new C3DObject("models/gameover.ase","textures/");
 	message_tile[0]->normalize(4.0);
 	message_tile[1]->normalize(4.0);
 	message_tile[2]->normalize(4.0);

@@ -237,7 +237,7 @@ int main(int argc, char** argv)
 					int val=mainmenu_cycle(SCREEN_X,SCREEN_Y);
 					if (val==1) {
 						char tmp[256];
-						sprintf(tmp,"/usr/local/share/netherearth/maps/%s",mapname);
+						sprintf(tmp,"maps/%s",mapname);
 						game=new NETHER(tmp);
 					} /* if */ 
 					if (val==2) quit=true;

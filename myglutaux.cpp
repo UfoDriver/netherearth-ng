@@ -62,7 +62,7 @@ float draw3Dtext(char *text,float dx,float dy,float dz,float r,float g,float b)
 			filename[3]='s';
 			filename[4]='c';
 			filename[5]=0;
-			characters[text[i]]=new C3DObject(filename,"/usr/local/share/netherearth/textures/");
+			characters[text[i]]=new C3DObject(filename,"textures/");
 			characters[text[i]]->normalize();
 		} /* if */ 
 		if (characters[text[i]]!=NULL) {
