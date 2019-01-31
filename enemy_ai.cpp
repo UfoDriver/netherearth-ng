@@ -93,11 +93,11 @@ void NETHER::AI_enemy(void)
 		l.Rewind();
 		mean_factory_position=Vector(0,0,0);
 		while(l.Iterate(b)) {
-			if (b->type==B_FACTORY_ELECTRONICS ||
-				b->type==B_FACTORY_NUCLEAR ||
-				b->type==B_FACTORY_PHASERS ||
-				b->type==B_FACTORY_MISSILES ||
-				b->type==B_FACTORY_CANNONS) {
+			if (b->type==Building::B_FACTORY_ELECTRONICS ||
+				b->type==Building::B_FACTORY_NUCLEAR ||
+				b->type==Building::B_FACTORY_PHASERS ||
+				b->type==Building::B_FACTORY_MISSILES ||
+				b->type==Building::B_FACTORY_CANNONS) {
 				factories[b->owner]++;
 				if (b->owner!=2) mean_factory_position=mean_factory_position+b->pos;
 			} /* if */ 
@@ -109,7 +109,7 @@ void NETHER::AI_enemy(void)
 		l.Instance(buildings);
 		l.Rewind();
 		while(l.Iterate(b)) {
-			if (b->type==B_WARBASE &&
+			if (b->type==Building::B_WARBASE &&
 				b->owner==2) {
 				forces[0]=0;
 				forces[1]=0;

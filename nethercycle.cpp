@@ -86,31 +86,31 @@ bool NETHER::cycle(unsigned char *keyboard)
 		l.Instance(buildings);
 		l.Rewind();
 		while(l.Iterate(b)) {
-			if (b->type==B_WARBASE) {
+			if (b->type==Building::B_WARBASE) {
 				if (b->owner==1) statistics[0][0]++;
 				if (b->owner==2) statistics[1][0]++;
 			} /* if */ 
-			if (b->type==B_FACTORY_ELECTRONICS) {
+			if (b->type==Building::B_FACTORY_ELECTRONICS) {
 				if (b->owner==1) statistics[0][1]++;
 				if (b->owner==2) statistics[1][1]++;
 			} /* if */ 
-			if (b->type==B_FACTORY_NUCLEAR) {
+			if (b->type==Building::B_FACTORY_NUCLEAR) {
 				if (b->owner==1) statistics[0][2]++;
 				if (b->owner==2) statistics[1][2]++;
 			} /* if */ 
-			if (b->type==B_FACTORY_PHASERS) {
+			if (b->type==Building::B_FACTORY_PHASERS) {
 				if (b->owner==1) statistics[0][3]++;
 				if (b->owner==2) statistics[1][3]++;
 			} /* if */ 
-			if (b->type==B_FACTORY_MISSILES) {
+			if (b->type==Building::B_FACTORY_MISSILES) {
 				if (b->owner==1) statistics[0][4]++;
 				if (b->owner==2) statistics[1][4]++;
 			} /* if */ 
-			if (b->type==B_FACTORY_CANNONS) {
+			if (b->type==Building::B_FACTORY_CANNONS) {
 				if (b->owner==1) statistics[0][5]++;
 				if (b->owner==2) statistics[1][5]++;
 			} /* if */ 
-			if (b->type==B_FACTORY_CHASSIS) {
+			if (b->type==Building::B_FACTORY_CHASSIS) {
 				if (b->owner==1) statistics[0][6]++;
 				if (b->owner==2) statistics[1][6]++;
 			} /* if */ 
@@ -866,7 +866,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 			l.Instance(buildings);
 			l.Rewind();
 			while(l.Iterate(b)) {
-				if (b->type==B_WARBASE && b->owner==1 && 
+				if (b->type==Building::B_WARBASE && b->owner==1 && 
 					shipp.x==b->pos.x && shipp.y==b->pos.y && shiplanded) {
 					game_state=STATE_CONSTRUCTION;
 					construction_pointer=0;
@@ -1319,12 +1319,12 @@ bool NETHER::cycle(unsigned char *keyboard)
 			l.Instance(buildings);
 			l.Rewind();
 			while(l.Iterate(b)) {
-				if (b->type==B_FACTORY_ELECTRONICS ||
-					b->type==B_FACTORY_NUCLEAR ||
-					b->type==B_FACTORY_PHASERS ||
-					b->type==B_FACTORY_MISSILES ||
-					b->type==B_FACTORY_CANNONS	||
-					b->type==B_FACTORY_CHASSIS) {
+				if (b->type==Building::B_FACTORY_ELECTRONICS ||
+					b->type==Building::B_FACTORY_NUCLEAR ||
+					b->type==Building::B_FACTORY_PHASERS ||
+					b->type==Building::B_FACTORY_MISSILES ||
+					b->type==Building::B_FACTORY_CANNONS	||
+					b->type==Building::B_FACTORY_CHASSIS) {
 					int robot=AI_robothere(b->pos+Vector(1,0,0));
 					if (robot==0) {
 						b->status=0;
@@ -1346,7 +1346,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 					} /* if */ 
 				} /* if */ 
 
-				if (b->type==B_WARBASE) {
+				if (b->type==Building::B_WARBASE) {
 					int robot=AI_robothere(b->pos+Vector(2,0,0));
 					if (robot==0) {
 						b->status=0;

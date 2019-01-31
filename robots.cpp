@@ -451,34 +451,34 @@ bool NETHER::RobotCollision(ROBOT *r,bool complete)
 			m2[14]=b->pos.z;
 
 			switch(b->type) {
-				case B_FENCE:
+				case Building::B_FENCE:
 					if (r->cmc.collision_simple(m1,&(building_tile[5]->cmc),m2)) return true;
 					break;
-				case B_WALL1:
+				case Building::B_WALL1:
 					if (r->cmc.collision_simple(m1,&(building_tile[0]->cmc),m2)) return true;
 					break;
-				case B_WALL2:
+				case Building::B_WALL2:
 					if (r->cmc.collision_simple(m1,&(building_tile[1]->cmc),m2)) return true;
 					break;
-				case B_WALL3:
+				case Building::B_WALL3:
 					if (r->cmc.collision_simple(m1,&(building_tile[2]->cmc),m2)) return true;
 					break;
-				case B_WALL4:
+				case Building::B_WALL4:
 					if (r->cmc.collision_simple(m1,&(building_tile[3]->cmc),m2)) return true;
 					break;
-				case B_WALL5:
+				case Building::B_WALL5:
 					if (r->cmc.collision_simple(m1,&(building_tile[4]->cmc),m2)) return true;
 					break;
-				case B_WALL6:
+				case Building::B_WALL6:
 					if (r->cmc.collision_simple(m1,&(building_tile[7]->cmc),m2)) return true;
 					break;
-				case B_WARBASE:
+				case Building::B_WARBASE:
 					if (r->cmc.collision_simple(m1,&(building_tile[8]->cmc),m2)) return true;
 					//m2[13]=b->pos.y-2;
 					//m2[14]=b->pos.z+1;
 					//if (b->owner!=0) if (r->cmc.collision_simple(m1,&(building_tile[6]->cmc),m2)) return true;
 					break;
-			case B_FACTORY_ELECTRONICS:
+			case Building::B_FACTORY_ELECTRONICS:
 					if (r->cmc.collision_simple(m1,&(building_tile[4]->cmc),m2)) return true;
 					m2[12]=b->pos.x+0.5;
 					m2[13]=b->pos.y+0.5;
@@ -488,7 +488,7 @@ bool NETHER::RobotCollision(ROBOT *r,bool complete)
 					//m2[13]=b->pos.y-1;
 					//if (b->owner!=0) if (r->cmc.collision_simple(m1,&(building_tile[6]->cmc),m2)) return true;
 					break;
-			case B_FACTORY_NUCLEAR:
+			case Building::B_FACTORY_NUCLEAR:
 					if (r->cmc.collision_simple(m1,&(building_tile[4]->cmc),m2)) return true;
 					m2[12]=b->pos.x+0.5;
 					m2[13]=b->pos.y+0.5;
@@ -498,7 +498,7 @@ bool NETHER::RobotCollision(ROBOT *r,bool complete)
 					//m2[13]=b->pos.y-1;
 					//if (b->owner!=0) if (r->cmc.collision_simple(m1,&(building_tile[6]->cmc),m2)) return true;
 					break;
-			case B_FACTORY_PHASERS:
+			case Building::B_FACTORY_PHASERS:
 					if (r->cmc.collision_simple(m1,&(building_tile[4]->cmc),m2)) return true;
 					m2[12]=b->pos.x+0.5;
 					m2[13]=b->pos.y+0.5;
@@ -508,7 +508,7 @@ bool NETHER::RobotCollision(ROBOT *r,bool complete)
 					//m2[13]=b->pos.y-1;
 					//if (b->owner!=0) if (r->cmc.collision_simple(m1,&(building_tile[6]->cmc),m2)) return true;
 					break;
-			case B_FACTORY_MISSILES:
+			case Building::B_FACTORY_MISSILES:
 					if (r->cmc.collision_simple(m1,&(building_tile[4]->cmc),m2)) return true;
 					m2[12]=b->pos.x+0.5;
 					m2[13]=b->pos.y+0.5;
@@ -518,7 +518,7 @@ bool NETHER::RobotCollision(ROBOT *r,bool complete)
 					//m2[13]=b->pos.y-1;
 					//if (b->owner!=0) if (r->cmc.collision_simple(m1,&(building_tile[6]->cmc),m2)) return true;
 					break;
-			case B_FACTORY_CANNONS:
+			case Building::B_FACTORY_CANNONS:
 					if (r->cmc.collision_simple(m1,&(building_tile[4]->cmc),m2)) return true;
 					m2[12]=b->pos.x+0.5;
 					m2[13]=b->pos.y+0.5;
@@ -528,7 +528,7 @@ bool NETHER::RobotCollision(ROBOT *r,bool complete)
 					//m2[13]=b->pos.y-1;
 					//if (b->owner!=0) if (r->cmc.collision_simple(m1,&(building_tile[6]->cmc),m2)) return true;
 					break;
-			case B_FACTORY_CHASSIS:
+			case Building::B_FACTORY_CHASSIS:
 					if (r->cmc.collision_simple(m1,&(building_tile[4]->cmc),m2)) return true;
 					m2[12]=b->pos.x+0.5;
 					m2[13]=b->pos.y+0.5;

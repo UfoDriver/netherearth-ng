@@ -744,7 +744,7 @@ int NETHER::AI_program_capture(int goal,Vector *program_goal,Vector pos,int angl
 			l.Rewind();
 			while(l.Iterate(b)) {
 				if (goal==P_PARAM_WARBASES && 
-					b->type==B_WARBASE && b->owner!=player &&
+					b->type==Building::B_WARBASE && b->owner!=player &&
 					AI_WorseMapTerrain(int((b->pos.x+2.0)/0.5),int(b->pos.y/0.5),2,2)<=T_HOLE) {
 					distance=float(((b->pos+Vector(2.5,0.5,0))-pos).norma());
 					if (!anygoal || distance<minimumdistance) {
@@ -754,12 +754,12 @@ int NETHER::AI_program_capture(int goal,Vector *program_goal,Vector pos,int angl
 					} /* if */ 
 				} /* if */ 
 				if (goal==P_PARAM_NFACTORIES && 
-					(b->type==B_FACTORY_ELECTRONICS ||
-					 b->type==B_FACTORY_NUCLEAR ||
-					 b->type==B_FACTORY_PHASERS ||
-					 b->type==B_FACTORY_MISSILES ||
-					 b->type==B_FACTORY_CANNONS ||
-					 b->type==B_FACTORY_CHASSIS) && b->owner==0 &&
+					(b->type==Building::B_FACTORY_ELECTRONICS ||
+					 b->type==Building::B_FACTORY_NUCLEAR ||
+					 b->type==Building::B_FACTORY_PHASERS ||
+					 b->type==Building::B_FACTORY_MISSILES ||
+					 b->type==Building::B_FACTORY_CANNONS ||
+					 b->type==Building::B_FACTORY_CHASSIS) && b->owner==0 &&
 					AI_WorseMapTerrain(int((b->pos.x+1.0)/0.5),int(b->pos.y/0.5),2,2)<=T_HOLE) {
 					distance=float(((b->pos+Vector(1.5,0.5,0))-pos).norma());
 					if (!anygoal || distance<minimumdistance) {
@@ -769,12 +769,12 @@ int NETHER::AI_program_capture(int goal,Vector *program_goal,Vector pos,int angl
 					} /* if */ 
 				} /* if */ 
 				if (goal==P_PARAM_EFACTORIES && 
-					(b->type==B_FACTORY_ELECTRONICS ||
-					 b->type==B_FACTORY_NUCLEAR ||
-					 b->type==B_FACTORY_PHASERS ||
-					 b->type==B_FACTORY_MISSILES ||
-					 b->type==B_FACTORY_CANNONS ||
-					 b->type==B_FACTORY_CHASSIS) && b->owner!=0 && b->owner!=player &&
+					(b->type==Building::B_FACTORY_ELECTRONICS ||
+					 b->type==Building::B_FACTORY_NUCLEAR ||
+					 b->type==Building::B_FACTORY_PHASERS ||
+					 b->type==Building::B_FACTORY_MISSILES ||
+					 b->type==Building::B_FACTORY_CANNONS ||
+					 b->type==Building::B_FACTORY_CHASSIS) && b->owner!=0 && b->owner!=player &&
 					AI_WorseMapTerrain(int((b->pos.x+1.0)/0.5),int(b->pos.y/0.5),2,2)<=T_HOLE) {
 					distance=float(((b->pos+Vector(1.5,0.5,0))-pos).norma());
 					if (!anygoal || distance<minimumdistance) {
@@ -944,7 +944,7 @@ int NETHER::AI_program_destroy(int goal,Vector *program_goal,Vector pos,int angl
 			l.Rewind();
 			while(l.Iterate(b)) {
 				if (goal==P_PARAM_WARBASES && 
-					b->type==B_WARBASE && b->owner!=player &&
+					b->type==Building::B_WARBASE && b->owner!=player &&
 					AI_WorseMapTerrain(int((b->pos.x+2.0)/0.5),int(b->pos.y/0.5),2,2)<=T_HOLE) {
 					distance=float(((b->pos+Vector(2.5,0.5,0))-pos).norma());
 					if (!anygoal || distance<minimumdistance) {
@@ -954,12 +954,12 @@ int NETHER::AI_program_destroy(int goal,Vector *program_goal,Vector pos,int angl
 					} /* if */ 
 				} /* if */ 
 				if (goal==P_PARAM_EFACTORIES && 
-					(b->type==B_FACTORY_ELECTRONICS ||
-					 b->type==B_FACTORY_NUCLEAR ||
-					 b->type==B_FACTORY_PHASERS ||
-					 b->type==B_FACTORY_MISSILES ||
-					 b->type==B_FACTORY_CANNONS ||
-					 b->type==B_FACTORY_CHASSIS) && b->owner!=0 && b->owner!=player &&
+					(b->type==Building::B_FACTORY_ELECTRONICS ||
+					 b->type==Building::B_FACTORY_NUCLEAR ||
+					 b->type==Building::B_FACTORY_PHASERS ||
+					 b->type==Building::B_FACTORY_MISSILES ||
+					 b->type==Building::B_FACTORY_CANNONS ||
+					 b->type==Building::B_FACTORY_CHASSIS) && b->owner!=0 && b->owner!=player &&
 					AI_WorseMapTerrain(int((b->pos.x+1.0)/0.5),int(b->pos.y/0.5),2,2)<=T_HOLE) {
 					distance=float(((b->pos+Vector(1.5,0.5,0))-pos).norma());
 					if (!anygoal || distance<minimumdistance) {

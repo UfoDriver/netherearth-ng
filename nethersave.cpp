@@ -262,7 +262,7 @@ bool NETHER::load_game(char *filename)
 		int owner;
 		int status;	
 */
-      BUILDINGS_AND_WALLS type;
+      Building::BUILDINGS_AND_WALLS type;
       int owner;
       int status;
       if (3!=fscanf(fp,"%i %i %i", &type, &owner, &status)) return false;
