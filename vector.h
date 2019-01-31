@@ -1,38 +1,39 @@
 #ifndef __AW_VECTOR
 #define __AW_VECTOR
 
+#include <stdio.h>
+
 class Vector {
 public:
-	Vector();
-	Vector(double nx,double ny,double nz);
-	Vector(const Vector &v);
-	Vector(FILE *fp) {
-		x=y=z=0;
-		load(fp);
-	} 
+  Vector(): x(0), y(0), z() {};
+  Vector(double nx, double ny, double nz): x(nx), y(ny), z(nz) {};
+  Vector(const Vector &v): x(v.x), y(v.y), z(v.z) {};
+  explicit Vector(FILE *fp): x(0), y(0), z(0) {
+    load(fp);
+  }
 
-	Vector operator+(const Vector &v);
-	Vector operator-(const Vector &v);
-	Vector operator-(void);
+  Vector operator+(const Vector &v);
+  Vector operator-(const Vector &v);
+  Vector operator-();
 
-	Vector operator^(const Vector &v);
-	double operator*(const Vector &v);
-	Vector operator*(double ctnt);
+  Vector operator^(const Vector &v);
+  double operator*(const Vector &v);
+  Vector operator*(double ctnt);
 
-	Vector operator/(double ctnt);
+  Vector operator/(double ctnt);
 
-	bool operator==(const Vector &v);
-	bool operator!=(const Vector &v);
+  bool operator==(const Vector &v);
+  bool operator!=(const Vector &v);
 
-	bool zero();
+  bool zero();
 
-	double norma(void);
-	double normalize(void);
+  double norma();
+  double normalize();
 
-	bool load(FILE *fp);
-	bool save(FILE *fp);
+  bool load(FILE *fp);
+  bool save(FILE *fp);
 
-	double x,y,z;
-}; /* Vector */ 
+  double x,y,z;
+};
 
 #endif

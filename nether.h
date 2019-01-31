@@ -3,6 +3,7 @@
 
 #include <cstring>
 #include <string>
+#include "vector.h"
 
 // #define _WRITE_REPORT_
 

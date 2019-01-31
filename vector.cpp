@@ -3,168 +3,107 @@
 #include "vector.h"
 
 
-Vector::Vector() 
-{
-	x=0;
-	y=0;
-	z=0;
-} /* Vector */ 
-
-
-Vector::Vector(double nx,double ny,double nz) 
-{
-	x=nx;
-	y=ny;
-	z=nz;
-} /* Vector */ 
-
-
-Vector::Vector(const Vector &v)
-{
-	x=v.x;
-	y=v.y;
-	z=v.z;
-} /* Vector */ 
-
-
 Vector Vector::operator+(const Vector &v)
 {
-	Vector tmp;
-
-	tmp.x=x+v.x;
-	tmp.y=y+v.y;
-	tmp.z=z+v.z;
-
-	return tmp;
-} /* operator+ */ 
+  return Vector(x + v.x, y + v.y, z + v.z);
+}
 
 
 Vector Vector::operator-(const Vector &v)
 {
-	Vector tmp;
-
-	tmp.x=x-v.x;
-	tmp.y=y-v.y;
-	tmp.z=z-v.z;
-
-	return tmp;
-} /* operator- */ 
+  return Vector(x - v.x, y - v.y, z - v.z);
+}
 
 
-Vector Vector::operator-(void)
+Vector Vector::operator-()
 {
-	Vector tmp;
-
-	tmp.x=-x;
-	tmp.y=-y;
-	tmp.z=-z;
-
-	return tmp;
-} /* operator- */ 
+  return Vector(-x, -y, -z);
+}
 
 
-Vector Vector::operator^(const Vector &v) 
+Vector Vector::operator^(const Vector &v)
 {
-	Vector res;
-
-	res.x=y*v.z-v.y*z;
-	res.y=z*v.x-v.z*x;
-	res.z=x*v.y-v.x*y;
-	return res;
-} /* operator* */ 
+  return Vector(y * v.z - v.y * z,
+                z * v.x - v.z * x,
+                x * v.y - v.x * y);
+}
 
 
-double Vector::operator*(const Vector &v) 
+double Vector::operator*(const Vector &v)
 {
-	return x*v.x+y*v.y+z*v.z;
-} /* operator* */ 
+  return x * v.x + y * v.y + z * v.z;
+}
 
 
 Vector Vector::operator*(double ctnt)
 {
-	Vector res=*this;
-
-	res.x*=ctnt;
-	res.y*=ctnt;
-	res.z*=ctnt;
-
-	return res;
-} /* operator* */ 
+  x *= ctnt;
+  y *= ctnt;
+  z *= ctnt;
+  return *this;
+}
 
 
 Vector Vector::operator/(double ctnt)
 {
-	Vector res=*this;
-
-	res.x/=ctnt;
-	res.y/=ctnt;
-	res.z/=ctnt;
-
-	return res;
-} /* operator/ */ 
+  x /= ctnt;
+  y /= ctnt;
+  z /= ctnt;
+  return *this;
+}
 
 
 bool Vector::operator==(const Vector &v)
 {
-	if (x!=v.x ||
-		y!=v.y ||
-		z!=v.z) return false;
-	return true;
-} /* operator== */ 
+  return x == v.x && y == v.y && z == v.z;
+}
 
 
 bool Vector::operator!=(const Vector &v)
 {
-	if (x!=v.x ||
-		y!=v.y ||
-		z!=v.z) return true;
-	return false;
-} /* operator!= */ 
+  return x != v.x || y != v.y || z != v.z;
+}
 
-
-double Vector::norma(void)
+double Vector::norma()
 {
-	return sqrt(x*x+y*y+z*z);
-} /* norma */ 
+  return sqrt(x*x+y*y+z*z);
+}
 
 
-double Vector::normalize(void) 
+double Vector::normalize()
 {
-	double n=norma();
+  double n = norma();
 
-	if (n==0) return 0;
+  if (n == 0) return 0;
 
-	x/=n;
-	y/=n;
-	z/=n;
+  x /= n;
+  y /= n;
+  z /= n;
 
-	return n;
-} /* normalize */ 
+  return n;
+}
 
 
 bool Vector::zero()
 {
-	return (x==0 && y==0 && z==0);
-} /* zero */ 
+  return x == 0 && y == 0 && z == 0;
+}
 
 
-bool Vector::load(FILE *fp) 
+bool Vector::load(FILE *fp)
 {
-	float t1,t2,t3;
+  float t1, t2, t3;
 
-	if (3!=fscanf(fp,"%f %f %f",&t1,&t2,&t3)) return false;
-	x=t1;
-	y=t2;
-	z=t3;
+  if (3 != fscanf(fp, "%f %f %f", &t1, &t2, &t3)) return false;
+  x = t1;
+  y = t2;
+  z = t3;
+  return true;
+}
 
-	return true;
-} /* load */ 
 
-
-bool Vector::save(FILE *fp) 
+bool Vector::save(FILE *fp)
 {
-	fprintf(fp,"%.8f %.8f %.8f\n",float(x),float(y),float(z));
-
-	return true;
-} /* save */ 
-
+  fprintf(fp, "%.8f %.8f %.8f\n", float(x), float(y), float(z));
+  return true;
+}
