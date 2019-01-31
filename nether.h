@@ -5,137 +5,125 @@
 #include <string>
 #include "vector.h"
 
-// #define _WRITE_REPORT_
 
+const float COLISION_TEST_THRESHOLD = 9.0;
+const int INTRO_TIME = 60;
+const int END_TIME = 260;
 
-#define COLISION_TEST_THRESHOLD	9.0
-#define INTRO_TIME 60
-#define END_TIME 260
+/* BULLET SPEED: */
+const float BULLET_SPEED = 0.1f;
+const int CANNON_PERSISTENCE = 40;
+const int MISSILE_PERSISTENCE = 60;
+const int PHASER_PERSISTENCE = 40;
 
-/* BULLET SPEED: */ 
-#define BULLET_SPEED		0.1f
-#define CANNON_PERSISTENCE	40
-#define MISSILE_PERSISTENCE	60
-#define PHASER_PERSISTENCE	40
+/* GAME STATES: */
+enum GAME_STATE {STATE_PLAYING,
+                 STATE_CONSTRUCTION,
+                 STATE_PAUSE,
+                 STATE_SAVINGGAME,
+                 STATE_LOADINGGAME};
 
-/* GAME STATES: */ 
-#define STATE_PLAYING		0
-#define STATE_CONSTRUCTION	1
-#define STATE_PAUSE			2
-#define STATE_SAVINGGAME	3
-#define STATE_LOADINGGAME	4
+enum BUTTON_NAMES {TIME_BUTTON = 1,
+                   STATUS_BUTTON,
+                   RESOURCE_BUTTON,
+                   ROBOT1_BUTTON,
+                   ROBOT2_BUTTON,
+                   ROBOT3_BUTTON,
+                   ROBOT4_BUTTON,
+                   COMBAT1_BUTTON,
+                   COMBAT2_BUTTON,
+                   COMBAT3_BUTTON,
+                   COMBAT4_BUTTON,
+                   COMBAT5_BUTTON,
+                   COMBAT6_BUTTON,
+                   ORDERS1_BUTTON,
+                   ORDERS2_BUTTON,
+                   ORDERS3_BUTTON,
+                   ORDERS4_BUTTON,
+                   ORDERS5_BUTTON,
+                   ORDERS_BUTTON,
+                   TARGET1_BUTTON,
+                   TARGET2_BUTTON,
+                   TARGET3_BUTTON};
 
-/* BUTTON NAMES: */ 
-#define TIME_BUTTON		1
-#define STATUS_BUTTON	2
-#define RESOURCE_BUTTON	3
-#define ROBOT1_BUTTON	4
-#define ROBOT2_BUTTON	5
-#define ROBOT3_BUTTON	6
-#define ROBOT4_BUTTON	7
-#define COMBAT1_BUTTON	8
-#define COMBAT2_BUTTON	9
-#define COMBAT3_BUTTON	10
-#define COMBAT4_BUTTON	11
-#define COMBAT5_BUTTON	12
-#define COMBAT6_BUTTON	13
-#define ORDERS1_BUTTON	14
-#define ORDERS2_BUTTON	15
-#define ORDERS3_BUTTON	16
-#define ORDERS4_BUTTON	17
-#define ORDERS5_BUTTON	18
-#define ORDERS_BUTTON	19
-#define TARGET1_BUTTON	20
-#define TARGET2_BUTTON	21
-#define TARGET3_BUTTON	22
+enum MENU_TYPES {GENERAL_MENU,
+                 ROBOT_MENU,
+                 DIRECTCONTROL_MENU,
+                 COMBATMODE_MENU,
+                 DIRECTCONTROL2_MENU,
+                 ORDERS_MENU,
+                 SELECTDISTANCE_MENU,
+                 TARGETD_MENU,
+                 TARGETC_MENU,
+                 ALL_MENUS};
 
-const ushort GENERAL_MENU(0);
-const ushort ROBOT_MENU(1);
-const ushort DIRECTCONTROL_MENU(2);
-const ushort COMBATMODE_MENU(3);
-const ushort DIRECTCONTROL2_MENU(4);
-const ushort ORDERS_MENU(5);
-const ushort SELECTDISTANCE_MENU(6);
-const ushort TARGETD_MENU(7);
-const ushort TARGETC_MENU(8);
-const ushort ALL_MENUS(9);
+enum SHIP_OPERATORS {OP_NONE = -1,
+                     OP_LEFT,
+                     OP_RIGHT,
+                     OP_FORWARD,
+                     OP_BACKWARD,
+                     OP_UP};
 
-/* SHIP OPERATORS: */ 
-#define OP_NONE		   -1
-#define	OP_LEFT			0
-#define OP_RIGHT		1
-#define OP_FORWARD		2
-#define OP_BACKWARD		3
-#define OP_UP			4
+enum TERRAINS {T_GRASS,
+               T_SAND,
+               T_MOUNTAINS,
+               T_HOLE,
+               T_BUILDING,
+               T_SHIP,
+               T_ROBOT,
+               T_EROBOT,
+               T_OUT};
 
-/* TERRAINS: */ 
-#define T_GRASS		0
-#define T_SAND		1
-#define T_MOUNTAINS	2
-#define T_HOLE		3
-#define T_BUILDING	4
-#define T_SHIP		5
-#define T_ROBOT		6
-#define T_EROBOT	7
-#define T_OUT		8
+enum RESOURCES {R_GENERAL,
+                R_ELECTRONICS,
+                R_NUCLEAR,
+                R_PHASERS,
+                R_MISSILES,
+                R_CANNONS,
+                R_CHASSIS};
 
-/* RESOURCES: */ 
-#define R_GENERAL		0
-#define R_ELECTRONICS	1
-#define R_NUCLEAR		2
-#define R_PHASERS		3
-#define R_MISSILES		4
-#define R_CANNONS		5
-#define R_CHASSIS		6
+enum BUILDINGS_AND_WALLS {B_FENCE,
+                          B_WALL1,
+                          B_WALL2,
+                          B_WALL3,
+                          B_WALL4,
+                          B_WALL5,
+                          B_WALL6,
+                          B_FACTORY_ELECTRONICS,
+                          B_FACTORY_NUCLEAR,
+                          B_FACTORY_PHASERS,
+                          B_FACTORY_MISSILES,
+                          B_FACTORY_CANNONS,
+                          B_FACTORY_CHASSIS,
+                          B_WARBASE};
 
-/* BUILDINGS & WALLS: */ 
-#define B_FENCE		0
-#define B_WALL1		1
-#define B_WALL2		2
-#define B_WALL3		3
-#define B_WALL4		4
-#define B_WALL5		5
-#define B_WALL6		6
-#define B_FACTORY_ELECTRONICS	7
-#define B_FACTORY_NUCLEAR		8
-#define B_FACTORY_PHASERS		9
-#define B_FACTORY_MISSILES	   10
-#define B_FACTORY_CANNONS	   11
-#define B_FACTORY_CHASSIS	   12
-#define B_WARBASE			   13
+enum ROBOT_OPERATORS {ROBOTOP_NONE = -1,
+                      ROBOTOP_FORWARD,
+                      ROBOTOP_LEFT,
+                      ROBOTOP_RIGHT,
+                      ROBOTOP_CANNONS,
+                      ROBOTOP_MISSILES,
+                      ROBOTOP_PHASERS,
+                      ROBOTOP_NUCLEAR};
 
-/* ROBOT PROGRAMS AND OPERATORS: */ 
-#define ROBOTOP_NONE	   -1
-#define ROBOTOP_FORWARD		0
-#define ROBOTOP_LEFT		1
-#define ROBOTOP_RIGHT		2
-#define ROBOTOP_CANNONS		3
-#define ROBOTOP_MISSILES	4
-#define ROBOTOP_PHASERS		5
-#define ROBOTOP_NUCLEAR		6
+enum ROBOT_PROGRAMS {PROGRAM_NONE = -1,
+                     PROGRAM_FORWARD,
+                     PROGRAM_STOPDEFEND,
+                     PROGRAM_ADVANCE,
+                     PROGRAM_RETREAT,
+                     PROGRAM_DESTROY,
+                     PROGRAM_CAPTURE};
 
-#define PROGRAM_NONE	   -1
-#define PROGRAM_FORWARD		0
-#define PROGRAM_STOPDEFEND	1
-#define PROGRAM_ADVANCE		2
-#define PROGRAM_RETREAT		3
-#define PROGRAM_DESTROY		4
-#define PROGRAM_CAPTURE		5
+enum PROGRAM_PARAM {P_PARAM_ROBOTS = 1,
+                    P_PARAM_WARBASES,
+                    P_PARAM_NFACTORIES,
+                    P_PARAM_EFACTORIES};
 
-#define P_PARAM_ROBOTS		1
-#define P_PARAM_WARBASES	2
-#define P_PARAM_NFACTORIES	3
-#define P_PARAM_EFACTORIES	4
-
-/* ARTIFICIAL INTELLIGENCE STATES: */ 
-#define AI_STATE_EXPANDING	0
-#define AI_STATE_FIGHTING	1
-#define AI_STATE_DEFENDING	2
-#define AI_STATE_CONQUERING	3
-#define AI_STATE_DESTROYING	4
-
-
-
+enum AI_STATES {AI_STATE_EXPANDING,
+                AI_STATE_FIGHTING,
+                AI_STATE_DEFENDING,
+                AI_STATE_CONQUERING,
+                AI_STATE_DESTROYING};
 
 
 class StatusButton {
