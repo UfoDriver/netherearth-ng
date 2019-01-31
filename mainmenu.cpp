@@ -197,6 +197,10 @@ int mainmenu_cycle(int width,int height)
 				SCREEN_Y=768;
 				break;
 			case 1024:
+              SCREEN_X=1366;
+              SCREEN_Y=768;
+              break;
+            case 1366:
 				SCREEN_X=320;
 				SCREEN_Y=240;
 				break;
@@ -394,6 +398,8 @@ void mainmenu_draw(int width,int height)
 		if (SCREEN_X== 640) scaledglprintf(0.005,0.005,"1 - RESOLUTION:  640x480");
 		if (SCREEN_X== 800) scaledglprintf(0.005,0.005,"1 - RESOLUTION:  800x600");
 		if (SCREEN_X==1024) scaledglprintf(0.005,0.005,"1 - RESOLUTION: 1024x768");
+        if (SCREEN_X==1366) scaledglprintf(0.005,0.005,"1 - RESOLUTION: 13660x768");
+
 		glTranslatef(0,-1,0);
 		if (COLOUR_DEPTH== 8) scaledglprintf(0.005,0.005,"2 - COLOR DEPTH:  8bit  ");
 		if (COLOUR_DEPTH==16) scaledglprintf(0.005,0.005,"2 - COLOR DEPTH: 16bit  ");
@@ -495,7 +501,7 @@ void loadConfiguration(void)
 void saveConfiguration(void)
 {
     std::ofstream configFile("nether.cfg");
-    configFile << SCREEN_X << ' '<< SCREEN_Y << std::endl
+    configFile << SCREEN_X << ' ' << SCREEN_Y << std::endl
                << fullscreen << ' ' << shadows << ' ' << detaillevel << std::endl
                << up_key << ' ' << down_key << ' ' << left_key << ' ' << right_key << ' '
                << fire_key << ' ' << pause_key << std::endl
