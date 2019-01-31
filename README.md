@@ -15,3 +15,4 @@
 * Debugging (with command line option)
 * Menu is broken after load (at least in combat mode)
 * Make radar semitransparent
+* Provide bigger screen resolutions

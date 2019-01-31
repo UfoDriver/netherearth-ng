@@ -11,6 +11,8 @@
 #include "SDL/SDL.h"
 #include "SDL/SDL_mixer.h"
 
+#include <string>
+
 #include "list.h"
 #include "vector.h"
 
@@ -39,7 +41,7 @@ int mainmenu_status=0;
 int mainmenu_substatus=0;
 bool fullscreen=false;
 bool show_radar=true;
-char mapname[128]="original.map";
+std::string mapname("original.map");
 C3DObject *nethertittle=0;
 
 /* DRAWING REGION AROUND THE SHIP: */ 
@@ -236,9 +238,7 @@ int main(int argc, char** argv)
 				} else {
 					int val=mainmenu_cycle(SCREEN_X,SCREEN_Y);
 					if (val==1) {
-						char tmp[256];
-						sprintf(tmp,"maps/%s",mapname);
-						game=new NETHER(tmp);
+						game=new NETHER("maps/" + mapname);
 					} /* if */ 
 					if (val==2) quit=true;
 					if (val==3) {

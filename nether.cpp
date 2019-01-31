@@ -2,6 +2,8 @@
 #include "windows.h"
 #endif
 
+#include <string>
+
 #include "string.h"
 #include "stdio.h"
 #include "stdlib.h"
@@ -38,7 +40,7 @@ FILE *debug_fp=0;
 #endif
 
 
-NETHER::NETHER(char *mapname)
+NETHER::NETHER(const std::string& mapname)
 {
 
 #ifdef _WRITE_REPORT_

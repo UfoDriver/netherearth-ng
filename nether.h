@@ -1,6 +1,7 @@
 #ifndef NETHER_HEADER
 #define NETHER_HEADER
 
+#include <string>
 
 // #define _WRITE_REPORT_
 
@@ -242,7 +243,7 @@ public:
 
 class NETHER {
 public:
-	NETHER(char *mapname);
+  NETHER(const std::string& mapname);
 	~NETHER();
 
 	void loadobjects();
@@ -268,7 +269,7 @@ private:
 	void construction_draw(int w,int h);
 	void options_draw(int w,int h);
 
-	bool loadmap(char *file);
+    bool loadmap(const std::string& filename);
 	void drawmap(bool shadows);
 
 	float MapMaxZ(float x[2],float y[2]);

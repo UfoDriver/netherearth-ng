@@ -7,6 +7,7 @@
 #endif
 
 #include <fstream>
+#include <iostream>
 
 #include "string.h"
 #include "stdio.h"
@@ -54,7 +55,7 @@ extern int detaillevel;
 extern bool sound;
 extern int level;
 extern int up_key,down_key,left_key,right_key,fire_key,pause_key;
-extern char mapname[128];
+extern std::string mapname;
 extern bool show_radar;
 List<char> mapnames;
 
@@ -151,14 +152,15 @@ int mainmenu_cycle(int width,int height)
 #endif
 				/* Look for the actualmap: */ 
 				mapnames.Rewind();
-				while(!mapnames.EndP() && strcmp(mapnames.GetObj(),mapname)!=0) mapnames.Next();
+				while(!mapnames.EndP() && strcmp(mapnames.GetObj(), mapname.c_str())!=0) mapnames.Next();
 
 			} /* if */ 
 
 			if (!mapnames.EmptyP()) {
 				mapnames.Next();
 				if (mapnames.EndP()) mapnames.Rewind();
-				strcpy(mapname,mapnames.GetObj());
+                mapname = mapnames.GetObj();
+
 			} /* if */ 
 
 			saveConfiguration();
@@ -373,7 +375,7 @@ void mainmenu_draw(int width,int height)
 		glTranslatef(0,-1,0);
 		scaledglprintf2(0.005,0.005,"3 - OPTIONS          ");
 		glTranslatef(0,-1,0);
-		scaledglprintf2(0.005,0.005,"4 - MAP: %s",mapname);
+		scaledglprintf2(0.005,0.005,"4 - MAP: %s",mapname.c_str());
 		glTranslatef(0,-1,0);
 		scaledglprintf2(0.005,0.005,"5 - EXIT GAME        ");
 		break;

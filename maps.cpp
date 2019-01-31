@@ -2,6 +2,8 @@
 #include "windows.h"
 #endif
 
+#include <string>
+
 #include "stdio.h"
 #include "string.h"
 
@@ -24,12 +26,12 @@ extern int detaillevel;
 extern float MINY,MAXY,MINX,MAXX;
 
 
-bool NETHER::loadmap(char *file)
+bool NETHER::loadmap(const std::string& filename)
 {
 	FILE *fp;
 	int i;
 
-	fp=fopen(file,"r");
+	fp=fopen(filename.c_str(),"r");
 	if (fp==0) return false;
 
 	if (2!=fscanf(fp,"%i %i",&map_w,&map_h)) {
