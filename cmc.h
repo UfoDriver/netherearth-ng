@@ -1,6 +1,9 @@
 #ifndef __BRAIN_CMC
 #define __BRAIN_CMC
 
+#include <cstdio>
+
+
 class CMC {
 public:
 	CMC();

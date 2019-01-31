@@ -160,7 +160,7 @@ void NETHER::killmenu(ushort menu)
 }
 
 
-void NETHER::newbutton(int ID, int x, int y, int sx, int sy, const std::string& t1,
+void NETHER::newbutton(BUTTON_NAMES ID, int x, int y, int sx, int sy, const std::string& t1,
                        const std::string& t2, float r, float g, float b)
 {
   StatusButton* but = new StatusButton(ID, x, y, sx, sy, t1, t2, r, g, b, -16);
@@ -169,7 +169,7 @@ void NETHER::newbutton(int ID, int x, int y, int sx, int sy, const std::string& 
 }
 
 
-void NETHER::newbuttondelayed(int ID, int x, int y, int sx, int sy, const std::string& t1,
+void NETHER::newbuttondelayed(BUTTON_NAMES ID, int x, int y, int sx, int sy, const std::string& t1,
                               const std::string& t2, float r, float g, float b)
 {
   StatusButton* but = new StatusButton(ID, x, y, sx, sy, t1, t2, r, g, b, -32);
@@ -178,7 +178,7 @@ void NETHER::newbuttondelayed(int ID, int x, int y, int sx, int sy, const std::s
 }
 
 
-void NETHER::killbutton(int ID)
+void NETHER::killbutton(BUTTON_NAMES ID)
 {
   List<StatusButton> l;
   StatusButton *b;
@@ -192,7 +192,7 @@ void NETHER::killbutton(int ID)
 }
 
 
-StatusButton *NETHER::getbutton(int ID)
+StatusButton *NETHER::getbutton(BUTTON_NAMES ID)
 {
   List<StatusButton> l;
   StatusButton *b;

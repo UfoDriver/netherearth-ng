@@ -4,7 +4,11 @@
 #include <cstring>
 #include <string>
 #include "vector.h"
-
+#include "list.h"
+#include "cmc.h"
+#include "3dobject.h"
+#include "shadow3dobject.h"
+#include "piece3dobject.h"
 
 const float COLISION_TEST_THRESHOLD = 9.0;
 const int INTRO_TIME = 60;
@@ -128,12 +132,12 @@ enum AI_STATES {AI_STATE_EXPANDING,
 
 class StatusButton {
 public:
-  StatusButton(int ID, int x, int y, int sx, int sy, const std::string& text1,
+  StatusButton(BUTTON_NAMES ID, int x, int y, int sx, int sy, const std::string& text1,
                const std::string& text2, float r, float g, float b, int status):
     ID(ID), x(x), y(y), sx(sx), sy(sy), text1(text1), text2(text2), r(r), g(g), b(b), status(status)
   {}
 
-  int ID;
+  BUTTON_NAMES ID;
   int x, y;
   int sx, sy;
   std::string text1;
@@ -145,12 +149,10 @@ public:
 
 class BUILDING {
 public:
-	int type;
-	Vector pos;
-	int owner;
-
-	int status;		/* This variable controls the status of the building: if its free, or being captured	*/ 
-					/* by some of the players.																*/ 
+  int type;
+  Vector pos;
+  int owner;
+  int status;
 };
 
 
@@ -288,12 +290,12 @@ private:
 
 	int SFX_volume(Vector pos);
 
-  void newbutton(int ID, int x, int y, int sx, int sy, const std::string& t1, const std::string& t2,
+  void newbutton(BUTTON_NAMES ID, int x, int y, int sx, int sy, const std::string& t1, const std::string& t2,
                  float r, float g, float b);
-	void newbuttondelayed(int ID, int x, int y, int sx, int sy, const std::string& t1,
+	void newbuttondelayed(BUTTON_NAMES ID, int x, int y, int sx, int sy, const std::string& t1,
                           const std::string& t2, float r, float g, float b);
-	void killbutton(int ID);
-	StatusButton *getbutton(int ID);
+	void killbutton(BUTTON_NAMES ID);
+	StatusButton *getbutton(BUTTON_NAMES ID);
 	void newmenu(ushort menu);
 	void killmenu(ushort menu);
 
@@ -374,7 +376,7 @@ private:
 	/* Status variables: */ 
 	List<StatusButton> buttons;
 	int act_menu;
-	int act_button;
+	BUTTON_NAMES act_button;
 	int redrawmenu,redrawradar;
 	bool recomputestatistics;
 

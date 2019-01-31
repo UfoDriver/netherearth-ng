@@ -246,7 +246,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 			/* Browsing through the ROBOT MENU: */ 
 			{
 				int i;
-				int buttons[4]={ROBOT1_BUTTON,ROBOT2_BUTTON,ROBOT3_BUTTON,ROBOT4_BUTTON};
+				BUTTON_NAMES buttons[4]={ROBOT1_BUTTON,ROBOT2_BUTTON,ROBOT3_BUTTON,ROBOT4_BUTTON};
 				StatusButton *b;
 
 				if (keyboard[up_key] && !old_keyboard[up_key]) {
@@ -273,7 +273,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 				} /* if */ 
 
 				for(i=0;i<4;i++) {
-					b=getbutton(buttons[i]);
+                  b=getbutton(buttons[i]);
 					if (b!=0) {
 						b->r=0.0f;
 						b->g=0.0f;
@@ -356,7 +356,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 			/* Browsing through the COMBAT MENU: */ 
 			{
 				int i;
-				int buttons[6]={COMBAT1_BUTTON,COMBAT2_BUTTON,COMBAT3_BUTTON,COMBAT4_BUTTON,COMBAT5_BUTTON,COMBAT6_BUTTON};
+				BUTTON_NAMES buttons[6]={COMBAT1_BUTTON,COMBAT2_BUTTON,COMBAT3_BUTTON,COMBAT4_BUTTON,COMBAT5_BUTTON,COMBAT6_BUTTON};
 				StatusButton *b;
 
 				if (keyboard[up_key] && !old_keyboard[up_key]) {
@@ -466,7 +466,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 			/* Browsing through the ORDERS MENU: */ 
 			{
 				int i;
-				int buttons[5]={ORDERS1_BUTTON,ORDERS2_BUTTON,ORDERS3_BUTTON,ORDERS4_BUTTON,ORDERS5_BUTTON};
+				BUTTON_NAMES buttons[5]={ORDERS1_BUTTON,ORDERS2_BUTTON,ORDERS3_BUTTON,ORDERS4_BUTTON,ORDERS5_BUTTON};
 				StatusButton *b;
 
 				if (keyboard[up_key] && !old_keyboard[up_key]) {
@@ -590,7 +590,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 			/* Browsing through the SELECT TARGET FOR DESTROYING MENU: */ 
 			{
 				int i;
-				int buttons[3]={TARGET1_BUTTON,TARGET2_BUTTON,TARGET3_BUTTON};
+				BUTTON_NAMES buttons[3]={TARGET1_BUTTON,TARGET2_BUTTON,TARGET3_BUTTON};
 				StatusButton *b;
 
 				if (keyboard[up_key] && !old_keyboard[up_key]) {
@@ -686,7 +686,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 			/* Browsing through the SELECT TARGET FOR CAPTURING MENU: */ 
 			{
 				int i;
-				int buttons[3]={TARGET1_BUTTON,TARGET2_BUTTON,TARGET3_BUTTON};
+				BUTTON_NAMES buttons[3]={TARGET1_BUTTON,TARGET2_BUTTON,TARGET3_BUTTON};
 				StatusButton *b;
 
 				if (keyboard[up_key] && !old_keyboard[up_key]) {

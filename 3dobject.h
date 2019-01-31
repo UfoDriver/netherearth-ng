@@ -1,6 +1,8 @@
 #ifndef __BRAIN_3DOBJECT
 #define __BRAIN_3DOBJECT
 
+#include "cmc.h"
+
 class C3DObject {
 public:
 	C3DObject();
