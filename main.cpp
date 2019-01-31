@@ -59,8 +59,8 @@ SDL_Surface *screen_sfc;
 
 NETHER *game=0;
 
-void save_configuration(void);
-void load_configuration(void);
+void saveConfiguration(void);
+void loadConfiguration(void);
 int mainmenu_cycle(int width,int height);
 void mainmenu_draw(int width,int height);
 
@@ -156,7 +156,7 @@ int main(int argc, char** argv)
 	SDL_Event event;
     bool quit = false;
 
-	load_configuration();
+	loadConfiguration();
 
 	screen_sfc = initialization((fullscreen ? SDL_FULLSCREEN : 0));
 	if (screen_sfc==0) return 0;

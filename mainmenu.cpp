@@ -6,6 +6,8 @@
 #include <dirent.h>
 #endif
 
+#include <fstream>
+
 #include "string.h"
 #include "stdio.h"
 #include "math.h"
@@ -61,8 +63,8 @@ extern int mainmenu_substatus;
 extern C3DObject *nethertittle;
 unsigned char old_keyboard[SDLK_LAST];
 
-void save_configuration(void);
-void load_configuration(void);
+void saveConfiguration(void);
+void loadConfiguration(void);
 
 
 int mainmenu_cycle(int width,int height)
@@ -159,7 +161,7 @@ int mainmenu_cycle(int width,int height)
 				strcpy(mapname,mapnames.GetObj());
 			} /* if */ 
 
-			save_configuration();
+			saveConfiguration();
 		} /* if */ 
 		if (keyboard[SDLK_5] && !old_keyboard[SDLK_5]) {
 			mainmenu_status=5;
@@ -201,7 +203,7 @@ int mainmenu_cycle(int width,int height)
 				SCREEN_Y=480;
 			} /* switch */ 
 			retval=3;
-			save_configuration();
+			saveConfiguration();
 		} /* if */ 
 		if (keyboard[SDLK_2] && !old_keyboard[SDLK_2]) {
 			switch(COLOUR_DEPTH) {
@@ -215,38 +217,38 @@ int mainmenu_cycle(int width,int height)
 				COLOUR_DEPTH=8;
 			} /* switch */ 
 			retval=3;
-			save_configuration();
+			saveConfiguration();
 		} /* if */ 
 		if (keyboard[SDLK_3] && !old_keyboard[SDLK_3]) {
 			if (fullscreen) fullscreen=false;
 					   else fullscreen=true;
 			retval=3;
-			save_configuration();
+			saveConfiguration();
 		} /* if */ 
 		if (keyboard[SDLK_4] && !old_keyboard[SDLK_4]) {
 			shadows++;
 			if (shadows>=3) shadows=0;
-			save_configuration();
+			saveConfiguration();
 		} /* if */ 
 		if (keyboard[SDLK_5] && !old_keyboard[SDLK_5]) {
 			detaillevel++;
 			if (detaillevel>=5) detaillevel=0;
-			save_configuration();
+			saveConfiguration();
 		} /* if */ 
 		if (keyboard[SDLK_6] && !old_keyboard[SDLK_6]) {
 			if (sound) sound=false;
 				  else sound=true;
-			save_configuration();
+			saveConfiguration();
 		} /* if */ 
 		if (keyboard[SDLK_7] && !old_keyboard[SDLK_7]) {
 			level++;
 			if (level>=4) level=0;
-			save_configuration();
+			saveConfiguration();
 		} /* if */ 
 		if (keyboard[SDLK_8] && !old_keyboard[SDLK_8]) {
 			if (show_radar) show_radar=false;
 					   else show_radar=true;
-			save_configuration();
+			saveConfiguration();
 		} /* if */ 
 		if (keyboard[SDLK_9] && !old_keyboard[SDLK_9]) {
 			mainmenu_status=0;
@@ -296,7 +298,7 @@ int mainmenu_cycle(int width,int height)
 					if (mainmenu_substatus==7) {
 						mainmenu_status=0;
 						mainmenu_substatus=0;
-						save_configuration();
+						saveConfiguration();
 					} /* if */ 
 				} /* if */ 
 			} /* for */ 
@@ -479,47 +481,23 @@ void mainmenu_draw(int width,int height)
 
 
 
-void load_configuration(void)
+void loadConfiguration(void)
 {
-	int v;
-	FILE *fp;
-
-	fp=fopen("nether.cfg","r");
-	if (fp==0) return;
-
-	if (2!=fscanf(fp,"%i %i",&SCREEN_X,&SCREEN_Y)) return;
-	if (1!=fscanf(fp,"%i",&v)) return;
-	if (v==0) fullscreen=true;
-		 else fullscreen=false;
-	if (1!=fscanf(fp,"%i",&shadows)) return;
-	if (1!=fscanf(fp,"%i",&detaillevel)) return;
-
-	if (6!=fscanf(fp,"%i %i %i %i %i %i",&up_key,&down_key,&left_key,&right_key,&fire_key,&pause_key)) return;
-	if (1!=fscanf(fp,"%i",&v)) return;
-	if (v==0) sound=true;
-		 else sound=false;
-
-	if (1!=fscanf(fp,"%i",&level)) return;
-
-	if (1!=fscanf(fp,"%s",mapname)) return; 
-
-	fclose(fp);
-} /* load_configuration */ 
+    std::ifstream configFile("nether.cfg");
+    configFile >> SCREEN_X >> SCREEN_Y >> fullscreen >> shadows >> detaillevel
+               >> up_key >> down_key >> left_key >> right_key >> fire_key >> pause_key
+               >> sound >> level >> mapname;
+}
 
 
-void save_configuration(void)
+void saveConfiguration(void)
 {
-	FILE *fp;
-
-	fp=fopen("nether.cfg","w");
-	if (fp==0) return;
-
-	fprintf(fp,"%i %i\n",SCREEN_X,SCREEN_Y);
-	fprintf(fp,"%i %i %i\n",(fullscreen ? 0 : 1),shadows,detaillevel);
-	fprintf(fp,"%i %i %i %i %i %i\n",up_key,down_key,left_key,right_key,fire_key,pause_key);
-	fprintf(fp,"%i\n",(sound ? 0 : 1));
-	fprintf(fp,"%i\n",level);
-	fprintf(fp,"%s\n",mapname);
-
-	fclose(fp);
-} /* save_configuration */ 
+    std::ofstream configFile("nether.cfg");
+    configFile << SCREEN_X << ' '<< SCREEN_Y << std::endl
+               << fullscreen << ' ' << shadows << ' ' << detaillevel << std::endl
+               << up_key << ' ' << down_key << ' ' << left_key << ' ' << right_key << ' '
+               << fire_key << ' ' << pause_key << std::endl
+               << sound << std::endl
+               << level << std::endl
+               << mapname << std::endl;
+}
