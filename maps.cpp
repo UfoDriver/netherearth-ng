@@ -74,7 +74,7 @@ bool NETHER::loadmap(const std::string& filename)
 		char tmp[80];
 
 		while(1==fscanf(fp,"%s",tmp)) {
-			BUILDING *b;
+			Building *b;
 			float x,y;
 
 			if (strcmp(tmp,"fence")==0) {
@@ -82,88 +82,46 @@ bool NETHER::loadmap(const std::string& filename)
 					fclose(fp);
 					return false;
 				} /* if */ 
-				b=new BUILDING();
-				b->pos.x=x;
-				b->pos.y=y;
-				b->pos.z=0;
-				b->type=B_FENCE;
-				b->owner=0;
-				b->status=0;
-				buildings.Add(b);
+				buildings.Add(new Building(Vector(x, y, 0), B_FENCE));
 			} /* if */  
 			if (strcmp(tmp,"wall1")==0) {
 				if (2!=fscanf(fp,"%f %f",&x,&y)) {
 					fclose(fp);
 					return false;
 				} /* if */ 
-				b=new BUILDING();
-				b->pos.x=x;
-				b->pos.y=y;
-				b->pos.z=0;
-				b->type=B_WALL1;
-				b->owner=0;
-				b->status=0;
-				buildings.Add(b);
+				buildings.Add(new Building(Vector(x, y, 0), B_WALL1));
 			} /* if */  
 			if (strcmp(tmp,"wall2")==0) {
 				if (2!=fscanf(fp,"%f %f",&x,&y)) {
 					fclose(fp);
 					return false;
 				} /* if */ 
-				b=new BUILDING();
-				b->pos.x=x;
-				b->pos.y=y;
-				b->pos.z=0;
-				b->type=B_WALL2;
-				b->owner=0;
-				b->status=0;
-				buildings.Add(b);
+				buildings.Add(new Building(Vector(x, y, 0), B_WALL2));
 			} /* if */  
 			if (strcmp(tmp,"wall3")==0) {
 				if (2!=fscanf(fp,"%f %f",&x,&y)) {
 					fclose(fp);
 					return false;
 				} /* if */ 
-				b=new BUILDING();
-				b->pos.x=x;
-				b->pos.y=y;
-				b->pos.z=0;
-				b->type=B_WALL3;
-				b->owner=0;
-				b->status=0;
-				buildings.Add(b);
+				buildings.Add(new Building(Vector(x, y, 0), B_WALL3));
 			} /* if */  
 			if (strcmp(tmp,"wall4")==0) {
 				if (2!=fscanf(fp,"%f %f",&x,&y)) {
 					fclose(fp);
 					return false;
 				} /* if */ 
-				b=new BUILDING();
-				b->pos.x=x;
-				b->pos.y=y;
-				b->pos.z=0;
-				b->type=B_WALL4;
-				b->owner=0;
-				b->status=0;
-				buildings.Add(b);
+				buildings.Add(new Building(Vector(x, y, 0), B_WALL4));
 			} /* if */  
 			if (strcmp(tmp,"wall6")==0) {
 				if (2!=fscanf(fp,"%f %f",&x,&y)) {
 					fclose(fp);
 					return false;
 				} /* if */ 
-				b=new BUILDING();
-				b->pos.x=x;
-				b->pos.y=y;
-				b->pos.z=0;
-				b->type=B_WALL6;
-				b->owner=0;
-				b->status=0;
-				buildings.Add(b);
+				buildings.Add(new Building(Vector(x, y, 0), B_WALL6));
 			} /* if */  
 			if (strcmp(tmp,"factory")==0) {
 				char tmp2[80];
-				int obj[4]={B_WALL4,B_WALL4,B_WALL2,B_WALL2},i;
+				BUILDINGS_AND_WALLS obj[4]={B_WALL4,B_WALL4,B_WALL2,B_WALL2};
 				float xo[4]={0,0,1,1};
 				float yo[4]={0,2,0,2};
 
@@ -172,24 +130,11 @@ bool NETHER::loadmap(const std::string& filename)
 					return false;
 				} /* if */ 
 
-				for(i=0;i<4;i++) {
-					b=new BUILDING();
-					b->pos.x=x+xo[i];
-					b->pos.y=y+yo[i];
-					b->pos.z=0;
-					b->type=obj[i];
-					b->owner=0;
-					b->status=0;
-					buildings.Add(b);
+				for(int i=0;i<4;i++) {
+                  buildings.Add(new Building(Vector(x + xo[i], y + yo[i], 0), obj[i], 0, 0));
 				} /* for */ 
 
-				b=new BUILDING();
-				b->pos.x=x;
-				b->pos.y=y+1;
-				b->pos.z=0;
-				b->type=B_FACTORY_ELECTRONICS;
-				b->owner=0;
-				b->status=0;
+				b=new Building(Vector(x, y + 1, 0), B_FACTORY_ELECTRONICS);
 				if (strcmp(tmp2,"electronics")==0) b->type=B_FACTORY_ELECTRONICS;
 				if (strcmp(tmp2,"nuclear")==0) b->type=B_FACTORY_NUCLEAR;
 				if (strcmp(tmp2,"phasers")==0) b->type=B_FACTORY_PHASERS;
@@ -199,11 +144,11 @@ bool NETHER::loadmap(const std::string& filename)
 				buildings.Add(b);
 			} /* if */  
 			if (strcmp(tmp,"warbase")==0) {
-				int obj[15]={B_WALL4,B_WALL5,
+				BUILDINGS_AND_WALLS obj[15]={B_WALL4,B_WALL5,
 							 B_WALL4,B_WALL1,B_WALL1,B_WALL2,
 							 B_WALL4,B_WARBASE,B_WALL2,
 							 B_WALL4,B_WALL1,B_WALL1,B_WALL2,
-							 B_WALL4,B_WALL5},i;
+                                             B_WALL4,B_WALL5};
 				float xo[15]={0.5,1.5,
 						 	  0,1,2,3,
 							  0.5,1.5,2.5,
@@ -221,14 +166,8 @@ bool NETHER::loadmap(const std::string& filename)
 					return false;
 				} /* if */ 
 
-				for(i=0;i<15;i++) {
-					b=new BUILDING();
-					b->pos.x=x+xo[i];
-					b->pos.y=y+yo[i];
-					b->pos.z=0;
-					b->type=obj[i];
-					b->owner=o;
-					b->status=0;
+				for(int i=0;i<15;i++) {
+                  b=new Building(Vector(x + xo[i], y + yo[i], 0), obj[i], o, 0);
 					buildings.Add(b);
 				} /* for */ 
 			} /* if */  
@@ -244,8 +183,8 @@ void NETHER::drawmap(bool shadows)
 {
 	int i,j;
 	int o,m[8]={13,15,17,19,7,23,21,25};
-	List<BUILDING> l;
-	BUILDING *b;
+	List<Building> l;
+	Building *b;
 	Vector light;
 
 	light.x=lightpos[0];

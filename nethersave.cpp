@@ -36,7 +36,7 @@ bool NETHER::save_game(char *filename)
 {
 	int i,j;
 	FILE *fp;
-	BUILDING *b;
+	Building *b;
 	ROBOT *r;
 	BULLET *bul;
 	EXPLOSION *e;
@@ -201,7 +201,7 @@ bool NETHER::load_game(char *filename)
 {
 	int i,j,k,booltmp,length;
 	FILE *fp;
-	BUILDING *b;
+	Building *b;
 	ROBOT *r;
 	BULLET *bul;
 	EXPLOSION *e;
@@ -261,11 +261,14 @@ bool NETHER::load_game(char *filename)
 		Vector pos;
 		int owner;
 		int status;	
-*/ 
-		b=new BUILDING();
-		if (3!=fscanf(fp,"%i %i %i",&b->type,&b->owner,&b->status)) return false;
-		if (!b->pos.load(fp)) return false;
-		buildings.Add(b);
+*/
+      BUILDINGS_AND_WALLS type;
+      int owner;
+      int status;
+      if (3!=fscanf(fp,"%i %i %i", &type, &owner, &status)) return false;
+      b=new Building(Vector(0, 0, 0), type, owner, status);
+      if (!b->pos.load(fp)) return false;
+      buildings.Add(b);
 	} /* for */ 
 
 	for(i=0;i<2;i++) {

@@ -101,8 +101,8 @@ void NETHER::AI_precomputations(void)
 
 	/* Transfer all the buildings to the new map: */ 
 	{
-		List<BUILDING> l;
-		BUILDING *b;
+		List<Building> l;
+		Building *b;
 
 		l.Instance(buildings);
 		l.Rewind();
@@ -733,8 +733,8 @@ int NETHER::AI_program_capture(int goal,Vector *program_goal,Vector pos,int angl
 
 		{
 			/* Seek a goal: */ 
-			List<BUILDING> l;
-			BUILDING *b;
+			List<Building> l;
+			Building *b;
 			bool anygoal=false;
 			float distance,minimumdistance;
 
@@ -933,8 +933,8 @@ int NETHER::AI_program_destroy(int goal,Vector *program_goal,Vector pos,int angl
 
 		if (goal!=P_PARAM_ROBOTS) {
 			/* Seek a goal: */ 
-			List<BUILDING> l;
-			BUILDING *b;
+			List<Building> l;
+			Building *b;
 			bool anygoal=false;
 			float distance,minimumdistance;
 

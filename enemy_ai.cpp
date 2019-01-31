@@ -29,13 +29,13 @@ extern int level;
 
 void NETHER::AI_enemy(void)
 {
-	BUILDING *in_danger_warbase=0;
+	Building *in_danger_warbase=0;
 	int state=AI_STATE_EXPANDING;
 	int nrobots[3]={0,0,0};	/* EXPANDING / ATTACING / DEFENDING */ 
 	Vector mean_factory_position;
-	BUILDING *closest_to_factories_warbase=0;
+	Building *closest_to_factories_warbase=0;
 	float distance_to_factories;
-	BUILDING *closest_to_enemy_warbase=0;
+	Building *closest_to_enemy_warbase=0;
 	float distance_to_enemy;
 	int factories[3]={0,0,0};
 
@@ -82,8 +82,8 @@ void NETHER::AI_enemy(void)
 
 
 	{
-		List<BUILDING> l;
-		BUILDING *b;
+		List<Building> l;
+		Building *b;
 		List<ROBOT> rl;
 		ROBOT *r;
 		int i;

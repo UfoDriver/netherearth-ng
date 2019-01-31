@@ -9,6 +9,7 @@
 #include "3dobject.h"
 #include "shadow3dobject.h"
 #include "piece3dobject.h"
+#include "building.h"
 
 const float COLISION_TEST_THRESHOLD = 9.0;
 const int INTRO_TIME = 60;
@@ -86,21 +87,6 @@ enum RESOURCES {R_GENERAL,
                 R_CANNONS,
                 R_CHASSIS};
 
-enum BUILDINGS_AND_WALLS {B_FENCE,
-                          B_WALL1,
-                          B_WALL2,
-                          B_WALL3,
-                          B_WALL4,
-                          B_WALL5,
-                          B_WALL6,
-                          B_FACTORY_ELECTRONICS,
-                          B_FACTORY_NUCLEAR,
-                          B_FACTORY_PHASERS,
-                          B_FACTORY_MISSILES,
-                          B_FACTORY_CANNONS,
-                          B_FACTORY_CHASSIS,
-                          B_WARBASE};
-
 enum ROBOT_OPERATORS {ROBOTOP_NONE = -1,
                       ROBOTOP_FORWARD,
                       ROBOTOP_LEFT,
@@ -143,15 +129,6 @@ public:
   std::string text1;
   std::string text2;
   float r, g, b;
-  int status;
-};
-
-
-class BUILDING {
-public:
-  int type;
-  Vector pos;
-  int owner;
   int status;
 };
 
@@ -339,7 +316,7 @@ private:
 	int ship_op,ship_op2,ship_op3;
 	int ship_timemoving;
 
-	List<BUILDING> buildings;
+	List<Building> buildings;
 	List<ROBOT> robots[2];
 	List<BULLET> bullets;
 	List<EXPLOSION> explosions;

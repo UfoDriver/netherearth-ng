@@ -174,8 +174,8 @@ void NETHER::DrawBullet(BULLET *bullet,bool shadows)
 bool NETHER::BulletCollision(BULLET *bullet,ROBOT **r)
 {
 	int i;
-	List<BUILDING> l;
-	BUILDING *b;
+	List<Building> l;
+	Building *b;
 	List<ROBOT> l2;
 	ROBOT *rt;
 	float m1[16]={1,0,0,0,

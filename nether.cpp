@@ -1362,8 +1362,8 @@ bool NETHER::option_cycle(unsigned char *keyboard)
 bool NETHER::ShipCollision(C3DObject *obj,float x,float y,float z)
 {
 	int i;
-	List<BUILDING> l;
-	BUILDING *b;
+	List<Building> l;
+	Building *b;
 	List<ROBOT> l2;
 	ROBOT *r;
 	float m1[16]={1,0,0,0,

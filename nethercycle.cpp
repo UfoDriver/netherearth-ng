@@ -63,8 +63,8 @@ bool NETHER::cycle(unsigned char *keyboard)
 	} /* if */ 
 
 	if (recomputestatistics) {
-		List<BUILDING> l;
-		BUILDING *b;
+		List<Building> l;
+		Building *b;
 
 		statistics[0][0]=0;
 		statistics[0][1]=0;
@@ -860,8 +860,8 @@ bool NETHER::cycle(unsigned char *keyboard)
 
 		/* Test if the ship has landed over a Factory: */ 
 		{
-			List<BUILDING> l;
-			BUILDING *b;
+			List<Building> l;
+			Building *b;
 
 			l.Instance(buildings);
 			l.Rewind();
@@ -1140,8 +1140,8 @@ bool NETHER::cycle(unsigned char *keyboard)
 
 						/* Find buildings to destroy: */ 
 						{
-							List<BUILDING> l,todelete;
-							BUILDING *b;
+							List<Building> l,todelete;
+							Building *b;
 							float distance;
 
 							l.Instance(buildings);
@@ -1313,8 +1313,8 @@ bool NETHER::cycle(unsigned char *keyboard)
 
 		/* Buildings: */ 
 		{
-			List<BUILDING> l;
-			BUILDING *b;
+			List<Building> l;
+			Building *b;
 
 			l.Instance(buildings);
 			l.Rewind();

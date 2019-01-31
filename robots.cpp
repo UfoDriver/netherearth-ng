@@ -415,8 +415,8 @@ float ROBOT::piecez(int piece)
 bool NETHER::RobotCollision(ROBOT *r,bool complete)
 {
 	int i;
-	List<BUILDING> l;
-	BUILDING *b;
+	List<Building> l;
+	Building *b;
 	List<ROBOT> l2;
 	ROBOT *rt;
 	float m1[16]={1,0,0,0,
