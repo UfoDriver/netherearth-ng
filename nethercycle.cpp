@@ -244,7 +244,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 			{
 				int i;
 				int buttons[4]={ROBOT1_BUTTON,ROBOT2_BUTTON,ROBOT3_BUTTON,ROBOT4_BUTTON};
-				STATUSBUTTON *b;
+				StatusButton *b;
 
 				if (keyboard[up_key] && !old_keyboard[up_key]) {
 					int j=-1;
@@ -288,7 +288,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 					switch(act_button) {
 					case ROBOT1_BUTTON:
 						{
-							STATUSBUTTON *b;
+							StatusButton *b;
 
 							b=getbutton(act_button);
 							if (b!=0) {
@@ -354,7 +354,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 			{
 				int i;
 				int buttons[6]={COMBAT1_BUTTON,COMBAT2_BUTTON,COMBAT3_BUTTON,COMBAT4_BUTTON,COMBAT5_BUTTON,COMBAT6_BUTTON};
-				STATUSBUTTON *b;
+				StatusButton *b;
 
 				if (keyboard[up_key] && !old_keyboard[up_key]) {
 					int j=-1;
@@ -434,7 +434,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 						break;
 					case COMBAT5_BUTTON:
 						{
-							STATUSBUTTON *b;
+							StatusButton *b;
 
 							b=getbutton(act_button);
 							if (b!=0) {
@@ -464,7 +464,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 			{
 				int i;
 				int buttons[5]={ORDERS1_BUTTON,ORDERS2_BUTTON,ORDERS3_BUTTON,ORDERS4_BUTTON,ORDERS5_BUTTON};
-				STATUSBUTTON *b;
+				StatusButton *b;
 
 				if (keyboard[up_key] && !old_keyboard[up_key]) {
 					int j=-1;
@@ -588,7 +588,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 			{
 				int i;
 				int buttons[3]={TARGET1_BUTTON,TARGET2_BUTTON,TARGET3_BUTTON};
-				STATUSBUTTON *b;
+				StatusButton *b;
 
 				if (keyboard[up_key] && !old_keyboard[up_key]) {
 					int j=-1;
@@ -684,7 +684,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 			{
 				int i;
 				int buttons[3]={TARGET1_BUTTON,TARGET2_BUTTON,TARGET3_BUTTON};
-				STATUSBUTTON *b;
+				StatusButton *b;
 
 				if (keyboard[up_key] && !old_keyboard[up_key]) {
 					int j=-1;
@@ -794,7 +794,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 #endif
 
 		{
-			STATUSBUTTON *timeb;
+			StatusButton *timeb;
 
 			second+=5;
 			if (second>=60) {
@@ -1490,8 +1490,8 @@ bool NETHER::cycle(unsigned char *keyboard)
 
 	/* STATUS Cycle: */ 
 	{
-		List<STATUSBUTTON> l,todelete;
-		STATUSBUTTON *b;
+		List<StatusButton> l,todelete;
+		StatusButton *b;
 
 		l.Instance(buttons);
 		l.Rewind();

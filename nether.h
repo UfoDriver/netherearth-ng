@@ -1,6 +1,7 @@
 #ifndef NETHER_HEADER
 #define NETHER_HEADER
 
+#include <cstring>
 #include <string>
 
 // #define _WRITE_REPORT_
@@ -47,17 +48,16 @@
 #define TARGET2_BUTTON	21
 #define TARGET3_BUTTON	22
 
-#define GENERAL_MENU		0
-#define ROBOT_MENU			1
-#define DIRECTCONTROL_MENU	2
-#define COMBATMODE_MENU		3
-#define DIRECTCONTROL2_MENU	4
-#define ORDERS_MENU			5
-#define SELECTDISTANCE_MENU 6
-#define TARGETD_MENU		7
-#define TARGETC_MENU		8
-
-#define ALL_MENUS			9
+const ushort GENERAL_MENU(0);
+const ushort ROBOT_MENU(1);
+const ushort DIRECTCONTROL_MENU(2);
+const ushort COMBATMODE_MENU(3);
+const ushort DIRECTCONTROL2_MENU(4);
+const ushort ORDERS_MENU(5);
+const ushort SELECTDISTANCE_MENU(6);
+const ushort TARGETD_MENU(7);
+const ushort TARGETC_MENU(8);
+const ushort ALL_MENUS(9);
 
 /* SHIP OPERATORS: */ 
 #define OP_NONE		   -1
@@ -137,16 +137,30 @@
 
 
 
-class STATUSBUTTON {
+class StatusButton {
 public:
-	int ID;
-	int sx,sy;
-	int x,y;
-	char text1[80];
-	char text2[80];
+  StatusButton(int ID, int x, int y, int sx, int sy, const std::string& t1,
+               const std::string& t2, float r, float g, float b, int status):
+    ID(ID), x(x), y(y), sx(sx), sy(sy), r(r), g(g), b(b), status(status)
+  {
+    if (t1.empty())
+      text1[0] = 0;
+    else
+      strcpy(text1, t1.c_str());
+	if (t2.empty())
+      text2[0] = 0;
+    else
+      strcpy(text2, t2.c_str());
+  }
 
-	int status;
-	float r,g,b;
+  int ID;
+  int sx, sy;
+  int x, y;
+  char text1[80];
+  char text2[80];
+
+  int status;
+  float r, g, b;
 };
 
 
@@ -295,12 +309,14 @@ private:
 
 	int SFX_volume(Vector pos);
 
-	void newbutton(int ID,int x,int y,int sx,int sy,char *t1,char *t2,float r,float g,float b);
-	void newbuttondelayed(int ID,int x,int y,int sx,int sy,char *t1,char *t2,float r,float g,float b);
+  void newbutton(int ID, int x, int y, int sx, int sy, const std::string& t1, const std::string& t2,
+                 float r, float g, float b);
+	void newbuttondelayed(int ID, int x, int y, int sx, int sy, const std::string& t1,
+                          const std::string& t2, float r, float g, float b);
 	void killbutton(int ID);
-	STATUSBUTTON *getbutton(int ID);
-	void newmenu(int menu);
-	void killmenu(int menu);
+	StatusButton *getbutton(int ID);
+	void newmenu(ushort menu);
+	void killmenu(ushort menu);
 
 	void AI_enemy(void);
 	ROBOT *AI_enemy_newrobot(int state,Vector pos);
@@ -377,7 +393,7 @@ private:
 	Piece3DObject **bullet_tile;
 
 	/* Status variables: */ 
-	List<STATUSBUTTON> buttons;
+	List<StatusButton> buttons;
 	int act_menu;
 	int act_button;
 	int redrawmenu,redrawradar;

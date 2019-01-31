@@ -846,8 +846,8 @@ void NETHER::draw_status(void)
 
 	/* Draw buttons: */ 
 	{
-		List<STATUSBUTTON> l;
-		STATUSBUTTON *b;
+		List<StatusButton> l;
+		StatusButton *b;
 		float angle,cf;
 
 		l.Instance(buttons);
@@ -887,7 +887,7 @@ void NETHER::draw_status(void)
 	switch(act_menu) {
 	case GENERAL_MENU:
 		{
-			STATUSBUTTON *b;
+			StatusButton *b;
 			b=getbutton(STATUS_BUTTON);
 			if (b!=0 && b->status==0) {
 				statistics[0][7]=robots[0].Length();
@@ -932,7 +932,7 @@ void NETHER::draw_status(void)
 	case ROBOT_MENU:
 	case DIRECTCONTROL_MENU:
 		{
-			STATUSBUTTON *b;
+			StatusButton *b;
 
 			b=getbutton(ROBOT1_BUTTON);
 			if (b!=0 && b->status==0) {
@@ -1051,7 +1051,7 @@ void NETHER::draw_status(void)
 
 	case ORDERS_MENU:
 		{
-			STATUSBUTTON *b;
+			StatusButton *b;
 
 			b=getbutton(ORDERS1_BUTTON);
 			if (b!=0 && b->status==0) {
@@ -1073,7 +1073,7 @@ void NETHER::draw_status(void)
 
 	case SELECTDISTANCE_MENU:
 		{
-			STATUSBUTTON *b;
+			StatusButton *b;
 
 			b=getbutton(ORDERS_BUTTON);
 			if (b!=0 && b->status==0) {
@@ -1100,7 +1100,7 @@ void NETHER::draw_status(void)
 	case TARGETD_MENU:
 	case TARGETC_MENU:
 		{
-			STATUSBUTTON *b;
+			StatusButton *b;
 
 			b=getbutton(ORDERS_BUTTON);
 			if (b!=0 && b->status==0) {
