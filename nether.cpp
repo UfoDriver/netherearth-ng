@@ -771,7 +771,7 @@ void NETHER::draw_game(bool shadows)
 
 		glPushMatrix();
 		glTranslatef(sx,sy,minz+0.05);
-		if (shadows) ship->DrawShadow(0,0,0,0.5);
+		ship->DrawShadow(0,0,0,0.5);
 		glPopMatrix();
 	} 
 
@@ -801,12 +801,14 @@ void NETHER::draw_game(bool shadows)
 			if (a>1) a=1;
 
 			glPushMatrix();
-			glTranslatef(n->pos.x,n->pos.y,n->pos.z);		
+			glTranslatef(n->pos.x,n->pos.y,n->pos.z);
 			glColor4f(1.0f,0.5f,0.0,a);
 			glDepthMask(GL_FALSE);
 			glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 			glEnable(GL_BLEND);
-			glutSolidSphere(r,8,8);
+            // Somehow solid sphere dumps core
+            // glutSolidSphere(r,8,8);
+			glutWireSphere(r,8,8);
 			glDisable(GL_BLEND);
 			glDepthMask(GL_TRUE);
 			glPopMatrix();
