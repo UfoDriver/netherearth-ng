@@ -5,6 +5,9 @@
 #include "string.h"
 #include "stdlib.h"
 
+#include <sstream>
+#include <iomanip>
+
 #include "stdio.h"
 #include "math.h"
 
@@ -840,8 +843,12 @@ bool NETHER::cycle(unsigned char *keyboard)
 				} /* if */ 
 				timeb=getbutton(TIME_BUTTON);
 				if (timeb!=0) {
-					sprintf(timeb->text1,"Day: %i",day);
-					sprintf(timeb->text2,"Hour: %.2i:%.2i",hour,minute);
+                  std::ostringstream t1Formatter;
+                  t1Formatter << "Day: " << day;
+                  timeb->text1 = t1Formatter.str();
+                  std::ostringstream t2Formatter;
+                  t2Formatter << "Hour: " << std::setw(2) << hour << ':' << std::setw(2) << minute;
+                  timeb->text2 = t2Formatter.str();
 				} /* if */ 
 			} /* if */ 
 		}

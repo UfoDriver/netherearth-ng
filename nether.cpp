@@ -838,50 +838,49 @@ void NETHER::draw_game(bool shadows)
 
 void NETHER::draw_status(void)
 {
-    /* Clear the color and depth buffers. */ 
-    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+  /* Clear the color and depth buffers. */
+  glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
 
-	/* Draw buttons: */ 
-	{
-		List<StatusButton> l;
-		StatusButton *b;
-		float angle,cf;
+  /* Draw buttons: */
+  {
+    List<StatusButton> l;
+    StatusButton *b;
+    float angle, cf;
 
-		l.Instance(buttons);
-		l.Rewind();
-		while(l.Iterate(b)) {
-			if (b->status>=-16) {
-				angle=(float(b->status)*90.0)/16.0;
-				cf=float((16-abs(b->status)))/16.0;
-				glPushMatrix();
-				glTranslatef(b->x,b->y,0);
-				glRotatef(angle,0,1,0);
+    l.Instance(buttons);
+    l.Rewind();
+    while(l.Iterate(b)) {
+      if (b->status >= -16) {
+        angle=(float(b->status) * 90.0) / 16.0;
+        cf=float((16 - abs(b->status))) / 16.0;
+        glPushMatrix();
+        glTranslatef(b->x, b->y, 0);
+        glRotatef(angle, 0, 1, 0);
 
-				/* Draw button: */ 
-				glColor3f(b->r*cf,b->g*cf,b->b*cf);
-				glutSolidBox(b->sx/2,b->sy/2,10.0);
-				glTranslatef(0,0,11);
+        /* Draw button: */
+        glColor3f(b->r * cf, b->g * cf, b->b * cf);
+        glutSolidBox(b->sx / 2, b->sy / 2, 10.0);
+        glTranslatef(0, 0, 11);
 
-				glColor3f(1.0,1.0,1.0);
-				if (b->text1[0]!=0) {
-					if (b->text2[0]!=0) {
-						glTranslatef(0,-12,0);
-						scaledglprintf(0.1f,0.1f,b->text2);
-						glTranslatef(0,17,0);
-						scaledglprintf(0.1f,0.1f,b->text1);
-					} else {
-						glTranslatef(0,-3,0);
-						scaledglprintf(0.1f,0.1f,b->text1);
-					} /* if */ 
-				} /* if */ 
-
-				glPopMatrix();
-			} /* if */ 
-		} /* while */ 
-	}
+        glColor3f(1.0, 1.0, 1.0);
+        if (!b->text1.empty()) {
+          if (!b->text2.empty()) {
+            glTranslatef(0, -12, 0);
+            scaledglprintf(0.1f, 0.1f, b->text2.c_str());
+            glTranslatef(0, 17, 0);
+            scaledglprintf(0.1f, 0.1f, b->text1.c_str());
+          } else {
+            glTranslatef(0, -3, 0);
+            scaledglprintf(0.1f, 0.1f, b->text1.c_str());
+          }
+        }
+        glPopMatrix();
+      }
+    }
+  }
 
 	glPushMatrix();
 	switch(act_menu) {

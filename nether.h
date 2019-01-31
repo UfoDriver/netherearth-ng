@@ -139,28 +139,18 @@ const ushort ALL_MENUS(9);
 
 class StatusButton {
 public:
-  StatusButton(int ID, int x, int y, int sx, int sy, const std::string& t1,
-               const std::string& t2, float r, float g, float b, int status):
-    ID(ID), x(x), y(y), sx(sx), sy(sy), r(r), g(g), b(b), status(status)
-  {
-    if (t1.empty())
-      text1[0] = 0;
-    else
-      strcpy(text1, t1.c_str());
-	if (t2.empty())
-      text2[0] = 0;
-    else
-      strcpy(text2, t2.c_str());
-  }
+  StatusButton(int ID, int x, int y, int sx, int sy, const std::string& text1,
+               const std::string& text2, float r, float g, float b, int status):
+    ID(ID), x(x), y(y), sx(sx), sy(sy), text1(text1), text2(text2), r(r), g(g), b(b), status(status)
+  {}
 
   int ID;
-  int sx, sy;
   int x, y;
-  char text1[80];
-  char text2[80];
-
-  int status;
+  int sx, sy;
+  std::string text1;
+  std::string text2;
   float r, g, b;
+  int status;
 };
 
 

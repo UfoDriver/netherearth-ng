@@ -16,3 +16,4 @@
 * Menu is broken after load (at least in combat mode)
 * Make radar semitransparent
 * Provide bigger screen resolutions
+* "NETHER" is a God object and should be decoupled
