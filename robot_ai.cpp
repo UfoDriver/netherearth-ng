@@ -83,10 +83,10 @@ void NETHER::AI_precomputations(void)
 
 	discreetmap=new int[(map_w*2)*(map_h*2)];
 	bk_discreetmap=new int[(map_w*2)*(map_h*2)];
-	searchmap=new AI_OPERATOR *[(map_w*2)*(map_h*2)];
+	searchmap=new AIOperator *[(map_w*2)*(map_h*2)];
 	atackmap=new int[(map_w*2)*(map_h*2)];
 	for(i=0;i<(map_w*2)*(map_h*2);i++) {
-		searchmap[i]=new AI_OPERATOR();
+		searchmap[i]=new AIOperator();
 		searchmap[i]->used=false;
 		atackmap[i]=0;
 	} /* for */ 
@@ -191,7 +191,7 @@ void NETHER::AI_moverobot(Vector oldpos,Vector newpos,int owner)
 } /* NETHER::AI_moverobot */ 
 
 
-void NETHER::AI_availableoperators(Vector pos,int angle,int traction,List<AI_OPERATOR> *l)
+void NETHER::AI_availableoperators(Vector pos,int angle,int traction,List<AIOperator> *l)
 {
 	int i;
 	int x,y,dx,dy;
@@ -199,7 +199,7 @@ void NETHER::AI_availableoperators(Vector pos,int angle,int traction,List<AI_OPE
 	int n_turns;
 	int dif;
 	int cost;
-	AI_OPERATOR *op;
+	AIOperator *op;
 
 	robot_zone(pos,&x,&y,&dx,&dy);
 
@@ -228,7 +228,7 @@ void NETHER::AI_availableoperators(Vector pos,int angle,int traction,List<AI_OPE
 			}
 
 			/* Build a new AI_operator: */ 
-			op=new AI_OPERATOR();
+			op=new AIOperator();
 			op->cost=cost;
 			op->previous=-1;
 			op->deadend=false;
@@ -344,7 +344,7 @@ int NETHER::AI_searchengine(Vector pos,int angle,int goaltype,Vector goalpos,int
 		double further;
 		int mincost;
 		bool first=true;
-		AI_OPERATOR *op,*bestop=0;
+		AIOperator *op,*bestop=0;
 
 		for(i=-depth;i<depth;i++) {
 			for(j=-depth;j<depth;j++) {
@@ -370,7 +370,7 @@ int NETHER::AI_searchengine(Vector pos,int angle,int goaltype,Vector goalpos,int
 
 		if (bestop!=0) {
 			int rop;
-			AI_OPERATOR *prev;
+			AIOperator *prev;
 
 			prev=bestop;
 			while(bestop->previous!=-1 && searchmap[bestop->previous]->used) {
@@ -397,7 +397,7 @@ int NETHER::AI_searchengine(Vector pos,int angle,int goaltype,Vector goalpos,int
 		double further;
 		int mincost;
 		bool first=true;
-		AI_OPERATOR *op,*bestop=0;
+		AIOperator *op,*bestop=0;
 
 		for(i=-depth;i<depth;i++) {
 			for(j=-depth;j<depth;j++) {
@@ -423,7 +423,7 @@ int NETHER::AI_searchengine(Vector pos,int angle,int goaltype,Vector goalpos,int
 
 		if (bestop!=0) {
 			int rop;
-			AI_OPERATOR *prev;
+			AIOperator *prev;
 
 			prev=bestop;
 			while(bestop->previous!=-1 && searchmap[bestop->previous]->used) {
@@ -450,7 +450,7 @@ int NETHER::AI_searchengine(Vector pos,int angle,int goaltype,Vector goalpos,int
 		double closer;
 		int mincost;
 		bool first=true;
-		AI_OPERATOR *op,*bestop=0;
+		AIOperator *op,*bestop=0;
 
 #ifdef _WRITE_REPORT_
 	fprintf(debug_fp,"Search engine for CAPTURE START\n");
@@ -486,7 +486,7 @@ int NETHER::AI_searchengine(Vector pos,int angle,int goaltype,Vector goalpos,int
 
 		if (bestop!=0) {
 			int rop;
-			AI_OPERATOR *prev;
+			AIOperator *prev;
 
 			prev=bestop;
 			while(bestop->previous!=-1 && searchmap[bestop->previous]->used) {
@@ -512,11 +512,11 @@ int NETHER::AI_searchengine(Vector pos,int angle,int goaltype,Vector goalpos,int
 	if (goaltype==PROGRAM_DESTROY) {
 		int i,j;
 		double closer;
-		AI_OPERATOR *op;
+		AIOperator *op;
 		int mincost,mincost2;
 		bool first=true,first2=true;
-		AI_OPERATOR *bestop=0;	/* Best operator to get closer to the nearest robot */ 
-		AI_OPERATOR *bestop2=0;	/* Best operator to reach an attaking position		*/ 
+		AIOperator *bestop=0;	/* Best operator to get closer to the nearest robot */ 
+		AIOperator *bestop2=0;	/* Best operator to reach an attaking position		*/ 
 
 		for(i=-depth;i<depth;i++) {
 			for(j=-depth;j<depth;j++) {
@@ -556,7 +556,7 @@ int NETHER::AI_searchengine(Vector pos,int angle,int goaltype,Vector goalpos,int
 
 		if (bestop!=0) {
 			int rop;
-			AI_OPERATOR *prev;
+			AIOperator *prev;
 
 			prev=bestop;
 			while(bestop->previous!=-1 && searchmap[bestop->previous]->used) {
@@ -623,7 +623,7 @@ int NETHER::AI_program_advance(int amount,Vector pos,int angle,int traction,bool
 	/* First of all, delete the robot from the discreet map: */ 
 	int op=ROBOTOP_NONE;
 	int type;
-	List<AI_OPERATOR> l;
+	List<AIOperator> l;
 	Vector tmp_goal;
 
 	op=AI_program_stopdefend(&tmp_goal,pos,angle,traction,electronics,player,pieces);
@@ -635,7 +635,7 @@ int NETHER::AI_program_advance(int amount,Vector pos,int angle,int traction,bool
 
 	if (!l.EmptyP()) {
 		/* Choose one operator: */ 
-		AI_OPERATOR *aiop;
+		AIOperator *aiop;
 
 		if (electronics) {
 			op=AI_searchengine(pos,angle,PROGRAM_ADVANCE,Vector(0,0,0),traction,WE_SEARCH_DEPTH);
@@ -663,7 +663,7 @@ int NETHER::AI_program_retreat(int amount,Vector pos,int angle,int traction,bool
 	/* First of all, delete the robot from the discreet map: */ 
 	int op=ROBOTOP_NONE;
 	int type;
-	List<AI_OPERATOR> l;
+	List<AIOperator> l;
 	Vector tmp_goal;
 
 	op=AI_program_stopdefend(&tmp_goal,pos,angle,traction,electronics,player,pieces);
@@ -675,7 +675,7 @@ int NETHER::AI_program_retreat(int amount,Vector pos,int angle,int traction,bool
 
 	if (!l.EmptyP()) {
 		/* Choose one operator: */ 
-		AI_OPERATOR *aiop;
+		AIOperator *aiop;
 
 		if (electronics) {
 			op=AI_searchengine(pos,angle,PROGRAM_RETREAT,Vector(0,0,0),traction,WE_SEARCH_DEPTH);
@@ -703,7 +703,7 @@ int NETHER::AI_program_capture(int goal,Vector *program_goal,Vector pos,int angl
 	/* First of all, delete the robot from the discreet map: */ 
 	int op=ROBOTOP_NONE;
 	int type;
-	List<AI_OPERATOR> l;
+	List<AIOperator> l;
 
 #ifdef _WRITE_REPORT_
 	fprintf(debug_fp,"AI_program_capture START\n");
@@ -724,7 +724,7 @@ int NETHER::AI_program_capture(int goal,Vector *program_goal,Vector pos,int angl
 
 	if (!l.EmptyP()) {
 		/* Choose one operator: */ 
-		AI_OPERATOR *aiop;
+		AIOperator *aiop;
 
 #ifdef _WRITE_REPORT_
 	fprintf(debug_fp,"Seeking a goal\n");
@@ -923,13 +923,13 @@ int NETHER::AI_program_destroy(int goal,Vector *program_goal,Vector pos,int angl
 	/* First of all, delete the robot from the discreet map: */ 
 	int op=ROBOTOP_NONE;
 	int type=AI_killrobot(pos);
-	List<AI_OPERATOR> lops;
+	List<AIOperator> lops;
 
 	AI_availableoperators(pos,angle,traction,&lops);
 
 	if (!lops.EmptyP()) {
 		/* Choose one operator: */ 
-		AI_OPERATOR *aiop;
+		AIOperator *aiop;
 
 		if (goal!=P_PARAM_ROBOTS) {
 			/* Seek a goal: */ 
@@ -1145,7 +1145,7 @@ int NETHER::AI_program_stopdefend(Vector *program_goal,Vector pos,int angle,int 
 	/* First of all, delete the robot from the discreet map: */ 
 	int op=ROBOTOP_NONE;
 	int type=AI_killrobot(pos);
-	List<AI_OPERATOR> lops;
+	List<AIOperator> lops;
 
 	AI_availableoperators(pos,angle,traction,&lops);
 
@@ -1282,10 +1282,10 @@ int NETHER::AI_program_stopdefend(Vector *program_goal,Vector pos,int angle,int 
 } /* NETHER::AI_program_stopdefend */ 
 
 
-void NETHER::AI_rankoperators_advance(List<AI_OPERATOR> *l)
+void NETHER::AI_rankoperators_advance(List<AIOperator> *l)
 {
-	AI_OPERATOR *op1,*op2;
-	LLink<AI_OPERATOR> *p1,*p2;
+	AIOperator *op1,*op2;
+	LLink<AIOperator> *p1,*p2;
 	bool changes;
 	
 	/* Bubble sort: */ 
@@ -1313,10 +1313,10 @@ void NETHER::AI_rankoperators_advance(List<AI_OPERATOR> *l)
 } /* NETHER::AI_rankoperators_advance */ 
 
 
-void NETHER::AI_rankoperators_retreat(List<AI_OPERATOR> *l)
+void NETHER::AI_rankoperators_retreat(List<AIOperator> *l)
 {
-	AI_OPERATOR *op1,*op2;
-	LLink<AI_OPERATOR> *p1,*p2;
+	AIOperator *op1,*op2;
+	LLink<AIOperator> *p1,*p2;
 	bool changes;
 	
 	/* Bubble sort: */ 
@@ -1344,10 +1344,10 @@ void NETHER::AI_rankoperators_retreat(List<AI_OPERATOR> *l)
 } /* NETHER::AI_rankoperators_retreat */ 
 
 
-void NETHER::AI_rankoperators_capture(List<AI_OPERATOR> *l,Vector goal)
+void NETHER::AI_rankoperators_capture(List<AIOperator> *l,Vector goal)
 {
-	AI_OPERATOR *op1,*op2;
-	LLink<AI_OPERATOR> *p1,*p2;
+	AIOperator *op1,*op2;
+	LLink<AIOperator> *p1,*p2;
 	bool changes;
 	float dist1 = 0;
 	float dist2 = 0;
@@ -1403,7 +1403,7 @@ void NETHER::AI_rankoperators_capture(List<AI_OPERATOR> *l,Vector goal)
 } /* NETHER::AI_rankoperators_capture */ 
 
 
-AI_OPERATOR *NETHER::AI_chooseoperator(List<AI_OPERATOR> *l,int factor)
+AIOperator *NETHER::AI_chooseoperator(List<AIOperator> *l,int factor)
 {
 	if (factor==0) {
 		l->Rewind();

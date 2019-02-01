@@ -15,6 +15,7 @@
 #include "bullet.h"
 #include "explosion.h"
 #include "particle.h"
+#include "ai_operator.h"
 
 
 const float COLISION_TEST_THRESHOLD = 9.0;
@@ -99,17 +100,6 @@ enum AI_STATES {AI_STATE_EXPANDING,
                 AI_STATE_DESTROYING};
 
 
-class AI_OPERATOR {
-public:
-	Vector newpos;
-	int first_robotop;
-	int cost;
-	int previous;
-	bool deadend;
-	bool used;
-};
-
-
 class NETHER {
 public:
   NETHER(const std::string& mapname);
@@ -183,7 +173,7 @@ private:
 	int  AI_killrobot(Vector pos);
 	void AI_moverobot(Vector oldpos,Vector newpos,int owner);
 	void AI_removebuilding(Vector pos);
-	void AI_availableoperators(Vector pos,int angle,int traction,List<AI_OPERATOR> *l);
+	void AI_availableoperators(Vector pos,int angle,int traction,List<AIOperator> *l);
 	bool AI_expandoperators(int x,int y,int angle,int traction,int previous,int oldcost,int depth);
 	int  AI_searchengine(Vector pos,int angle,int goaltype,Vector goalpos,int traction,int depth);
 	void AI_resetsearch(Vector pos,int depth);
@@ -192,10 +182,10 @@ private:
 	int  AI_program_capture(int goal,Vector *program_goal,Vector pos,int angle,int traction,bool electronics,int player,bool *pieces);
 	int  AI_program_destroy(int goal,Vector *program_goal,Vector pos,int angle,int traction,bool electronics,int player,bool *pieces);
 	int  AI_program_stopdefend(Vector *program_goal,Vector pos,int angle,int traction,bool electronics,int player,bool *pieces);
-	void AI_rankoperators_advance(List<AI_OPERATOR> *l);
-	void AI_rankoperators_retreat(List<AI_OPERATOR> *l);
-	void AI_rankoperators_capture(List<AI_OPERATOR> *l,Vector goal);
-	AI_OPERATOR *AI_chooseoperator(List<AI_OPERATOR> *l,int factor);
+	void AI_rankoperators_advance(List<AIOperator> *l);
+	void AI_rankoperators_retreat(List<AIOperator> *l);
+	void AI_rankoperators_capture(List<AIOperator> *l,Vector goal);
+	AIOperator *AI_chooseoperator(List<AIOperator> *l,int factor);
 	int  AI_robothere(Vector pos);
 	int  AI_RealShotPaths(int x,int y,int player,int persistence);
 
@@ -260,7 +250,7 @@ private:
 	/* Artificial intelligence variables: */ 
 	int *discreetmap;
 	int *bk_discreetmap;
-	AI_OPERATOR **searchmap;
+	AIOperator **searchmap;
 	int *atackmap;
 
 	/* Sonido: */ 
