@@ -13,6 +13,7 @@
 #include "statusbutton.h"
 #include "robot.h"
 #include "bullet.h"
+#include "explosion.h"
 
 
 const float COLISION_TEST_THRESHOLD = 9.0;
@@ -95,17 +96,6 @@ enum AI_STATES {AI_STATE_EXPANDING,
                 AI_STATE_DEFENDING,
                 AI_STATE_CONQUERING,
                 AI_STATE_DESTROYING};
-
-
-class EXPLOSION {
-public:
-	EXPLOSION(void);
-	EXPLOSION(Vector p,int sz);
-
-	Vector pos;
-	int step;
-	int size;
-};
 
 
 class PARTICLE {
@@ -238,7 +228,7 @@ private:
 	List<Building> buildings;
 	List<Robot> robots[2];
 	List<Bullet> bullets;
-	List<EXPLOSION> explosions;
+	List<Explosion> explosions;
 	List<PARTICLE> particles;
 
 	int day,hour,minute,second;

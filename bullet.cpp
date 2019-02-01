@@ -320,18 +320,3 @@ bool NETHER::BulletCollision(Bullet *bullet,Robot **r)
 
 	return false;
 } /* NETHER::BulletCollision */ 
-
-
-EXPLOSION::EXPLOSION(void)
-{
-	step=0;
-	size=0;
-} /* NUCLEAR::NUCLEAR */ 
-
-
-EXPLOSION::EXPLOSION(Vector p,int sz)
-{
-	pos=p;
-	step=0;
-	size=sz;
-} /* NUCLEAR::NUCLEAR */ 

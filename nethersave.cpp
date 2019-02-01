@@ -39,7 +39,7 @@ bool NETHER::save_game(char *filename)
 	Building *b;
 	Robot *r;
 	Bullet *bul;
-	EXPLOSION *e;
+	Explosion *e;
 
 	fp=fopen(filename,"w");
 	if (fp==0) return false;
@@ -204,7 +204,7 @@ bool NETHER::load_game(char *filename)
 	Building *b;
 	Robot *r;
 	Bullet *bul;
-	EXPLOSION *e;
+	Explosion *e;
 
 	fp=fopen(filename,"r");
 	if (fp==0) return false;
@@ -341,7 +341,7 @@ bool NETHER::load_game(char *filename)
 		int step;
 		int size;
 */ 
-		e=new EXPLOSION();
+		e=new Explosion();
 
 		e->pos.load(fp);
 		if (2!=fscanf(fp,"%i %i",&e->step,&e->size)) return false;

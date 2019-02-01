@@ -1124,9 +1124,9 @@ bool NETHER::cycle(unsigned char *keyboard)
 						r->op==ROBOTOP_PHASERS) r->firetimer++;
 
 					if (r->op==ROBOTOP_NUCLEAR) {
-						EXPLOSION *n;
+						Explosion *n;
 
-						n=new EXPLOSION(r->pos,2);
+						n=new Explosion(r->pos,2);
 						explosions.Add(n);
 
 						/* Robot destroyed: */ 
@@ -1415,9 +1415,9 @@ bool NETHER::cycle(unsigned char *keyboard)
 				if (b->step>=persistence || BulletCollision(b,&r)) {
 					todelete.Add(b);
 					if (b->step<persistence) {
-						EXPLOSION *n;
+						Explosion *n;
 
-						n=new EXPLOSION(b->pos,0);
+						n=new Explosion(b->pos,0);
 						explosions.Add(n);
 					} /* if */ 
 				} /* if */ 
@@ -1427,9 +1427,9 @@ bool NETHER::cycle(unsigned char *keyboard)
 					/* The bullet has collided with a robot: */ 
 					if (!r->bulletHit(b->type)) {
 						/* Robot destroyed: */ 
-						EXPLOSION *n;
+						Explosion *n;
 
-						n=new EXPLOSION(r->pos,1);
+						n=new Explosion(r->pos,1);
 						explosions.Add(n);
 
 						if (S_explosion!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_explosion,0),SFX_volume(r->pos));
@@ -1462,8 +1462,8 @@ bool NETHER::cycle(unsigned char *keyboard)
 
 		/* Nuclear explosions: */ 
 		{
-			List<EXPLOSION> l,todelete;
-			EXPLOSION *n;
+			List<Explosion> l,todelete;
+			Explosion *n;
 
 			l.Instance(explosions);
 			l.Rewind();

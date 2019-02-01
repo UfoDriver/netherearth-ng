@@ -678,8 +678,8 @@ void NETHER::draw_game(bool shadows)
 
 	if (!explosions.EmptyP()) {
 		int minstep=128;
-		List<EXPLOSION> l;
-		EXPLOSION *n;
+		List<Explosion> l;
+		Explosion *n;
 		float offs=0.0,r;
 
 		l.Instance(explosions);
@@ -781,8 +781,8 @@ void NETHER::draw_game(bool shadows)
 	
 	/* Draw nuclear explosions: */ 
 	if (!shadows) {
-		List<EXPLOSION> l;
-		EXPLOSION *n;
+		List<Explosion> l;
+		Explosion *n;
 		float a,r;
 
 		l.Instance(explosions);

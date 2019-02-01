@@ -39,7 +39,7 @@ bool NETHER::save_debug_report(char *filename)
 	Building *b;
 	Robot *r;
 	Bullet *bul;
-	EXPLOSION *e;
+	Explosion *e;
 
 	fp=fopen(filename,"w");
 	if (fp==0) return false;
