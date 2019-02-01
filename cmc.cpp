@@ -2,6 +2,8 @@
 #include "windows.h"
 #endif
 
+#include <iomanip>
+
 #include "math.h"
 #include "stdio.h"
 #include "vector.h"
@@ -737,3 +739,12 @@ bool CMC::save(FILE *fp)
 
 	return true;
 } /* CMC::save */ 
+
+
+std::ostream& operator<<(std::ostream& out, const CMC& cmc)
+{
+  out << cmc.x[0] << ' ' << cmc.x[1] << '\n'
+      << cmc.y[0] << ' ' << cmc.y[1] << '\n'
+      << cmc.z[0] << ' ' << cmc.z[1] << '\n';
+  return out;
+}

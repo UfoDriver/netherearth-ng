@@ -197,7 +197,7 @@ bool NETHER::save_game(char *filename)
 } /* NETHER::save_game */ 
 
 
-bool NETHER::load_game(char *filename)
+bool NETHER::loadGame(const std::string& filename)
 {
 	int i,j,k,booltmp,length;
 	FILE *fp;
@@ -206,7 +206,7 @@ bool NETHER::load_game(char *filename)
 	Bullet *bul;
 	Explosion *e;
 
-	fp=fopen(filename,"r");
+	fp=fopen(filename.c_str(),"r");
 	if (fp==0) return false;
 
 /*

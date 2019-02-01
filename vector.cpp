@@ -1,3 +1,5 @@
+#include <iomanip>
+
 #include "math.h"
 #include "stdio.h"
 #include "vector.h"
@@ -106,4 +108,14 @@ bool Vector::save(FILE *fp)
 {
   fprintf(fp, "%.8f %.8f %.8f\n", float(x), float(y), float(z));
   return true;
+}
+
+
+std::ostream& operator<<(std::ostream& out, const Vector& vector)
+{
+  out << std::setw(8) << float(vector.x)
+      << std::setw(8) << float(vector.y)
+      << std::setw(8) << float(vector.z)
+      << '\n';
+  return out;
 }

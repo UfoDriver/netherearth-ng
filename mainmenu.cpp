@@ -67,6 +67,54 @@ unsigned char old_keyboard[SDLK_LAST];
 void saveConfiguration(void);
 void loadConfiguration(void);
 
+void populateMaps()
+{
+#ifdef _WIN32
+  // NOT TESTED BRANCH
+  WIN32_FIND_DATA finfo;
+  HANDLE h;
+
+  h=FindFirstFile("maps/*.map",&finfo);
+  if (h!=INVALID_HANDLE_VALUE) {
+    if (strcmp(finfo.cFileName,".")!=0 &&
+        strcmp(finfo.cFileName,"..")!=0) {
+      char *name;
+      name=new char[strlen(finfo.cFileName)+1];
+      strcpy(name,finfo.cFileName);
+      mapnames.Add(name);
+    }
+
+    while(FindNextFile(h,&finfo)==TRUE) {
+
+      if (strcmp(finfo.cFileName,".")!=0 &&
+          strcmp(finfo.cFileName,"..")!=0) {
+        char *name;
+        name=new char[strlen(finfo.cFileName)+1];
+        strcpy(name,finfo.cFileName);
+        mapnames.Add(name);
+      }
+    }
+  }
+#else
+  DIR *dp;
+  struct dirent *ep;
+  dp = opendir ("maps/");
+  if (dp != NULL) {
+    while (ep = readdir (dp)) {
+      if ((strstr(ep->d_name,".map") + 4) == ep->d_name + strlen(ep->d_name)) {
+        char *name;
+        name=new char[strlen(ep->d_name)+1];
+        strcpy(name,ep->d_name);
+        mapnames.Add(name);
+      }
+    }
+    (void) closedir (dp);
+  }
+#endif
+  /* Look for the actualmap: */
+  mapnames.Rewind();
+  while(!mapnames.EndP() && strcmp(mapnames.GetObj(), mapname.c_str())!=0) mapnames.Next();
+}
 
 int mainmenu_cycle(int width,int height)
 {
@@ -102,60 +150,8 @@ int mainmenu_cycle(int width,int height)
 		} /* if */ 
 		if (keyboard[SDLK_4] && !old_keyboard[SDLK_4]) {
 			/* Change the MAP: */ 
-			if (mapnames.EmptyP()) {
-				/* Fill the mapnames list: */ 
-#ifdef _WIN32
-				WIN32_FIND_DATA finfo;
-				HANDLE h;
-
-				h=FindFirstFile("maps/*.map",&finfo);
-				if (h!=INVALID_HANDLE_VALUE) {
-					if (strcmp(finfo.cFileName,".")!=0 &&
-						strcmp(finfo.cFileName,"..")!=0) {
-						char *name;
-						name=new char[strlen(finfo.cFileName)+1];
-						strcpy(name,finfo.cFileName);
-						mapnames.Add(name);
-					} /* if */ 
-
-					while(FindNextFile(h,&finfo)==TRUE) {
-
-						if (strcmp(finfo.cFileName,".")!=0 &&
-							strcmp(finfo.cFileName,"..")!=0) {
-							char *name;
-							name=new char[strlen(finfo.cFileName)+1];
-							strcpy(name,finfo.cFileName);
-							mapnames.Add(name);
-						} /* if */ 
-					} /* while */ 
-				} /* if */ 
-				
-#else
-				DIR *dp;
-				struct dirent *ep;
-				  
-				dp = opendir ("maps/");
-				if (dp != NULL)
-				 {
-				    while (ep = readdir (dp))
-				     {
-					if ((strstr(ep->d_name,".map") + 4) == ep->d_name + strlen(ep->d_name))
-					 {
-						char *name;
-						name=new char[strlen(ep->d_name)+1];
-						strcpy(name,ep->d_name);
-						mapnames.Add(name);
-					 }
-				     }
-				    (void) closedir (dp);
-				 }
-#endif
-				/* Look for the actualmap: */ 
-				mapnames.Rewind();
-				while(!mapnames.EndP() && strcmp(mapnames.GetObj(), mapname.c_str())!=0) mapnames.Next();
-
-			} /* if */ 
-
+			if (mapnames.EmptyP())
+              populateMaps();
 			if (!mapnames.EmptyP()) {
 				mapnames.Next();
 				if (mapnames.EndP()) mapnames.Rewind();

@@ -47,7 +47,7 @@ bool NETHER::loadmap(const std::string& filename)
 	for(i=0;i<map_w*map_h;i++) {
 		int tile;
 		char tilestr[16];
-		char *tiles[]={"G","S","S2","M","H1",
+		const char *tiles[]={"G","S","S2","M","H1",
 			           "H2","H3","H4","H5","H6",
 					   "GG","SS","MM","?"};
 		bool found;

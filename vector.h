@@ -1,6 +1,7 @@
 #ifndef __AW_VECTOR
 #define __AW_VECTOR
 
+#include <iostream>
 #include <stdio.h>
 
 class Vector {
@@ -35,5 +36,8 @@ public:
 
   double x,y,z;
 };
+
+std::ostream& operator<<(std::ostream& out, const Vector& vector);
+
 
 #endif

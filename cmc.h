@@ -2,6 +2,7 @@
 #define __BRAIN_CMC
 
 #include <cstdio>
+#include <fstream>
 
 
 class CMC {
@@ -29,5 +30,7 @@ public:
 
 	float x[2],y[2],z[2];
 };
+
+std::ostream& operator<<(std::ostream& out, const CMC& cmc);
 
 #endif

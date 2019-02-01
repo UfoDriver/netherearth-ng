@@ -113,8 +113,8 @@ public:
 	void refresh_display_lists(void);
 
 	bool save_game(char *filename);
-	bool load_game(char *filename);
-	bool save_debug_report(char *filename);
+  bool loadGame(const std::string& filename);
+  bool saveDebugReport(const std::string& filename);
 
 private:
 	bool cycle(unsigned char *keyboard);

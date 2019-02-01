@@ -1291,7 +1291,7 @@ bool NETHER::option_cycle(unsigned char *keyboard)
 					char filename[80];
 					sprintf(filename,"savedgame%i.txt",option_menu-1);
 					save_game(filename);
-					//save_debug_report("debugreport.txt");
+					saveDebugReport("debugreport.txt");
 					game_state=STATE_PAUSE;
 					option_menu=2;
 					redrawmenu=2;
@@ -1326,7 +1326,7 @@ bool NETHER::option_cycle(unsigned char *keyboard)
 					char filename[80];
 					sprintf(filename,"savedgame%i.txt",option_menu-1);
 					killmenu(act_menu);
-					load_game(filename);
+					loadGame(filename);
 					newmenu(act_menu);
 					redrawmenu=2;
 					recomputestatistics=true;
