@@ -17,6 +17,7 @@
 #include "particle.h"
 #include "ai_operator.h"
 #include "menu.h"
+#include "radar.h"
 
 
 const float COLISION_TEST_THRESHOLD = 9.0;
@@ -93,7 +94,7 @@ enum AI_STATES {AI_STATE_EXPANDING,
 class NETHER {
 public:
   NETHER(const std::string& mapname);
-	~NETHER();
+  ~NETHER();
 
 	void loadObjects();
 	void deleteObjects();
@@ -113,7 +114,6 @@ private:
 
 	void draw(int w,int h);
 	void draw_game(bool shadows);
-	void draw_radar(void);
 	void construction_draw(int w,int h);
 	void options_draw(int w,int h);
 
@@ -165,6 +165,8 @@ private:
 
 	/* Game variables: */
   Menu menu;
+  Radar radar;
+  
 	int map_w,map_h;
 	int *map;
 	float lightpos[4];
@@ -213,7 +215,6 @@ private:
 	Piece3DObject **bullet_tile;
 
 	/* Status variables: */
-	int redrawradar;
 	bool recomputestatistics;
 
 	/* Option/Pause menu variables: */ 
@@ -229,6 +230,7 @@ private:
 	Mix_Chunk *S_shot,*S_explosion,*S_select,*S_wrong,*S_construction;
 
   friend class Menu;
+  friend class Radar;
 };
 
 #endif

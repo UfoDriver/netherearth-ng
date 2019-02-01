@@ -261,7 +261,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 							menu.act_button=buttons[j];
 						} /* if */ 
 					} /* for */ 
-					menu.redrawmenu=2;
+					menu.needsRedraw=2;
 				} /* if */ 
 				if (keyboard[down_key] && !old_keyboard[down_key]) {
 					int j=-1;
@@ -272,7 +272,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 							menu.act_button=buttons[j];
 						} /* if */ 
 					} /* for */ 
-					menu.redrawmenu=2;
+					menu.needsRedraw=2;
 				} /* if */ 
 
 				for(i=0;i<4;i++) {
@@ -304,7 +304,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 							} /* if */ 
 
 							menu.act_menu=Menu::DIRECTCONTROL_MENU;
-							menu.redrawmenu=2;
+							menu.needsRedraw=2;
 							if (S_select!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_select,0),128);
 						}
 						break;
@@ -340,7 +340,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 		case Menu::DIRECTCONTROL_MENU:
 			/* Direct control of a robot by the user: */ 
 			if (keyboard[fire_key] && !old_keyboard[fire_key]) {
-				menu.redrawmenu=2;
+				menu.needsRedraw = 2;
 				menu.act_menu=Menu::ROBOT_MENU;
 			} /* if */ 
 			break;
@@ -348,7 +348,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 		case Menu::DIRECTCONTROL2_MENU:
 			/* Direct control of a robot by the user: */ 
 			if (keyboard[fire_key] && !old_keyboard[fire_key]) {
-				menu.redrawmenu=2;
+				menu.needsRedraw = 2;
 				menu.act_menu=Menu::COMBATMODE_MENU;
 			} /* if */ 
 			break;
@@ -374,7 +374,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 							menu.act_button=buttons[j];
 						} /* if */ 
 					} /* for */ 
-					menu.redrawmenu=2;
+					menu.needsRedraw=2;
 				} /* if */ 
 				if (keyboard[down_key] && !old_keyboard[down_key]) {
 					int j=-1;
@@ -385,7 +385,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 							menu.act_button=buttons[j];
 						} /* if */ 
 					} /* for */ 
-					menu.redrawmenu=2;
+					menu.needsRedraw=2;
 				} /* if */ 
 
 				for(i=0;i<6;i++) {
@@ -453,7 +453,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 							} /* if */ 
 
 							menu.act_menu=Menu::DIRECTCONTROL2_MENU;
-							menu.redrawmenu=2;
+							menu.needsRedraw=2;
 							if (S_select!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_select,0),128);
 						}
 						break;
@@ -487,7 +487,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 							menu.act_button=buttons[j];
 						} /* if */ 
 					} /* for */ 
-					menu.redrawmenu=2;
+					menu.needsRedraw=2;
 				} /* if */ 
 				if (keyboard[down_key] && !old_keyboard[down_key]) {
 					int j=-1;
@@ -498,7 +498,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 							menu.act_button=buttons[j];
 						} /* if */ 
 					} /* for */ 
-					menu.redrawmenu=2;
+					menu.needsRedraw=2;
 				} /* if */ 
 
 				for(i=0;i<5;i++) {
@@ -570,14 +570,14 @@ bool NETHER::cycle(unsigned char *keyboard)
 					if (controlled->program_parameter>190) controlled->program_parameter=190;
 					controlled->program_goal=Vector(-1,-1,-1);
 
-					menu.redrawmenu=2;
+					menu.needsRedraw=2;
 				} /* if */ 
 				if (keyboard[down_key] && !old_keyboard[down_key]) {
 					controlled->program_parameter-=10;
 					if (controlled->program_parameter<0) controlled->program_parameter=0;
 					controlled->program_goal=Vector(-1,-1,-1);
 
-					menu.redrawmenu=2;
+					menu.needsRedraw=2;
 				} /* if */ 
 				if (keyboard[fire_key] && !old_keyboard[fire_key]) {
 					if (controlled->program_parameter==0) controlled->program=PROGRAM_STOPDEFEND;
@@ -608,7 +608,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 							menu.act_button=buttons[j];
 						} /* if */ 
 					} /* for */ 
-					menu.redrawmenu=2;
+					menu.needsRedraw=2;
 				} /* if */ 
 				if (keyboard[down_key] && !old_keyboard[down_key]) {
 					int j=-1;
@@ -619,7 +619,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 							menu.act_button=buttons[j];
 						} /* if */ 
 					} /* for */ 
-					menu.redrawmenu=2;
+					menu.needsRedraw=2;
 				} /* if */ 
 
 				for(i=0;i<3;i++) {
@@ -703,7 +703,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 							menu.act_button=buttons[j];
 						} /* if */ 
 					} /* for */ 
-					menu.redrawmenu=2;
+					menu.needsRedraw=2;
 				} /* if */ 
 				if (keyboard[down_key] && !old_keyboard[down_key]) {
 					int j=-1;
@@ -714,7 +714,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 							menu.act_button=buttons[j];
 						} /* if */ 
 					} /* for */ 
-					menu.redrawmenu=2;
+					menu.needsRedraw=2;
 				} /* if */ 
 
 				for(i=0;i<3;i++) {
@@ -804,7 +804,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 			second+=5;
 			if (second>=60) {
 				second=0;
-				menu.redrawmenu=2;
+				menu.needsRedraw=2;
 				minute+=5;
 				if (minute>=60) {
 					minute=0;

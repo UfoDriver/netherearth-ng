@@ -41,7 +41,7 @@ FILE *debug_fp=0;
 #endif
 
 
-NETHER::NETHER(const std::string& mapname): menu(this)
+NETHER::NETHER(const std::string& mapname): menu(this), radar(this)
 {
 
 #ifdef _WRITE_REPORT_
@@ -157,8 +157,8 @@ NETHER::NETHER(const std::string& mapname): menu(this)
 
 	/* Init status: */ 
 	menu.newmenu(Menu::GENERAL_MENU);
-	menu.redrawmenu=2;
-	redrawradar=1;
+	menu.needsRedraw=2;
+	radar.needsRedraw=1;
 
 #ifdef _WRITE_REPORT_
 	fprintf(debug_fp,"Initializing AI...\n");
@@ -509,7 +509,7 @@ void NETHER::gameredraw(int w,int h)
 } /* gameredraw */ 
 
 
-void NETHER::draw(int width,int height)
+void NETHER::draw(int width, int height)
 {
 	float lightpos2[4]={0,0,1000,0};
 	float tmpls[4]={1.0F,1.0F,1.0F,1.0};
@@ -620,7 +620,7 @@ void NETHER::draw(int width,int height)
 	} /* if */ 
 
 	/* Draw the RADAR screen: */ 
-	if (show_radar && redrawradar<=1) {
+	if (show_radar && radar.needsRedraw<=1) {
 
 		glLightfv(GL_LIGHT0,GL_POSITION,lightpos2);
 		glClearColor(0.0,0.0,0,0);
@@ -630,38 +630,14 @@ void NETHER::draw(int width,int height)
 		glOrtho(0,float(split),0,float(splity),-100,100);
 		glScissor(0,0,split,splity);
 		glScalef(width/640.0,height/480.0,1);
-		draw_radar();
-	} /* if */ 
-	redrawradar--;
-	if (redrawradar<0) redrawradar=3;
+		radar.draw();
+	} /* if */
+	radar.needsRedraw--;
+	if (radar.needsRedraw<0) radar.needsRedraw=3;
 
-	/* Draw the STATUS screen: */ 
-	if (menu.redrawmenu!=0) {
-        menu.redrawmenu--;
+    menu.draw(width, height);
+}
 
-		glLightfv(GL_LIGHT0,GL_POSITION,lightpos2);
-		glClearColor(0,0,0.2,0);
-		glViewport(split,0,width-split,height);
-		glMatrixMode( GL_PROJECTION );
-		glLoadIdentity( );
-		glOrtho(0,float(width-split),0,height,-100,100);
-		glScissor(split,0,width-split,height);
-		glScalef(width/640.0,height/480.0,1);
-		menu.draw();
-
-/*
-		glMatrixMode(GL_MODELVIEW);
-		glPushMatrix();
-		glLoadIdentity();
-		glTranslatef(70.0,10.0,0);
-		glColor3f(1.0f,1.0f,1.0f);
-		scaledglprintf(0.1f,0.1f,"FPS: %i",frames_per_sec);
-		glPopMatrix();
-*/
- 
-	} /* if */ 
-} /* NETHER::draw */ 
- 
 
 
 void NETHER::draw_game(bool shadows)
@@ -1006,8 +982,8 @@ bool NETHER::option_cycle(unsigned char *keyboard)
 					saveDebugReport("debugreport.txt");
 					game_state=STATE_PAUSE;
 					option_menu=2;
-					menu.redrawmenu=2;
-					redrawradar=1;
+					menu.needsRedraw=2;
+					radar.needsRedraw=1;
 				}
 			} /* if */ 
 		} /* if */ 
@@ -1040,7 +1016,7 @@ bool NETHER::option_cycle(unsigned char *keyboard)
 					menu.killmenu(menu.act_menu);
 					loadGame(filename);
 					menu.newmenu(menu.act_menu);
-					menu.redrawmenu=2;
+					menu.needsRedraw=2;
 					recomputestatistics=true;
 					game_finished=0;
 					game_started=INTRO_TIME;

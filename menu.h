@@ -20,9 +20,9 @@ public:
                    TARGETD_MENU,
                    TARGETC_MENU,
                    ALL_MENUS};
-  explicit Menu(const NETHER* nether): redrawmenu(0), act_menu(GENERAL_MENU), act_button(StatusButton::COMBAT1_BUTTON),
+  explicit Menu(const NETHER* nether): needsRedraw(0), act_menu(GENERAL_MENU), act_button(StatusButton::COMBAT1_BUTTON),
                                      nether(nether) {};
-  void draw();
+  void draw(int width, int height);
   void cycle();
   void replaceMenu(MENU_TYPES oldMenu, MENU_TYPES newMenu, StatusButton::BUTTON_NAMES activeButton);
   void newmenu(MENU_TYPES menu);
@@ -35,7 +35,7 @@ public:
   void killbutton(StatusButton::BUTTON_NAMES ID);
   StatusButton *getbutton(StatusButton::BUTTON_NAMES ID);
 
-  int redrawmenu;
+  int needsRedraw;
   MENU_TYPES act_menu;
   StatusButton::BUTTON_NAMES act_button;
 

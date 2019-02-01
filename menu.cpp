@@ -25,14 +25,29 @@
 #include "nether.h"
 
 
-void Menu::draw()
+void Menu::draw(int width, int height)
 {
-  glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
+  if (needsRedraw != 0) {
+    needsRedraw--;
+    float lightpos2[4] = {0,0,1000,0};
+    int split = int((width * 25.0F)/32.0F);
 
-  drawButtons();
-  drawStatus();
+    glLightfv(GL_LIGHT0,GL_POSITION, lightpos2);
+    glClearColor(0,0,0.2,0);
+    glViewport(split,0,width-split,height);
+    glMatrixMode( GL_PROJECTION );
+    glLoadIdentity( );
+    glOrtho(0,float(width-split),0,height,-100,100);
+    glScissor(split,0,width-split,height);
+    glScalef(width/640.0,height/480.0,1);
+
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    drawButtons();
+    drawStatus();
+  }
 }
 
 
@@ -318,7 +333,7 @@ void Menu::cycle()
   while (l.Iterate(b)) {
     if (b->status != 0) {
       b->status++;
-      redrawmenu = 2;
+      needsRedraw = 2;
       if (b->status >= 16) {
         todelete.Add(b);
       }
@@ -396,7 +411,7 @@ void Menu::newmenu(MENU_TYPES menu)
     act_menu=TARGETC_MENU;
     break;
   }
-  redrawmenu=true;
+  needsRedraw = true;
 }
 
 
@@ -469,7 +484,7 @@ void Menu::killmenu(MENU_TYPES menu)
     killbutton(StatusButton::TARGET3_BUTTON);
     break;
   }
-  redrawmenu=true;
+  needsRedraw = true;
 }
 
 
@@ -477,7 +492,7 @@ void Menu::newbutton(StatusButton::BUTTON_NAMES ID, int x, int y, int sx, int sy
 const std::string& t1, const std::string& t2, float r, float g, float b)
 {
   buttons.Add(new StatusButton(ID, x, y, sx, sy, t1, t2, r, g, b, -16));
-  redrawmenu = true;
+  needsRedraw = true;
 }
 
 
@@ -485,7 +500,7 @@ void Menu::newbuttondelayed(StatusButton::BUTTON_NAMES ID, int x, int y, int sx,
 const std::string& t1, const std::string& t2, float r, float g, float b)
 {
   buttons.Add(new StatusButton(ID, x, y, sx, sy, t1, t2, r, g, b, -32));
-  redrawmenu = true;
+  needsRedraw = true;
 }
 
 
@@ -499,7 +514,7 @@ void Menu::killbutton(StatusButton::BUTTON_NAMES ID)
   while(l.Iterate(b)) {
     if (b->ID == ID) b->status = 1;
   }
-  redrawmenu=true;
+  needsRedraw = true;
 }
 
 

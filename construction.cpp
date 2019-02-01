@@ -345,8 +345,8 @@ bool NETHER::construction_cycle(unsigned char *keyboard)
 		} /* if */ 
 	} /* if */ 
 
-	menu.redrawmenu=2;
-	redrawradar=1;
+	menu.needsRedraw=2;
+	radar.needsRedraw=1;
 	return true;
 } /* NETHER::construction_cycle */ 
 
