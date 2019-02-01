@@ -19,9 +19,10 @@
 #include "piece3dobject.h"
 #include "nether.h"
 #include "statusbutton.h"
+#include "menu.h"
+#include "nether.h"
 
-
-void NETHER::newmenu(ushort menu)
+void Menu::newmenu(MENU_TYPES menu)
 {
   switch(menu) {
   case GENERAL_MENU:
@@ -61,9 +62,9 @@ void NETHER::newmenu(ushort menu)
     break;
 
   case SELECTDISTANCE_MENU:
-    if (controlled->program==PROGRAM_ADVANCE)
+    if (nether->controlled->program==PROGRAM_ADVANCE)
       newbuttondelayed(StatusButton::ORDERS_BUTTON,70,400,130,40,"ADVANCE  "," ?? MILES",0,0,0.8f);
-    if (controlled->program==PROGRAM_RETREAT)
+    if (nether->controlled->program==PROGRAM_RETREAT)
       newbuttondelayed(StatusButton::ORDERS_BUTTON,70,400,130,40,"RETREAT  "," ?? MILES",0,0,0.8f);
     act_menu=SELECTDISTANCE_MENU;
     break;
@@ -88,7 +89,7 @@ void NETHER::newmenu(ushort menu)
 }
 
 
-void NETHER::killmenu(ushort menu)
+void Menu::killmenu(MENU_TYPES menu)
 {
   switch(menu) {
   case GENERAL_MENU:
@@ -161,25 +162,23 @@ void NETHER::killmenu(ushort menu)
 }
 
 
-void NETHER::newbutton(StatusButton::BUTTON_NAMES ID, int x, int y, int sx, int sy,
+void Menu::newbutton(StatusButton::BUTTON_NAMES ID, int x, int y, int sx, int sy,
 const std::string& t1, const std::string& t2, float r, float g, float b)
 {
-  StatusButton* but = new StatusButton(ID, x, y, sx, sy, t1, t2, r, g, b, -16);
-  buttons.Add(but);
+  buttons.Add(new StatusButton(ID, x, y, sx, sy, t1, t2, r, g, b, -16));
   redrawmenu = true;
 }
 
 
-void NETHER::newbuttondelayed(StatusButton::BUTTON_NAMES ID, int x, int y, int sx, int sy,
+void Menu::newbuttondelayed(StatusButton::BUTTON_NAMES ID, int x, int y, int sx, int sy,
 const std::string& t1, const std::string& t2, float r, float g, float b)
 {
-  StatusButton* but = new StatusButton(ID, x, y, sx, sy, t1, t2, r, g, b, -32);
-  buttons.Add(but);
+  buttons.Add(new StatusButton(ID, x, y, sx, sy, t1, t2, r, g, b, -32));
   redrawmenu = true;
 }
 
 
-void NETHER::killbutton(StatusButton::BUTTON_NAMES ID)
+void Menu::killbutton(StatusButton::BUTTON_NAMES ID)
 {
   List<StatusButton> l;
   StatusButton *b;
@@ -187,13 +186,13 @@ void NETHER::killbutton(StatusButton::BUTTON_NAMES ID)
   l.Instance(buttons);
   l.Rewind();
   while(l.Iterate(b)) {
-    if (b->ID==ID) b->status=1;
+    if (b->ID == ID) b->status = 1;
   }
   redrawmenu=true;
 }
 
 
-StatusButton *NETHER::getbutton(StatusButton::BUTTON_NAMES ID)
+StatusButton* Menu::getbutton(StatusButton::BUTTON_NAMES ID)
 {
   List<StatusButton> l;
   StatusButton *b;
@@ -201,8 +200,17 @@ StatusButton *NETHER::getbutton(StatusButton::BUTTON_NAMES ID)
   l.Instance(buttons);
   l.Rewind();
   while(l.Iterate(b)) {
-    if (b->ID==ID) return b;
+    if (b->ID == ID) return b;
   }
 
   return 0;
+}
+
+
+void Menu::replaceMenu(MENU_TYPES oldMenu, MENU_TYPES newMenu,
+                       StatusButton::BUTTON_NAMES activeButton)
+{
+  killmenu(oldMenu);
+  newmenu(newMenu);
+  act_button = activeButton;
 }

@@ -190,7 +190,7 @@ bool NETHER::save_game(char *filename)
 	int act_menu;
 	int act_button;
 */ 
-	fprintf(fp,"%i %i\n",act_menu,act_button);
+	fprintf(fp,"%i %i\n",menu.act_menu,menu.act_button);
 
 	fclose(fp);
 	return true;
@@ -368,7 +368,7 @@ bool NETHER::loadGame(const std::string& filename)
 	int act_menu;
 	int act_button;
 */ 
-	if (2!=fscanf(fp,"%i %i",&act_menu,&act_button)) return false;
+	if (2!=fscanf(fp,"%i %i",&menu.act_menu,&menu.act_button)) return false;
 
 	fclose(fp);
 	AI_precomputations();

@@ -16,6 +16,7 @@
 #include "explosion.h"
 #include "particle.h"
 #include "ai_operator.h"
+#include "menu.h"
 
 
 const float COLISION_TEST_THRESHOLD = 9.0;
@@ -34,17 +35,6 @@ enum GAME_STATE {STATE_PLAYING,
                  STATE_PAUSE,
                  STATE_SAVINGGAME,
                  STATE_LOADINGGAME};
-
-enum MENU_TYPES {GENERAL_MENU,
-                 ROBOT_MENU,
-                 DIRECTCONTROL_MENU,
-                 COMBATMODE_MENU,
-                 DIRECTCONTROL2_MENU,
-                 ORDERS_MENU,
-                 SELECTDISTANCE_MENU,
-                 TARGETD_MENU,
-                 TARGETC_MENU,
-                 ALL_MENUS};
 
 enum SHIP_OPERATORS {OP_NONE = -1,
                      OP_LEFT,
@@ -148,15 +138,6 @@ private:
 
 	int SFX_volume(Vector pos);
 
-  void newbutton(StatusButton::BUTTON_NAMES ID, int x, int y, int sx, int sy, const std::string& t1, const std::string& t2,
-                 float r, float g, float b);
-  void newbuttondelayed(StatusButton::BUTTON_NAMES ID, int x, int y, int sx, int sy, const std::string& t1,
-                          const std::string& t2, float r, float g, float b);
-	void killbutton(StatusButton::BUTTON_NAMES ID);
-	StatusButton *getbutton(StatusButton::BUTTON_NAMES ID);
-	void newmenu(ushort menu);
-	void killmenu(ushort menu);
-
 	void AI_enemy(void);
 	Robot *AI_enemy_newrobot(int state,Vector pos);
 	void AI_precomputations(void);
@@ -183,7 +164,8 @@ private:
 	int  AI_robothere(Vector pos);
 	int  AI_RealShotPaths(int x,int y,int player,int persistence);
 
-	/* Game variables: */ 
+	/* Game variables: */
+  Menu menu;
 	int map_w,map_h;
 	int *map;
 	float lightpos[4];
@@ -231,11 +213,8 @@ private:
 	int n_bullets;
 	Piece3DObject **bullet_tile;
 
-	/* Status variables: */ 
-	List<StatusButton> buttons;
-	int act_menu;
-	StatusButton::BUTTON_NAMES act_button;
-	int redrawmenu,redrawradar;
+	/* Status variables: */
+	int redrawradar;
 	bool recomputestatistics;
 
 	/* Option/Pause menu variables: */ 
@@ -249,8 +228,8 @@ private:
 
 	/* Sonido: */ 
 	Mix_Chunk *S_shot,*S_explosion,*S_select,*S_wrong,*S_construction;
-	
 
+  friend class Menu;
 };
 
 #endif

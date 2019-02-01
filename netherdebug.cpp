@@ -3,9 +3,8 @@
 #endif
 
 #include <fstream>
+#include <string>
 
-#include "string.h"
-#include "stdio.h"
 #include "math.h"
 
 #include "GL/gl.h"
@@ -87,7 +86,7 @@ bool NETHER::saveDebugReport(const std::string& filename)
       }
       log << " PROGRAM: " << r->program << "\n PROGRAM PARAMETER: " << r->program_parameter << '\n';
       log << " PROGRAM GOAL: ";
-      log << r->program_goal; // .save(fp);
+      log << r->program_goal;
       log << " ACTUAL OPERATOR: " << r->op << '\n';
       if (r->shipover)
         log << " HAS THE SHIP OVER IT\n";
@@ -148,7 +147,7 @@ bool NETHER::saveDebugReport(const std::string& filename)
   }
 
   log << "\nROBOT UNDER CONTROL: " << robots[0].SearchObjRef(controlled) << "\n";
-  log << "\nMENU " << act_menu << "\nACT BUTTON: " << act_button << "\n";
+  log << "\nMENU " << menu.act_menu << "\nACT BUTTON: " << menu.act_button << "\n";
 
   return true;
 }

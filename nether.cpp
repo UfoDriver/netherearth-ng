@@ -23,6 +23,7 @@
 #include "piece3dobject.h"
 #include "myglutaux.h"
 #include "nether.h"
+#include "menu.h"
 
 #include "glprintf.h"
 
@@ -40,7 +41,7 @@ FILE *debug_fp=0;
 #endif
 
 
-NETHER::NETHER(const std::string& mapname)
+NETHER::NETHER(const std::string& mapname): menu(this)
 {
 
 #ifdef _WRITE_REPORT_
@@ -155,8 +156,8 @@ NETHER::NETHER(const std::string& mapname)
 #endif
 
 	/* Init status: */ 
-	newmenu(GENERAL_MENU);
-	redrawmenu=2;
+	menu.newmenu(Menu::GENERAL_MENU);
+	menu.redrawmenu=2;
 	redrawradar=1;
 
 #ifdef _WRITE_REPORT_
@@ -635,8 +636,8 @@ void NETHER::draw(int width,int height)
 	if (redrawradar<0) redrawradar=3;
 
 	/* Draw the STATUS screen: */ 
-	if (redrawmenu!=0) {
-		redrawmenu--;
+	if (menu.redrawmenu!=0) {
+        menu.redrawmenu--;
 
 		glLightfv(GL_LIGHT0,GL_POSITION,lightpos2);
 		glClearColor(0,0,0.2,0);
@@ -845,7 +846,7 @@ void NETHER::draw_status(void)
     StatusButton *b;
     float angle, cf;
 
-    l.Instance(buttons);
+    l.Instance(menu.buttons);
     l.Rewind();
     while(l.Iterate(b)) {
       if (b->status >= -16) {
@@ -878,11 +879,11 @@ void NETHER::draw_status(void)
   }
 
 	glPushMatrix();
-	switch(act_menu) {
-	case GENERAL_MENU:
+	switch(menu.act_menu) {
+	case Menu::GENERAL_MENU:
 		{
 			StatusButton *b;
-			b=getbutton(StatusButton::STATUS_BUTTON);
+			b=menu.getbutton(StatusButton::STATUS_BUTTON);
 			if (b!=0 && b->status==0) {
 				statistics[0][7]=robots[0].Length();
 				statistics[1][7]=robots[1].Length();
@@ -923,12 +924,12 @@ void NETHER::draw_status(void)
 			} /* if */ 
 		}
 		break;
-	case ROBOT_MENU:
-	case DIRECTCONTROL_MENU:
+	case Menu::ROBOT_MENU:
+	case Menu::DIRECTCONTROL_MENU:
 		{
 			StatusButton *b;
 
-			b=getbutton(StatusButton::ROBOT1_BUTTON);
+			b=menu.getbutton(StatusButton::ROBOT1_BUTTON);
 			if (b!=0 && b->status==0) {
 
 				glTranslatef(70,140,0);
@@ -1032,8 +1033,8 @@ void NETHER::draw_status(void)
 		}
 		break;
 
-	case COMBATMODE_MENU:
-	case DIRECTCONTROL2_MENU:
+	case Menu::COMBATMODE_MENU:
+	case Menu::DIRECTCONTROL2_MENU:
 
 		glTranslatef(70,40,0);
 		glColor3f(1.0f,1.0f,0.0);
@@ -1043,11 +1044,11 @@ void NETHER::draw_status(void)
 		scaledglprintf(0.1f,0.1f,"%.3i%c",controlled->strength,'%');
 		break;
 
-	case ORDERS_MENU:
+	case Menu::ORDERS_MENU:
 		{
 			StatusButton *b;
 
-			b=getbutton(StatusButton::ORDERS1_BUTTON);
+			b=menu.getbutton(StatusButton::ORDERS1_BUTTON);
 			if (b!=0 && b->status==0) {
 				glTranslatef(70,400,0);
 				glColor3f(1.0f,1.0f,1.0f);
@@ -1065,11 +1066,11 @@ void NETHER::draw_status(void)
 		}
 		break;
 
-	case SELECTDISTANCE_MENU:
+	case Menu::SELECTDISTANCE_MENU:
 		{
 			StatusButton *b;
 
-			b=getbutton(StatusButton::ORDERS_BUTTON);
+			b=menu.getbutton(StatusButton::ORDERS_BUTTON);
 			if (b!=0 && b->status==0) {
 				glTranslatef(70,300,0);
 				glColor3f(0.5f,0.5f,1.0f);
@@ -1091,12 +1092,12 @@ void NETHER::draw_status(void)
 		}
 		break;
 
-	case TARGETD_MENU:
-	case TARGETC_MENU:
+	case Menu::TARGETD_MENU:
+	case Menu::TARGETC_MENU:
 		{
 			StatusButton *b;
 
-			b=getbutton(StatusButton::ORDERS_BUTTON);
+			b=menu.getbutton(StatusButton::ORDERS_BUTTON);
 			if (b!=0 && b->status==0) {
 				glTranslatef(70,350,0);
 				glColor3f(0.5f,0.5f,1.0f);
@@ -1294,7 +1295,7 @@ bool NETHER::option_cycle(unsigned char *keyboard)
 					saveDebugReport("debugreport.txt");
 					game_state=STATE_PAUSE;
 					option_menu=2;
-					redrawmenu=2;
+					menu.redrawmenu=2;
 					redrawradar=1;
 				}
 			} /* if */ 
@@ -1325,10 +1326,10 @@ bool NETHER::option_cycle(unsigned char *keyboard)
 				{
 					char filename[80];
 					sprintf(filename,"savedgame%i.txt",option_menu-1);
-					killmenu(act_menu);
+					menu.killmenu(menu.act_menu);
 					loadGame(filename);
-					newmenu(act_menu);
-					redrawmenu=2;
+					menu.newmenu(menu.act_menu);
+					menu.redrawmenu=2;
 					recomputestatistics=true;
 					game_finished=0;
 					game_started=INTRO_TIME;
