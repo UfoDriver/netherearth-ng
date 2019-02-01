@@ -301,7 +301,7 @@ void Robot::draw(int owner, bool shadows, Piece3DObject ***piece_tile, Vector li
 }
 
 
-void Robot::cost(int player, int* res, int resources1[2][7])
+void Robot::cost(int player, int* res, int resources[2][7])
 {
   // int i;
   int tmp;

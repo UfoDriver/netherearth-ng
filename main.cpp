@@ -183,7 +183,7 @@ int main(int argc, char** argv)
 							/* Toogle FULLSCREEN mode: */ 
 							if (game!=0) game->refresh_display_lists();
 							if (nethertittle!=0) nethertittle->refresh_display_lists();
-							if (game!=0) game->deleteobjects();
+							if (game!=0) game->deleteObjects();
 							if (fullscreen) fullscreen=false;
 									   else fullscreen=true;
 							SDL_QuitSubSystem(SDL_INIT_VIDEO);
@@ -197,7 +197,7 @@ int main(int argc, char** argv)
 								SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE,1);
 
 								screen_sfc = SDL_SetVideoMode(SCREEN_X, SCREEN_Y, COLOUR_DEPTH, SDL_OPENGL|(fullscreen ? SDL_FULLSCREEN : 0));
-								if (game!=0) game->loadobjects();
+								if (game!=0) game->loadObjects();
 								SDL_WM_SetCaption("Nether Earth REMAKE v0.5", 0);
 								SDL_ShowCursor(SDL_DISABLE);
 							} else {
@@ -244,7 +244,7 @@ int main(int argc, char** argv)
 					if (val==3) {
 						if (game!=0) game->refresh_display_lists();
 						if (nethertittle!=0) nethertittle->refresh_display_lists();
-						if (game!=0) game->deleteobjects();
+						if (game!=0) game->deleteObjects();
 						SDL_QuitSubSystem(SDL_INIT_VIDEO);
 						SDL_InitSubSystem(SDL_INIT_VIDEO);
 						if (SDL_WasInit(SDL_INIT_VIDEO)) {
@@ -257,7 +257,7 @@ int main(int argc, char** argv)
 							SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE,1);
 
 							screen_sfc = SDL_SetVideoMode(SCREEN_X, SCREEN_Y, COLOUR_DEPTH, SDL_OPENGL|(fullscreen ? SDL_FULLSCREEN : 0));
-							if (game!=0) game->loadobjects();
+							if (game!=0) game->loadObjects();
 							SDL_WM_SetCaption("Nether Earth REMAKE v0.5", 0);
 							SDL_ShowCursor(SDL_DISABLE);
 						} else {

@@ -21,7 +21,7 @@ Shadow3DObject::Shadow3DObject() : C3DObject()
 } /* Shadow3DObject::Shadow3DObject */ 
 
 
-Shadow3DObject::Shadow3DObject(char *file,char *texturedir) : C3DObject(file,texturedir)
+Shadow3DObject::Shadow3DObject(const char* file, const char* texturedir) : C3DObject(file,texturedir)
 {
 	shdw_npuntos=0;
 	shdw_ncaras=0;

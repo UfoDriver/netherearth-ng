@@ -38,7 +38,7 @@ Piece3DObject::Piece3DObject() : C3DObject()
 } /* Piece3DObject::Piece3DObject */ 
 
 
-Piece3DObject::Piece3DObject(char *file,char *texturedir) : C3DObject(file,texturedir)
+Piece3DObject::Piece3DObject(const char* file, const char* texturedir) : C3DObject(file,texturedir)
 {
 	shdw_npuntos_0=0;
 	shdw_ncaras_0=0;

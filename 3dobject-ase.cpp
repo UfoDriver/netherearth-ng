@@ -24,7 +24,7 @@ bool nexttaginside(char *tag,FILE *fp);
 bool skipinfo(FILE *fp);
 bool readcomment(char *data,FILE *fp);
 
-bool C3DObject::loadASE(char *file,char *texturedir)
+bool C3DObject::loadASE(const char* file, const char* texturedir)
 {
 	int i=0,j=0;
 	int *smooth=0;

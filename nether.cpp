@@ -72,7 +72,7 @@ NETHER::NETHER(const std::string& mapname)
 	fflush(debug_fp);
 #endif
 
-	loadobjects();
+	loadObjects();
 		
 #ifdef _WRITE_REPORT_
 	fprintf(debug_fp,"loading map...\n");
@@ -216,7 +216,7 @@ NETHER::~NETHER()
 	fflush(debug_fp);
 #endif
 
-	deleteobjects();
+	deleteObjects();
 
 #ifdef _WRITE_REPORT_
 	fprintf(debug_fp,"Deleting AI...\n");
@@ -243,156 +243,152 @@ NETHER::~NETHER()
 } /* NETHER::~NETHER */ 
 
 
-void NETHER::loadobjects(void)
+void NETHER::loadObjects()
 {
-	/* Load 3D objects: */ 
-	char *tnames[12]={"models/grass1.ase","models/rough.ase","models/rocks.ase","models/heavyrocks.ase",
-					  "models/hole1.asc","models/hole2.asc","models/hole3.asc",
-					  "models/hole4.asc","models/hole5.asc","models/hole6.asc",
-					  "models/grass2.ase","models/grass3.ase"};
-	char *bnames[9]={"models/lowwall1.ase","models/lowwall2.ase","models/lowwall3.ase",
-					 "models/highwall1.ase","models/factory.ase","models/fence.asc",
-					 "models/flag.asc","models/highwall2.ase","models/warbase.ase"};
-	char *pnames[11]={"models/h-bipod.ase","models/h-tracks.ase","models/h-antigrav.ase",
-					 "models/h-cannon.ase","models/h-missiles.ase","models/h-phasers.ase",
-					 "models/h-nuclear.ase","models/h-electronics.ase",
-					 "models/h-bipod-base.ase","models/h-bipod-rleg.ase","models/h-bipod-lleg.ase"};
-	char *pnames2[11]={"models/e-bipod.ase","models/e-tracks.ase","models/e-antigrav.ase",
-					  "models/e-cannon.ase","models/e-missiles.ase","models/e-phasers.ase",
-					  "models/nuclear.asc","models/e-electronics.ase",
-					  "models/e-bipod-base.ase","models/e-bipod-rleg.ase","models/e-bipod-lleg.ase"};
-	char *bullnames[3]={"models/bullet1.asc","models/bullet2.asc","models/bullet3.asc"};
-	float pscale[11]={0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.45,0.375,0.375};
-	float bscale[9]={0.5,0.5,0.5,
-					 0.5,0.5,1.0,
-					 0.25,0.5,0.5}; 
-	float bullscale[3]={0.05,0.3,0.4};
+  const char *tnames[12]={"models/grass1.ase","models/rough.ase","models/rocks.ase","models/heavyrocks.ase",
+                    "models/hole1.asc","models/hole2.asc","models/hole3.asc",
+                    "models/hole4.asc","models/hole5.asc","models/hole6.asc",
+                    "models/grass2.ase","models/grass3.ase"};
+  const char *bnames[9]={"models/lowwall1.ase","models/lowwall2.ase","models/lowwall3.ase",
+                   "models/highwall1.ase","models/factory.ase","models/fence.asc",
+                   "models/flag.asc","models/highwall2.ase","models/warbase.ase"};
+  const char *pnames[11]={"models/h-bipod.ase","models/h-tracks.ase","models/h-antigrav.ase",
+                    "models/h-cannon.ase","models/h-missiles.ase","models/h-phasers.ase",
+                    "models/h-nuclear.ase","models/h-electronics.ase",
+                    "models/h-bipod-base.ase","models/h-bipod-rleg.ase","models/h-bipod-lleg.ase"};
+  const char *pnames2[11]={"models/e-bipod.ase","models/e-tracks.ase","models/e-antigrav.ase",
+                     "models/e-cannon.ase","models/e-missiles.ase","models/e-phasers.ase",
+                     "models/nuclear.asc","models/e-electronics.ase",
+                     "models/e-bipod-base.ase","models/e-bipod-rleg.ase","models/e-bipod-lleg.ase"};
+  const char *bullnames[3]={"models/bullet1.asc","models/bullet2.asc","models/bullet3.asc"};
+  float pscale[11]={0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.45,0.375,0.375};
+  float bscale[9]={0.5,0.5,0.5,
+                   0.5,0.5,1.0,
+                   0.25,0.5,0.5}; 
+  float bullscale[3]={0.05,0.3,0.4};
 
-	float r[12]={0.0    ,0.7f ,0.6f  ,0.5f ,0.0    ,0.0    ,0.0    ,0.0    ,0.0    ,0.0    ,0.0    ,0.0};
-	float g[12]={0.733f ,0.5f ,0.45f ,0.4f ,0.733f ,0.733f ,0.733f ,0.733f ,0.733f ,0.733f ,0.733f ,0.733f};
-	float b[12]={0.0    ,0.0  ,0.0   ,0.0  ,0.0    ,0.0    ,0.0    ,0.0    ,0.0    ,0.0    ,0.0    ,0.0};
-	int i;
+  float r[12]={0.0    ,0.7f ,0.6f  ,0.5f ,0.0    ,0.0    ,0.0    ,0.0    ,0.0    ,0.0    ,0.0    ,0.0};
+  float g[12]={0.733f ,0.5f ,0.45f ,0.4f ,0.733f ,0.733f ,0.733f ,0.733f ,0.733f ,0.733f ,0.733f ,0.733f};
+  float b[12]={0.0    ,0.0  ,0.0   ,0.0  ,0.0    ,0.0    ,0.0    ,0.0    ,0.0    ,0.0    ,0.0    ,0.0};
+  int i;
 
-	n_objs=12;
-	tile=new C3DObject *[n_objs];
-	tile_r=new float[n_objs];
-	tile_g=new float[n_objs];
-	tile_b=new float[n_objs];
-	for(i=0;i<n_objs;i++) {
-		tile[i]=new C3DObject(tnames[i],"textures/");
-		tile[i]->normalize(0.50f);
-		tile[i]->makepositive();
-		tile_r[i]=r[i];
-		tile_g[i]=g[i];
-		tile_b[i]=b[i];
-	} /* for */ 
-	
-	tile[4]->moveobject(0,0,-0.05);
-	tile[5]->moveobject(0,0,-0.05);
-	tile[6]->moveobject(0,0,-0.05);
-	tile[7]->moveobject(0,0,-0.05);
-	tile[8]->moveobject(0,0,-0.05);
-	tile[9]->moveobject(0,0,-0.05);
+  n_objs=12;
+  tile=new C3DObject *[n_objs];
+  tile_r=new float[n_objs];
+  tile_g=new float[n_objs];
+  tile_b=new float[n_objs];
+  for(i=0;i<n_objs;i++) {
+    tile[i]=new C3DObject(tnames[i], "textures/");
+    tile[i]->normalize(0.50f);
+    tile[i]->makepositive();
+    tile_r[i]=r[i];
+    tile_g[i]=g[i];
+    tile_b[i]=b[i];
+  } /* for */ 
 
-	n_buildings=9;
-	building_tile=new Shadow3DObject *[n_buildings];
-	for(i=0;i<n_buildings;i++) {
-		building_tile[i]=new Shadow3DObject(bnames[i],"textures/");
-		building_tile[i]->normalize(bscale[i]);
-		building_tile[i]->makepositive();
-	} /* for */ 
-	building_tile[5]->moveobject(0,0,0.01);
-	building_tile[6]->moveobject(0.4,0.4,0.0);
+  tile[4]->moveobject(0,0,-0.05);
+  tile[5]->moveobject(0,0,-0.05);
+  tile[6]->moveobject(0,0,-0.05);
+  tile[7]->moveobject(0,0,-0.05);
+  tile[8]->moveobject(0,0,-0.05);
+  tile[9]->moveobject(0,0,-0.05);
 
-	n_pieces=11;
-	piece_tile[0]=new Piece3DObject *[n_pieces];
-	piece_tile[1]=new Piece3DObject *[n_pieces];
-	for(i=0;i<n_pieces;i++) {
-		piece_tile[0][i]=new Piece3DObject(pnames[i],"textures/");
-		piece_tile[0][i]->normalize(pscale[i]);
-		piece_tile[0][i]->makepositive();
-		piece_tile[1][i]=new Piece3DObject(pnames2[i],"textures/");
-		piece_tile[1][i]->normalize(pscale[i]);
-		piece_tile[1][i]->makepositive();
-	} /* for */ 
-	piece_tile[0][0]->moveobject(-0.5,-0.5,0.0);
-	piece_tile[0][1]->moveobject(-0.5,-0.5,0.0);
-	piece_tile[0][2]->moveobject(-0.5,-0.5,0.2);
-	piece_tile[0][3]->moveobject(-0.5,-0.5,0.0);
-	piece_tile[0][4]->moveobject(-0.5,-0.45,0.0);
-	piece_tile[0][5]->moveobject(-0.5,-0.5,0.0);
-	piece_tile[0][6]->moveobject(-0.5,-0.5,0.0);
-	piece_tile[0][7]->moveobject(-0.32,-0.3,0.0);
-	piece_tile[0][8]->moveobject(-0.45,-0.45,0.6);
-	piece_tile[0][9]->moveobject(-0.4,-0.5,0.0);
-	piece_tile[0][10]->moveobject(-0.4,0.2,0.0);
+  n_buildings=9;
+  building_tile=new Shadow3DObject *[n_buildings];
+  for(i=0;i<n_buildings;i++) {
+    building_tile[i]=new Shadow3DObject(bnames[i], "textures/");
+    building_tile[i]->normalize(bscale[i]);
+    building_tile[i]->makepositive();
+  } /* for */ 
+  building_tile[5]->moveobject(0,0,0.01);
+  building_tile[6]->moveobject(0.4,0.4,0.0);
 
-	piece_tile[1][0]->moveobject(-0.5,-0.5,0.0);
-	piece_tile[1][1]->moveobject(-0.5,-0.5,0.0);
-	piece_tile[1][2]->moveobject(-0.5,-0.5,0.2);
-	piece_tile[1][3]->moveobject(-0.5,-0.5,0.0);
-	piece_tile[1][4]->moveobject(-0.5,-0.45,0.0);
-	piece_tile[1][5]->moveobject(-0.5,-0.5,0.0);
-	piece_tile[1][6]->moveobject(-0.5,-0.5,0.0);
-	piece_tile[1][7]->moveobject(-0.32,-0.3,0.0);
-	piece_tile[1][8]->moveobject(-0.45,-0.45,0.6);
-	piece_tile[1][9]->moveobject(-0.4,-0.5,0.0);
-	piece_tile[1][10]->moveobject(-0.4,0.2,0.0);
+  n_pieces=11;
+  piece_tile[0]=new Piece3DObject *[n_pieces];
+  piece_tile[1]=new Piece3DObject *[n_pieces];
+  for(i=0;i<n_pieces;i++) {
+    piece_tile[0][i]=new Piece3DObject(pnames[i],"textures/");
+    piece_tile[0][i]->normalize(pscale[i]);
+    piece_tile[0][i]->makepositive();
+    piece_tile[1][i]=new Piece3DObject(pnames2[i],"textures/");
+    piece_tile[1][i]->normalize(pscale[i]);
+    piece_tile[1][i]->makepositive();
+  } /* for */ 
+  piece_tile[0][0]->moveobject(-0.5,-0.5,0.0);
+  piece_tile[0][1]->moveobject(-0.5,-0.5,0.0);
+  piece_tile[0][2]->moveobject(-0.5,-0.5,0.2);
+  piece_tile[0][3]->moveobject(-0.5,-0.5,0.0);
+  piece_tile[0][4]->moveobject(-0.5,-0.45,0.0);
+  piece_tile[0][5]->moveobject(-0.5,-0.5,0.0);
+  piece_tile[0][6]->moveobject(-0.5,-0.5,0.0);
+  piece_tile[0][7]->moveobject(-0.32,-0.3,0.0);
+  piece_tile[0][8]->moveobject(-0.45,-0.45,0.6);
+  piece_tile[0][9]->moveobject(-0.4,-0.5,0.0);
+  piece_tile[0][10]->moveobject(-0.4,0.2,0.0);
 
-	ship=new Shadow3DObject("models/ship.asc","textures/");
-	ship->normalize(0.5f);
-	ship->makepositive();
+  piece_tile[1][0]->moveobject(-0.5,-0.5,0.0);
+  piece_tile[1][1]->moveobject(-0.5,-0.5,0.0);
+  piece_tile[1][2]->moveobject(-0.5,-0.5,0.2);
+  piece_tile[1][3]->moveobject(-0.5,-0.5,0.0);
+  piece_tile[1][4]->moveobject(-0.5,-0.45,0.0);
+  piece_tile[1][5]->moveobject(-0.5,-0.5,0.0);
+  piece_tile[1][6]->moveobject(-0.5,-0.5,0.0);
+  piece_tile[1][7]->moveobject(-0.32,-0.3,0.0);
+  piece_tile[1][8]->moveobject(-0.45,-0.45,0.6);
+  piece_tile[1][9]->moveobject(-0.4,-0.5,0.0);
+  piece_tile[1][10]->moveobject(-0.4,0.2,0.0);
 
-	n_bullets=3;
-	bullet_tile=new Piece3DObject *[n_bullets];
-	for(i=0;i<n_bullets;i++) {
-		bullet_tile[i]=new Piece3DObject(bullnames[i],"textures/");
-		bullet_tile[i]->normalize(bullscale[i]);
-	} /* for */ 
-	
-	ship->ComputeShadow(lightposv);
-	for(i=0;i<n_buildings;i++) building_tile[i]->ComputeShadow(lightposv);
-	for(i=0;i<n_pieces;i++) piece_tile[0][i]->ComputeFixedShadows(lightposv);
-	for(i=0;i<n_pieces;i++) piece_tile[1][i]->ComputeFixedShadows(lightposv);
-	for(i=0;i<n_bullets;i++) bullet_tile[i]->ComputeFixedShadows(lightposv);
+  ship=new Shadow3DObject("models/ship.asc","textures/");
+  ship->normalize(0.5f);
+  ship->makepositive();
 
-	construction_tile[0]=new C3DObject("models/construction1.asc","textures/");
-	construction_tile[1]=new C3DObject("models/construction2.asc","textures/");
-	construction_tile[2]=new C3DObject("models/construction3.asc","textures/");
-	construction_tile[0]->normalize(10.0);
-	construction_tile[1]->normalize(9.0);
-	construction_tile[2]->normalize(7.0);
+  n_bullets=3;
+  bullet_tile=new Piece3DObject *[n_bullets];
+  for(i=0;i<n_bullets;i++) {
+    bullet_tile[i]=new Piece3DObject(bullnames[i],"textures/");
+    bullet_tile[i]->normalize(bullscale[i]);
+  } /* for */
 
-	message_tile[0]=new C3DObject("models/go.ase","textures/");
-	message_tile[1]=new C3DObject("models/youwin.ase","textures/");
-	message_tile[2]=new C3DObject("models/gameover.ase","textures/");
-	message_tile[0]->normalize(4.0);
-	message_tile[1]->normalize(4.0);
-	message_tile[2]->normalize(4.0);
+  ship->ComputeShadow(lightposv);
+  for(i=0;i<n_buildings;i++) building_tile[i]->ComputeShadow(lightposv);
+  for(i=0;i<n_pieces;i++) piece_tile[0][i]->ComputeFixedShadows(lightposv);
+  for(i=0;i<n_pieces;i++) piece_tile[1][i]->ComputeFixedShadows(lightposv);
+  for(i=0;i<n_bullets;i++) bullet_tile[i]->ComputeFixedShadows(lightposv);
+
+  construction_tile[0]=new C3DObject("models/construction1.asc","textures/");
+  construction_tile[1]=new C3DObject("models/construction2.asc","textures/");
+  construction_tile[2]=new C3DObject("models/construction3.asc","textures/");
+  construction_tile[0]->normalize(10.0);
+  construction_tile[1]->normalize(9.0);
+  construction_tile[2]->normalize(7.0);
+
+  message_tile[0]=new C3DObject("models/go.ase","textures/");
+  message_tile[1]=new C3DObject("models/youwin.ase","textures/");
+  message_tile[2]=new C3DObject("models/gameover.ase","textures/");
+  message_tile[0]->normalize(4.0);
+  message_tile[1]->normalize(4.0);
+  message_tile[2]->normalize(4.0);
 } /* NETHER::loadobjects */ 
 
 
-void NETHER::deleteobjects(void)
+void NETHER::deleteObjects()
 {
-	int i;
-
-	/* Delete objects: */ 
-	for(i=0;i<n_objs;i++) delete tile[i];
+	for(int i=0; i < n_objs; i++) delete tile[i];
 	delete tile;
-	tile=0;
+	tile = 0;
 	delete tile_r;
-	tile_r=0;
+	tile_r = 0;
 	delete tile_g;
-	tile_g=0;
+	tile_g = 0;
 	delete tile_b;
-	tile_b=0;
+	tile_b = 0;
 	delete ship;
-	ship=0;
-	for(i=0;i<n_buildings;i++) delete building_tile[i];
+	ship = 0;
+	for(int i = 0; i < n_buildings; i++) delete building_tile[i];
 	delete building_tile;
-	building_tile=0;
-	for(i=0;i<n_pieces;i++) delete piece_tile[0][i];
-	for(i=0;i<n_pieces;i++) delete piece_tile[1][i];
+	building_tile = 0;
+	for(int i = 0;i < n_pieces; i++) delete piece_tile[0][i];
+	for(int i = 0; i < n_pieces;i++) delete piece_tile[1][i];
 	delete piece_tile[0];
 	delete piece_tile[1];
 	piece_tile[0]=0;
@@ -406,10 +402,10 @@ void NETHER::deleteobjects(void)
 	delete message_tile[0];
 	delete message_tile[1];
 	delete message_tile[2];
-	for(i=0;i<n_bullets;i++) delete bullet_tile[i];
+	for(int i = 0; i < n_bullets; i++) delete bullet_tile[i];
 	delete bullet_tile;
-	bullet_tile=0;
-} /* NETHER::deleteobjects */ 
+	bullet_tile = 0;
+}
 
 
 void NETHER::refresh_display_lists(void)

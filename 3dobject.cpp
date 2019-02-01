@@ -38,7 +38,7 @@ C3DObject::C3DObject()
 
 
 
-C3DObject::C3DObject(char *file,char *texturedir)
+C3DObject::C3DObject(const char* file, const char* texturedir)
 {
 	int l;
 
@@ -60,7 +60,7 @@ C3DObject::C3DObject(char *file,char *texturedir)
 } /* C3DObject::C3DObject */ 
 
 
-bool C3DObject::loadASC(char *file)
+bool C3DObject::loadASC(const char* file)
 {
 	FILE *fp;
 	char buffer[256],buffer2[256],buffer3[256],buffer4[256],buffer5[256];

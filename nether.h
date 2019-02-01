@@ -105,8 +105,8 @@ public:
   NETHER(const std::string& mapname);
 	~NETHER();
 
-	void loadobjects();
-	void deleteobjects();
+	void loadObjects();
+	void deleteObjects();
 
 	bool gamecycle(int w,int h);
 	void gameredraw(int w,int h);
