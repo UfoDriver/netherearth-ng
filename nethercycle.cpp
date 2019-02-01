@@ -1494,7 +1494,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 			l.Instance(particles);
 			l.Rewind();
 			while(l.Iterate(p)) {
-				if (!CycleParticle(p)) todelete.Add(p);
+				if (!p->cycle()) todelete.Add(p);
 			} /* while */ 
 
 			while(!todelete.EmptyP()) {

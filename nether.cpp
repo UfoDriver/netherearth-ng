@@ -828,7 +828,7 @@ void NETHER::draw_game(bool shadows)
 			if (p->pos.y>=(viewp.y+MINY) &&
 				p->pos.y<=(viewp.y+MAXY) &&
 				p->pos.x>=(viewp.x+MINX) &&
-				p->pos.x<=(viewp.x+MAXX)) DrawParticle(p);
+				p->pos.x<=(viewp.x+MAXX)) p->draw();
 		} /* if */ 
 
 	} /* if */ 

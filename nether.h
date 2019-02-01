@@ -145,8 +145,6 @@ private:
 	int  RobotCost(Robot *r);
 	CMC  RobotCMC(Robot *r,int owner);
 	CMC  BulletCMC(Bullet *r);
-	void DrawParticle(Particle *p);
-	bool CycleParticle(Particle *p);
 
 	float RobotSpeed(int traction,int terrain);
 	int RobotRotationSpeed(int traction,int terrain);
