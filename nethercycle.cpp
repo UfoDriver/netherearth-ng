@@ -1023,7 +1023,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 						if (r->traction==1) {
 							if (detaillevel>=4) {
 								int i;
-								PARTICLE *p;
+								Particle *p;
 								Vector pos,sp1;
 								float red,g,b;
 
@@ -1052,7 +1052,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 										pos.x+=((rand()%2)==0 ? -0.5 : 0.5);
 										break;
 									} /* switch */ 									
-									p=new PARTICLE(pos,sp1,Vector(0,0,0.05),0,0.3, red,g,b, 1.0,0.0,20+(rand()%10));
+									p=new Particle(pos,sp1,Vector(0,0,0.05),0,0.3, red,g,b, 1.0,0.0,20+(rand()%10));
 									particles.Add(p);
 								} /* for */ 
 							} /* if */ 
@@ -1488,8 +1488,8 @@ bool NETHER::cycle(unsigned char *keyboard)
 
 		/* Particles: */ 
 		{
-			List<PARTICLE> l,todelete;
-			PARTICLE *p;
+			List<Particle> l,todelete;
+			Particle *p;
 
 			l.Instance(particles);
 			l.Rewind();

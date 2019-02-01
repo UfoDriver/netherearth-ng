@@ -112,7 +112,7 @@ void NETHER::DrawBullet(Bullet *bullet,bool shadows)
 			/* TRACKS PARTICLES: */ 
 			if (detaillevel>=4) {
 				int i;
-				PARTICLE *p;
+				Particle *p;
 				Vector pos,sp1;
 				float red,g,b;
 
@@ -141,7 +141,7 @@ void NETHER::DrawBullet(Bullet *bullet,bool shadows)
 						pos.x+=((rand()%2)==0 ? -0.33 : 0.33);
 						break;
 					} /* switch */ 
-					p=new PARTICLE(pos,sp1,sp1,0,0.3, red,g,b, 1.0,0.0,10+(rand()%8));
+					p=new Particle(pos,sp1,sp1,0,0.3, red,g,b, 1.0,0.0,10+(rand()%8));
 					particles.Add(p);
 				} /* for */ 
 			} /* if */ 

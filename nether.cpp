@@ -819,8 +819,8 @@ void NETHER::draw_game(bool shadows)
 
 	/* Draw the particles: */ 
 	if (!shadows) {
-		List<PARTICLE> l;
-		PARTICLE *p;
+		List<Particle> l;
+		Particle *p;
 
 		l.Instance(particles);
 		l.Rewind();

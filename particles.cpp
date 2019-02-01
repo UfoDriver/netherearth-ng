@@ -21,35 +21,8 @@
 #include "myglutaux.h"
 #include "nether.h"
 
-PARTICLE::PARTICLE(void)
-{
-	size1=size2=0;
-	r=g=b=0;
-	a1=a2=0;
-	lifetime=acttime=0;
-} /* PARTICLE::PARTICLE */ 
 
-
-PARTICLE::PARTICLE(Vector p,Vector spd1,Vector spd2,float sz1,float sz2,float rp,float gp,float bp,float a1p,float a2p,int lt)
-{
-	pos=p;
-	speed1=spd1;
-	speed2=spd2;
-	size1=sz1;
-	size2=sz2;
-	r=rp;
-	g=gp;
-	b=gp;
-	a1=a1p;
-	a2=a2p;
-	lifetime=lt;
-	acttime=0;
-
-} /* PARTICLE::PARTICLE */ 
-
-
-
-void NETHER::DrawParticle(PARTICLE *p)
+void NETHER::DrawParticle(Particle *p)
 {
 	float val,val2;
 	float sz;
@@ -104,7 +77,7 @@ void NETHER::DrawParticle(PARTICLE *p)
 
 
 
-bool NETHER::CycleParticle(PARTICLE *p)
+bool NETHER::CycleParticle(Particle *p)
 {
 	float val,val2;
 

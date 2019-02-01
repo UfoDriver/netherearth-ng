@@ -14,6 +14,7 @@
 #include "robot.h"
 #include "bullet.h"
 #include "explosion.h"
+#include "particle.h"
 
 
 const float COLISION_TEST_THRESHOLD = 9.0;
@@ -98,19 +99,6 @@ enum AI_STATES {AI_STATE_EXPANDING,
                 AI_STATE_DESTROYING};
 
 
-class PARTICLE {
-public:
-	PARTICLE(void);
-	PARTICLE(Vector p,Vector speed1,Vector speed2,float sz1,float sz2,float r,float g,float b,float a1,float a2,int lifetime);
-
-	Vector pos,speed1,speed2;
-	float size1,size2;
-	float r,g,b;
-	float a1,a2;
-	int lifetime,acttime;
-};
-
-
 class AI_OPERATOR {
 public:
 	Vector newpos;
@@ -167,8 +155,8 @@ private:
 	int  RobotCost(Robot *r);
 	CMC  RobotCMC(Robot *r,int owner);
 	CMC  BulletCMC(Bullet *r);
-	void DrawParticle(PARTICLE *p);
-	bool CycleParticle(PARTICLE *p);
+	void DrawParticle(Particle *p);
+	bool CycleParticle(Particle *p);
 
 	float RobotSpeed(int traction,int terrain);
 	int RobotRotationSpeed(int traction,int terrain);
@@ -229,7 +217,7 @@ private:
 	List<Robot> robots[2];
 	List<Bullet> bullets;
 	List<Explosion> explosions;
-	List<PARTICLE> particles;
+	List<Particle> particles;
 
 	int day,hour,minute,second;
 	int resources[2][7];
