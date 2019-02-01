@@ -887,7 +887,7 @@ void NETHER::draw_status(void)
 	case GENERAL_MENU:
 		{
 			StatusButton *b;
-			b=getbutton(STATUS_BUTTON);
+			b=getbutton(StatusButton::STATUS_BUTTON);
 			if (b!=0 && b->status==0) {
 				statistics[0][7]=robots[0].Length();
 				statistics[1][7]=robots[1].Length();
@@ -933,7 +933,7 @@ void NETHER::draw_status(void)
 		{
 			StatusButton *b;
 
-			b=getbutton(ROBOT1_BUTTON);
+			b=getbutton(StatusButton::ROBOT1_BUTTON);
 			if (b!=0 && b->status==0) {
 
 				glTranslatef(70,140,0);
@@ -1052,7 +1052,7 @@ void NETHER::draw_status(void)
 		{
 			StatusButton *b;
 
-			b=getbutton(ORDERS1_BUTTON);
+			b=getbutton(StatusButton::ORDERS1_BUTTON);
 			if (b!=0 && b->status==0) {
 				glTranslatef(70,400,0);
 				glColor3f(1.0f,1.0f,1.0f);
@@ -1074,7 +1074,7 @@ void NETHER::draw_status(void)
 		{
 			StatusButton *b;
 
-			b=getbutton(ORDERS_BUTTON);
+			b=getbutton(StatusButton::ORDERS_BUTTON);
 			if (b!=0 && b->status==0) {
 				glTranslatef(70,300,0);
 				glColor3f(0.5f,0.5f,1.0f);
@@ -1101,7 +1101,7 @@ void NETHER::draw_status(void)
 		{
 			StatusButton *b;
 
-			b=getbutton(ORDERS_BUTTON);
+			b=getbutton(StatusButton::ORDERS_BUTTON);
 			if (b!=0 && b->status==0) {
 				glTranslatef(70,350,0);
 				glColor3f(0.5f,0.5f,1.0f);

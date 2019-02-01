@@ -246,7 +246,10 @@ bool NETHER::cycle(unsigned char *keyboard)
 			/* Browsing through the ROBOT MENU: */ 
 			{
 				int i;
-				BUTTON_NAMES buttons[4]={ROBOT1_BUTTON,ROBOT2_BUTTON,ROBOT3_BUTTON,ROBOT4_BUTTON};
+				StatusButton::BUTTON_NAMES buttons[4]={StatusButton::ROBOT1_BUTTON,
+                                                       StatusButton::ROBOT2_BUTTON,
+                                                       StatusButton::ROBOT3_BUTTON,
+                                                       StatusButton::ROBOT4_BUTTON};
 				StatusButton *b;
 
 				if (keyboard[up_key] && !old_keyboard[up_key]) {
@@ -289,7 +292,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 
 				if (keyboard[fire_key] && !old_keyboard[fire_key]) {
 					switch(act_button) {
-					case ROBOT1_BUTTON:
+					case StatusButton::ROBOT1_BUTTON:
 						{
 							StatusButton *b;
 
@@ -305,23 +308,23 @@ bool NETHER::cycle(unsigned char *keyboard)
 							if (S_select!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_select,0),128);
 						}
 						break;
-					case ROBOT2_BUTTON:
+					case StatusButton::ROBOT2_BUTTON:
 						{
 							killmenu(ROBOT_MENU);
 							newmenu(ORDERS_MENU);
-							act_button=ORDERS1_BUTTON;
+							act_button=StatusButton::ORDERS1_BUTTON;
 							if (S_select!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_select,0),128);
 						}
 						break;
-					case ROBOT3_BUTTON:
+					case StatusButton::ROBOT3_BUTTON:
 						{
 							killmenu(ROBOT_MENU);
 							newmenu(COMBATMODE_MENU);
-							act_button=COMBAT6_BUTTON;
+							act_button=StatusButton::COMBAT6_BUTTON;
 							if (S_select!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_select,0),128);
 						}
 						break;
-					case ROBOT4_BUTTON:
+					case StatusButton::ROBOT4_BUTTON:
 						/* Back to the general menu: */ 
 						controlled->electronics_state+=6;
 						controlled->shipover=false;
@@ -356,7 +359,12 @@ bool NETHER::cycle(unsigned char *keyboard)
 			/* Browsing through the COMBAT MENU: */ 
 			{
 				int i;
-				BUTTON_NAMES buttons[6]={COMBAT1_BUTTON,COMBAT2_BUTTON,COMBAT3_BUTTON,COMBAT4_BUTTON,COMBAT5_BUTTON,COMBAT6_BUTTON};
+				StatusButton::BUTTON_NAMES buttons[6]={StatusButton::COMBAT1_BUTTON,
+                                                       StatusButton::COMBAT2_BUTTON,
+                                                       StatusButton::COMBAT3_BUTTON,
+                                                       StatusButton::COMBAT4_BUTTON,
+                                                       StatusButton::COMBAT5_BUTTON,
+                                                       StatusButton::COMBAT6_BUTTON};
 				StatusButton *b;
 
 				if (keyboard[up_key] && !old_keyboard[up_key]) {
@@ -399,7 +407,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 				
 				if (keyboard[fire_key] && !old_keyboard[fire_key]) {
 					switch(act_button) {
-					case COMBAT1_BUTTON:
+					case StatusButton::COMBAT1_BUTTON:
 						/* Fire Nuclear: */ 
 						if ((controlled->angle==0 || controlled->angle==90 ||
 							 controlled->angle==180 || controlled->angle==270) &&
@@ -408,7 +416,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 							controlled->op=ROBOTOP_NUCLEAR;
 						} /* if */ 						
 						break;
-					case COMBAT2_BUTTON:
+					case StatusButton::COMBAT2_BUTTON:
 						/* Fire Phasers: */ 
 						if ((controlled->angle==0 || controlled->angle==90 ||
 							 controlled->angle==180 || controlled->angle==270) &&
@@ -417,7 +425,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 							controlled->op=ROBOTOP_PHASERS;
 						} /* if */ 
 						break;
-					case COMBAT3_BUTTON:
+					case StatusButton::COMBAT3_BUTTON:
 						/* Fire Missiles: */ 
 						if ((controlled->angle==0 || controlled->angle==90 ||
 							 controlled->angle==180 || controlled->angle==270) &&
@@ -426,7 +434,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 							controlled->op=ROBOTOP_MISSILES;
 						} /* if */ 
 						break;
-					case COMBAT4_BUTTON:
+					case StatusButton::COMBAT4_BUTTON:
 						/* Fire Canons: */ 
 						if ((controlled->angle==0 || controlled->angle==90 ||
 							 controlled->angle==180 || controlled->angle==270) &&
@@ -435,7 +443,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 							controlled->op=ROBOTOP_CANNONS;
 						} /* if */ 
 						break;
-					case COMBAT5_BUTTON:
+					case StatusButton::COMBAT5_BUTTON:
 						{
 							StatusButton *b;
 
@@ -451,11 +459,11 @@ bool NETHER::cycle(unsigned char *keyboard)
 							if (S_select!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_select,0),128);
 						}
 						break;
-					case COMBAT6_BUTTON:
+					case StatusButton::COMBAT6_BUTTON:
 						/* Back to the robot menu: */ 
 						killmenu(COMBATMODE_MENU);
 						newmenu(ROBOT_MENU);
-						act_button=ROBOT3_BUTTON;
+						act_button=StatusButton::ROBOT3_BUTTON;
 						if (S_select!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_select,0),128);
 						break;
 					} /* switch */ 
@@ -466,7 +474,11 @@ bool NETHER::cycle(unsigned char *keyboard)
 			/* Browsing through the ORDERS MENU: */ 
 			{
 				int i;
-				BUTTON_NAMES buttons[5]={ORDERS1_BUTTON,ORDERS2_BUTTON,ORDERS3_BUTTON,ORDERS4_BUTTON,ORDERS5_BUTTON};
+				StatusButton::BUTTON_NAMES buttons[5]={StatusButton::ORDERS1_BUTTON,
+                                                       StatusButton::ORDERS2_BUTTON,
+                                                       StatusButton::ORDERS3_BUTTON,
+                                                       StatusButton::ORDERS4_BUTTON,
+                                                       StatusButton::ORDERS5_BUTTON};
 				StatusButton *b;
 
 				if (keyboard[up_key] && !old_keyboard[up_key]) {
@@ -509,17 +521,17 @@ bool NETHER::cycle(unsigned char *keyboard)
 				
 				if (keyboard[fire_key] && !old_keyboard[fire_key]) {
 					switch(act_button) {
-					case ORDERS1_BUTTON:
+					case StatusButton::ORDERS1_BUTTON:
 						/* STOP & DEFEND: */ 
 						controlled->program=PROGRAM_STOPDEFEND;
 						controlled->program_goal=Vector(-1,-1,-1);
 
 						killmenu(ORDERS_MENU);
 						newmenu(ROBOT_MENU);
-						act_button=ROBOT2_BUTTON;
+						act_button=StatusButton::ROBOT2_BUTTON;
 						if (S_select!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_select,0),128);
 						break;
-					case ORDERS2_BUTTON:
+					case StatusButton::ORDERS2_BUTTON:
 						/* ADVANCE ?? MILES: */ 
 						controlled->program=PROGRAM_ADVANCE;
 						controlled->program_parameter=0;
@@ -529,7 +541,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 						newmenu(SELECTDISTANCE_MENU);
 						if (S_select!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_select,0),128);
 						break;
-					case ORDERS3_BUTTON:
+					case StatusButton::ORDERS3_BUTTON:
 						/* RETREAT ?? MILES: */ 
 						controlled->program=PROGRAM_RETREAT;
 						controlled->program_parameter=0;
@@ -539,18 +551,18 @@ bool NETHER::cycle(unsigned char *keyboard)
 						newmenu(SELECTDISTANCE_MENU);
 						if (S_select!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_select,0),128);
 						break;
-					case ORDERS4_BUTTON:
+					case StatusButton::ORDERS4_BUTTON:
 						/* SEARCH AND DESTROY: */ 
 						killmenu(ORDERS_MENU);
 						newmenu(TARGETD_MENU);
-						act_button=TARGET1_BUTTON;
+						act_button=StatusButton::TARGET1_BUTTON;
 						if (S_select!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_select,0),128);
 						break;
-					case ORDERS5_BUTTON:
+					case StatusButton::ORDERS5_BUTTON:
 						/* SEARCH AND CAPTURE: */ 
 						killmenu(ORDERS_MENU);
 						newmenu(TARGETC_MENU);
-						act_button=TARGET1_BUTTON;
+						act_button=StatusButton::TARGET1_BUTTON;
 						if (S_select!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_select,0),128);
 						break;
 					} /* switch */ 
@@ -580,7 +592,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 
 					killmenu(SELECTDISTANCE_MENU);
 					newmenu(ROBOT_MENU);
-					act_button=ROBOT2_BUTTON;
+					act_button=StatusButton::ROBOT2_BUTTON;
 					if (S_select!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_select,0),128);
 				} /* if */ 
 			}
@@ -590,7 +602,9 @@ bool NETHER::cycle(unsigned char *keyboard)
 			/* Browsing through the SELECT TARGET FOR DESTROYING MENU: */ 
 			{
 				int i;
-				BUTTON_NAMES buttons[3]={TARGET1_BUTTON,TARGET2_BUTTON,TARGET3_BUTTON};
+				StatusButton::BUTTON_NAMES buttons[3]={StatusButton::TARGET1_BUTTON,
+                                                       StatusButton::TARGET2_BUTTON,
+                                                       StatusButton::TARGET3_BUTTON};
 				StatusButton *b;
 
 				if (keyboard[up_key] && !old_keyboard[up_key]) {
@@ -633,13 +647,13 @@ bool NETHER::cycle(unsigned char *keyboard)
 				
 				if (keyboard[fire_key] && !old_keyboard[fire_key]) {
 					switch(act_button) {
-					case TARGET1_BUTTON:
+					case StatusButton::TARGET1_BUTTON:
 						if (controlled->pieces[0] ||
 							controlled->pieces[1] ||
 							controlled->pieces[2]) {
 							killmenu(TARGETD_MENU);
 							newmenu(ROBOT_MENU);
-							act_button=ROBOT2_BUTTON;
+							act_button=StatusButton::ROBOT2_BUTTON;
 							controlled->program=PROGRAM_DESTROY;
 							controlled->program_parameter=P_PARAM_ROBOTS;
 							controlled->program_goal=Vector(-1,-1,-1);
@@ -649,11 +663,11 @@ bool NETHER::cycle(unsigned char *keyboard)
 							if (S_wrong!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_wrong,0),128);
 						} /* if */ 
 						break;
-					case TARGET2_BUTTON:
+					case StatusButton::TARGET2_BUTTON:
 						if (controlled->pieces[3]) {
 							killmenu(TARGETD_MENU);
 							newmenu(ROBOT_MENU);
-							act_button=ROBOT2_BUTTON;
+							act_button=StatusButton::ROBOT2_BUTTON;
 							controlled->program=PROGRAM_DESTROY;
 							controlled->program_parameter=P_PARAM_EFACTORIES;
 							controlled->program_goal=Vector(-1,-1,-1);
@@ -663,11 +677,11 @@ bool NETHER::cycle(unsigned char *keyboard)
 							if (S_wrong!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_wrong,0),128);
 						} /* if */ 
 						break;
-					case TARGET3_BUTTON:
+					case StatusButton::TARGET3_BUTTON:
 						if (controlled->pieces[3]) {
 							killmenu(TARGETD_MENU);
 							newmenu(ROBOT_MENU);
-							act_button=ROBOT2_BUTTON;
+							act_button=StatusButton::ROBOT2_BUTTON;
 							controlled->program=PROGRAM_DESTROY;
 							controlled->program_parameter=P_PARAM_WARBASES;
 							controlled->program_goal=Vector(-1,-1,-1);
@@ -686,7 +700,9 @@ bool NETHER::cycle(unsigned char *keyboard)
 			/* Browsing through the SELECT TARGET FOR CAPTURING MENU: */ 
 			{
 				int i;
-				BUTTON_NAMES buttons[3]={TARGET1_BUTTON,TARGET2_BUTTON,TARGET3_BUTTON};
+				StatusButton::BUTTON_NAMES buttons[3]={StatusButton::TARGET1_BUTTON,
+                                                       StatusButton::TARGET2_BUTTON,
+                                                       StatusButton::TARGET3_BUTTON};
 				StatusButton *b;
 
 				if (keyboard[up_key] && !old_keyboard[up_key]) {
@@ -729,28 +745,28 @@ bool NETHER::cycle(unsigned char *keyboard)
 
 				if (keyboard[fire_key] && !old_keyboard[fire_key]) {
 					switch(act_button) {
-					case TARGET1_BUTTON:
+					case StatusButton::TARGET1_BUTTON:
 						killmenu(TARGETC_MENU);
 						newmenu(ROBOT_MENU);
-						act_button=ROBOT2_BUTTON;
+						act_button=StatusButton::ROBOT2_BUTTON;
 						controlled->program=PROGRAM_CAPTURE;
 						controlled->program_parameter=P_PARAM_NFACTORIES;
 						controlled->program_goal=Vector(-1,-1,-1);
 						if (S_select!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_select,0),128);
 						break;
-					case TARGET2_BUTTON:
+					case StatusButton::TARGET2_BUTTON:
 						killmenu(TARGETC_MENU);
 						newmenu(ROBOT_MENU);
-						act_button=ROBOT2_BUTTON;
+						act_button=StatusButton::ROBOT2_BUTTON;
 						controlled->program=PROGRAM_CAPTURE;
 						controlled->program_parameter=P_PARAM_EFACTORIES;
 						controlled->program_goal=Vector(-1,-1,-1);
 						if (S_select!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_select,0),128);
 						break;
-					case TARGET3_BUTTON:
+					case StatusButton::TARGET3_BUTTON:
 						killmenu(TARGETC_MENU);
 						newmenu(ROBOT_MENU);
-						act_button=ROBOT2_BUTTON;
+						act_button=StatusButton::ROBOT2_BUTTON;
 						controlled->program=PROGRAM_CAPTURE;
 						controlled->program_parameter=P_PARAM_WARBASES;
 						controlled->program_goal=Vector(-1,-1,-1);
@@ -841,7 +857,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 
 					} /* if */ 
 				} /* if */ 
-				timeb=getbutton(TIME_BUTTON);
+				timeb=getbutton(StatusButton::TIME_BUTTON);
 				if (timeb!=0) {
                   std::ostringstream t1Formatter;
                   t1Formatter << "Day: " << day;
@@ -909,7 +925,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 					if (controlled->program==PROGRAM_FORWARD) controlled->program=PROGRAM_STOPDEFEND;
 					killmenu(GENERAL_MENU);
 					newmenu(ROBOT_MENU);
-					act_button=ROBOT4_BUTTON;
+					act_button=StatusButton::ROBOT4_BUTTON;
 				} /* while */ 
 			} /* while */ 
 		} /* if */ 

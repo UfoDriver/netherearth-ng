@@ -10,6 +10,7 @@
 #include "shadow3dobject.h"
 #include "piece3dobject.h"
 #include "building.h"
+#include "statusbutton.h"
 
 const float COLISION_TEST_THRESHOLD = 9.0;
 const int INTRO_TIME = 60;
@@ -27,29 +28,6 @@ enum GAME_STATE {STATE_PLAYING,
                  STATE_PAUSE,
                  STATE_SAVINGGAME,
                  STATE_LOADINGGAME};
-
-enum BUTTON_NAMES {TIME_BUTTON = 1,
-                   STATUS_BUTTON,
-                   RESOURCE_BUTTON,
-                   ROBOT1_BUTTON,
-                   ROBOT2_BUTTON,
-                   ROBOT3_BUTTON,
-                   ROBOT4_BUTTON,
-                   COMBAT1_BUTTON,
-                   COMBAT2_BUTTON,
-                   COMBAT3_BUTTON,
-                   COMBAT4_BUTTON,
-                   COMBAT5_BUTTON,
-                   COMBAT6_BUTTON,
-                   ORDERS1_BUTTON,
-                   ORDERS2_BUTTON,
-                   ORDERS3_BUTTON,
-                   ORDERS4_BUTTON,
-                   ORDERS5_BUTTON,
-                   ORDERS_BUTTON,
-                   TARGET1_BUTTON,
-                   TARGET2_BUTTON,
-                   TARGET3_BUTTON};
 
 enum MENU_TYPES {GENERAL_MENU,
                  ROBOT_MENU,
@@ -116,21 +94,6 @@ enum AI_STATES {AI_STATE_EXPANDING,
                 AI_STATE_DESTROYING};
 
 
-class StatusButton {
-public:
-  StatusButton(BUTTON_NAMES ID, int x, int y, int sx, int sy, const std::string& text1,
-               const std::string& text2, float r, float g, float b, int status):
-    ID(ID), x(x), y(y), sx(sx), sy(sy), text1(text1), text2(text2), r(r), g(g), b(b), status(status)
-  {}
-
-  BUTTON_NAMES ID;
-  int x, y;
-  int sx, sy;
-  std::string text1;
-  std::string text2;
-  float r, g, b;
-  int status;
-};
 
 
 class ROBOT {
@@ -267,12 +230,12 @@ private:
 
 	int SFX_volume(Vector pos);
 
-  void newbutton(BUTTON_NAMES ID, int x, int y, int sx, int sy, const std::string& t1, const std::string& t2,
+  void newbutton(StatusButton::BUTTON_NAMES ID, int x, int y, int sx, int sy, const std::string& t1, const std::string& t2,
                  float r, float g, float b);
-	void newbuttondelayed(BUTTON_NAMES ID, int x, int y, int sx, int sy, const std::string& t1,
+  void newbuttondelayed(StatusButton::BUTTON_NAMES ID, int x, int y, int sx, int sy, const std::string& t1,
                           const std::string& t2, float r, float g, float b);
-	void killbutton(BUTTON_NAMES ID);
-	StatusButton *getbutton(BUTTON_NAMES ID);
+	void killbutton(StatusButton::BUTTON_NAMES ID);
+	StatusButton *getbutton(StatusButton::BUTTON_NAMES ID);
 	void newmenu(ushort menu);
 	void killmenu(ushort menu);
 
@@ -353,7 +316,7 @@ private:
 	/* Status variables: */ 
 	List<StatusButton> buttons;
 	int act_menu;
-	BUTTON_NAMES act_button;
+	StatusButton::BUTTON_NAMES act_button;
 	int redrawmenu,redrawradar;
 	bool recomputestatistics;
 
