@@ -22,6 +22,8 @@ public:
                    ALL_MENUS};
   explicit Menu(const NETHER* nether): redrawmenu(0), act_menu(GENERAL_MENU), act_button(StatusButton::COMBAT1_BUTTON),
                                      nether(nether) {};
+  void draw();
+  void cycle();
   void replaceMenu(MENU_TYPES oldMenu, MENU_TYPES newMenu, StatusButton::BUTTON_NAMES activeButton);
   void newmenu(MENU_TYPES menu);
   void killmenu(MENU_TYPES menu);
@@ -35,11 +37,11 @@ public:
 
   int redrawmenu;
   MENU_TYPES act_menu;
-  List<StatusButton> buttons;
   StatusButton::BUTTON_NAMES act_button;
 
 private:
   const NETHER* nether;
+  List<StatusButton> buttons;
 };
 
 #endif // MENU_H

@@ -1,6 +1,8 @@
 #ifndef __BRAIN_GLUTAUX
 #define __BRAIN_GLUTAUX
 
+#include "vector.h"
+
 
 float draw3Dtext(char *text,float dx,float dy,float dz,float r,float g,float b);
 

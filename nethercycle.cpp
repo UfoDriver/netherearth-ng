@@ -1496,29 +1496,8 @@ bool NETHER::cycle(unsigned char *keyboard)
 	fflush(debug_fp);
 #endif
 
-	/* STATUS Cycle: */ 
-	{
-		List<StatusButton> l,todelete;
-		StatusButton *b;
-
-		l.Instance(menu.buttons);
-		l.Rewind();
-		while(l.Iterate(b)) {
-			if (b->status!=0) {
-				b->status++;
-				menu.redrawmenu=2;
-				if (b->status>=16) {
-					todelete.Add(b);
-				} /* if */ 
-			} /* if */ 
-		} /* while */ 
-
-		while(!todelete.EmptyP()) {
-			b=todelete.Extract();
-			menu.buttons.DeleteElement(b);
-			delete b;
-		} /* while */ 
-	}
+	/* STATUS Cycle: */
+    menu.cycle();
 
 	if (game_state==STATE_PLAYING && keyboard[pause_key] && !old_keyboard[pause_key]) {
 		game_state=STATE_PAUSE;

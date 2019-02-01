@@ -10,6 +10,8 @@
 #include "GL/glu.h"
 #include "SDL/SDL.h"
 #include "SDL/SDL_mixer.h"
+#include "myglutaux.h"
+#include "glprintf.h"
 
 #include "list.h"
 #include "vector.h"
@@ -21,6 +23,72 @@
 #include "statusbutton.h"
 #include "menu.h"
 #include "nether.h"
+
+
+void Menu::draw()
+{
+  List<StatusButton> l;
+  StatusButton *b;
+  float angle, cf;
+
+  l.Instance(buttons);
+  l.Rewind();
+  while(l.Iterate(b)) {
+    if (b->status >= -16) {
+      angle=(float(b->status) * 90.0) / 16.0;
+      cf=float((16 - abs(b->status))) / 16.0;
+      glPushMatrix();
+      glTranslatef(b->x, b->y, 0);
+      glRotatef(angle, 0, 1, 0);
+
+      /* Draw button: */
+      glColor3f(b->r * cf, b->g * cf, b->b * cf);
+      glutSolidBox(b->sx / 2, b->sy / 2, 10.0);
+      glTranslatef(0, 0, 11);
+
+      glColor3f(1.0, 1.0, 1.0);
+      if (!b->text1.empty()) {
+        if (!b->text2.empty()) {
+          glTranslatef(0, -12, 0);
+          scaledglprintf(0.1f, 0.1f, b->text2.c_str());
+          glTranslatef(0, 17, 0);
+          scaledglprintf(0.1f, 0.1f, b->text1.c_str());
+        } else {
+          glTranslatef(0, -3, 0);
+          scaledglprintf(0.1f, 0.1f, b->text1.c_str());
+        }
+      }
+      glPopMatrix();
+    }
+  }
+}
+
+
+void Menu::cycle()
+{
+  List<StatusButton> l;
+  List<StatusButton> todelete;
+  StatusButton *b;
+
+  l.Instance(buttons);
+  l.Rewind();
+  while (l.Iterate(b)) {
+    if (b->status != 0) {
+      b->status++;
+      redrawmenu = 2;
+      if (b->status >= 16) {
+        todelete.Add(b);
+      }
+    }
+  }
+
+  while (!todelete.EmptyP()) {
+    b = todelete.Extract();
+    buttons.DeleteElement(b);
+    delete b;
+  }
+}
+
 
 void Menu::newmenu(MENU_TYPES menu)
 {

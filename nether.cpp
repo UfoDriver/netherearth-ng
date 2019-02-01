@@ -840,43 +840,7 @@ void NETHER::draw_status(void)
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  /* Draw buttons: */
-  {
-    List<StatusButton> l;
-    StatusButton *b;
-    float angle, cf;
-
-    l.Instance(menu.buttons);
-    l.Rewind();
-    while(l.Iterate(b)) {
-      if (b->status >= -16) {
-        angle=(float(b->status) * 90.0) / 16.0;
-        cf=float((16 - abs(b->status))) / 16.0;
-        glPushMatrix();
-        glTranslatef(b->x, b->y, 0);
-        glRotatef(angle, 0, 1, 0);
-
-        /* Draw button: */
-        glColor3f(b->r * cf, b->g * cf, b->b * cf);
-        glutSolidBox(b->sx / 2, b->sy / 2, 10.0);
-        glTranslatef(0, 0, 11);
-
-        glColor3f(1.0, 1.0, 1.0);
-        if (!b->text1.empty()) {
-          if (!b->text2.empty()) {
-            glTranslatef(0, -12, 0);
-            scaledglprintf(0.1f, 0.1f, b->text2.c_str());
-            glTranslatef(0, 17, 0);
-            scaledglprintf(0.1f, 0.1f, b->text1.c_str());
-          } else {
-            glTranslatef(0, -3, 0);
-            scaledglprintf(0.1f, 0.1f, b->text1.c_str());
-          }
-        }
-        glPopMatrix();
-      }
-    }
-  }
+  menu.draw();
 
 	glPushMatrix();
 	switch(menu.act_menu) {
