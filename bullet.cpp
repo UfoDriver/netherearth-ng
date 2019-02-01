@@ -29,18 +29,18 @@
 
 extern int detaillevel;
 
-BULLET::BULLET(): type(BULLET_CANNONS), step(0), angle(0), owner(0)
+Bullet::Bullet(): type(BULLET_CANNONS), step(0), angle(0), owner(0)
 {
 }
 
 
-BULLET::BULLET(BULLET_TYPE type, Vector position, int angle, Robot *robot):
+Bullet::Bullet(BULLET_TYPE type, Vector position, int angle, Robot *robot):
   type(type), step(0), pos(position), angle(angle), owner(robot)
 {
 }
 
 
-CMC NETHER::BulletCMC(BULLET *b)
+CMC NETHER::BulletCMC(Bullet *b)
 {
 	CMC cmc;
 	float m[16]={1,0,0,0,
@@ -84,7 +84,7 @@ CMC NETHER::BulletCMC(BULLET *b)
 
 
 
-void NETHER::DrawBullet(BULLET *bullet,bool shadows)
+void NETHER::DrawBullet(Bullet *bullet,bool shadows)
 {
 	switch(bullet->type) {
 	case 0:/* CANONS: */ 
@@ -164,7 +164,7 @@ void NETHER::DrawBullet(BULLET *bullet,bool shadows)
 } /* NETHER::DrawBullet */ 
 
 
-bool NETHER::BulletCollision(BULLET *bullet,Robot **r)
+bool NETHER::BulletCollision(Bullet *bullet,Robot **r)
 {
 	int i;
 	List<Building> l;

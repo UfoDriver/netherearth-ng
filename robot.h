@@ -11,7 +11,7 @@ public:
   Robot();
   bool valid();
   float piecez(int piece);
-  bool bulletHit(BULLET::BULLET_TYPE type);
+  bool bulletHit(Bullet::BULLET_TYPE type);
 
   int traction;
   bool pieces[5];

@@ -169,14 +169,14 @@ private:
 
 	bool ShipCollision(C3DObject *ship,float x,float y,float z);
 	bool RobotCollision(Robot *r,bool complete);
-	bool BulletCollision(BULLET *b,Robot **r);
+	bool BulletCollision(Bullet *b,Robot **r);
 
-	void DrawBullet(BULLET *bullet,bool shadows);
+	void DrawBullet(Bullet *bullet,bool shadows);
 	void DrawRobot(Robot *robot,int owner,bool shadows);
 	void RobotCost(int player,Robot *r,int *res);
 	int  RobotCost(Robot *r);
 	CMC  RobotCMC(Robot *r,int owner);
-	CMC  BulletCMC(BULLET *r);
+	CMC  BulletCMC(Bullet *r);
 	void DrawParticle(PARTICLE *p);
 	bool CycleParticle(PARTICLE *p);
 
@@ -237,7 +237,7 @@ private:
 
 	List<Building> buildings;
 	List<Robot> robots[2];
-	List<BULLET> bullets;
+	List<Bullet> bullets;
 	List<EXPLOSION> explosions;
 	List<PARTICLE> particles;
 

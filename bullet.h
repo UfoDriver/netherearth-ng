@@ -7,11 +7,11 @@
 class Robot;
 
 
-class BULLET {
+class Bullet {
 public:
   enum BULLET_TYPE {BULLET_CANNONS, BULLET_MISSILES, BULLET_PHASERS};
-  BULLET(void);
-  BULLET(BULLET_TYPE type, Vector position, int angle, Robot *robot);
+  Bullet();
+  Bullet(BULLET_TYPE type, Vector position, int angle, Robot *robot);
 
   BULLET_TYPE type;
   int step;

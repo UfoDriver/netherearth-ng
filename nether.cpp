@@ -708,9 +708,9 @@ void NETHER::draw_game(bool shadows)
 	{
 		int i;
 		List<Robot> l;
-		List<BULLET> l2;
+		List<Bullet> l2;
 		Robot *r;
-		BULLET *b; 
+		Bullet *b; 
 
 		for(i=0;i<2;i++) {
 			l.Instance(robots[i]);

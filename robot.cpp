@@ -19,7 +19,7 @@ bool Robot::valid()
 }
 
 
-bool Robot::bulletHit(BULLET::BULLET_TYPE type)
+bool Robot::bulletHit(Bullet::BULLET_TYPE type)
 {
   int npieces = 0;
   int damage;
@@ -31,7 +31,7 @@ bool Robot::bulletHit(BULLET::BULLET_TYPE type)
   if (pieces[4]) npieces++;
 
   switch(type) {
-  case BULLET::BULLET_CANNONS:
+  case Bullet::BULLET_CANNONS:
     damage = 24;
     if (traction == 0) damage -= 2;
     if (npieces == 1) damage -= 2;
@@ -40,7 +40,7 @@ bool Robot::bulletHit(BULLET::BULLET_TYPE type)
     if (npieces == 4) damage -= 12;
     if (npieces == 5) damage -= 16;
     break;
-  case BULLET::BULLET_MISSILES:
+  case Bullet::BULLET_MISSILES:
     damage = 36;
     if (traction == 0) damage -= 3;
     if (npieces == 1) damage -= 3;
@@ -49,7 +49,7 @@ bool Robot::bulletHit(BULLET::BULLET_TYPE type)
     if (npieces == 4) damage -= 18;
     if (npieces == 5) damage -= 24;
     break;
-  case BULLET::BULLET_PHASERS:
+  case Bullet::BULLET_PHASERS:
     damage = 48;
     if (traction == 0) damage -= 4;
     if (npieces == 1) damage -= 4;

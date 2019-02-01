@@ -38,7 +38,7 @@ bool NETHER::save_game(char *filename)
 	FILE *fp;
 	Building *b;
 	Robot *r;
-	BULLET *bul;
+	Bullet *bul;
 	EXPLOSION *e;
 
 	fp=fopen(filename,"w");
@@ -203,7 +203,7 @@ bool NETHER::load_game(char *filename)
 	FILE *fp;
 	Building *b;
 	Robot *r;
-	BULLET *bul;
+	Bullet *bul;
 	EXPLOSION *e;
 
 	fp=fopen(filename,"r");
@@ -323,7 +323,7 @@ bool NETHER::load_game(char *filename)
 		ROBOT *owner;
 		CMC cmc;
 */
-		bul=new BULLET();
+		bul=new Bullet();
 		if (3!=fscanf(fp,"%i %i %i",&bul->type,&bul->step,&bul->angle)) return false;
 
 		bul->pos.load(fp);

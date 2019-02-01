@@ -1078,13 +1078,13 @@ bool NETHER::cycle(unsigned char *keyboard)
 					if (r->angle<0) r->angle+=360;
 
 					if (r->op==ROBOTOP_CANNONS && r->firetimer==0) {
-						BULLET *b;
+						Bullet *b;
 						Vector pos;
 
 						pos=r->pos;
 						pos.z=r->piecez(0)+0.3f;
 
-						b=new BULLET(BULLET::BULLET_CANNONS, pos,r->angle,r);
+						b=new Bullet(Bullet::BULLET_CANNONS, pos,r->angle,r);
 						b->cmc=BulletCMC(b);
 
 						bullets.Add(b);
@@ -1092,13 +1092,13 @@ bool NETHER::cycle(unsigned char *keyboard)
 					} /* if */ 
 
 					if (r->op==ROBOTOP_MISSILES && r->firetimer==0) {
-						BULLET *b;
+						Bullet *b;
 						Vector pos;
 
 						pos=r->pos;
 						pos.z=r->piecez(1)+0.2f;
 
-						b=new BULLET(BULLET::BULLET_MISSILES,pos,r->angle,r);
+						b=new Bullet(Bullet::BULLET_MISSILES,pos,r->angle,r);
 						b->cmc=BulletCMC(b);
 
 						bullets.Add(b);
@@ -1106,13 +1106,13 @@ bool NETHER::cycle(unsigned char *keyboard)
 					} /* if */ 
 
 					if (r->op==ROBOTOP_PHASERS && r->firetimer==0) {
-						BULLET *b;
+						Bullet *b;
 						Vector pos;
 
 						pos=r->pos;
 						pos.z=r->piecez(2)+0.3f;
 
-						b=new BULLET(BULLET::BULLET_PHASERS,pos,r->angle,r);
+						b=new Bullet(Bullet::BULLET_PHASERS,pos,r->angle,r);
 						b->cmc=BulletCMC(b);
 
 						bullets.Add(b);
@@ -1394,8 +1394,8 @@ bool NETHER::cycle(unsigned char *keyboard)
 
 		/* Bullets: */ 
 		{
-			List<BULLET> l,todelete;
-			BULLET *b;
+			List<Bullet> l,todelete;
+			Bullet *b;
 			Robot *r;
 			int persistence=CANNON_PERSISTENCE;
 			
