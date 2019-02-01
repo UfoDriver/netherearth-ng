@@ -114,7 +114,6 @@ private:
 	void draw(int w,int h);
 	void draw_game(bool shadows);
 	void draw_radar(void);
-	void draw_status(void);
 	void construction_draw(int w,int h);
 	void options_draw(int w,int h);
 

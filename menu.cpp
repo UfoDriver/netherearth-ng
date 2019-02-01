@@ -27,6 +27,249 @@
 
 void Menu::draw()
 {
+  glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+
+  drawButtons();
+  drawStatus();
+}
+
+
+void Menu::drawStatus()
+{
+  glPushMatrix();
+  switch (act_menu) {
+  case Menu::GENERAL_MENU:
+    {
+      StatusButton* b = getbutton(StatusButton::STATUS_BUTTON);
+      if (b != 0 && b->status == 0) {
+        int robots0 =  nether->robots[0].Length();
+        int robots1 = nether->robots[1].Length();
+
+        glColor3f(0.5f,0.5f,1.0f);
+        glTranslatef(70,356,0);
+        scaledglprintf(0.1f,0.1f,"%i WARBASES %i", nether->statistics[1][0], nether->statistics[0][0]);
+        glTranslatef(0,-18,0);
+        scaledglprintf(0.1f,0.1f,"%i ELECTR'S %i", nether->statistics[1][1], nether->statistics[0][1]);
+        glTranslatef(0,-18,0);
+        scaledglprintf(0.1f,0.1f,"%i NUCLEAR  %i", nether->statistics[1][2], nether->statistics[0][2]);
+        glTranslatef(0,-18,0);
+        scaledglprintf(0.1f,0.1f,"%i PHASERS  %i", nether->statistics[1][3], nether->statistics[0][3]);
+        glTranslatef(0,-18,0);
+        scaledglprintf(0.1f,0.1f,"%i MISSILES %i", nether->statistics[1][4], nether->statistics[0][4]);
+        glTranslatef(0,-18,0);
+        scaledglprintf(0.1f,0.1f,"%i  CANNON  %i", nether->statistics[1][5], nether->statistics[0][5]);
+        glTranslatef(0,-18,0);
+        scaledglprintf(0.1f,0.1f,"%i CHASSIS  %i", nether->statistics[1][6], nether->statistics[0][6]);
+        glTranslatef(0,-18,0);
+        scaledglprintf(0.1f,0.1f,"%.2i ROBOTS %.2i", robots1, robots0);
+        glColor3f(0.0f,0.8f,0.0f);
+        glTranslatef(0,-65,0);
+        scaledglprintf(0.1f,0.1f,"GENERAL %.2i", nether->resources[0][0]);
+        glTranslatef(0,-18,0);
+        scaledglprintf(0.1f,0.1f,"ELECTR' %.2i", nether->resources[0][1]);
+        glTranslatef(0,-18,0);
+        scaledglprintf(0.1f,0.1f,"NUCLEAR %.2i", nether->resources[0][2]);
+        glTranslatef(0,-18,0);
+        scaledglprintf(0.1f,0.1f,"PHASERS %.2i", nether->resources[0][3]);
+        glTranslatef(0,-18,0);
+        scaledglprintf(0.1f,0.1f,"MISSILE %.2i", nether->resources[0][4]);
+        glTranslatef(0,-18,0);
+        scaledglprintf(0.1f,0.1f,"CANNON  %.2i", nether->resources[0][5]);
+        glTranslatef(0,-18,0);
+        scaledglprintf(0.1f,0.1f,"CHASSIS %.2i", nether->resources[0][6]);
+      }
+    }
+    break;
+  case Menu::ROBOT_MENU:
+  case Menu::DIRECTCONTROL_MENU:
+    {
+      StatusButton* b = getbutton(StatusButton::ROBOT1_BUTTON);
+      if (b!=0 && b->status==0) {
+        glTranslatef(70,140,0);
+        glColor3f(1.0f,1.0f,0.0);
+        scaledglprintf(0.1f,0.1f,"-ORDERS-");
+        glColor3f(0.5f,0.5f,1.0f);
+        switch(nether->controlled->program) {
+        case PROGRAM_STOPDEFEND:
+          glTranslatef(0,-20,0);
+          scaledglprintf(0.1f,0.1f,"STOP");
+          glTranslatef(0,-18,0);
+          scaledglprintf(0.1f,0.1f,"AND");
+          glTranslatef(0,-18,0);
+          scaledglprintf(0.1f,0.1f,"DEFEND");
+          break;
+        case PROGRAM_ADVANCE:
+          glTranslatef(0,-20,0);
+          scaledglprintf(0.1f,0.1f,"ADVANCE");
+          glTranslatef(0,-18,0);
+          scaledglprintf(0.1f,0.1f,"%.2i",nether->controlled->program_parameter/2);
+          glTranslatef(0,-18,0);
+          scaledglprintf(0.1f,0.1f,"MILES");
+          break;
+        case PROGRAM_RETREAT:
+          glTranslatef(0,-20,0);
+          scaledglprintf(0.1f,0.1f,"RETREAT");
+          glTranslatef(0,-18,0);
+          scaledglprintf(0.1f,0.1f,"%.2i",nether->controlled->program_parameter/2);
+          glTranslatef(0,-18,0);
+          scaledglprintf(0.1f,0.1f,"MILES");
+          break;
+        case PROGRAM_DESTROY:
+          glTranslatef(0,-20,0);
+          scaledglprintf(0.1f,0.1f,"DESTROY");
+          switch(nether->controlled->program_parameter) {
+          case P_PARAM_ROBOTS:
+            glTranslatef(0,-18,0);
+            scaledglprintf(0.1f,0.1f,"ENEMY");
+            glTranslatef(0,-18,0);
+            scaledglprintf(0.1f,0.1f,"ROBOTS");
+            break;
+          case P_PARAM_WARBASES:
+            glTranslatef(0,-18,0);
+            scaledglprintf(0.1f,0.1f,"ENEMY");
+            glTranslatef(0,-18,0);
+            scaledglprintf(0.1f,0.1f,"WARBASES");
+            break;
+          case P_PARAM_NFACTORIES:
+            glTranslatef(0,-18,0);
+            scaledglprintf(0.1f,0.1f,"NEUTRAL");
+            glTranslatef(0,-18,0);
+            scaledglprintf(0.1f,0.1f,"FACTORIES");
+            break;
+          case P_PARAM_EFACTORIES:
+            glTranslatef(0,-18,0);
+            scaledglprintf(0.1f,0.1f,"ENEMY");
+            glTranslatef(0,-18,0);
+            scaledglprintf(0.1f,0.1f,"FACTORIES");
+            break;
+          }
+          break;
+        case PROGRAM_CAPTURE:
+          glTranslatef(0,-20,0);
+          scaledglprintf(0.1f,0.1f,"CAPTURE");
+          switch(nether->controlled->program_parameter) {
+          case P_PARAM_ROBOTS:
+            glTranslatef(0,-18,0);
+            scaledglprintf(0.1f,0.1f,"ENEMY");
+            glTranslatef(0,-18,0);
+            scaledglprintf(0.1f,0.1f,"ROBOTS");
+            break;
+          case P_PARAM_WARBASES:
+            glTranslatef(0,-18,0);
+            scaledglprintf(0.1f,0.1f,"ENEMY");
+            glTranslatef(0,-18,0);
+            scaledglprintf(0.1f,0.1f,"WARBASES");
+            break;
+          case P_PARAM_NFACTORIES:
+            glTranslatef(0,-18,0);
+            scaledglprintf(0.1f,0.1f,"NEUTRAL");
+            glTranslatef(0,-18,0);
+            scaledglprintf(0.1f,0.1f,"FACTORIES");
+            break;
+          case P_PARAM_EFACTORIES:
+            glTranslatef(0,-18,0);
+            scaledglprintf(0.1f,0.1f,"ENEMY");
+            glTranslatef(0,-18,0);
+            scaledglprintf(0.1f,0.1f,"FACTORIES");
+            break;
+          }
+          break;
+        }
+
+        glTranslatef(0,-44,0);
+        glColor3f(1.0f,1.0f,0.0);
+        scaledglprintf(0.1f,0.1f,"STRENGTH");
+        glTranslatef(0,-18,0);
+        glColor3f(1.0f,1.0f,1.0f);
+        scaledglprintf(0.1f,0.1f,"%.3i%c", nether->controlled->strength,'%');
+      }
+    }
+    break;
+
+  case Menu::COMBATMODE_MENU:
+  case Menu::DIRECTCONTROL2_MENU:
+    glTranslatef(70,40,0);
+    glColor3f(1.0f,1.0f,0.0);
+    scaledglprintf(0.1f,0.1f,"STRENGTH");
+    glTranslatef(0,-18,0);
+    glColor3f(1.0f,1.0f,1.0f);
+    scaledglprintf(0.1f,0.1f,"%.3i%c",nether->controlled->strength,'%');
+    break;
+
+  case Menu::ORDERS_MENU:
+      {
+        StatusButton* b =getbutton(StatusButton::ORDERS1_BUTTON);
+        if (b!=0 && b->status==0) {
+          glTranslatef(70,400,0);
+          glColor3f(1.0f,1.0f,1.0f);
+          scaledglprintf(0.1f,0.1f,"SELECT");
+          glTranslatef(0,-20,0);
+          scaledglprintf(0.1f,0.1f,"ORDERS");
+
+          glTranslatef(0,-340,0);
+          glColor3f(1.0f,1.0f,0.0);
+          scaledglprintf(0.1f,0.1f,"STRENGTH");
+          glTranslatef(0,-18,0);
+          glColor3f(1.0f,1.0f,1.0f);
+          scaledglprintf(0.1f,0.1f,"%.3i%c", nether->controlled->strength,'%');
+        }
+      }
+      break;
+
+  case Menu::SELECTDISTANCE_MENU:
+    {
+      StatusButton* b = getbutton(StatusButton::ORDERS_BUTTON);
+      if (b!=0 && b->status==0) {
+        glTranslatef(70,300,0);
+        glColor3f(0.5f,0.5f,1.0f);
+        scaledglprintf(0.1f,0.1f,"SELECT");
+        glTranslatef(0,-20,0);
+        scaledglprintf(0.1f,0.1f,"DISTANCE");
+
+        glColor3f(1.0f,1.0f,0.0);
+        glTranslatef(0,-40,0);
+        scaledglprintf(0.1f,0.1f,"%.2i MILES", nether->controlled->program_parameter/2);
+
+        glTranslatef(0,-200,0);
+        glColor3f(1.0f,1.0f,0.0);
+        scaledglprintf(0.1f,0.1f,"STRENGTH");
+        glTranslatef(0,-18,0);
+        glColor3f(1.0f,1.0f,1.0f);
+        scaledglprintf(0.1f,0.1f,"%.3i%c", nether->controlled->strength,'%');
+      }
+    }
+    break;
+
+  case Menu::TARGETD_MENU:
+  case Menu::TARGETC_MENU:
+    {
+      StatusButton* b = getbutton(StatusButton::ORDERS_BUTTON);
+      if (b!=0 && b->status==0) {
+        glTranslatef(70,350,0);
+        glColor3f(0.5f,0.5f,1.0f);
+        scaledglprintf(0.1f,0.1f,"SELECT");
+        glTranslatef(0,-20,0);
+        scaledglprintf(0.1f,0.1f,"TARGET");
+
+        glTranslatef(0,-290,0);
+        glColor3f(1.0f,1.0f,0.0);
+        scaledglprintf(0.1f,0.1f,"STRENGTH");
+        glTranslatef(0,-18,0);
+        glColor3f(1.0f,1.0f,1.0f);
+        scaledglprintf(0.1f,0.1f,"%.3i%c", nether->controlled->strength,'%');
+      }
+    }
+    break;
+
+  }
+  glPopMatrix();
+}
+
+
+void Menu::drawButtons()
+{
   List<StatusButton> l;
   StatusButton *b;
   float angle, cf;

@@ -234,15 +234,13 @@ public:
 		return false;
 	} /* MemberRefP */ 
 
-	int Length() {
-		LLink<T> *tmp;
-		int count=0;
-
-		tmp=list;
-		while(tmp!=NULL) {
-			tmp=tmp->Getnext();
+	int Length() const {
+		int count = 0;
+		LLink<T>* tmp = list;
+		while (tmp != NULL) {
+			tmp = tmp->Getnext();
 			count++;
-		} /* while */ 
+		}
 		return count;
 	};
 

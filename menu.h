@@ -40,6 +40,8 @@ public:
   StatusButton::BUTTON_NAMES act_button;
 
 private:
+  void drawButtons();
+  void drawStatus();
   const NETHER* nether;
   List<StatusButton> buttons;
 };
