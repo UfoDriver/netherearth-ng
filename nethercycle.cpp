@@ -911,8 +911,8 @@ bool NETHER::cycle(unsigned char *keyboard)
 		if (act_menu==GENERAL_MENU &&
 			(int(shipp.x*8)%4)==0 &&
 			(int(shipp.y*8)%4)==0) {
-			List<ROBOT> l;
-			ROBOT *r;
+			List<Robot> l;
+			Robot *r;
 
 			l.Instance(robots[0]);
 			l.Rewind();
@@ -938,8 +938,8 @@ bool NETHER::cycle(unsigned char *keyboard)
 		/* Robot cycles: */ 
 		{
 			int i;
-			List<ROBOT> l,robotstodelete;
-			ROBOT *r;
+			List<Robot> l,robotstodelete;
+			Robot *r;
 			float x[2],y[2],minz;
 			Vector old_pos;
 			int old_chassis_state;
@@ -1084,7 +1084,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 						pos=r->pos;
 						pos.z=r->piecez(0)+0.3f;
 
-						b=new BULLET(0,pos,r->angle,r);
+						b=new BULLET(BULLET::BULLET_CANNONS, pos,r->angle,r);
 						b->cmc=BulletCMC(b);
 
 						bullets.Add(b);
@@ -1098,7 +1098,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 						pos=r->pos;
 						pos.z=r->piecez(1)+0.2f;
 
-						b=new BULLET(1,pos,r->angle,r);
+						b=new BULLET(BULLET::BULLET_MISSILES,pos,r->angle,r);
 						b->cmc=BulletCMC(b);
 
 						bullets.Add(b);
@@ -1112,7 +1112,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 						pos=r->pos;
 						pos.z=r->piecez(2)+0.3f;
 
-						b=new BULLET(2,pos,r->angle,r);
+						b=new BULLET(BULLET::BULLET_PHASERS,pos,r->angle,r);
 						b->cmc=BulletCMC(b);
 
 						bullets.Add(b);
@@ -1139,8 +1139,8 @@ bool NETHER::cycle(unsigned char *keyboard)
 
 						/* Find Robots to destroy: */ 
 						{
-							List<ROBOT> l;
-							ROBOT *r;
+							List<Robot> l;
+							Robot *r;
 							int i;
 							float distance;
 
@@ -1396,7 +1396,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 		{
 			List<BULLET> l,todelete;
 			BULLET *b;
-			ROBOT *r;
+			Robot *r;
 			int persistence=CANNON_PERSISTENCE;
 			
 			l.Instance(bullets);
@@ -1425,7 +1425,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 				if (r!=0) {
 					int damage=0;
 					/* The bullet has collided with a robot: */ 
-					if (!r->bullethit(b->type)) {
+					if (!r->bulletHit(b->type)) {
 						/* Robot destroyed: */ 
 						EXPLOSION *n;
 

@@ -22,29 +22,22 @@
 #include "piece3dobject.h"
 #include "myglutaux.h"
 #include "nether.h"
+#include "bullet.h"
 
 #include "glprintf.h"
 
 
 extern int detaillevel;
 
-BULLET::BULLET()
+BULLET::BULLET(): type(BULLET_CANNONS), step(0), angle(0), owner(0)
 {
-	type=0;
-	step=0;
-	angle=0;
-	owner=0;
-} /* BULLET::BULLET */ 
+}
 
 
-BULLET::BULLET(int t,Vector p,int a,ROBOT *r)
+BULLET::BULLET(BULLET_TYPE type, Vector position, int angle, Robot *robot):
+  type(type), step(0), pos(position), angle(angle), owner(robot)
 {
-	type=t;
-	step=0;
-	pos=p;
-	angle=a;
-	owner=r;
-} /* BULLET::BULLET */ 
+}
 
 
 CMC NETHER::BulletCMC(BULLET *b)
@@ -171,13 +164,13 @@ void NETHER::DrawBullet(BULLET *bullet,bool shadows)
 } /* NETHER::DrawBullet */ 
 
 
-bool NETHER::BulletCollision(BULLET *bullet,ROBOT **r)
+bool NETHER::BulletCollision(BULLET *bullet,Robot **r)
 {
 	int i;
 	List<Building> l;
 	Building *b;
-	List<ROBOT> l2;
-	ROBOT *rt;
+	List<Robot> l2;
+	Robot *rt;
 	float m1[16]={1,0,0,0,
 				  0,1,0,0,
 				  0,0,1,0,

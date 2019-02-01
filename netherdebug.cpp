@@ -37,7 +37,7 @@ bool NETHER::save_debug_report(char *filename)
 	int i,j;
 	FILE *fp;
 	Building *b;
-	ROBOT *r;
+	Robot *r;
 	BULLET *bul;
 	EXPLOSION *e;
 

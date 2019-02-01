@@ -37,7 +37,7 @@ bool NETHER::save_game(char *filename)
 	int i,j;
 	FILE *fp;
 	Building *b;
-	ROBOT *r;
+	Robot *r;
 	BULLET *bul;
 	EXPLOSION *e;
 
@@ -202,7 +202,7 @@ bool NETHER::load_game(char *filename)
 	int i,j,k,booltmp,length;
 	FILE *fp;
 	Building *b;
-	ROBOT *r;
+	Robot *r;
 	BULLET *bul;
 	EXPLOSION *e;
 
@@ -289,7 +289,7 @@ bool NETHER::load_game(char *filename)
 			int angle;
 			CMC cmc;
 */
-			r=new ROBOT();
+			r=new Robot();
 			if (1!=fscanf(fp,"%i",&r->traction)) return false;
 			for(j=0;j<5;j++) {
 				if (1!=fscanf(fp,"%i",&booltmp)) return false;

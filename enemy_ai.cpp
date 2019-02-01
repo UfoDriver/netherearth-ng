@@ -65,9 +65,9 @@ void NETHER::AI_enemy(void)
 		there are less player robots than computer robots -> state = AI_CONQUERING
 	*/ 
 
-	ROBOT *tmpr;	// To test is the entrance to Warbases is free
+	Robot *tmpr;	// To test is the entrance to Warbases is free
 
-	tmpr=new ROBOT();
+	tmpr=new Robot();
 	tmpr->traction=0;
 	tmpr->pieces[0]=true;
 	tmpr->pieces[1]=false;
@@ -84,8 +84,8 @@ void NETHER::AI_enemy(void)
 	{
 		List<Building> l;
 		Building *b;
-		List<ROBOT> rl;
-		ROBOT *r;
+		List<Robot> rl;
+		Robot *r;
 		int i;
 		int forces[2]={0,0};
 
@@ -180,8 +180,8 @@ void NETHER::AI_enemy(void)
 
 	/* Count the number of robots: */ 
 	{
-		List<ROBOT> rl;
-		ROBOT *r;
+		List<Robot> rl;
+		Robot *r;
 		
 		rl.Instance(robots[1]);
 		rl.Rewind();
@@ -196,7 +196,7 @@ void NETHER::AI_enemy(void)
 		(level>=2 ||
 		 (level==1 && (rand()%2)==0) ||
 		 (level==0 && (rand()%4)==0))) {
-		ROBOT *r;
+		Robot *r;
 		/* Try to build a ROBOT to defend the WARBASE */ 
 		
 //		fprintf(fp,"Trying to BUILD a robot to DEFEND the WARBASE \n");
@@ -215,8 +215,8 @@ void NETHER::AI_enemy(void)
 			(level==1 && (rand()%2)==0) ||
 			(level==0 && (rand()%4)==0))) {
 			/* There are too many robots in STOP & DEFEND: */ 
-			List<ROBOT> rl;
-			ROBOT *r;
+			List<Robot> rl;
+			Robot *r;
 			
 			rl.Instance(robots[1]);
 			rl.Rewind();
@@ -272,7 +272,7 @@ void NETHER::AI_enemy(void)
 				break;
 			} /* switch */  
 
-			ROBOT *r=AI_enemy_newrobot(AI_STATE_EXPANDING,closest_to_factories_warbase->pos+Vector(2.5,0.5,0));
+			Robot *r=AI_enemy_newrobot(AI_STATE_EXPANDING,closest_to_factories_warbase->pos+Vector(2.5,0.5,0));
 //			fprintf(fp,"Trying to BUILD a robot to CONQUER FACTORIES \n");
 			if (r!=0) {
 				if (factories[1]>factories[0]) {			
@@ -296,7 +296,7 @@ void NETHER::AI_enemy(void)
 //				fprintf(fp,"Trying to BUILD a robot to CONQUER WARBASES \n");
 				
 				if (resources[1][0]+resources[1][6]<40) return;
-				ROBOT *r=AI_enemy_newrobot(AI_STATE_CONQUERING,closest_to_enemy_warbase->pos+Vector(2.5,0.5,0));
+				Robot *r=AI_enemy_newrobot(AI_STATE_CONQUERING,closest_to_enemy_warbase->pos+Vector(2.5,0.5,0));
 				if (r!=0) {
 
 //					fprintf(fp,"Achieved.\n");
@@ -326,7 +326,7 @@ void NETHER::AI_enemy(void)
 					break;
 				} /* switch */ 
 
-				ROBOT *r=AI_enemy_newrobot(AI_STATE_FIGHTING,closest_to_enemy_warbase->pos+Vector(2.5,0.5,0));
+				Robot *r=AI_enemy_newrobot(AI_STATE_FIGHTING,closest_to_enemy_warbase->pos+Vector(2.5,0.5,0));
 
 //				fprintf(fp,"Trying to BUILD a robot to ATTACK ROBOTS \n");
 				
@@ -344,7 +344,7 @@ void NETHER::AI_enemy(void)
 } /* NETHER::AI_enemy */ 
 
 
-ROBOT *NETHER::AI_enemy_newrobot(int state,Vector pos)
+Robot *NETHER::AI_enemy_newrobot(int state,Vector pos)
 {
 	int traction=0;
 	bool pieces[5]={false,false,false,false,false};
@@ -470,10 +470,10 @@ ROBOT *NETHER::AI_enemy_newrobot(int state,Vector pos)
 	/* Build the robot: */ 
 	{
 		int i;
-		ROBOT *r;
+		Robot *r;
 		int cost[7];
 
-		r=new ROBOT();
+		r=new Robot();
 		r->traction=traction;
 		r->pieces[0]=pieces[0];
 		r->pieces[1]=pieces[1];

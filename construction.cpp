@@ -263,7 +263,7 @@ bool NETHER::construction_cycle(unsigned char *keyboard)
 		int i;
 		int cost[7];
 		bool tmp[8];
-		ROBOT r_tmp;
+		Robot r_tmp;
 		bool enoughresources=true;
 
 		r_tmp=in_construction;
@@ -316,8 +316,8 @@ bool NETHER::construction_cycle(unsigned char *keyboard)
 			int cost[7];
 
 			/* Valid robot, build it: */ 
-			ROBOT *r;
-			r=new ROBOT();
+			Robot *r;
+			r=new Robot();
 			*r=in_construction;
 			r->angle=0;
 			r->program=PROGRAM_FORWARD;

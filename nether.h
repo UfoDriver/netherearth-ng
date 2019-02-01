@@ -11,6 +11,9 @@
 #include "piece3dobject.h"
 #include "building.h"
 #include "statusbutton.h"
+#include "robot.h"
+#include "bullet.h"
+
 
 const float COLISION_TEST_THRESHOLD = 9.0;
 const int INTRO_TIME = 60;
@@ -94,53 +97,6 @@ enum AI_STATES {AI_STATE_EXPANDING,
                 AI_STATE_DESTROYING};
 
 
-
-
-class ROBOT {
-public:
-	ROBOT();
-	bool valid(void);
-	float piecez(int piece);
-	bool bullethit(int type); 
-
-	int traction;
-	bool pieces[5];
-
-	int program;
-	int program_parameter;
-	Vector program_goal;
-
-	int op;
-	bool shipover;
-	int firetimer;
-	int strength;
-
-	Vector pos;
-	int angle;
-	CMC cmc;
-
-	/* Animation variables: */ 
-	int electronics_state;
-	int chassis_state;
-};
-
-
-class BULLET {
-public:
-	BULLET(void);
-	BULLET(int t,Vector p,int a,ROBOT *r);
-
-	int type;
-	int step;
-
-	Vector pos;
-	int angle;
-	ROBOT *owner;	/* The robot who fired this bullet */ 
-
-	CMC cmc;
-};
-
-
 class EXPLOSION {
 public:
 	EXPLOSION(void);
@@ -212,14 +168,14 @@ private:
 	int WorseMapTerrain(float x[2], float y[2]);
 
 	bool ShipCollision(C3DObject *ship,float x,float y,float z);
-	bool RobotCollision(ROBOT *r,bool complete);
-	bool BulletCollision(BULLET *b,ROBOT **r);
+	bool RobotCollision(Robot *r,bool complete);
+	bool BulletCollision(BULLET *b,Robot **r);
 
 	void DrawBullet(BULLET *bullet,bool shadows);
-	void DrawRobot(ROBOT *robot,int owner,bool shadows);
-	void RobotCost(int player,ROBOT *r,int *res);
-	int  RobotCost(ROBOT *r);
-	CMC  RobotCMC(ROBOT *r,int owner);
+	void DrawRobot(Robot *robot,int owner,bool shadows);
+	void RobotCost(int player,Robot *r,int *res);
+	int  RobotCost(Robot *r);
+	CMC  RobotCMC(Robot *r,int owner);
 	CMC  BulletCMC(BULLET *r);
 	void DrawParticle(PARTICLE *p);
 	bool CycleParticle(PARTICLE *p);
@@ -240,7 +196,7 @@ private:
 	void killmenu(ushort menu);
 
 	void AI_enemy(void);
-	ROBOT *AI_enemy_newrobot(int state,Vector pos);
+	Robot *AI_enemy_newrobot(int state,Vector pos);
 	void AI_precomputations(void);
 	void AI_deleteprecomputations(void);
 	void AI_release(void);
@@ -280,7 +236,7 @@ private:
 	int ship_timemoving;
 
 	List<Building> buildings;
-	List<ROBOT> robots[2];
+	List<Robot> robots[2];
 	List<BULLET> bullets;
 	List<EXPLOSION> explosions;
 	List<PARTICLE> particles;
@@ -293,8 +249,8 @@ private:
 	int construction_pointer;
 	bool construction[8];
 	int game_state;
-	ROBOT in_construction;
-	ROBOT *controlled;
+	Robot in_construction;
+	Robot *controlled;
 
 	int game_finished;
 	int game_started;

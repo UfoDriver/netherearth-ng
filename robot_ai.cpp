@@ -989,8 +989,8 @@ int NETHER::AI_program_destroy(int goal,Vector *program_goal,Vector pos,int angl
 
 		} else {
 			/* Find the nearest position to destroy an enemy robot: */ 
-			List<ROBOT> l;
-			ROBOT *r;
+			List<Robot> l;
+			Robot *r;
 			int x,y,dx,dy,i,j,k;
 			bool collided;
 			bool first=true;
@@ -1153,8 +1153,8 @@ int NETHER::AI_program_stopdefend(Vector *program_goal,Vector pos,int angle,int 
 		/* Choose one operator: */ 
 
 		/* Find the nearest position to destroy an enemy robot: */ 
-		List<ROBOT> l;
-		ROBOT *r;
+		List<Robot> l;
+		Robot *r;
 		int x,y,dx,dy,i,j,k;
 		bool collided;
 		int persistence=CANNON_PERSISTENCE;

@@ -707,9 +707,9 @@ void NETHER::draw_game(bool shadows)
 	/* Draw the robots and bullets: */ 
 	{
 		int i;
-		List<ROBOT> l;
+		List<Robot> l;
 		List<BULLET> l2;
-		ROBOT *r;
+		Robot *r;
 		BULLET *b; 
 
 		for(i=0;i<2;i++) {
@@ -1364,8 +1364,8 @@ bool NETHER::ShipCollision(C3DObject *obj,float x,float y,float z)
 	int i;
 	List<Building> l;
 	Building *b;
-	List<ROBOT> l2;
-	ROBOT *r;
+	List<Robot> l2;
+	Robot *r;
 	float m1[16]={1,0,0,0,
 				  0,1,0,0,
 				  0,0,1,0,

@@ -63,6 +63,8 @@ automake
 1
 %file fsource radar.cpp
 1
+%file fsource robot.cpp
+1
 %file fsource robot_ai.cpp
 1
 %file fsource robots.cpp
