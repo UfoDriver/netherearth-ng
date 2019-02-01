@@ -138,7 +138,7 @@ void NETHER::AI_enemy(void)
 					while(rl.Iterate(r)) {
 						if ((r->pos-b->pos).norma()<10.0) {
 							/* Robot near: */ 
-							forces[i]+=RobotCost(r);
+                          forces[i]+= r->cost();
 
 							if (i==1) {
 								if (forces[0]>forces[1] && 
@@ -480,7 +480,7 @@ Robot *NETHER::AI_enemy_newrobot(int state,Vector pos)
 		r->pieces[2]=pieces[2];
 		r->pieces[3]=pieces[3];
 		r->pieces[4]=pieces[4];
-		RobotCost(1,r,cost);
+		r->cost(1, cost, resources);
 
 		for(i=0;i<7;i++) {
 			if (resources[1][i]<cost[i]) {

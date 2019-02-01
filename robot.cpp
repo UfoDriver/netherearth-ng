@@ -299,3 +299,58 @@ void Robot::draw(int owner, bool shadows, Piece3DObject ***piece_tile, Vector li
   } /* if */
   glPopMatrix();
 }
+
+
+void Robot::cost(int player, int* res, int resources1[2][7])
+{
+  // int i;
+  int tmp;
+  int corr[5] = {5, 4, 3, 2, 1};
+  int cost[5] = {2, 4, 4, 20, 3};
+
+  res[0] = 0;
+  res[1] = 0;
+  res[2] = 0;
+  res[3] = 0;
+  res[4] = 0;
+  res[5] = 0;
+  res[6] = 0;
+
+  tmp = 0;
+  if (traction == 0) tmp = 3;
+  if (traction == 1) tmp = 5;
+  if (traction == 2) tmp = 10;
+  if (resources[player][6] > tmp) {
+    res[6] = tmp;
+  } else {
+    res[6] = resources[player][6];
+    res[0] = tmp - resources[player][6];
+  }
+
+  for(int i = 0; i < 5; i++) {
+    if (pieces[i]) {
+      if (resources[player][corr[i]] > cost[i]) {
+        res[corr[i]] = cost[i];
+      } else {
+        res[corr[i]] = resources[player][corr[i]];
+        res[0] += cost[i] - resources[player][corr[i]];
+      }
+    }
+  }
+}
+
+int Robot::cost()
+{
+  int tmp = 0;
+  int cost[5] = {2, 4, 4, 20, 3};
+
+  if (traction == 0) tmp = 3;
+  if (traction == 1) tmp = 5;
+  if (traction == 2) tmp = 10;
+
+  for (int i = 0;i < 5; i++) {
+    if (pieces[i]) tmp += cost[i];
+  }
+
+  return tmp;
+}

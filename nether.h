@@ -139,8 +139,6 @@ private:
 	bool RobotCollision(Robot *r,bool complete);
 	bool BulletCollision(Bullet *b,Robot **r);
 
-	void RobotCost(int player,Robot *r,int *res);
-	int  RobotCost(Robot *r);
 	CMC  RobotCMC(Robot *r,int owner);
 	CMC  BulletCMC(Bullet *r);
 

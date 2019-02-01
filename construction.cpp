@@ -79,7 +79,7 @@ void NETHER::construction_draw(int width,int height)
 		int i,total=0;
 		int res[7];
 
-		RobotCost(0,&in_construction,res);
+		in_construction.cost(0, res, resources);
 		for(i=0;i<7;i++) res[i]=resources[0][i]-res[i];
 
 		glColor3f(0.5f,1.0f,0.5f);
@@ -284,7 +284,7 @@ bool NETHER::construction_cycle(unsigned char *keyboard)
 			construction[construction_pointer-20]=true;
 		} /* if */ 
 
-		RobotCost(0,&in_construction,cost);
+		in_construction.cost(0, cost, resources);
 		enoughresources=true;
 		for(i=0;i<7;i++) {
 			if (resources[0][i]<cost[i]) {
@@ -329,7 +329,7 @@ bool NETHER::construction_cycle(unsigned char *keyboard)
 				robots[0].Add(r);
 				AI_newrobot(r->pos,0);
 
-				RobotCost(0,&in_construction,cost);
+				in_construction.cost(0, cost, resources);
 				for(i=0;i<7;i++) resources[0][i]-=cost[i];
 
 				game_state=STATE_PLAYING;

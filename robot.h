@@ -13,7 +13,8 @@ public:
   float piecez(int piece);
   bool bulletHit(Bullet::BULLET_TYPE type);
   void draw(int owner, bool shadows, Piece3DObject ***piece_tile, Vector lightposv);
-
+  int cost();
+  void cost(int player, int* res, int resources[2][7]);
 
   int traction;
   bool pieces[5];
