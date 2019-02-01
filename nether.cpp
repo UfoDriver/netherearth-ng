@@ -706,13 +706,12 @@ void NETHER::draw_game(bool shadows)
 
 	/* Draw the robots and bullets: */ 
 	{
-		int i;
 		List<Robot> l;
 		List<Bullet> l2;
 		Robot *r;
-		Bullet *b; 
+		Bullet *b;
 
-		for(i=0;i<2;i++) {
+		for(int i = 0; i < 2; i++) {
 			l.Instance(robots[i]);
 			l.Rewind();
 			while(l.Iterate(r)) {
@@ -722,7 +721,7 @@ void NETHER::draw_game(bool shadows)
 					r->pos.x<=(viewp.x+MAXX)) {
 					glPushMatrix();
 					glTranslatef(r->pos.x,r->pos.y,r->pos.z);
-					DrawRobot(r,i,shadows);
+					r->draw(i, shadows, piece_tile, lightposv);
 					glPopMatrix();
 				} /* if */ 
 			} /* while */ 
@@ -737,7 +736,7 @@ void NETHER::draw_game(bool shadows)
 				b->pos.x<=(viewp.x+MAXX)) {
 				glPushMatrix();
 				glTranslatef(b->pos.x,b->pos.y,b->pos.z);
-				DrawBullet(b,shadows);
+				b->draw(shadows, bullet_tile, particles);
 				glPopMatrix();
 			} /* if */ 
 		} /* while */ 

@@ -83,85 +83,89 @@ CMC NETHER::BulletCMC(Bullet *b)
 } /* BULLET::BULLET */ 
 
 
-
-void NETHER::DrawBullet(Bullet *bullet,bool shadows)
+void Bullet::draw(bool shadows, Piece3DObject **bullet_tile, List<Particle> &particles)
 {
-	switch(bullet->type) {
-	case 0:/* CANONS: */ 
-		if (!shadows) {
-			glPushMatrix();
-			glRotatef(bullet->angle,0,0,1);
-			glTranslatef(0,0.2,0);
-			bullet_tile[0]->draw(0.2f,0.2f,0.2f);
-			glTranslatef(0,-0.4,0);
-			bullet_tile[0]->draw(0.2f,0.2f,0.2f);
-			glPopMatrix();
-		} /* if */ 
-		break;
-	case 1:/* MISSILES: */ 
-		if (!shadows) {
-			glPushMatrix();
-			glRotatef(bullet->angle,0,0,1);
-			glRotatef(180,0,0,1);
-			glTranslatef(0,0.33,0);
-			bullet_tile[1]->draw(0.8f,0.8f,0.8f);
-			glTranslatef(0,-0.66,0);
-			bullet_tile[1]->draw(0.8f,0.8f,0.8f);
-			glPopMatrix();
+  switch(type) {
+  case BULLET_CANNONS:
+    if (!shadows) {
+      glPushMatrix();
+      glRotatef(angle, 0, 0, 1);
+      glTranslatef(0, 0.2, 0);
+      bullet_tile[0]->draw(0.2f, 0.2f, 0.2f);
+      glTranslatef(0, -0.4, 0);
+      bullet_tile[0]->draw(0.2f, 0.2f, 0.2f);
+      glPopMatrix();
+    }
+    break;
+  case BULLET_MISSILES:
+    if (!shadows) {
+      glPushMatrix();
+      glRotatef(angle, 0, 0, 1);
+      glRotatef(180, 0, 0, 1);
+      glTranslatef(0, 0.33, 0);
+      bullet_tile[1]->draw(0.8f, 0.8f, 0.8f);
+      glTranslatef(0, -0.66, 0);
+      bullet_tile[1]->draw(0.8f, 0.8f, 0.8f);
+      glPopMatrix();
+      if (detaillevel >= 4) {
+        drawParticles(particles);
+      }
+    }
+    break;
+  case BULLET_PHASERS:
+    if (!shadows) {
+      glPushMatrix();
+      glRotatef(angle,0,0,1);
+      glRotatef(90,0,0,1);
 
-			/* TRACKS PARTICLES: */ 
-			if (detaillevel>=4) {
-				int i;
-				Particle *p;
-				Vector pos,sp1;
-				float red,g,b;
+      if ((rand() % 4) !=0)
+        bullet_tile[2]->draw_notexture(1.0f, 0.5f, 1.0f, 0.9f);
+      else
+        bullet_tile[2]->draw_notexture(1.0f,1.0f,1.0f,0.5f);
 
-				for(i=0;i<10;i++) {
-					pos.x=bullet->pos.x+float(rand()%10)/100.0;
-					pos.y=bullet->pos.y+float(rand()%10)/100.0;
-					pos.z=bullet->pos.z;
-					red=0.9F+float(rand()%21-10)/100.0;
-					g=0.7F+float(rand()%21-10)/100.0;
-					b=0.5F+float(rand()%21-10)/100.0;
-					switch(bullet->angle) {
-					case 0:sp1=Vector(-0.05,float(rand()%9-4)/200.0,0);
-						pos.x-=0.25;
-						pos.y+=((rand()%2)==0 ? -0.33 : 0.33);
-						break;
-					case 90:sp1=Vector(float(rand()%9-4)/200.0,-0.05,0);
-						pos.y-=0.25;
-						pos.x+=((rand()%2)==0 ? -0.33 : 0.33);
-						break;
-					case 180:sp1=Vector(0.05,float(rand()%9-4)/200.0,0);
-						pos.x+=0.25;
-						pos.y+=((rand()%2)==0 ? -0.33 : 0.33);
-						break;
-					case 270:sp1=Vector(float(rand()%9-4)/200.0,0.05,0);
-						pos.y+=0.25;
-						pos.x+=((rand()%2)==0 ? -0.33 : 0.33);
-						break;
-					} /* switch */ 
-					p=new Particle(pos,sp1,sp1,0,0.3, red,g,b, 1.0,0.0,10+(rand()%8));
-					particles.Add(p);
-				} /* for */ 
-			} /* if */ 
+      glPopMatrix();
+    }
+    break;
+  }
+}
 
-		} /* if */ 
-		break;
-	case 2:/* PHASERS: */ 
-		if (!shadows) {
-			glPushMatrix();
-			glRotatef(bullet->angle,0,0,1);
-			glRotatef(90,0,0,1);
 
-			if ((rand()%4)!=0) bullet_tile[2]->draw_notexture(1.0f,0.5f,1.0f,0.9f);
-						  else bullet_tile[2]->draw_notexture(1.0f,1.0f,1.0f,0.5f);
+void Bullet::drawParticles(List<Particle> &particles)
+{
+  Vector pos, sp1;
+  float red, g, b;
 
-			glPopMatrix();
-		} /* if */ 
-		break;
-	} /* switch */ 
-} /* NETHER::DrawBullet */ 
+  for(int i = 0; i < 10; i++) {
+    pos.x = pos.x + float(rand() % 10) / 100.0;
+    pos.y = pos.y + float(rand( )% 10) / 100.0;
+    pos.z = pos.z;
+    red = 0.9F + float(rand() % 21 - 10) / 100.0;
+    g = 0.7F + float(rand() % 21 - 10) / 100.0;
+    b = 0.5F + float(rand() % 21 - 10) / 100.0;
+    switch(angle) {
+    case 0:
+      sp1 = Vector(-0.05, float(rand() % 9 - 4) / 200.0,0);
+      pos.x -= 0.25;
+      pos.y += ((rand() % 2) == 0 ? -0.33 : 0.33);
+      break;
+    case 90 : sp1 = Vector(float(rand() % 9 - 4) / 200.0, -0.05, 0);
+      pos.y -= 0.25;
+      pos.x+=((rand() % 2) == 0 ? -0.33 : 0.33);
+      break;
+    case 180:
+      sp1 = Vector(0.05, float(rand() % 9 - 4) / 200.0, 0);
+      pos.x += 0.25;
+      pos.y += ((rand() % 2) == 0 ? -0.33 : 0.33);
+      break;
+    case 270:
+      sp1 = Vector(float(rand() % 9 - 4) / 200.0, 0.05, 0);
+      pos.y += 0.25;
+      pos.x += ((rand() % 2) == 0 ? -0.33 : 0.33);
+      break;
+    }
+    particles.Add(new Particle(pos, sp1, sp1, 0, 0.3, red, g, b, 1.0, 0.0, 10 + (rand() % 8)));
+  }
+}
 
 
 bool NETHER::BulletCollision(Bullet *bullet,Robot **r)

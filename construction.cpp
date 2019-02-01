@@ -194,7 +194,7 @@ void NETHER::construction_draw(int width,int height)
 		glRotatef(30,1,0,0);
 		glRotatef(animation_timer*32,0,1,0);
 		glRotatef(-90,1,0,0);
-		DrawRobot(&in_construction,0,false);
+		in_construction.draw(0, false, piece_tile, lightposv);
 		glPopMatrix();
 	}
 

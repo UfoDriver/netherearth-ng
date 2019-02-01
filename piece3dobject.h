@@ -1,6 +1,9 @@
 #ifndef __BRAIN_PIECE3DOBJECT
 #define __BRAIN_PIECE3DOBJECT
 
+#include "vector.h"
+#include "3dobject.h"
+
 class Piece3DObject : public C3DObject {
 public:
 	Piece3DObject();

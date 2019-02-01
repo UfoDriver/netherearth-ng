@@ -1,4 +1,11 @@
+#include <GL/gl.h>
+
+#include "cmath"
+#include "piece3dobject.h"
 #include "robot.h"
+
+
+extern int detaillevel;
 
 
 Robot::Robot() : traction(-1), firetimer(0), strength(100),
@@ -102,4 +109,193 @@ float Robot::piecez(int piece)
   }
 
   return z;
+}
+
+
+void Robot::draw(int owner, bool shadows, Piece3DObject ***piece_tile, Vector lightposv)
+{
+  float r[2] = {0.9, 0.4};
+  float g[2] = {0.9, 0.4};
+  float b[2] = {0.9, 0.4};
+  float z = 0;
+  float bipod_v = 0;
+  Vector light;
+
+  light=lightposv;
+  light=light / light.z;
+
+  glPushMatrix();
+  switch(traction) {
+  case 0:
+    if (chassis_state >= 0) {
+      if (chassis_state < 32) {
+        bipod_v = chassis_state * 0.00390625;
+      } else {
+        bipod_v = (64 - chassis_state) * 0.00390625;
+      }
+    } else {
+      if (chassis_state >- 31) {
+        bipod_v = chassis_state * 0.00390625;
+      } else {
+        bipod_v = (-63 - chassis_state) * 0.00390625;
+      }
+    }
+    if (!shadows) {
+      glPushMatrix();
+      glRotatef(angle, 0, 0, 1);
+      if (detaillevel >= 3)
+        piece_tile[owner][8]->draw(r[owner],g[owner],b[owner]);
+      else piece_tile[owner][8]->draw_notexture(r[owner],g[owner],b[owner]);
+      glPushMatrix();
+      glTranslatef(bipod_v,0,0);
+      if (detaillevel>=3) piece_tile[owner][9]->draw(r[owner],g[owner],b[owner]);
+      else piece_tile[owner][9]->draw_notexture(r[owner],g[owner],b[owner]);
+      glPopMatrix();
+      glPushMatrix();
+      glTranslatef(-bipod_v,0,0);
+      if (detaillevel>=3) piece_tile[owner][10]->draw(r[owner],g[owner],b[owner]);
+      else piece_tile[owner][10]->draw_notexture(r[owner],g[owner],b[owner]);
+      glPopMatrix();
+      //			piece_tile[owner][0]->draw(r[owner],g[owner],b[owner]);
+      glPopMatrix();
+    } else {
+      glPushMatrix();
+      glTranslatef(-z*light.x,-z*light.y,0.05);
+      glRotatef(angle,0,0,1);
+      piece_tile[owner][8]->DrawShadow(angle,lightposv,0,0,0,0.5);
+      glPushMatrix();
+      glTranslatef(bipod_v,0,0);
+      piece_tile[owner][9]->DrawShadow(angle,lightposv,0,0,0,0.5);
+      glPopMatrix();
+      glPushMatrix();
+      glTranslatef(-bipod_v,0,0);
+      piece_tile[owner][10]->DrawShadow(angle,lightposv,0,0,0,0.5);
+      glPopMatrix();
+      //			piece_tile[owner][0]->DrawShadow(angle,lightposv,0,0,0,0.5);
+      glPopMatrix();
+    } /* if */ 
+    z+=1.0;
+    break;
+  case 1:
+    if (!shadows) {
+      glPushMatrix();
+      glRotatef(angle,0,0,1);
+      if (detaillevel>=3) piece_tile[owner][1]->draw(r[owner],g[owner],b[owner]);
+      else piece_tile[owner][1]->draw_notexture(r[owner],g[owner],b[owner]);
+      glPopMatrix();
+    } else {
+      glPushMatrix();
+      glTranslatef(-z*light.x,-z*light.y,0.05);
+      glRotatef(angle,0,0,1);
+      piece_tile[owner][1]->DrawShadow(angle,lightposv,0,0,0,0.5);
+      glPopMatrix();
+    } /* if */
+    z+=0.35;
+    break;
+  case 2:
+    z+=(cos(chassis_state/15.0)*0.1)-0.1;
+    if (!shadows) {
+      glPushMatrix();
+      glTranslatef(0,0,z);
+      glRotatef(angle,0,0,1);
+      if (detaillevel>=3) piece_tile[owner][2]->draw(r[owner],g[owner],b[owner]);
+      else piece_tile[owner][2]->draw_notexture(r[owner],g[owner],b[owner]);
+      glPopMatrix();
+    } else {
+      glPushMatrix();
+      glTranslatef(-z*light.x,-z*light.y,0.05);
+      glRotatef(angle,0,0,1);
+      piece_tile[owner][2]->DrawShadow(angle,lightposv,0,0,0,0.5);
+      glPopMatrix();
+    } /* if */
+    z+=0.45;
+    break;
+  } /* switch */
+  if (pieces[0]) {
+    if (!shadows) {
+      glPushMatrix();
+      glTranslatef(0,0,z);
+      glRotatef(angle,0,0,1);
+      if (detaillevel>=3) piece_tile[owner][3]->draw(r[owner],g[owner],b[owner]);
+      else piece_tile[owner][3]->draw_notexture(r[owner],g[owner],b[owner]);
+      glPopMatrix();
+    } else {
+      glPushMatrix();
+      glTranslatef(-z*light.x,-z*light.y,0.05);
+      glRotatef(angle,0,0,1);
+      piece_tile[owner][3]->DrawShadow(angle,lightposv,0,0,0,0.5);
+      glPopMatrix();
+    } /* if */
+    z+=0.5;
+  } /* if */
+  if (pieces[1]) {
+    if (!shadows) {
+      glPushMatrix();
+      glTranslatef(0,0,z);
+      glRotatef(angle,0,0,1);
+      if (detaillevel>=3) piece_tile[owner][4]->draw(r[owner],g[owner],b[owner]);
+      else piece_tile[owner][4]->draw_notexture(r[owner],g[owner],b[owner]);
+      glPopMatrix();
+    } else {
+      glPushMatrix();
+      glTranslatef(-z*light.x,-z*light.y,0.05);
+      glRotatef(angle,0,0,1);
+      piece_tile[owner][4]->DrawShadow(angle,lightposv,0,0,0,0.5);
+      glPopMatrix();
+    }
+    z+=0.35;
+  } /* if */
+  if (pieces[2]) {
+    if (!shadows) {
+      glPushMatrix();
+      glTranslatef(0,0,z);
+      glRotatef(angle,0,0,1);
+      if (detaillevel>=3) piece_tile[owner][5]->draw(r[owner],g[owner],b[owner]);
+      else piece_tile[owner][5]->draw_notexture(r[owner],g[owner],b[owner]);
+      glPopMatrix();
+    } else {
+      glPushMatrix();
+      glTranslatef(-z*light.x,-z*light.y,0.05);
+      glRotatef(angle,0,0,1);
+      piece_tile[owner][5]->DrawShadow(angle,lightposv,0,0,0,0.5);
+      glPopMatrix();
+    } /* if */
+    z+=0.5;
+  } /* if */
+  if (pieces[3]) {
+    if (!shadows) {
+      glPushMatrix();
+      glTranslatef(0,0,z);
+      glRotatef(angle,0,0,1);
+      if (detaillevel>=3) piece_tile[owner][6]->draw(r[owner],g[owner],b[owner]);
+      else piece_tile[owner][6]->draw_notexture(r[owner],g[owner],b[owner]);
+      glPopMatrix();
+    } else {
+      glPushMatrix();
+      glTranslatef(-z*light.x,-z*light.y,0.05);
+      glRotatef(angle,0,0,1);
+      piece_tile[owner][6]->DrawShadow(angle,lightposv,0,0,0,0.5);
+      glPopMatrix();
+    } /* if */
+    z+=0.8;
+  } /* if */
+  if (pieces[4]) {
+    if (!shadows) {
+      glPushMatrix();
+      glTranslatef(0,0,z);
+      glRotatef(angle,0,0,1);
+      if (!pieces[3]) glTranslatef(-0.2,0,0);
+      glRotatef(electronics_state,0,0,1);
+      if (detaillevel >= 3) piece_tile[owner][7]->draw(r[owner],g[owner],b[owner]);
+      else piece_tile[owner][7]->draw_notexture(r[owner],g[owner],b[owner]);
+      glPopMatrix();
+    } else {
+      glPushMatrix();
+      glTranslatef(-z*light.x,-z*light.y,0.05);
+      glRotatef(angle+electronics_state,0,0,1);
+      piece_tile[owner][7]->DrawShadow(angle+electronics_state,lightposv,0,0,0,0.5);
+      glPopMatrix();
+    } /* if */
+  } /* if */
+  glPopMatrix();
 }

@@ -3,8 +3,11 @@
 
 #include "cmc.h"
 #include "vector.h"
+#include "particle.h"
+#include "list.h"
 
 class Robot;
+class Piece3DObject;
 
 
 class Bullet {
@@ -12,6 +15,8 @@ public:
   enum BULLET_TYPE {BULLET_CANNONS, BULLET_MISSILES, BULLET_PHASERS};
   Bullet();
   Bullet(BULLET_TYPE type, Vector position, int angle, Robot *robot);
+  void draw(bool shadow, Piece3DObject **bullet_tile, List<Particle> &particles);
+
 
   BULLET_TYPE type;
   int step;
@@ -21,6 +26,9 @@ public:
   Robot *owner;	/* The robot who fired this bullet */
 
   CMC cmc;
+
+private:
+  void drawParticles(List<Particle> &particles);
 };
 
 #endif // BULLET_H
