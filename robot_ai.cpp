@@ -339,7 +339,7 @@ int NETHER::AI_searchengine(Vector pos,int angle,int goaltype,Vector goalpos,int
 
 
 	/* ADVANCE PROGRAM: */ 
-	if (goaltype==PROGRAM_ADVANCE) {
+	if (goaltype==Robot::PROGRAM_ADVANCE) {
 		int i,j;
 		double further;
 		int mincost;
@@ -392,7 +392,7 @@ int NETHER::AI_searchengine(Vector pos,int angle,int goaltype,Vector goalpos,int
 	} /* if */ 
 
 	/* RETREAT PROGRAM: */ 
-	if (goaltype==PROGRAM_RETREAT) {
+	if (goaltype==Robot::PROGRAM_RETREAT) {
 		int i,j;
 		double further;
 		int mincost;
@@ -445,7 +445,7 @@ int NETHER::AI_searchengine(Vector pos,int angle,int goaltype,Vector goalpos,int
 	} /* if */ 
 
 	/* CAPTURE PROGRAM: */ 
-	if (goaltype==PROGRAM_CAPTURE) {
+	if (goaltype==Robot::PROGRAM_CAPTURE) {
 		int i,j;
 		double closer;
 		int mincost;
@@ -509,7 +509,7 @@ int NETHER::AI_searchengine(Vector pos,int angle,int goaltype,Vector goalpos,int
 
 
 	/* DESTROY PROGRAM: */ 
-	if (goaltype==PROGRAM_DESTROY) {
+	if (goaltype==Robot::PROGRAM_DESTROY) {
 		int i,j;
 		double closer;
 		AIOperator *op;
@@ -638,10 +638,10 @@ int NETHER::AI_program_advance(int amount,Vector pos,int angle,int traction,bool
 		AIOperator *aiop;
 
 		if (electronics) {
-			op=AI_searchengine(pos,angle,PROGRAM_ADVANCE,Vector(0,0,0),traction,WE_SEARCH_DEPTH);
+			op=AI_searchengine(pos,angle,Robot::PROGRAM_ADVANCE,Vector(0,0,0),traction,WE_SEARCH_DEPTH);
 		} else {
 			if ((rand()%4)!=0) {
-				op=AI_searchengine(pos,angle,PROGRAM_ADVANCE,Vector(0,0,0),traction,WOE_SEARCH_DEPTH);
+				op=AI_searchengine(pos,angle,Robot::PROGRAM_ADVANCE,Vector(0,0,0),traction,WOE_SEARCH_DEPTH);
 			} else {
 				AI_rankoperators_advance(&l);
 				aiop=AI_chooseoperator(&l,8);
@@ -678,10 +678,10 @@ int NETHER::AI_program_retreat(int amount,Vector pos,int angle,int traction,bool
 		AIOperator *aiop;
 
 		if (electronics) {
-			op=AI_searchengine(pos,angle,PROGRAM_RETREAT,Vector(0,0,0),traction,WE_SEARCH_DEPTH);
+			op=AI_searchengine(pos,angle,Robot::PROGRAM_RETREAT,Vector(0,0,0),traction,WE_SEARCH_DEPTH);
 		} else {
 			if ((rand()%4)!=0) {
-				op=AI_searchengine(pos,angle,PROGRAM_RETREAT,Vector(0,0,0),traction,WOE_SEARCH_DEPTH);
+				op=AI_searchengine(pos,angle,Robot::PROGRAM_RETREAT,Vector(0,0,0),traction,WOE_SEARCH_DEPTH);
 			} else {
 				AI_rankoperators_retreat(&l);
 				aiop=AI_chooseoperator(&l,8);
@@ -743,7 +743,7 @@ int NETHER::AI_program_capture(int goal,Vector *program_goal,Vector pos,int angl
 			l.Instance(buildings);
 			l.Rewind();
 			while(l.Iterate(b)) {
-				if (goal==P_PARAM_WARBASES && 
+				if (goal==Robot::P_PARAM_WARBASES && 
 					b->type==Building::B_WARBASE && b->owner!=player &&
 					AI_WorseMapTerrain(int((b->pos.x+2.0)/0.5),int(b->pos.y/0.5),2,2)<=T_HOLE) {
 					distance=float(((b->pos+Vector(2.5,0.5,0))-pos).norma());
@@ -753,7 +753,7 @@ int NETHER::AI_program_capture(int goal,Vector *program_goal,Vector pos,int angl
 						*program_goal=b->pos+Vector(2.5,0.5,0);
 					} /* if */ 
 				} /* if */ 
-				if (goal==P_PARAM_NFACTORIES && 
+				if (goal==Robot::P_PARAM_NFACTORIES && 
 					(b->type==Building::B_FACTORY_ELECTRONICS ||
 					 b->type==Building::B_FACTORY_NUCLEAR ||
 					 b->type==Building::B_FACTORY_PHASERS ||
@@ -768,7 +768,7 @@ int NETHER::AI_program_capture(int goal,Vector *program_goal,Vector pos,int angl
 						*program_goal=b->pos+Vector(1.5,0.5,0);
 					} /* if */ 
 				} /* if */ 
-				if (goal==P_PARAM_EFACTORIES && 
+				if (goal==Robot::P_PARAM_EFACTORIES && 
 					(b->type==Building::B_FACTORY_ELECTRONICS ||
 					 b->type==Building::B_FACTORY_NUCLEAR ||
 					 b->type==Building::B_FACTORY_PHASERS ||
@@ -794,10 +794,10 @@ int NETHER::AI_program_capture(int goal,Vector *program_goal,Vector pos,int angl
 		if (program_goal->x!=-1 &&
 			(*program_goal)!=pos) {
 			if (electronics) {
-				op=AI_searchengine(pos,angle,PROGRAM_CAPTURE,*program_goal,traction,WE_SEARCH_DEPTH);
+				op=AI_searchengine(pos,angle,Robot::PROGRAM_CAPTURE,*program_goal,traction,WE_SEARCH_DEPTH);
 			} else {
 				if ((rand()%4)!=0) {
-					op=AI_searchengine(pos,angle,PROGRAM_CAPTURE,*program_goal,traction,WOE_SEARCH_DEPTH);
+					op=AI_searchengine(pos,angle,Robot::PROGRAM_CAPTURE,*program_goal,traction,WOE_SEARCH_DEPTH);
 				} else {
 					AI_rankoperators_capture(&l,*program_goal);
 					aiop=AI_chooseoperator(&l,8);
@@ -931,7 +931,7 @@ int NETHER::AI_program_destroy(int goal,Vector *program_goal,Vector pos,int angl
 		/* Choose one operator: */ 
 		AIOperator *aiop;
 
-		if (goal!=P_PARAM_ROBOTS) {
+		if (goal!=Robot::P_PARAM_ROBOTS) {
 			/* Seek a goal: */ 
 			List<Building> l;
 			Building *b;
@@ -943,7 +943,7 @@ int NETHER::AI_program_destroy(int goal,Vector *program_goal,Vector pos,int angl
 			l.Instance(buildings);
 			l.Rewind();
 			while(l.Iterate(b)) {
-				if (goal==P_PARAM_WARBASES && 
+				if (goal==Robot::P_PARAM_WARBASES && 
 					b->type==Building::B_WARBASE && b->owner!=player &&
 					AI_WorseMapTerrain(int((b->pos.x+2.0)/0.5),int(b->pos.y/0.5),2,2)<=T_HOLE) {
 					distance=float(((b->pos+Vector(2.5,0.5,0))-pos).norma());
@@ -953,7 +953,7 @@ int NETHER::AI_program_destroy(int goal,Vector *program_goal,Vector pos,int angl
 						*program_goal=b->pos+Vector(2.5,0.5,0);
 					} /* if */ 
 				} /* if */ 
-				if (goal==P_PARAM_EFACTORIES && 
+				if (goal==Robot::P_PARAM_EFACTORIES && 
 					(b->type==Building::B_FACTORY_ELECTRONICS ||
 					 b->type==Building::B_FACTORY_NUCLEAR ||
 					 b->type==Building::B_FACTORY_PHASERS ||
@@ -973,10 +973,10 @@ int NETHER::AI_program_destroy(int goal,Vector *program_goal,Vector pos,int angl
 			if (program_goal->x!=-1 &&
 				(*program_goal)!=pos) {
 				if (electronics) {
-					op=AI_searchengine(pos,angle,PROGRAM_CAPTURE,*program_goal,traction,WE_SEARCH_DEPTH);
+					op=AI_searchengine(pos,angle,Robot::PROGRAM_CAPTURE,*program_goal,traction,WE_SEARCH_DEPTH);
 				} else {
 					if ((rand()%4)!=0) {
-						op=AI_searchengine(pos,angle,PROGRAM_CAPTURE,*program_goal,traction,WOE_SEARCH_DEPTH);
+						op=AI_searchengine(pos,angle,Robot::PROGRAM_CAPTURE,*program_goal,traction,WOE_SEARCH_DEPTH);
 					} else {
 						AI_rankoperators_capture(&lops,*program_goal);
 						aiop=AI_chooseoperator(&lops,8);
@@ -1101,10 +1101,10 @@ int NETHER::AI_program_destroy(int goal,Vector *program_goal,Vector pos,int angl
 						} /* if */ 
 					} else {
 						if (electronics) {
-							op=AI_searchengine(pos,angle,PROGRAM_DESTROY,*program_goal,traction,WE_SEARCH_DEPTH);
+							op=AI_searchengine(pos,angle,Robot::PROGRAM_DESTROY,*program_goal,traction,WE_SEARCH_DEPTH);
 						} else {
 							if ((rand()%4)!=0) {
-								op=AI_searchengine(pos,angle,PROGRAM_DESTROY,*program_goal,traction,WOE_SEARCH_DEPTH);
+								op=AI_searchengine(pos,angle,Robot::PROGRAM_DESTROY,*program_goal,traction,WOE_SEARCH_DEPTH);
 							} else {
 								AI_rankoperators_capture(&lops,*program_goal);
 								aiop=AI_chooseoperator(&lops,8);
@@ -1114,10 +1114,10 @@ int NETHER::AI_program_destroy(int goal,Vector *program_goal,Vector pos,int angl
 					} /* if */ 
 				} else {
 					if (electronics) {
-						op=AI_searchengine(pos,angle,PROGRAM_DESTROY,*program_goal,traction,WE_SEARCH_DEPTH);
+						op=AI_searchengine(pos,angle,Robot::PROGRAM_DESTROY,*program_goal,traction,WE_SEARCH_DEPTH);
 					} else {
 						if ((rand()%4)!=0) {
-							op=AI_searchengine(pos,angle,PROGRAM_DESTROY,*program_goal,traction,WOE_SEARCH_DEPTH);
+							op=AI_searchengine(pos,angle,Robot::PROGRAM_DESTROY,*program_goal,traction,WOE_SEARCH_DEPTH);
 						} else {
 							AI_rankoperators_capture(&lops,*program_goal);
 							aiop=AI_chooseoperator(&lops,8);

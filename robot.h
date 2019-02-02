@@ -8,6 +8,18 @@
 
 class Robot {
 public:
+  enum ROBOT_PROGRAMS {PROGRAM_NONE = -1,
+                       PROGRAM_FORWARD,
+                       PROGRAM_STOPDEFEND,
+                       PROGRAM_ADVANCE,
+                       PROGRAM_RETREAT,
+                       PROGRAM_DESTROY,
+                       PROGRAM_CAPTURE};
+
+  enum PROGRAM_PARAM {P_PARAM_ROBOTS = 1,
+                      P_PARAM_WARBASES,
+                      P_PARAM_NFACTORIES,
+                      P_PARAM_EFACTORIES};
   Robot();
   bool valid();
   float piecez(int piece);
@@ -19,8 +31,11 @@ public:
   int traction;
   bool pieces[5];
 
-  int program;
-  int program_parameter;
+  ROBOT_PROGRAMS program;
+  union {
+    PROGRAM_PARAM param;
+    int as_int;
+  } program_parameter;
   Vector program_goal;
 
   int op;

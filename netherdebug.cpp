@@ -84,7 +84,7 @@ bool NETHER::saveDebugReport(const std::string& filename)
         if (r->pieces[j])
           log << ' ' << pieces[j] << '\n';
       }
-      log << " PROGRAM: " << r->program << "\n PROGRAM PARAMETER: " << r->program_parameter << '\n';
+      log << " PROGRAM: " << r->program << "\n PROGRAM PARAMETER: " << r->program_parameter.as_int << '\n';
       log << " PROGRAM GOAL: ";
       log << r->program_goal;
       log << " ACTUAL OPERATOR: " << r->op << '\n';

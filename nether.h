@@ -32,11 +32,6 @@ const int MISSILE_PERSISTENCE = 60;
 const int PHASER_PERSISTENCE = 40;
 
 /* GAME STATES: */
-enum GAME_STATE {STATE_PLAYING,
-                 STATE_CONSTRUCTION,
-                 STATE_PAUSE,
-                 STATE_SAVINGGAME,
-                 STATE_LOADINGGAME};
 
 enum SHIP_OPERATORS {OP_NONE = -1,
                      OP_LEFT,
@@ -72,19 +67,6 @@ enum ROBOT_OPERATORS {ROBOTOP_NONE = -1,
                       ROBOTOP_PHASERS,
                       ROBOTOP_NUCLEAR};
 
-enum ROBOT_PROGRAMS {PROGRAM_NONE = -1,
-                     PROGRAM_FORWARD,
-                     PROGRAM_STOPDEFEND,
-                     PROGRAM_ADVANCE,
-                     PROGRAM_RETREAT,
-                     PROGRAM_DESTROY,
-                     PROGRAM_CAPTURE};
-
-enum PROGRAM_PARAM {P_PARAM_ROBOTS = 1,
-                    P_PARAM_WARBASES,
-                    P_PARAM_NFACTORIES,
-                    P_PARAM_EFACTORIES};
-
 enum AI_STATES {AI_STATE_EXPANDING,
                 AI_STATE_FIGHTING,
                 AI_STATE_DEFENDING,
@@ -94,7 +76,13 @@ enum AI_STATES {AI_STATE_EXPANDING,
 
 class NETHER {
 public:
-  NETHER(const std::string& mapname);
+  enum GAME_STATE {STATE_PLAYING,
+                   STATE_CONSTRUCTION,
+                   STATE_PAUSE,
+                   STATE_SAVINGGAME,
+                   STATE_LOADINGGAME};
+
+  explicit NETHER(const std::string& mapname);
   ~NETHER();
 
 	void loadObjects();
@@ -193,7 +181,7 @@ private:
 	float animation_timer;
 	int construction_pointer;
 	bool construction[8];
-	int game_state;
+	GAME_STATE game_state;
 	Robot in_construction;
 	Robot *controlled;
 

@@ -520,7 +520,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 					switch(menu.act_button) {
 					case StatusButton::ORDERS1_BUTTON:
 						/* STOP & DEFEND: */ 
-						controlled->program=PROGRAM_STOPDEFEND;
+						controlled->program=Robot::PROGRAM_STOPDEFEND;
 						controlled->program_goal=Vector(-1,-1,-1);
                         menu.replaceMenu(Menu::ORDERS_MENU, Menu::ROBOT_MENU,
                                          StatusButton::ROBOT2_BUTTON);
@@ -528,8 +528,8 @@ bool NETHER::cycle(unsigned char *keyboard)
 						break;
 					case StatusButton::ORDERS2_BUTTON:
 						/* ADVANCE ?? MILES: */ 
-						controlled->program=PROGRAM_ADVANCE;
-						controlled->program_parameter=0;
+						controlled->program=Robot::PROGRAM_ADVANCE;
+						controlled->program_parameter.as_int = 0;
 						controlled->program_goal=Vector(-1,-1,-1);
 
 						menu.killmenu(Menu::ORDERS_MENU);
@@ -538,8 +538,8 @@ bool NETHER::cycle(unsigned char *keyboard)
 						break;
 					case StatusButton::ORDERS3_BUTTON:
 						/* RETREAT ?? MILES: */ 
-						controlled->program=PROGRAM_RETREAT;
-						controlled->program_parameter=0;
+						controlled->program=Robot::PROGRAM_RETREAT;
+						controlled->program_parameter.as_int = 0;
 						controlled->program_goal=Vector(-1,-1,-1);
 
 						menu.killmenu(Menu::ORDERS_MENU);
@@ -566,21 +566,21 @@ bool NETHER::cycle(unsigned char *keyboard)
 		case Menu::SELECTDISTANCE_MENU:
 			{
 				if (keyboard[up_key] && !old_keyboard[up_key]) {
-					controlled->program_parameter+=10;
-					if (controlled->program_parameter>190) controlled->program_parameter=190;
+                  controlled->program_parameter.as_int += 10;
+                  if (controlled->program_parameter.as_int > 190) controlled->program_parameter.as_int=190;
 					controlled->program_goal=Vector(-1,-1,-1);
 
 					menu.needsRedraw=2;
 				} /* if */ 
 				if (keyboard[down_key] && !old_keyboard[down_key]) {
-					controlled->program_parameter-=10;
-					if (controlled->program_parameter<0) controlled->program_parameter=0;
+                  controlled->program_parameter.as_int -= 10;
+					if (controlled->program_parameter.as_int < 0) controlled->program_parameter.as_int = 0;
 					controlled->program_goal=Vector(-1,-1,-1);
 
 					menu.needsRedraw=2;
 				} /* if */ 
 				if (keyboard[fire_key] && !old_keyboard[fire_key]) {
-					if (controlled->program_parameter==0) controlled->program=PROGRAM_STOPDEFEND;
+                  if (controlled->program_parameter.as_int == 0) controlled->program=Robot::PROGRAM_STOPDEFEND;
 					controlled->program_goal=Vector(-1,-1,-1);
 
                     menu.replaceMenu(Menu::SELECTDISTANCE_MENU, Menu::ROBOT_MENU,
@@ -645,8 +645,8 @@ bool NETHER::cycle(unsigned char *keyboard)
 							controlled->pieces[2]) {
                           menu.replaceMenu(Menu::TARGETD_MENU, Menu::ROBOT_MENU,
                                            StatusButton::ROBOT2_BUTTON);
-							controlled->program=PROGRAM_DESTROY;
-							controlled->program_parameter=P_PARAM_ROBOTS;
+                          controlled->program=Robot::PROGRAM_DESTROY;
+                          controlled->program_parameter.param = Robot::P_PARAM_ROBOTS;
 							controlled->program_goal=Vector(-1,-1,-1);
                         sManager.playSelect();
 						} else {
@@ -658,8 +658,8 @@ bool NETHER::cycle(unsigned char *keyboard)
 						if (controlled->pieces[3]) {
                           menu.replaceMenu(Menu::TARGETD_MENU, Menu::ROBOT_MENU,
                                            StatusButton::ROBOT2_BUTTON);
-							controlled->program=PROGRAM_DESTROY;
-							controlled->program_parameter=P_PARAM_EFACTORIES;
+                          controlled->program=Robot::PROGRAM_DESTROY;
+                          controlled->program_parameter.param = Robot::P_PARAM_EFACTORIES;
 							controlled->program_goal=Vector(-1,-1,-1);
                             sManager.playSelect();
 						} else {
@@ -671,8 +671,8 @@ bool NETHER::cycle(unsigned char *keyboard)
 						if (controlled->pieces[3]) {
                           menu.replaceMenu(Menu::TARGETD_MENU, Menu::ROBOT_MENU,
                                            StatusButton::ROBOT2_BUTTON);
-							controlled->program=PROGRAM_DESTROY;
-							controlled->program_parameter=P_PARAM_WARBASES;
+                          controlled->program=Robot::PROGRAM_DESTROY;
+                          controlled->program_parameter.param = Robot::P_PARAM_WARBASES;
 							controlled->program_goal=Vector(-1,-1,-1);
                             sManager.playSelect();
 						} else {
@@ -737,24 +737,24 @@ bool NETHER::cycle(unsigned char *keyboard)
 					case StatusButton::TARGET1_BUTTON:
                       menu.replaceMenu(Menu::TARGETC_MENU, Menu::ROBOT_MENU,
                                        StatusButton::ROBOT2_BUTTON);
-						controlled->program=PROGRAM_CAPTURE;
-						controlled->program_parameter=P_PARAM_NFACTORIES;
+                      controlled->program=Robot::PROGRAM_CAPTURE;
+                      controlled->program_parameter.param = Robot::P_PARAM_NFACTORIES;
 						controlled->program_goal=Vector(-1,-1,-1);
                         sManager.playSelect();
 						break;
 					case StatusButton::TARGET2_BUTTON:
                       menu.replaceMenu(Menu::TARGETC_MENU, Menu::ROBOT_MENU,
                                        StatusButton::ROBOT2_BUTTON);
-						controlled->program=PROGRAM_CAPTURE;
-						controlled->program_parameter=P_PARAM_EFACTORIES;
+                      controlled->program=Robot::PROGRAM_CAPTURE;
+                      controlled->program_parameter.param = Robot::P_PARAM_EFACTORIES;
 						controlled->program_goal=Vector(-1,-1,-1);
                         sManager.playSelect();
 						break;
 					case StatusButton::TARGET3_BUTTON:
                       menu.replaceMenu(Menu::TARGETC_MENU, Menu::ROBOT_MENU,
                                        StatusButton::ROBOT2_BUTTON);
-						controlled->program=PROGRAM_CAPTURE;
-						controlled->program_parameter=P_PARAM_WARBASES;
+                      controlled->program=Robot::PROGRAM_CAPTURE;
+                      controlled->program_parameter.param = Robot::P_PARAM_WARBASES;
 						controlled->program_goal=Vector(-1,-1,-1);
                         sManager.playSelect();
 						break;
@@ -908,7 +908,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 					r->shipover=true;
 					controlled=r;
 					if (controlled->op==ROBOTOP_FORWARD) controlled->op=ROBOTOP_NONE;
-					if (controlled->program==PROGRAM_FORWARD) controlled->program=PROGRAM_STOPDEFEND;
+					if (controlled->program==Robot::PROGRAM_FORWARD) controlled->program=Robot::PROGRAM_STOPDEFEND;
 					menu.replaceMenu(Menu::GENERAL_MENU, Menu::ROBOT_MENU,
                                      StatusButton::ROBOT4_BUTTON);
 				} /* while */ 
@@ -1216,32 +1216,32 @@ bool NETHER::cycle(unsigned char *keyboard)
 	fflush(debug_fp);
 #endif
 							switch(r->program) {
-							case PROGRAM_NONE:
+							case Robot::PROGRAM_NONE:
 								break;
-							case PROGRAM_FORWARD:
+							case Robot::PROGRAM_FORWARD:
 								r->op=ROBOTOP_FORWARD;
 								break;
-							case PROGRAM_STOPDEFEND:
+							case Robot::PROGRAM_STOPDEFEND:
 								r->op=AI_program_stopdefend(&(r->program_goal),r->pos,r->angle,r->traction,r->pieces[4],i+1,r->pieces);
 								break;
-							case PROGRAM_ADVANCE:
-								r->op=AI_program_advance(r->program_parameter,r->pos,r->angle,r->traction,r->pieces[4],i+1,r->pieces);
-								if (r->op==ROBOTOP_FORWARD && r->angle==90) r->program_parameter--;
-								if (r->op==ROBOTOP_FORWARD && r->angle==270) r->program_parameter++;
-								if (r->program_parameter==0) r->program=PROGRAM_STOPDEFEND;
+							case Robot::PROGRAM_ADVANCE:
+                              r->op=AI_program_advance(r->program_parameter.as_int ,r->pos,r->angle,r->traction,r->pieces[4],i+1,r->pieces);
+								if (r->op==ROBOTOP_FORWARD && r->angle==90) r->program_parameter.as_int--;
+								if (r->op==ROBOTOP_FORWARD && r->angle==270) r->program_parameter.as_int++;
+								if (r->program_parameter.as_int == 0) r->program=Robot::PROGRAM_STOPDEFEND;
 								break;
-							case PROGRAM_RETREAT:
-								r->op=AI_program_retreat(r->program_parameter,r->pos,r->angle,r->traction,r->pieces[4],i+1,r->pieces);
-								if (r->op==ROBOTOP_FORWARD && r->angle==270) r->program_parameter--;
-								if (r->op==ROBOTOP_FORWARD && r->angle==90) r->program_parameter++;
-								if (r->program_parameter==0) r->program=PROGRAM_STOPDEFEND;
+							case Robot::PROGRAM_RETREAT:
+                              r->op=AI_program_retreat(r->program_parameter.as_int, r->pos,r->angle,r->traction,r->pieces[4],i+1,r->pieces);
+								if (r->op==ROBOTOP_FORWARD && r->angle==270) r->program_parameter.as_int--;
+								if (r->op==ROBOTOP_FORWARD && r->angle==90) r->program_parameter.as_int++;
+								if (r->program_parameter.as_int == 0) r->program=Robot::PROGRAM_STOPDEFEND;
 								break;
-							case PROGRAM_DESTROY:
-								r->op=AI_program_destroy(r->program_parameter,&(r->program_goal),r->pos,r->angle,r->traction,r->pieces[4],i+1,r->pieces);
+							case Robot::PROGRAM_DESTROY:
+								r->op=AI_program_destroy(r->program_parameter.as_int,&(r->program_goal),r->pos,r->angle,r->traction,r->pieces[4],i+1,r->pieces);
 								// if (r->program_goal.x==-1) r->program=PROGRAM_STOPDEFEND;
 								break;
-							case PROGRAM_CAPTURE:
-								r->op=AI_program_capture(r->program_parameter,&(r->program_goal),r->pos,r->angle,r->traction,r->pieces[4],i+1,r->pieces);
+							case Robot::PROGRAM_CAPTURE:
+								r->op=AI_program_capture(r->program_parameter.as_int,&(r->program_goal),r->pos,r->angle,r->traction,r->pieces[4],i+1,r->pieces);
 								// if (r->program_goal.x==-1) r->program=PROGRAM_STOPDEFEND;
 								break;
 							} /* switch */ 

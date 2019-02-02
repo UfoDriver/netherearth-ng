@@ -107,7 +107,7 @@ void Menu::drawStatus()
         scaledglprintf(0.1f,0.1f,"-ORDERS-");
         glColor3f(0.5f,0.5f,1.0f);
         switch(nether->controlled->program) {
-        case PROGRAM_STOPDEFEND:
+        case Robot::PROGRAM_STOPDEFEND:
           glTranslatef(0,-20,0);
           scaledglprintf(0.1f,0.1f,"STOP");
           glTranslatef(0,-18,0);
@@ -115,45 +115,45 @@ void Menu::drawStatus()
           glTranslatef(0,-18,0);
           scaledglprintf(0.1f,0.1f,"DEFEND");
           break;
-        case PROGRAM_ADVANCE:
+        case Robot::PROGRAM_ADVANCE:
           glTranslatef(0,-20,0);
           scaledglprintf(0.1f,0.1f,"ADVANCE");
           glTranslatef(0,-18,0);
-          scaledglprintf(0.1f,0.1f,"%.2i",nether->controlled->program_parameter/2);
+          scaledglprintf(0.1f,0.1f,"%.2i", nether->controlled->program_parameter.as_int / 2);
           glTranslatef(0,-18,0);
           scaledglprintf(0.1f,0.1f,"MILES");
           break;
-        case PROGRAM_RETREAT:
+        case Robot::PROGRAM_RETREAT:
           glTranslatef(0,-20,0);
           scaledglprintf(0.1f,0.1f,"RETREAT");
           glTranslatef(0,-18,0);
-          scaledglprintf(0.1f,0.1f,"%.2i",nether->controlled->program_parameter/2);
+          scaledglprintf(0.1f,0.1f,"%.2i",nether->controlled->program_parameter.as_int / 2);
           glTranslatef(0,-18,0);
           scaledglprintf(0.1f,0.1f,"MILES");
           break;
-        case PROGRAM_DESTROY:
+        case Robot::PROGRAM_DESTROY:
           glTranslatef(0,-20,0);
           scaledglprintf(0.1f,0.1f,"DESTROY");
-          switch(nether->controlled->program_parameter) {
-          case P_PARAM_ROBOTS:
+          switch(nether->controlled->program_parameter.param) {
+          case Robot::P_PARAM_ROBOTS:
             glTranslatef(0,-18,0);
             scaledglprintf(0.1f,0.1f,"ENEMY");
             glTranslatef(0,-18,0);
             scaledglprintf(0.1f,0.1f,"ROBOTS");
             break;
-          case P_PARAM_WARBASES:
+          case Robot::P_PARAM_WARBASES:
             glTranslatef(0,-18,0);
             scaledglprintf(0.1f,0.1f,"ENEMY");
             glTranslatef(0,-18,0);
             scaledglprintf(0.1f,0.1f,"WARBASES");
             break;
-          case P_PARAM_NFACTORIES:
+          case Robot::P_PARAM_NFACTORIES:
             glTranslatef(0,-18,0);
             scaledglprintf(0.1f,0.1f,"NEUTRAL");
             glTranslatef(0,-18,0);
             scaledglprintf(0.1f,0.1f,"FACTORIES");
             break;
-          case P_PARAM_EFACTORIES:
+          case Robot::P_PARAM_EFACTORIES:
             glTranslatef(0,-18,0);
             scaledglprintf(0.1f,0.1f,"ENEMY");
             glTranslatef(0,-18,0);
@@ -161,29 +161,29 @@ void Menu::drawStatus()
             break;
           }
           break;
-        case PROGRAM_CAPTURE:
+        case Robot::PROGRAM_CAPTURE:
           glTranslatef(0,-20,0);
           scaledglprintf(0.1f,0.1f,"CAPTURE");
-          switch(nether->controlled->program_parameter) {
-          case P_PARAM_ROBOTS:
+          switch(nether->controlled->program_parameter.param) {
+          case Robot::P_PARAM_ROBOTS:
             glTranslatef(0,-18,0);
             scaledglprintf(0.1f,0.1f,"ENEMY");
             glTranslatef(0,-18,0);
             scaledglprintf(0.1f,0.1f,"ROBOTS");
             break;
-          case P_PARAM_WARBASES:
+          case Robot::P_PARAM_WARBASES:
             glTranslatef(0,-18,0);
             scaledglprintf(0.1f,0.1f,"ENEMY");
             glTranslatef(0,-18,0);
             scaledglprintf(0.1f,0.1f,"WARBASES");
             break;
-          case P_PARAM_NFACTORIES:
+          case Robot::P_PARAM_NFACTORIES:
             glTranslatef(0,-18,0);
             scaledglprintf(0.1f,0.1f,"NEUTRAL");
             glTranslatef(0,-18,0);
             scaledglprintf(0.1f,0.1f,"FACTORIES");
             break;
-          case P_PARAM_EFACTORIES:
+          case Robot::P_PARAM_EFACTORIES:
             glTranslatef(0,-18,0);
             scaledglprintf(0.1f,0.1f,"ENEMY");
             glTranslatef(0,-18,0);
@@ -245,7 +245,7 @@ void Menu::drawStatus()
 
         glColor3f(1.0f,1.0f,0.0);
         glTranslatef(0,-40,0);
-        scaledglprintf(0.1f,0.1f,"%.2i MILES", nether->controlled->program_parameter/2);
+        scaledglprintf(0.1f,0.1f,"%.2i MILES", nether->controlled->program_parameter.as_int / 2);
 
         glTranslatef(0,-200,0);
         glColor3f(1.0f,1.0f,0.0);
@@ -388,9 +388,9 @@ void Menu::newmenu(MENU_TYPES menu)
     break;
 
   case SELECTDISTANCE_MENU:
-    if (nether->controlled->program==PROGRAM_ADVANCE)
+    if (nether->controlled->program==Robot::PROGRAM_ADVANCE)
       newbuttondelayed(StatusButton::ORDERS_BUTTON,70,400,130,40,"ADVANCE  "," ?? MILES",0,0,0.8f);
-    if (nether->controlled->program==PROGRAM_RETREAT)
+    if (nether->controlled->program==Robot::PROGRAM_RETREAT)
       newbuttondelayed(StatusButton::ORDERS_BUTTON,70,400,130,40,"RETREAT  "," ?? MILES",0,0,0.8f);
     act_menu=SELECTDISTANCE_MENU;
     break;

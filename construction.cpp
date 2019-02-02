@@ -320,7 +320,7 @@ bool NETHER::construction_cycle(unsigned char *keyboard)
 			r=new Robot();
 			*r=in_construction;
 			r->angle=0;
-			r->program=PROGRAM_FORWARD;
+			r->program=Robot::PROGRAM_FORWARD;
 			r->op=ROBOTOP_NONE;
 			r->cmc=RobotCMC(r,0);
 			r->shipover=false;

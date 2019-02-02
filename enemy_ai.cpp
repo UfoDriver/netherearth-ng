@@ -75,7 +75,7 @@ void NETHER::AI_enemy(void)
 	tmpr->pieces[3]=false;
 	tmpr->pieces[4]=false;
 	tmpr->angle=0;
-	tmpr->program=PROGRAM_FORWARD;
+	tmpr->program=Robot::PROGRAM_FORWARD;
 	tmpr->op=ROBOTOP_NONE;
 	tmpr->cmc=RobotCMC(tmpr,1);
 	tmpr->shipover=false;
@@ -142,13 +142,13 @@ void NETHER::AI_enemy(void)
 
 							if (i==1) {
 								if (forces[0]>forces[1] && 
-									(r->program!=PROGRAM_DESTROY ||
-									 r->program_parameter!=P_PARAM_ROBOTS)) {
+									(r->program!=Robot::PROGRAM_DESTROY ||
+									 r->program_parameter.param != Robot::P_PARAM_ROBOTS)) {
 								
 //									fprintf(fp,"Program of <%g,%g,%g> -> DESTROY ROBOTS\n",r->pos.x,r->pos.y,r->pos.z);
 
-									r->program=PROGRAM_DESTROY;
-									r->program_parameter=P_PARAM_ROBOTS;
+                                  r->program=Robot::PROGRAM_DESTROY;
+                                  r->program_parameter.param = Robot::P_PARAM_ROBOTS;
 									return;
 								} /* if */ 
 							} /* if */ 
@@ -186,9 +186,9 @@ void NETHER::AI_enemy(void)
 		rl.Instance(robots[1]);
 		rl.Rewind();
 		while(rl.Iterate(r)) {
-			if (r->program==PROGRAM_CAPTURE) nrobots[0]++;
-			if (r->program==PROGRAM_DESTROY) nrobots[1]++;
-			if (r->program==PROGRAM_STOPDEFEND) nrobots[2]++;
+          if (r->program==Robot::PROGRAM_CAPTURE) nrobots[0]++;
+          if (r->program==Robot::PROGRAM_DESTROY) nrobots[1]++;
+          if (r->program==Robot::PROGRAM_STOPDEFEND) nrobots[2]++;
 		} /* while */ 
 	}
 
@@ -206,8 +206,8 @@ void NETHER::AI_enemy(void)
 			
 //			fprintf(fp,"Achieved.\n");
 
-			r->program=PROGRAM_DESTROY;
-			r->program_parameter=P_PARAM_ROBOTS;
+          r->program=Robot::PROGRAM_DESTROY;
+          r->program_parameter.param = Robot::P_PARAM_ROBOTS;
 		} /* if */ 
 	} else {
 		if (nrobots[2]>0 &&
@@ -221,27 +221,27 @@ void NETHER::AI_enemy(void)
 			rl.Instance(robots[1]);
 			rl.Rewind();
 			while(rl.Iterate(r)) {
-				if (r->program==PROGRAM_STOPDEFEND) {
+              if (r->program==Robot::PROGRAM_STOPDEFEND) {
 					if (nrobots[0]<6 && factories[2]<(factories[1]+factories[0]) && 
 						(robots[0].Length()*2)<=nrobots[1]) {
 						/* Convert the robot to a conquering one: */ 
 						if (factories[1]>factories[0]) {
-							r->program=PROGRAM_CAPTURE;
-							r->program_parameter=P_PARAM_EFACTORIES;
+                          r->program=Robot::PROGRAM_CAPTURE;
+                          r->program_parameter.param = Robot::P_PARAM_EFACTORIES;
 							return;
 						} else {
-							r->program=PROGRAM_CAPTURE;
-							r->program_parameter=P_PARAM_NFACTORIES;
+							r->program=Robot::PROGRAM_CAPTURE;
+							r->program_parameter.param = Robot::P_PARAM_NFACTORIES;
 							return;
 						} /* if */ 
 					} else {
 						if ((robots[0].Length()*2)>nrobots[1]) {
-							r->program=PROGRAM_DESTROY;
-							r->program_parameter=P_PARAM_ROBOTS;
+							r->program=Robot::PROGRAM_DESTROY;
+							r->program_parameter.param =Robot::P_PARAM_ROBOTS;
 							return;
 						} else {
-							r->program=PROGRAM_CAPTURE;
-							r->program_parameter=P_PARAM_WARBASES;
+							r->program=Robot::PROGRAM_CAPTURE;
+							r->program_parameter.param = Robot::P_PARAM_WARBASES;
 							return;
 						} /* if */ 
 					} /* if */ 
@@ -279,14 +279,14 @@ void NETHER::AI_enemy(void)
 					
 //					fprintf(fp,"Achieved, it will conquer ENEMY FACTORIES\n");
 
-					r->program=PROGRAM_CAPTURE;
-					r->program_parameter=P_PARAM_EFACTORIES;
+					r->program=Robot::PROGRAM_CAPTURE;
+					r->program_parameter.param = Robot::P_PARAM_EFACTORIES;
 				} else {
 
 //					fprintf(fp,"Achieved, it will conquer NEUTRAL FACTORIES\n");
 
-					r->program=PROGRAM_CAPTURE;
-					r->program_parameter=P_PARAM_NFACTORIES;
+					r->program=Robot::PROGRAM_CAPTURE;
+					r->program_parameter.param = Robot::P_PARAM_NFACTORIES;
 				} /* if */ 
 			} /* if */ 
 		} else {
@@ -301,8 +301,8 @@ void NETHER::AI_enemy(void)
 
 //					fprintf(fp,"Achieved.\n");
 
-					r->program=PROGRAM_CAPTURE;
-					r->program_parameter=P_PARAM_WARBASES;
+					r->program=Robot::PROGRAM_CAPTURE;
+					r->program_parameter.param = Robot::P_PARAM_WARBASES;
 				} /* if */ 
 			} else {
 				/* I need more attacking robots: */ 
@@ -334,8 +334,8 @@ void NETHER::AI_enemy(void)
 
 //					fprintf(fp,"Achieved.\n");
 					
-					r->program=PROGRAM_DESTROY;
-					r->program_parameter=P_PARAM_ROBOTS;
+					r->program=Robot::PROGRAM_DESTROY;
+					r->program_parameter.param = Robot::P_PARAM_ROBOTS;
 				} /* if */ 
 			} /* if */ 
 		} /* if */ 
@@ -493,7 +493,7 @@ Robot *NETHER::AI_enemy_newrobot(int state,Vector pos)
 		/* Valid robot, build it: */ 
 		r->pos=pos;
 		r->angle=0;
-		r->program=PROGRAM_FORWARD;
+		r->program=Robot::PROGRAM_FORWARD;
 		r->op=ROBOTOP_NONE;
 		r->cmc=RobotCMC(r,1);
 		r->shipover=false;
