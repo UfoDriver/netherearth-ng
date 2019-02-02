@@ -299,9 +299,9 @@ bool NETHER::construction_cycle(unsigned char *keyboard)
 		} /* for */ 
 
 		if (enoughresources) {
-			if (S_select!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_select,0),128);
+          sManager.playSelect();
 		} else {
-			if (S_wrong!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_wrong,0),128);
+          sManager.playWrong();
 		} /* if */ 
 	} /* if */ 
 
@@ -334,14 +334,14 @@ bool NETHER::construction_cycle(unsigned char *keyboard)
 
 				game_state=STATE_PLAYING;
 				shipp.z=2.0;
-				if (S_construction!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_construction,0),128);
+                sManager.playConstruction();
 			} else {
 				/* The factory entrance is blocked: */ 
 				delete r;
 			} /* if */ 
 		} else {
-			/* Wrong robot: */ 
-			if (S_wrong!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_wrong,0),128);
+			/* Wrong robot: */
+          sManager.playWrong();
 		} /* if */ 
 	} /* if */ 
 
@@ -349,5 +349,3 @@ bool NETHER::construction_cycle(unsigned char *keyboard)
 	radar.needsRedraw=1;
 	return true;
 } /* NETHER::construction_cycle */ 
-
-

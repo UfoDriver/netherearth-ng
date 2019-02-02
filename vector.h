@@ -28,7 +28,7 @@ public:
 
   bool zero();
 
-  double norma();
+  double norma() const;
   double normalize();
 
   bool load(FILE *fp);

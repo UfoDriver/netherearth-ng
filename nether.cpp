@@ -169,18 +169,6 @@ NETHER::NETHER(const std::string& mapname): menu(this), radar(this)
 	AI_precomputations();
 
 #ifdef _WRITE_REPORT_
-	fprintf(debug_fp,"Loading sounds...\n");
-	fflush(debug_fp);
-#endif
-
-	/* Load sounds: */ 
-	S_shot=Mix_LoadWAV("sound/shot.wav");
-	S_explosion=Mix_LoadWAV("sound/explosion.wav");
-	S_select=Mix_LoadWAV("sound/select.wav");
-	S_wrong=Mix_LoadWAV("sound/wrong.wav");
-	S_construction=Mix_LoadWAV("sound/construction.wav");
-
-#ifdef _WRITE_REPORT_
 	fprintf(debug_fp,"Game created.\n");
 	fflush(debug_fp);
 #endif
@@ -200,17 +188,6 @@ NETHER::~NETHER()
 	fprintf(debug_fp,"Deleting sounds...\n");
 	fflush(debug_fp);
 #endif
-
-	Mix_FreeChunk(S_shot);
-	Mix_FreeChunk(S_explosion);
-	Mix_FreeChunk(S_select);
-	Mix_FreeChunk(S_wrong);
-	Mix_FreeChunk(S_construction);
-	S_shot=0;
-	S_explosion=0;
-	S_select=0;
-	S_wrong=0;
-	S_construction=0;
 
 #ifdef _WRITE_REPORT_
 	fprintf(debug_fp,"Deleting objects...\n");
@@ -1179,16 +1156,3 @@ bool NETHER::ShipCollision(C3DObject *obj,float x,float y,float z)
 
 	return false;
 } /* NETHER::ShipCollision */ 
-
-
-
-int NETHER::SFX_volume(Vector pos)
-{
-	float distance=(pos-shipp).norma();
-
-	distance=(distance-8)/8;
-	if (distance<1) distance=1;
-
-
-	return int(128/distance);
-} /* SFX_volume */ 

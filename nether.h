@@ -18,6 +18,7 @@
 #include "ai_operator.h"
 #include "menu.h"
 #include "radar.h"
+#include "soundmanager.h"
 
 
 const float COLISION_TEST_THRESHOLD = 9.0;
@@ -135,8 +136,6 @@ private:
 	int RobotRotationSpeed(int traction,int terrain);
 	bool Walkable(int traction,int terrain);
 
-	int SFX_volume(Vector pos);
-
 	void AI_enemy(void);
 	Robot *AI_enemy_newrobot(int state,Vector pos);
 	void AI_precomputations(void);
@@ -166,7 +165,8 @@ private:
 	/* Game variables: */
   Menu menu;
   Radar radar;
-  
+  SoundManager sManager;
+
 	int map_w,map_h;
 	int *map;
 	float lightpos[4];
@@ -225,9 +225,6 @@ private:
 	int *bk_discreetmap;
 	AIOperator **searchmap;
 	int *atackmap;
-
-	/* Sonido: */ 
-	Mix_Chunk *S_shot,*S_explosion,*S_select,*S_wrong,*S_construction;
 
   friend class Menu;
   friend class Radar;

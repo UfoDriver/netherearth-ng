@@ -305,21 +305,21 @@ bool NETHER::cycle(unsigned char *keyboard)
 
 							menu.act_menu=Menu::DIRECTCONTROL_MENU;
 							menu.needsRedraw=2;
-							if (S_select!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_select,0),128);
+                            sManager.playSelect();
 						}
 						break;
 					case StatusButton::ROBOT2_BUTTON:
 						{
                           menu.replaceMenu(Menu::ROBOT_MENU, Menu::ORDERS_MENU,
                                            StatusButton::ORDERS1_BUTTON);
-                          if (S_select!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_select,0),128);
+                          sManager.playSelect();
 						}
 						break;
 					case StatusButton::ROBOT3_BUTTON:
 						{
                           menu.replaceMenu(Menu::ROBOT_MENU, Menu::COMBATMODE_MENU,
                                            StatusButton::COMBAT6_BUTTON);
-							if (S_select!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_select,0),128);
+                          sManager.playSelect();
 						}
 						break;
 					case StatusButton::ROBOT4_BUTTON:
@@ -330,7 +330,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 						menu.killmenu(Menu::ROBOT_MENU);
 						menu.newmenu(Menu::GENERAL_MENU);
 						ship_op3=OP_UP;
-						if (S_select!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_select,0),128);
+                        sManager.playSelect();
 						break;
 					} /* switch */ 
 				} /* if */ 
@@ -454,14 +454,14 @@ bool NETHER::cycle(unsigned char *keyboard)
 
 							menu.act_menu=Menu::DIRECTCONTROL2_MENU;
 							menu.needsRedraw=2;
-							if (S_select!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_select,0),128);
+                            sManager.playSelect();
 						}
 						break;
 					case StatusButton::COMBAT6_BUTTON:
 						/* Back to the robot menu: */
                       menu.replaceMenu(Menu::COMBATMODE_MENU, Menu::ROBOT_MENU,
                                        StatusButton::ROBOT3_BUTTON);
-						if (S_select!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_select,0),128);
+                      sManager.playSelect();
 						break;
 					} /* switch */ 
 				} /* if */ 
@@ -524,7 +524,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 						controlled->program_goal=Vector(-1,-1,-1);
                         menu.replaceMenu(Menu::ORDERS_MENU, Menu::ROBOT_MENU,
                                          StatusButton::ROBOT2_BUTTON);
-						if (S_select!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_select,0),128);
+                        sManager.playSelect();
 						break;
 					case StatusButton::ORDERS2_BUTTON:
 						/* ADVANCE ?? MILES: */ 
@@ -534,7 +534,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 
 						menu.killmenu(Menu::ORDERS_MENU);
 						menu.newmenu(Menu::SELECTDISTANCE_MENU);
-						if (S_select!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_select,0),128);
+                        sManager.playSelect();
 						break;
 					case StatusButton::ORDERS3_BUTTON:
 						/* RETREAT ?? MILES: */ 
@@ -544,19 +544,19 @@ bool NETHER::cycle(unsigned char *keyboard)
 
 						menu.killmenu(Menu::ORDERS_MENU);
 						menu.newmenu(Menu::SELECTDISTANCE_MENU);
-						if (S_select!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_select,0),128);
+                        sManager.playSelect();
 						break;
 					case StatusButton::ORDERS4_BUTTON:
 						/* SEARCH AND DESTROY: */
                       menu.replaceMenu(Menu::ORDERS_MENU, Menu::TARGETD_MENU,
                                        StatusButton::TARGET1_BUTTON);
-						if (S_select!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_select,0),128);
+                        sManager.playSelect();
 						break;
 					case StatusButton::ORDERS5_BUTTON:
 						/* SEARCH AND CAPTURE: */
                       menu.replaceMenu(Menu::ORDERS_MENU, Menu::TARGETC_MENU,
                                        StatusButton::TARGET1_BUTTON);
-						if (S_select!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_select,0),128);
+                        sManager.playSelect();
 						break;
 					} /* switch */ 
 				} /* if */ 
@@ -585,7 +585,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 
                     menu.replaceMenu(Menu::SELECTDISTANCE_MENU, Menu::ROBOT_MENU,
                                      StatusButton::ROBOT2_BUTTON);
-					if (S_select!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_select,0),128);
+                    sManager.playSelect();
 				} /* if */ 
 			}
 			break;
@@ -648,10 +648,10 @@ bool NETHER::cycle(unsigned char *keyboard)
 							controlled->program=PROGRAM_DESTROY;
 							controlled->program_parameter=P_PARAM_ROBOTS;
 							controlled->program_goal=Vector(-1,-1,-1);
-							if (S_select!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_select,0),128);
+                        sManager.playSelect();
 						} else {
 							/* The robot has no standard WEAPONS!: */ 
-							if (S_wrong!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_wrong,0),128);
+                            sManager.playWrong();
 						} /* if */ 
 						break;
 					case StatusButton::TARGET2_BUTTON:
@@ -661,10 +661,10 @@ bool NETHER::cycle(unsigned char *keyboard)
 							controlled->program=PROGRAM_DESTROY;
 							controlled->program_parameter=P_PARAM_EFACTORIES;
 							controlled->program_goal=Vector(-1,-1,-1);
-							if (S_select!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_select,0),128);
+                            sManager.playSelect();
 						} else {
 							/* The robot has no NUCLEAR weapons: */ 
-							if (S_wrong!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_wrong,0),128);
+                          sManager.playWrong();
 						} /* if */ 
 						break;
 					case StatusButton::TARGET3_BUTTON:
@@ -674,10 +674,10 @@ bool NETHER::cycle(unsigned char *keyboard)
 							controlled->program=PROGRAM_DESTROY;
 							controlled->program_parameter=P_PARAM_WARBASES;
 							controlled->program_goal=Vector(-1,-1,-1);
-							if (S_select!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_select,0),128);
+                            sManager.playSelect();
 						} else {
 							/* The robot has no NUCLEAR weapons: */ 
-							if (S_wrong!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_wrong,0),128);
+                          sManager.playWrong();
 						} /* if */ 
 						break;
 					} /* switch */ 
@@ -740,7 +740,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 						controlled->program=PROGRAM_CAPTURE;
 						controlled->program_parameter=P_PARAM_NFACTORIES;
 						controlled->program_goal=Vector(-1,-1,-1);
-						if (S_select!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_select,0),128);
+                        sManager.playSelect();
 						break;
 					case StatusButton::TARGET2_BUTTON:
                       menu.replaceMenu(Menu::TARGETC_MENU, Menu::ROBOT_MENU,
@@ -748,7 +748,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 						controlled->program=PROGRAM_CAPTURE;
 						controlled->program_parameter=P_PARAM_EFACTORIES;
 						controlled->program_goal=Vector(-1,-1,-1);
-						if (S_select!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_select,0),128);
+                        sManager.playSelect();
 						break;
 					case StatusButton::TARGET3_BUTTON:
                       menu.replaceMenu(Menu::TARGETC_MENU, Menu::ROBOT_MENU,
@@ -756,7 +756,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 						controlled->program=PROGRAM_CAPTURE;
 						controlled->program_parameter=P_PARAM_WARBASES;
 						controlled->program_goal=Vector(-1,-1,-1);
-						if (S_select!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_select,0),128);
+                        sManager.playSelect();
 						break;
 					} /* switch */ 
 				} /* if */ 
@@ -1073,7 +1073,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 						b->cmc=BulletCMC(b);
 
 						bullets.Add(b);
-						if (S_shot!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_shot,0),SFX_volume(r->pos));
+                        sManager.playShot(shipp, r->pos);
 					} /* if */ 
 
 					if (r->op==ROBOTOP_MISSILES && r->firetimer==0) {
@@ -1087,7 +1087,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 						b->cmc=BulletCMC(b);
 
 						bullets.Add(b);
-						if (S_shot!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_shot,0),SFX_volume(r->pos));
+                        sManager.playShot(shipp, r->pos);
 					} /* if */ 
 
 					if (r->op==ROBOTOP_PHASERS && r->firetimer==0) {
@@ -1101,7 +1101,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 						b->cmc=BulletCMC(b);
 
 						bullets.Add(b);
-						if (S_shot!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_shot,0),SFX_volume(r->pos));
+                        sManager.playShot(shipp, r->pos);
 					} /* if */ 
 
 					if (r->op==ROBOTOP_CANNONS ||
@@ -1160,7 +1160,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 							} /* while */ 
 						}
 
-						if (S_explosion!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_explosion,0),SFX_volume(r->pos));
+                        sManager.playExplosion(shipp, r->pos);
 						recomputestatistics=true;
 					} /* if */ 
 
@@ -1417,7 +1417,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 						n=new Explosion(r->pos,1);
 						explosions.Add(n);
 
-						if (S_explosion!=0 && sound) Mix_Volume(Mix_PlayChannel(-1,S_explosion,0),SFX_volume(r->pos));
+                        sManager.playExplosion(shipp, r->pos);
 						if (r==controlled) {
 							controlled->shipover=false;
 							controlled=0;

@@ -66,9 +66,9 @@ bool Vector::operator!=(const Vector &v)
   return x != v.x || y != v.y || z != v.z;
 }
 
-double Vector::norma()
+double Vector::norma() const
 {
-  return sqrt(x*x+y*y+z*z);
+  return sqrt(x * x + y * y + z * z);
 }
 
 
