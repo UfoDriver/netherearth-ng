@@ -3,6 +3,7 @@
 #endif
 
 #include <string>
+#include <iostream>
 
 #include "string.h"
 #include "stdio.h"
@@ -412,44 +413,44 @@ void NETHER::refresh_display_lists(void)
 
 
 
-bool NETHER::gamecycle(int w,int h)
+bool NETHER::gamecycle(int w, int h)
 {
-	int i;
-	bool retval=true;
-	unsigned char *keyboard;
+  bool retval = true;
+  unsigned char *keyboard;
 
-	SDL_PumpEvents();
-	keyboard = SDL_GetKeyState(NULL);
-
-#ifdef _WRITE_REPORT_
-	fprintf(debug_fp,"Cycle start.\n");
-	fprintf(debug_fp,"game_state: %i\n",game_state);
-	fflush(debug_fp);
-#endif
-
-	switch(game_state) {
-	case STATE_PLAYING:
-		retval=cycle(keyboard);
-		break;
-	case STATE_CONSTRUCTION:
-		retval=construction_cycle(keyboard);
-		break;
-	case STATE_PAUSE:
-	case STATE_SAVINGGAME:
-	case STATE_LOADINGGAME:
-		retval=option_cycle(keyboard);
-		break;
-	} /* switch */ 
-
-	for(i=0;i<SDLK_LAST;i++) old_keyboard[i]=keyboard[i];
+  SDL_PumpEvents();
+  keyboard = SDL_GetKeyState(NULL);
 
 #ifdef _WRITE_REPORT_
-	fprintf(debug_fp,"Cycle end: %i\n",retval);
-	fflush(debug_fp);
+  fprintf(debug_fp,"Cycle start.\n");
+  fprintf(debug_fp,"game_state: %i\n",game_state);
+  fflush(debug_fp);
 #endif
 
-	return retval;
-} /* NETHER::gamecycle */ 
+  switch(game_state) {
+  case STATE_PLAYING:
+    retval = cycle(keyboard);
+    break;
+  case STATE_CONSTRUCTION:
+    retval = construction_cycle(keyboard);
+    break;
+  case STATE_PAUSE:
+  case STATE_SAVINGGAME:
+  case STATE_LOADINGGAME:
+    retval = option_cycle(keyboard);
+    break;
+  }
+
+  for (int i = 0; i < SDLK_LAST; i++)
+    old_keyboard[i] = keyboard[i];
+
+#ifdef _WRITE_REPORT_
+  fprintf(debug_fp,"Cycle end: %i\n",retval);
+  fflush(debug_fp);
+#endif
+
+  return retval;
+}
 
 
 void NETHER::gameredraw(int w,int h)

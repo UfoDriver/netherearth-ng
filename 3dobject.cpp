@@ -13,8 +13,8 @@
 #include "myglutaux.h"
 
 
-#define ST_INIT         0
-#define ST_DATA         1
+const int ST_INIT = 0;
+const int ST_DATA = 1;
 
 extern void Normal (double vector1[3],double vector2[3],double resultado[3]);
 
@@ -24,7 +24,6 @@ C3DObject::C3DObject()
 {
 	puntos=0;
 	ncaras=0;
-	puntos=0;
 	normales=0;
 	caras=0;
 	r=0;
@@ -81,7 +80,7 @@ bool C3DObject::loadASC(const char* file)
 	end=false;
 	state=ST_INIT; 
 	do{
-		if (1!=fscanf(fp,"%s",buffer)) {
+		if (1!=fscanf(fp,"%255s",buffer)) {
 			end=true;
 		} else {
 			switch(state) {
@@ -117,7 +116,7 @@ bool C3DObject::loadASC(const char* file)
 					/* ... */ 
 				} /* if */ 
 				if (strcmp(buffer,"Vertex")==0) {
-					if (1==fscanf(fp,"%s",buffer2) &&
+					if (1==fscanf(fp,"%255s",buffer2) &&
 						0!=strcmp(buffer2,"list:")) {
 						if (3==fscanf(fp,"%s %s %s",buffer3,buffer4,buffer5)) {
 							buffer2[strlen(buffer2)]=0;

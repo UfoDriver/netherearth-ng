@@ -34,7 +34,7 @@ public:
   bool load(FILE *fp);
   bool save(FILE *fp);
 
-  double x,y,z;
+  float x, y, z;
 };
 
 std::ostream& operator<<(std::ostream& out, const Vector& vector);

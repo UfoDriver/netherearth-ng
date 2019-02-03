@@ -19,6 +19,7 @@
 #include "menu.h"
 #include "radar.h"
 #include "soundmanager.h"
+#include "SDL/SDL.h"
 
 
 const float COLISION_TEST_THRESHOLD = 9.0;
@@ -159,7 +160,7 @@ private:
 	int *map;
 	float lightpos[4];
 	Vector lightposv;
-	unsigned char old_keyboard[322];
+	unsigned char old_keyboard[SDLK_LAST];
 
 	float zoom;
 	Vector camera,viewp;
