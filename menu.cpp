@@ -3,8 +3,8 @@
 #endif
 
 #include "stdio.h"
-#include "string.h"
 #include <iostream>
+#include <algorithm>
 
 #include "GL/gl.h"
 #include "GL/glu.h"
@@ -13,7 +13,6 @@
 #include "myglutaux.h"
 #include "glprintf.h"
 
-#include "list.h"
 #include "vector.h"
 #include "cmc.h"
 #include "3dobject.h"
@@ -29,8 +28,8 @@ void Menu::draw(int width, int height)
 {
   if (needsRedraw != 0) {
     needsRedraw--;
-    float lightpos2[4] = {0,0,1000,0};
-    int split = int((width * 25.0F)/32.0F);
+    float lightpos2[4] = {0, 0, 1000, 0};
+    int split = int((width * 25.0F) / 32.0F);
 
     glLightfv(GL_LIGHT0,GL_POSITION, lightpos2);
     glClearColor(0,0,0.2,0);
@@ -285,13 +284,9 @@ void Menu::drawStatus()
 
 void Menu::drawButtons()
 {
-  List<StatusButton> l;
-  StatusButton *b;
   float angle, cf;
 
-  l.Instance(buttons);
-  l.Rewind();
-  while(l.Iterate(b)) {
+  for (StatusButton* b: buttons) {
     if (b->status >= -16) {
       angle=(float(b->status) * 90.0) / 16.0;
       cf=float((16 - abs(b->status))) / 16.0;
@@ -324,26 +319,22 @@ void Menu::drawButtons()
 
 void Menu::cycle()
 {
-  List<StatusButton> l;
-  List<StatusButton> todelete;
-  StatusButton *b;
-
-  l.Instance(buttons);
-  l.Rewind();
-  while (l.Iterate(b)) {
+  auto i = std::begin(buttons);
+  auto end = std::end(buttons);
+  while (i != end) {
+    auto b = *i;
     if (b->status != 0) {
       b->status++;
       needsRedraw = 2;
       if (b->status >= 16) {
-        todelete.Add(b);
+        delete b;
+        i = buttons.erase(i);
+      } else {
+        i++;
       }
+    } else {
+      i++;
     }
-  }
-
-  while (!todelete.EmptyP()) {
-    b = todelete.Extract();
-    buttons.DeleteElement(b);
-    delete b;
   }
 }
 
@@ -489,47 +480,38 @@ void Menu::killmenu(MENU_TYPES menu)
 
 
 void Menu::newbutton(StatusButton::BUTTON_NAMES ID, int x, int y, int sx, int sy,
-const std::string& t1, const std::string& t2, float r, float g, float b)
+                     const std::string& t1, const std::string& t2, float r, float g, float b)
 {
-  buttons.Add(new StatusButton(ID, x, y, sx, sy, t1, t2, r, g, b, -16));
+  buttons.push_back(new StatusButton(ID, x, y, sx, sy, t1, t2, r, g, b, -16));
   needsRedraw = true;
 }
 
 
 void Menu::newbuttondelayed(StatusButton::BUTTON_NAMES ID, int x, int y, int sx, int sy,
-const std::string& t1, const std::string& t2, float r, float g, float b)
+                            const std::string& t1, const std::string& t2, float r, float g, float b)
 {
-  buttons.Add(new StatusButton(ID, x, y, sx, sy, t1, t2, r, g, b, -32));
+  buttons.push_back(new StatusButton(ID, x, y, sx, sy, t1, t2, r, g, b, -32));
   needsRedraw = true;
 }
 
 
 void Menu::killbutton(StatusButton::BUTTON_NAMES ID)
 {
-  List<StatusButton> l;
-  StatusButton *b;
-
-  l.Instance(buttons);
-  l.Rewind();
-  while(l.Iterate(b)) {
-    if (b->ID == ID) b->status = 1;
-  }
+  std::for_each(std::cbegin(buttons), std::cend(buttons),
+                [ID](StatusButton* b) {if (b->ID == ID) b->status = 1; });
   needsRedraw = true;
 }
 
 
 StatusButton* Menu::getbutton(StatusButton::BUTTON_NAMES ID)
 {
-  List<StatusButton> l;
-  StatusButton *b;
-
-  l.Instance(buttons);
-  l.Rewind();
-  while(l.Iterate(b)) {
-    if (b->ID == ID) return b;
+  auto result = find_if(std::cbegin(buttons), std::cend(buttons),
+                        [ID](StatusButton* b) {return b->ID == ID;});
+  if (result != end(buttons)) {
+    return *result;
+  } else {
+    return 0;
   }
-
-  return 0;
 }
 
 

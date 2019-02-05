@@ -1,8 +1,10 @@
 #ifndef MENU_H
 #define MENU_H
 
+#include <list>
+
 #include "statusbutton.h"
-#include "list.h"
+
 
 class NETHER;
 
@@ -20,8 +22,9 @@ public:
                    TARGETD_MENU,
                    TARGETC_MENU,
                    ALL_MENUS};
-  explicit Menu(const NETHER* nether): needsRedraw(0), act_menu(GENERAL_MENU), act_button(StatusButton::COMBAT1_BUTTON),
-                                     nether(nether) {};
+  explicit Menu(const NETHER* nether): needsRedraw(0), act_menu(GENERAL_MENU),
+                                       act_button(StatusButton::COMBAT1_BUTTON),
+                                       nether(nether) {};
   void draw(int width, int height);
   void cycle();
   void replaceMenu(MENU_TYPES oldMenu, MENU_TYPES newMenu, StatusButton::BUTTON_NAMES activeButton);
@@ -43,7 +46,7 @@ private:
   void drawButtons();
   void drawStatus();
   const NETHER* nether;
-  List<StatusButton> buttons;
+  std::list<StatusButton *> buttons;
 };
 
 #endif // MENU_H
