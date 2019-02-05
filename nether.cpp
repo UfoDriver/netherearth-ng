@@ -37,12 +37,14 @@ extern int level;
 extern float MINY,MAXY,MINX,MAXX;
 extern bool show_radar;
 
+
 #ifdef _WRITE_REPORT_
 FILE *debug_fp=0;
 #endif
 
 
-NETHER::NETHER(const std::string& mapname): menu(this), radar(this)
+NETHER::NETHER(const std::string& mapname): menu(this), radar(this), n_objs(12), n_buildings(9),
+                                            n_pieces(11), n_bullets(3)
 {
 
 #ifdef _WRITE_REPORT_
@@ -249,21 +251,19 @@ void NETHER::loadObjects()
   float r[12]={0.0    ,0.7f ,0.6f  ,0.5f ,0.0    ,0.0    ,0.0    ,0.0    ,0.0    ,0.0    ,0.0    ,0.0};
   float g[12]={0.733f ,0.5f ,0.45f ,0.4f ,0.733f ,0.733f ,0.733f ,0.733f ,0.733f ,0.733f ,0.733f ,0.733f};
   float b[12]={0.0    ,0.0  ,0.0   ,0.0  ,0.0    ,0.0    ,0.0    ,0.0    ,0.0    ,0.0    ,0.0    ,0.0};
-  int i;
 
-  n_objs=12;
-  tile=new C3DObject *[n_objs];
-  tile_r=new float[n_objs];
-  tile_g=new float[n_objs];
-  tile_b=new float[n_objs];
-  for(i=0;i<n_objs;i++) {
-    tile[i]=new C3DObject(tnames[i], "textures/");
+  tile = new C3DObject *[n_objs];
+  tile_r = new float[n_objs];
+  tile_g = new float[n_objs];
+  tile_b = new float[n_objs];
+  for (int i = 0; i < n_objs; i++) {
+    tile[i] = new C3DObject(tnames[i], "textures/");
     tile[i]->normalize(0.50f);
     tile[i]->makepositive();
-    tile_r[i]=r[i];
-    tile_g[i]=g[i];
-    tile_b[i]=b[i];
-  } /* for */ 
+    tile_r[i] = r[i];
+    tile_g[i] = g[i];
+    tile_b[i] = b[i];
+  }
 
   tile[4]->moveobject(0,0,-0.05);
   tile[5]->moveobject(0,0,-0.05);
@@ -272,9 +272,8 @@ void NETHER::loadObjects()
   tile[8]->moveobject(0,0,-0.05);
   tile[9]->moveobject(0,0,-0.05);
 
-  n_buildings=9;
   building_tile=new Shadow3DObject *[n_buildings];
-  for(i=0;i<n_buildings;i++) {
+  for(int i=0;i<n_buildings;i++) {
     building_tile[i]=new Shadow3DObject(bnames[i], "textures/");
     building_tile[i]->normalize(bscale[i]);
     building_tile[i]->makepositive();
@@ -282,10 +281,9 @@ void NETHER::loadObjects()
   building_tile[5]->moveobject(0,0,0.01);
   building_tile[6]->moveobject(0.4,0.4,0.0);
 
-  n_pieces=11;
   piece_tile[0]=new Piece3DObject *[n_pieces];
   piece_tile[1]=new Piece3DObject *[n_pieces];
-  for(i=0;i<n_pieces;i++) {
+  for(int i=0; i <n_pieces;i++) {
     piece_tile[0][i]=new Piece3DObject(pnames[i],"textures/");
     piece_tile[0][i]->normalize(pscale[i]);
     piece_tile[0][i]->makepositive();
@@ -321,18 +319,17 @@ void NETHER::loadObjects()
   ship->normalize(0.5f);
   ship->makepositive();
 
-  n_bullets=3;
   bullet_tile=new Piece3DObject *[n_bullets];
-  for(i=0;i<n_bullets;i++) {
+  for(int i=0;i<n_bullets;i++) {
     bullet_tile[i]=new Piece3DObject(bullnames[i],"textures/");
     bullet_tile[i]->normalize(bullscale[i]);
   } /* for */
 
   ship->ComputeShadow(lightposv);
-  for(i=0;i<n_buildings;i++) building_tile[i]->ComputeShadow(lightposv);
-  for(i=0;i<n_pieces;i++) piece_tile[0][i]->ComputeFixedShadows(lightposv);
-  for(i=0;i<n_pieces;i++) piece_tile[1][i]->ComputeFixedShadows(lightposv);
-  for(i=0;i<n_bullets;i++) bullet_tile[i]->ComputeFixedShadows(lightposv);
+  for(int i=0;i<n_buildings;i++) building_tile[i]->ComputeShadow(lightposv);
+  for(int i=0;i<n_pieces;i++) piece_tile[0][i]->ComputeFixedShadows(lightposv);
+  for(int i=0;i<n_pieces;i++) piece_tile[1][i]->ComputeFixedShadows(lightposv);
+  for(int i=0;i<n_bullets;i++) bullet_tile[i]->ComputeFixedShadows(lightposv);
 
   construction_tile[0]=new C3DObject("models/construction1.asc","textures/");
   construction_tile[1]=new C3DObject("models/construction2.asc","textures/");

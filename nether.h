@@ -86,7 +86,7 @@ public:
   explicit NETHER(const std::string& mapname);
   ~NETHER();
 
-	void loadObjects();
+  void loadObjects();
 	void deleteObjects();
 
 	bool gamecycle(int w,int h);
@@ -190,17 +190,17 @@ private:
 	int game_started;
 
 	/* Graphics: */ 
-	int n_objs;
+	const int n_objs;
 	C3DObject **tile;
 	float *tile_r,*tile_g,*tile_b;
 	Shadow3DObject *ship;
-	int n_buildings;
+	const int n_buildings;
 	Shadow3DObject **building_tile;
-	int n_pieces;
+	const int n_pieces;
 	Piece3DObject **piece_tile[2];
 	C3DObject *construction_tile[3];
 	C3DObject *message_tile[3];
-	int n_bullets;
+	const int n_bullets;
 	Piece3DObject **bullet_tile;
 
 	/* Status variables: */
