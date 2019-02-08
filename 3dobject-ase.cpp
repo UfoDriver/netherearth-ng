@@ -9,6 +9,7 @@
 #include "cmc.h"
 #include "3dobject.h"
 
+#include <iostream>
 #include "vector.h"
 #include "myglutaux.h"
 
@@ -24,7 +25,7 @@ bool nexttaginside(const char *tag, FILE *fp);
 bool skipinfo(FILE *fp);
 bool readcomment(char *data, FILE *fp);
 
-bool C3DObject::loadASE(const char* file, const char* texturedir)
+bool C3DObject::loadASE(const std::string& filename, const std::string& texturedir)
 {
 	int i=0,j=0;
 	int *smooth=0;
@@ -34,7 +35,7 @@ bool C3DObject::loadASE(const char* file, const char* texturedir)
 	char buffer[256];
 	FILE *fp;
 
-	fp=fopen(file,"r");
+	fp=fopen(filename.c_str(),"r");
 	if (fp==NULL) return false;
 
 	/* Look for the materials: */ 
@@ -85,7 +86,7 @@ bool C3DObject::loadASE(const char* file, const char* texturedir)
 				} /* for */ 
 				if (k!=0) k++;
 
-				sprintf(bmpname2,"%s/%s",texturedir,bmpname+k);
+				sprintf(bmpname2,"%s/%s",texturedir.c_str(),bmpname+k);
 				material_bitmaps[j][0]=new char[strlen(bmpname2)+1];
 				strcpy(material_bitmaps[j][0],bmpname2);
 //                              materials[j][0]=createTexture(bmpname2);
@@ -125,7 +126,7 @@ bool C3DObject::loadASE(const char* file, const char* texturedir)
 					} /* for */ 
 					if (k!=0) k++;
 
-					sprintf(bmpname2,"%s/%s",texturedir,bmpname+k);
+					sprintf(bmpname2,"%s/%s",texturedir.c_str(),bmpname+k);
 					material_bitmaps[j][i]=new char[strlen(bmpname2)+1];
 					strcpy(material_bitmaps[j][i],bmpname2);
 //                                      materials[j][i]=createTexture(bmpname2);

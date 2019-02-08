@@ -3,6 +3,10 @@
 #endif
 #include "GL/gl.h"
 
+#include <iostream>
+#include <fstream>
+#include <sstream>
+
 #include "string.h"
 #include "stdio.h"
 
@@ -13,198 +17,169 @@
 #include "myglutaux.h"
 
 
-const int ST_INIT = 0;
-const int ST_DATA = 1;
-
 extern void Normal (double vector1[3],double vector2[3],double resultado[3]);
 
 
 
-C3DObject::C3DObject()
+C3DObject::C3DObject(): ncaras(0), puntos(0), normales(0), caras(0), r(0), g(0), b(0),
+                        display_list(-1), tx(0), ty(0), textures(0)
 {
-	puntos=0;
-	ncaras=0;
-	normales=0;
-	caras=0;
-	r=0;
-	g=0;
-	b=0;
-	display_list=-1;
-	tx=0;
-	ty=0;
-	textures=0;
-} /* C3DObject::C3DObject */ 
+}
 
 
-
-C3DObject::C3DObject(const char* file, const char* texturedir)
+C3DObject::C3DObject(const std::string& filename, const std::string& texturedir):
+  npuntos(0), ncaras(0), puntos(0), normales(0), caras(0), r(0), g(0), b(0), display_list(-1),
+  tx(0), ty(0), textures(0)
 {
-	int l;
+  int l = filename.length();
 
-	npuntos=0;
-	ncaras=0;
-	puntos=0;
-	normales=0;
-	caras=0;
-	r=g=b=0;
-	display_list=-1;
-	tx=0;
-	ty=0;
-	textures=0;
+  if (filename[l - 1] == 'c' || filename[l - 1] == 'C')
+    loadASC(filename);
+  else
+    loadASE(filename, texturedir);
+}
 
-	l=strlen(file);
-
-	if (file[l-1]=='c' || file[l-1]=='C') loadASC(file);
-									 else loadASE(file,texturedir);
-} /* C3DObject::C3DObject */ 
-
-
-bool C3DObject::loadASC(const char* file)
+bool C3DObject::readVertex(const std::string& data)
 {
-	FILE *fp;
-	char buffer[256],buffer2[256],buffer3[256],buffer4[256],buffer5[256];
-	bool end;
-	int state;
-	int i;
+  if (!data.compare(0, 12, "Vertex list:")) return false;
 
-	int act_face,tmp;
-	float x,y,z;
-	int p1,p2,p3;
+  std::istringstream inStr(data);
+  int vertexNumber = 0;
+  float x, y, z;
+  // @TODO: fix me, puntos and indexing are ugly
+  inStr.ignore(100, ' ');
+  inStr >> vertexNumber;
+  inStr.ignore(100, ':');
+  inStr.ignore(100, ':');
+  inStr >> x;
+  inStr.ignore(100, ':');
+  inStr >> y;
+  inStr.ignore(100, ':');
+  inStr >> z;
+  puntos[vertexNumber * 3] = x;
+  puntos[vertexNumber * 3 + 1] = y;
+  puntos[vertexNumber * 3 + 2] = z;
+  // @TODO: fixme
+  // if (textures) {
+  //   if (2==fscanf(fp,"%s %s",buffer3,buffer4)) {
+  //     if (1==sscanf(buffer3+2,"%f",&x) &&
+  //         1==sscanf(buffer4+2,"%f",&y)) {}
+  //   }
+  // }
+  return true;
+}
 
-	int *smooth;
 
-	fp=fopen(file,"r");
-	if (fp==NULL) return false;
+int C3DObject::readFace(const std::string& data, int* smooth) {
+  std::istringstream inStr(data);
+  int p1, p2, p3;
+  int act_face;
+  inStr.ignore(100, ' ');
+  inStr >> act_face;
+  inStr.ignore(100, ':');
+  inStr.ignore(100, ':');
+  inStr >> p1;
+  inStr.ignore(100, ':');
+  inStr >> p2;
+  inStr.ignore(100, ':');
+  inStr >> p3;
+  inStr.ignore(100, '\n');
 
-	/* Importar un fichero .ASC de 3DStudio */ 
-	end=false;
-	state=ST_INIT; 
-	do{
-		if (1!=fscanf(fp,"%255s",buffer)) {
-			end=true;
-		} else {
-			switch(state) {
-			case ST_INIT:
-				if (strcmp(buffer,"Vertices:")==0) {
-					if (1==fscanf(fp,"%i",&npuntos)) {
-						puntos=new float[npuntos*3];
-						for(i=0;i<npuntos*3;i++) puntos[i]=0.0F;
-						if (ncaras!=0) state=ST_DATA;
-					} /* if */ 
-				} /* if */ 
-				if (strcmp(buffer,"Faces:")==0) {
-					if (1==fscanf(fp,"%i",&ncaras)) {
-						caras=new int[ncaras*3];
-						smooth=new int[ncaras];
-						r=new float[ncaras];
-						g=new float[ncaras];
-						b=new float[ncaras];
-						for(i=0;i<ncaras*3;i++) {
-							caras[i]=0;
-						} /* for */ 
-						for(i=0;i<ncaras;i++) {
-							r[i]=0.5;
-							g[i]=0.5;
-							b[i]=0.5;
-						} /* for */ 
-						if (npuntos!=0) state=ST_DATA;
-					} /* if */ 
-				} /* if */ 
-				break;
-			case ST_DATA:
-				if (strcmp(buffer,"Mapped")==0) {
-					/* ... */ 
-				} /* if */ 
-				if (strcmp(buffer,"Vertex")==0) {
-					if (1==fscanf(fp,"%255s",buffer2) &&
-						0!=strcmp(buffer2,"list:")) {
-						if (3==fscanf(fp,"%s %s %s",buffer3,buffer4,buffer5)) {
-							buffer2[strlen(buffer2)]=0;
-							if (1==sscanf(buffer2,"%i",&tmp) &&
-								1==sscanf(buffer3+2,"%f",&x) &&
-								1==sscanf(buffer4+2,"%f",&y) &&
-								1==sscanf(buffer5+2,"%f",&z)) {
-								puntos[tmp*3]=x;
-								puntos[tmp*3+1]=y;
-								puntos[tmp*3+2]=z;
-								/* Test for textures: */ 
-								if (textures!=0) {
-									if (2==fscanf(fp,"%s %s",buffer3,buffer4)) {
-										if (1==sscanf(buffer3+2,"%f",&x) &&
-											1==sscanf(buffer4+2,"%f",&y)) {
-											/* ... */ 
-										} /* if */ 
-									} /* if */ 
-								}/* if */ 
-							} /* if */ 
-						} /* if */ 
-					} /* if */ 
-				} /* if */ 
-				if (strcmp(buffer,"Face")==0) {
-					if (1==fscanf(fp,"%s",buffer2) &&
-						0!=strcmp(buffer2,"list:")) {
-						if (3==fscanf(fp,"%s %s %s",buffer3,buffer4,buffer5)) {
-							buffer2[strlen(buffer2)]=0;
-							if (1==sscanf(buffer2,"%i",&act_face) &&
-								1==sscanf(buffer3+2,"%i",&p1) &&
-								1==sscanf(buffer4+2,"%i",&p2) &&
-								1==sscanf(buffer5+2,"%i",&p3)) {
-								caras[act_face*3]=p1;
-								caras[act_face*3+1]=p2;
-								caras[act_face*3+2]=p3;
-								smooth[act_face]=0;
-							} /* if */ 
-						} /* if */ 
-					} /* if */ 
-				} /* if */ 
+  caras[act_face * 3] = p1;
+  caras[act_face * 3 + 1] = p2;
+  caras[act_face * 3 + 2] = p3;
+  smooth[act_face] = 0;
+  return act_face;
+}
 
-				if (strcmp(buffer,"Material:")==0) {
-					int c,i;
 
-					buffer2[0]=0;
-					while(fgetc(fp)!='\"');
-					i=0;
-					do{
-						c=fgetc(fp);
-						buffer2[i++]=c;
-					}while(c!='\"');
-					i--;
-					buffer2[i++]='.';
-					buffer2[i++]='b';
-					buffer2[i++]='m';
-					buffer2[i++]='p';
-					buffer2[i]=0;
-					/* ... */ 
-				} /* if */ 
+bool C3DObject::readSmoothing(const std::string& data, int* smooth, int currentFace) {
+  std::istringstream inStr(data);
+  inStr.ignore(100, ':');
+  inStr >> smooth[currentFace];
+  return true;
+}
 
-				if (strcmp(buffer,"Smoothing:")==0) {
-					if (1==fscanf(fp,"%i",&p1)) {
-						smooth[act_face]=p1;
-					} /* if */                                      
-				} /* if */ 
-				break;
-			} /* switch */ 
-		} /* if */ 
-	}while(!end);
 
-	if (state==ST_INIT) {
-		if (puntos!=NULL) delete []puntos;
-		if (caras!=NULL) delete []caras;
-		npuntos=0;
-		ncaras=0;
-		puntos=NULL;
-		caras=NULL;
-		return false;
-	} /* if */ 
+bool C3DObject::loadASC(const std::string& filename)
+{
+  const int ST_INIT = 0;
+  const int ST_DATA = 1;
 
-	CalculaNormales(smooth);
-	cmc.set(puntos,npuntos);
+  int *smooth;
+  int state = ST_INIT;
+  int act_face;
 
-	delete []smooth;
+  std::ifstream inFile(filename);
+  if (!inFile.is_open()) return false;
 
-	fclose(fp); 
-	return true;
-} /* C3DObject::loadASC */ 
+
+  while (!inFile.eof()) {
+    std::string buffer;
+    std::getline(inFile, buffer);
+
+    switch(state) {
+      case ST_INIT:
+        if (buffer.find("Vertices:") != std::string::npos) {
+          std::istringstream iStr(buffer);
+          iStr.seekg(buffer.find("Vertices:") + 9);
+          iStr >> npuntos;
+          puntos = new float[npuntos * 3];
+          for(int i = 0; i < npuntos * 3; i++) puntos[i] = 0.0F;
+          if (ncaras != 0) state = ST_DATA;
+        }
+        if (buffer.find("Faces:") != std::string::npos) {
+          std::istringstream iStr(buffer);
+          iStr.seekg(buffer.find("Faces:") + 6);
+          iStr >> ncaras;
+          caras = new int[ncaras * 3];
+          smooth = new int[ncaras];
+          r = new float[ncaras];
+          g = new float[ncaras];
+          b = new float[ncaras];
+          for(int i = 0; i < ncaras * 3; i++) caras[i] = 0;
+          for(int i = 0;i < ncaras; i++) {
+            r[i] = 0.5;
+            g[i] = 0.5;
+            b[i] = 0.5;
+          }
+          if (npuntos != 0) state = ST_DATA;
+        }
+        break;
+      case ST_DATA:
+        if (!buffer.compare(0, 6, "Mapped")) {}
+        if (!buffer.compare(0, 6, "Vertex")) { readVertex(buffer); }
+        if (!buffer.compare(0, 4, "Face")) { act_face = readFace(buffer, smooth); }
+        if (!buffer.compare(0, 9, "Smoothing")) { readSmoothing(buffer, smooth, act_face); }
+
+        if (buffer == "Material:") {
+          // Not tested, we don't have models with material embedded
+          std::string buffer2;
+          inFile >> buffer2; // Should get quoted filename base
+          // buffer2.strip('"');
+          buffer2.append(".bmp");
+        }
+
+        break;
+    }
+  }
+
+  if (state == ST_INIT) {
+    if (puntos != NULL) delete[] puntos;
+    if (caras != NULL) delete[] caras;
+    npuntos = 0;
+    ncaras = 0;
+    puntos = NULL;
+    caras = NULL;
+    return false;
+  }
+
+  CalculaNormales(smooth);
+  cmc.set(puntos, npuntos);
+  delete[] smooth;
+
+  return true;
+}
 
 
 float C3DObject::normalize(void)

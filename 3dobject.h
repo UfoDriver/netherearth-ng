@@ -1,18 +1,24 @@
 #ifndef __BRAIN_3DOBJECT
 #define __BRAIN_3DOBJECT
 
+#include <string>
+#include <fstream>
+
 #include "cmc.h"
+
+
 
 class C3DObject {
 public:
-	C3DObject();
-	C3DObject(const char *file, const char *texturedir);
+  C3DObject();
+  C3DObject(const std::string& filename, const std::string& texturedir);
+
 	~C3DObject();
 
 	void refresh_display_lists(void);
 
-	bool loadASC(const char* file);
-	bool loadASE(const char* file, const char* texturedir);
+  bool loadASC(const std::string& filename);
+  bool loadASE(const std::string& filename, const std::string& texturedir);
 
 	bool valid(void);
 	void draw(void);
@@ -48,6 +54,11 @@ public:
 
 	float *tx,*ty;
 	unsigned int *textures;
+
+private:
+  bool readVertex(const std::string& data);
+  int readFace(const std::string& data, int* smooth);
+  bool readSmoothing(const std::string& data, int* smooth, int currentFace);
 };
 
 #endif
