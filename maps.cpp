@@ -223,8 +223,8 @@ void NETHER::drawmap(bool shadows)
 							if (((i*3+j*7)%m[(i+j+1)%8])==0) o=11;
 						} else {
 						} /* if */ 
-						if (detaillevel>=1) tile[o]->draw(tile_r[o],tile_g[o],tile_b[o]);
-									    else tile[o]->draw_notexture(tile_r[o],tile_g[o],tile_b[o]);
+						if (detaillevel>=1) tile[o]->draw(tileColors[o]);
+                        else tile[o]->draw_notexture(tileColors[o]);
 					} /* if */ 
 					glTranslatef(1.0,0.0,0.0);
 				} /* for */ 
@@ -247,56 +247,56 @@ void NETHER::drawmap(bool shadows)
 			glTranslatef(float(b->pos.x),float(b->pos.y),float(b->pos.z));
 			switch(b->type) {
 			case Building::B_FENCE:if (!shadows) {
-							if (detaillevel>=2) building_tile[5]->draw(0.2f,0.2f,0.2f);
-											else building_tile[5]->draw_notexture(0.2f,0.2f,0.2f);
+                if (detaillevel>=2) building_tile[5]->draw(Color(0.2f, 0.2f, 0.2f));
+                else building_tile[5]->draw_notexture(Color(0.2f, 0.2f, 0.2f));
 						 } else {
 							 glTranslatef(0,0,0.05f);
 							 building_tile[5]->DrawShadow(0,0,0,0.5);
 						 } /* if */ 
 						 break;
 			case Building::B_WALL1:if (!shadows) {
-							if (detaillevel>=2) building_tile[0]->draw(0.5,0.5,0.5);
-											else building_tile[0]->draw_notexture(0.5,0.5,0.5);
+                           if (detaillevel>=2) building_tile[0]->draw(Color(0.5, 0.5, 0.5));
+                           else building_tile[0]->draw_notexture(Color(0.5, 0.5, 0.5));
 						 } else {
 							 glTranslatef(0,0,0.05f);
 							 building_tile[0]->DrawShadow(0,0,0,0.5);
 						 } /* if */ 
 						 break;
 			case Building::B_WALL2:if (!shadows) {
-							if (detaillevel>=2) building_tile[1]->draw(0.5,0.5,0.5);
-											else building_tile[1]->draw_notexture(0.5,0.5,0.5);
+                           if (detaillevel>=2) building_tile[1]->draw(Color(0.5, 0.5, 0.5));
+                           else building_tile[1]->draw_notexture(Color(0.5, 0.5, 0.5));
 						 } else { 
 							 glTranslatef(0,0,0.05f);
 							 building_tile[1]->DrawShadow(0,0,0,0.5);
 						 } /* if */ 
 						 break;
 			case Building::B_WALL3:if (!shadows) {
-							if (detaillevel>=2) building_tile[2]->draw(0.3f,0.3f,0.3f);
-											else building_tile[2]->draw_notexture(0.5,0.5,0.5);
+                           if (detaillevel>=2) building_tile[2]->draw(Color(0.3f, 0.3f, 0.3f));
+                           else building_tile[2]->draw_notexture(Color(0.5, 0.5, 0.5));
 						 } else {
 							 glTranslatef(0,0,0.05f);
 							 building_tile[2]->DrawShadow(0,0,0,0.5);
 						 } /* if */ 
 						 break;
 			case Building::B_WALL4:if (!shadows) {
-							if (detaillevel>=2) building_tile[3]->draw(0.5,0.5,0.5);
-											else building_tile[3]->draw_notexture(0.5,0.5,0.5);
+                           if (detaillevel>=2) building_tile[3]->draw(Color(0.5, 0.5, 0.5));
+                           else building_tile[3]->draw_notexture(Color(0.5, 0.5, 0.5));
 						 } else {
 							 glTranslatef(0,0,0.05f);
 							 building_tile[3]->DrawShadow(0,0,0,0.5);
 						 } /* if */ 
 						 break;
 			case Building::B_WALL5:if (!shadows) {
-							if (detaillevel>=2) building_tile[4]->draw(0.5,0.5,0.5);
-											else building_tile[4]->draw_notexture(0.5,0.5,0.5);
+                           if (detaillevel>=2) building_tile[4]->draw(Color(0.5, 0.5, 0.5));
+                           else building_tile[4]->draw_notexture(Color(0.5, 0.5, 0.5));
 						 } else {
 							 glTranslatef(0,0,0.05f);
 							 building_tile[4]->DrawShadow(0,0,0,0.5);
 						 } /* if */ 
 						 break;
 			case Building::B_WALL6:if (!shadows) {
-							if (detaillevel>=2) building_tile[7]->draw(0.3f,0.3f,0.3f);
-											else building_tile[7]->draw_notexture(0.5,0.5,0.5);
+                           if (detaillevel>=2) building_tile[7]->draw(Color(0.3f, 0.3f, 0.3f));
+                           else building_tile[7]->draw_notexture(Color(0.5, 0.5, 0.5));
 						 } else {
 							 glTranslatef(0,0,0.05f);
 							 building_tile[7]->DrawShadow(0,0,0,0.5);
@@ -304,11 +304,11 @@ void NETHER::drawmap(bool shadows)
 						 break;
 			case Building::B_FACTORY_ELECTRONICS:
 						 if (!shadows) {
-							 if (detaillevel>=2) building_tile[4]->draw(0.5,0.5,0.5);
-											 else building_tile[4]->draw_notexture(0.5,0.5,0.5);
+                           if (detaillevel>=2) building_tile[4]->draw(Color(0.5, 0.5, 0.5));
+                           else building_tile[4]->draw_notexture(Color(0.5, 0.5, 0.5));
 							 glPushMatrix();
 							 glTranslatef(0.5,0.5,1);
-							 piece_tile[0][7]->draw_notexture(0.8f,0.8f,0.8f);
+							 piece_tile[0][7]->draw_notexture(Color(0.8f, 0.8f, 0.8f));
 							 glPopMatrix();
 						 } else {
 							 glPushMatrix();
@@ -322,7 +322,7 @@ void NETHER::drawmap(bool shadows)
 						 if (b->owner==1) {
 							if (!shadows) {
 								glTranslatef(0,-1,1);
-								building_tile[6]->draw(0.3f,0.3f,0.8f);
+								building_tile[6]->draw(Color(0.3f, 0.3f, 0.8f));
 							} else {
 								glTranslatef(float(-light.x),float(-light.y)-1,0.05f);
 								building_tile[6]->DrawShadow(0,0,0,0.5);
@@ -331,7 +331,7 @@ void NETHER::drawmap(bool shadows)
 						 if (b->owner==2) {
 							if (!shadows) {
 								glTranslatef(0,-1,1);
-								building_tile[6]->draw(0.8f,0.3f,0.3f);
+								building_tile[6]->draw(Color(0.8f, 0.3f, 0.3f));
 							} else {
 								glTranslatef(float(-light.x),float(-light.y)-1,0.05f);
 								building_tile[6]->DrawShadow(0,0,0,0.5);
@@ -340,11 +340,11 @@ void NETHER::drawmap(bool shadows)
 						 break;
 			case Building::B_FACTORY_NUCLEAR:
 						 if (!shadows) {
-							 if (detaillevel>=2) building_tile[4]->draw(0.5,0.5,0.5);
-											 else building_tile[4]->draw_notexture(0.5,0.5,0.5);
+                           if (detaillevel>=2) building_tile[4]->draw(Color(0.5, 0.5, 0.5));
+                           else building_tile[4]->draw_notexture(Color(0.5, 0.5, 0.5));
 							 glPushMatrix();
 							 glTranslatef(0.5,0.5,1);
-							 piece_tile[0][6]->draw_notexture(0.8f,0.8f,0.8f);
+							 piece_tile[0][6]->draw_notexture(Color(0.8f, 0.8f, 0.8f));
 							 glPopMatrix();
 						 } else {
 							 glPushMatrix();
@@ -358,7 +358,7 @@ void NETHER::drawmap(bool shadows)
 						 if (b->owner==1) {
 							if (!shadows) {
 								glTranslatef(0,-1,1);
-								building_tile[6]->draw(0.3f,0.3f,0.8f);
+								building_tile[6]->draw(Color(0.3f, 0.3f, 0.8f));
 							} else {
 								glTranslatef(float(-light.x),float(-light.y)-1,0.05f);
 								building_tile[6]->DrawShadow(0,0,0,0.5);
@@ -367,7 +367,7 @@ void NETHER::drawmap(bool shadows)
 						 if (b->owner==2) {
 							if (!shadows) {
 								glTranslatef(0,-1,1);
-								building_tile[6]->draw(0.8f,0.3f,0.3f);
+								building_tile[6]->draw(Color(0.8f,0.3f,0.3f));
 							} else {
 								glTranslatef(float(-light.x),float(-light.y)-1,0.05f);
 								building_tile[6]->DrawShadow(0,0,0,0.5);
@@ -376,11 +376,11 @@ void NETHER::drawmap(bool shadows)
 						 break;
 			case Building::B_FACTORY_PHASERS:
 						 if (!shadows) {
-							 if (detaillevel>=2) building_tile[4]->draw(0.5,0.5,0.5);
-											 else building_tile[4]->draw_notexture(0.5,0.5,0.5);
+                           if (detaillevel>=2) building_tile[4]->draw(Color(0.5, 0.5, 0.5));
+                           else building_tile[4]->draw_notexture(Color(0.5, 0.5, 0.5));
 							 glPushMatrix();
 							 glTranslatef(0.5,0.5,1);
-							 piece_tile[0][5]->draw_notexture(0.8f,0.8f,0.8f);
+							 piece_tile[0][5]->draw_notexture(Color(0.8f, 0.8f, 0.8f));
 							 glPopMatrix();
 						 } else {
 							 glPushMatrix();
@@ -394,7 +394,7 @@ void NETHER::drawmap(bool shadows)
 						 if (b->owner==1) {
 							if (!shadows) {
 								glTranslatef(0,-1,1);
-								building_tile[6]->draw(0.3f,0.3f,0.8f);
+								building_tile[6]->draw(Color(0.3f, 0.3f, 0.8f));
 							} else {
 								glTranslatef(float(-light.x),float(-light.y)-1,0.05f);
 								building_tile[6]->DrawShadow(0,0,0,0.5);
@@ -403,7 +403,7 @@ void NETHER::drawmap(bool shadows)
 						 if (b->owner==2) {
 							if (!shadows) {
 								glTranslatef(0,-1,1);
-								building_tile[6]->draw(0.8f,0.3f,0.3f);
+								building_tile[6]->draw(Color(0.8f, 0.3f, 0.3f));
 							} else {
 								glTranslatef(float(-light.x),float(-light.y)-1,0.05f);
 								building_tile[6]->DrawShadow(0,0,0,0.5);
@@ -412,11 +412,11 @@ void NETHER::drawmap(bool shadows)
 						 break;
 			case Building::B_FACTORY_MISSILES:
 						 if (!shadows) {
-							 if (detaillevel>=2) building_tile[4]->draw(0.5,0.5,0.5);
-											 else building_tile[4]->draw_notexture(0.5,0.5,0.5);
+                           if (detaillevel>=2) building_tile[4]->draw(Color(0.5, 0.5, 0.5));
+                           else building_tile[4]->draw_notexture(Color(0.5, 0.5, 0.5));
 							 glPushMatrix();
 							 glTranslatef(0.5,0.5,1);
-							 piece_tile[0][4]->draw_notexture(0.8f,0.8f,0.8f);
+							 piece_tile[0][4]->draw_notexture(Color(0.8f, 0.8f, 0.8f));
 							 glPopMatrix();
 						 } else {
 							 glPushMatrix();
@@ -430,7 +430,7 @@ void NETHER::drawmap(bool shadows)
 						 if (b->owner==1) {
 							if (!shadows) {
 								glTranslatef(0,-1,1);
-								building_tile[6]->draw(0.3f,0.3f,0.8f);
+								building_tile[6]->draw(Color(0.3f, 0.3f, 0.8f));
 							} else {
 								glTranslatef(float(-light.x),float(-light.y)-1,0.05f);
 								building_tile[6]->DrawShadow(0,0,0,0.5);
@@ -439,7 +439,7 @@ void NETHER::drawmap(bool shadows)
 						 if (b->owner==2) {
 							if (!shadows) {
 								glTranslatef(0,-1,1);
-								building_tile[6]->draw(0.8f,0.3f,0.3f);
+								building_tile[6]->draw(Color(0.8f, 0.3f, 0.3f));
 							} else {
 								glTranslatef(float(-light.x),float(-light.y)-1,0.05f);
 								building_tile[6]->DrawShadow(0,0,0,0.5);
@@ -448,11 +448,11 @@ void NETHER::drawmap(bool shadows)
 						 break;
 			case Building::B_FACTORY_CANNONS:
 						 if (!shadows) {
-							 if (detaillevel>=2) building_tile[4]->draw(0.5,0.5,0.5);
-											 else building_tile[4]->draw_notexture(0.5,0.5,0.5);
+                           if (detaillevel>=2) building_tile[4]->draw(Color(0.5, 0.5, 0.5));
+                           else building_tile[4]->draw_notexture(Color(0.5, 0.5, 0.5));
 							 glPushMatrix();
 							 glTranslatef(0.5,0.5,1);
-							 piece_tile[0][3]->draw_notexture(0.8f,0.8f,0.8f);
+							 piece_tile[0][3]->draw_notexture(Color(0.8f, 0.8f, 0.8f));
 							 glPopMatrix();
 						 } else {
 							 glPushMatrix();
@@ -466,7 +466,7 @@ void NETHER::drawmap(bool shadows)
 						 if (b->owner==1) {
 							if (!shadows) {
 								glTranslatef(0,-1,1);
-								building_tile[6]->draw(0.3f,0.3f,0.8f);
+								building_tile[6]->draw(Color(0.3f, 0.3f, 0.8f));
 							} else {
 								glTranslatef(float(-light.x),float(-light.y)-1,0.05f);
 								building_tile[6]->DrawShadow(0,0,0,0.5);
@@ -475,7 +475,7 @@ void NETHER::drawmap(bool shadows)
 						 if (b->owner==2) {
 							if (!shadows) {
 								glTranslatef(0,-1,1);
-								building_tile[6]->draw(0.8f,0.3f,0.3f);
+								building_tile[6]->draw(Color(0.8f, 0.3f, 0.3f));
 							} else {
 								glTranslatef(float(-light.x),float(-light.y)-1,0.05f);
 								building_tile[6]->DrawShadow(0,0,0,0.5);
@@ -484,11 +484,11 @@ void NETHER::drawmap(bool shadows)
 						 break; 
 			case Building::B_FACTORY_CHASSIS:
 						 if (!shadows) {
-							 if (detaillevel>=2) building_tile[4]->draw(0.5,0.5,0.5);
-											 else building_tile[4]->draw_notexture(0.5,0.5,0.5);
+                           if (detaillevel>=2) building_tile[4]->draw(Color(0.5, 0.5, 0.5));
+                           else building_tile[4]->draw_notexture(Color(0.5, 0.5, 0.5));
 							 glPushMatrix();
 							 glTranslatef(0.5,0.5,1);
-							 piece_tile[0][1]->draw_notexture(0.8f,0.8f,0.8f);
+							 piece_tile[0][1]->draw_notexture(Color(0.8f, 0.8f, 0.8f));
 							 glPopMatrix();
 						 } else {
 							 glPushMatrix();
@@ -502,7 +502,7 @@ void NETHER::drawmap(bool shadows)
 						 if (b->owner==1) {
 							if (!shadows) {
 								glTranslatef(0,-1,1);
-								building_tile[6]->draw(0.3f,0.3f,0.8f);
+								building_tile[6]->draw(Color(0.3f, 0.3f, 0.8f));
 							} else {
 								glTranslatef(float(-light.x),float(-light.y)-1,0.05f);
 								building_tile[6]->DrawShadow(0,0,0,0.5);
@@ -511,7 +511,7 @@ void NETHER::drawmap(bool shadows)
 						 if (b->owner==2) {
 							if (!shadows) {
 								glTranslatef(0,-1,1);
-								building_tile[6]->draw(0.8f,0.3f,0.3f);
+								building_tile[6]->draw(Color(0.8f, 0.3f, 0.3f));
 							} else {
 								glTranslatef(float(-light.x),float(-light.y)-1,0.05f);
 								building_tile[6]->DrawShadow(0,0,0,0.5);
@@ -520,8 +520,8 @@ void NETHER::drawmap(bool shadows)
 						 break;
 
 			case Building::B_WARBASE:if (!shadows) {
-							   if (detaillevel>=2) building_tile[8]->draw(0.5,0.5,0.5);
-											   else building_tile[8]->draw_notexture(0.5,0.5,0.5);
+                           if (detaillevel>=2) building_tile[8]->draw(Color(0.5, 0.5, 0.5));
+                           else building_tile[8]->draw_notexture(Color(0.5, 0.5, 0.5));
 						   } else {
 							   glTranslatef(0,0,0.05f);
 							   building_tile[8]->DrawShadow(0,0,0,0.5);
@@ -530,7 +530,7 @@ void NETHER::drawmap(bool shadows)
 						   if (b->owner==1) {
 							   if (!shadows) {
 								   glTranslatef(0,-2,1);
-								   building_tile[6]->draw(0.3f,0.3f,0.8f);
+								   building_tile[6]->draw(Color(0.3f, 0.3f, 0.8f));
 							   } else {
 								   glTranslatef(float(-light.x),float(-light.y)-2,0.05f);
 								   building_tile[6]->DrawShadow(0,0,0,0.5);
@@ -539,7 +539,7 @@ void NETHER::drawmap(bool shadows)
 						   if (b->owner==2) {
 							  if (!shadows) {
 								 glTranslatef(0,-2,1);
-								 building_tile[6]->draw(0.8f,0.3f,0.3f);
+								 building_tile[6]->draw(Color(0.8f, 0.3f, 0.3f));
 							  } else {
 								 glTranslatef(float(-light.x),float(-light.y)-2,0.05f);
 								 building_tile[6]->DrawShadow(0,0,0,0.5);

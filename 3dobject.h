@@ -21,14 +21,12 @@ public:
   bool loadASC(const std::string& filename);
   bool loadASE(const std::string& filename, const std::string& texturedir);
 
-  bool valid(void);
+  bool valid();
 
-	void draw(void);
-	void draw(float r,float g,float b);
-	void draw_notexture(float r,float g,float b);
-	void draw_notexture(float r,float g,float b,float a);
-
-	void drawcmc(float r,float g,float b);
+  void draw();
+  void draw(const Color& color);
+  void draw_notexture(const Color& color);
+  void drawcmc(const Color& color);
 
 	void CalculaNormales(int *smooth);
 
@@ -50,11 +48,10 @@ public:
 
   Color* faceColors;
 
-	int display_list;
+  int displayList;
+  CMC cmc;
 
-	CMC cmc;
-
-	float *tx,*ty;
+	float *tx, *ty;
 	unsigned int *textures;
 
 private:

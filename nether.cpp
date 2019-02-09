@@ -247,22 +247,26 @@ void NETHER::loadObjects()
                    0.5,0.5,1.0,
                    0.25,0.5,0.5}; 
   float bullscale[3]={0.05,0.3,0.4};
-
-  float r[12]={0.0    ,0.7f ,0.6f  ,0.5f ,0.0    ,0.0    ,0.0    ,0.0    ,0.0    ,0.0    ,0.0    ,0.0};
-  float g[12]={0.733f ,0.5f ,0.45f ,0.4f ,0.733f ,0.733f ,0.733f ,0.733f ,0.733f ,0.733f ,0.733f ,0.733f};
-  float b[12]={0.0    ,0.0  ,0.0   ,0.0  ,0.0    ,0.0    ,0.0    ,0.0    ,0.0    ,0.0    ,0.0    ,0.0};
+  Color colors[12] = {{0.0f, 0.733f, 0.0f},
+                      {0.7f, 0.5f, 0.0f},
+                      {0.6f, 0.45f, 0.0f},
+                      {0.5f, 0.4f, 0.0f},
+                      {0.0f, 0.733f, 0.0f},
+                      {0.0f, 0.733f, 0.0f},
+                      {0.0f, 0.733f, 0.0f},
+                      {0.0f, 0.733f, 0.0f},
+                      {0.0f, 0.733f, 0.0f},
+                      {0.0f, 0.733f, 0.0f},
+                      {0.0f, 0.733f, 0.0f},
+                      {0.0f, 0.733f, 0.0f}};
 
   tile = new C3DObject *[n_objs];
-  tile_r = new float[n_objs];
-  tile_g = new float[n_objs];
-  tile_b = new float[n_objs];
+  tileColors = new Color[n_objs];
   for (int i = 0; i < n_objs; i++) {
     tile[i] = new C3DObject(tnames[i], "textures/");
     tile[i]->normalize(0.50f);
     tile[i]->makepositive();
-    tile_r[i] = r[i];
-    tile_g[i] = g[i];
-    tile_b[i] = b[i];
+    tileColors[i] = colors[i];
   }
 
   tile[4]->moveobject(Vector(0, 0, -0.05));
@@ -352,12 +356,8 @@ void NETHER::deleteObjects()
 	for(int i=0; i < n_objs; i++) delete tile[i];
 	delete tile;
 	tile = 0;
-	delete tile_r;
-	tile_r = 0;
-	delete tile_g;
-	tile_g = 0;
-	delete tile_b;
-	tile_b = 0;
+    delete[] tileColors;
+    tileColors = NULL;
 	delete ship;
 	ship = 0;
 	for(int i = 0; i < n_buildings; i++) delete building_tile[i];
@@ -576,7 +576,7 @@ void NETHER::draw(int width, int height)
 
 		if (game_started>40) glTranslatef(0,0,(game_started-40)*2);
 		if (game_started<20) glTranslatef(0,0,(20-game_started)*2);
-		message_tile[0]->draw(1.0,1.0,1.0);
+		message_tile[0]->draw(Color(1.0, 1.0, 1.0));
 	} /* if */ 
 
 	if (game_finished>100) {
@@ -590,8 +590,8 @@ void NETHER::draw(int width, int height)
 
 		if (game_finished<120) glTranslatef(0,0,(120-game_finished)*2);
 		if (game_finished>240) glTranslatef(0,0,(game_finished-240)*2);
-		if (statistics[0][0]==0) message_tile[2]->draw(1.0,1.0,1.0);
-						    else message_tile[1]->draw(1.0,1.0,1.0);
+		if (statistics[0][0]==0) message_tile[2]->draw(Color(1.0, 1.0, 1.0));
+        else message_tile[1]->draw(Color(1.0, 1.0, 1.0));
 	} /* if */ 
 
 	/* Draw the RADAR screen: */ 
@@ -693,7 +693,7 @@ void NETHER::draw_game(bool shadows)
 	/* Draw the ship: */ 
 	glPushMatrix();
 	glTranslatef(shipp.x,shipp.y,shipp.z);
-	if (!shadows) ship->draw(0.7,0.7,0.7);
+	if (!shadows) ship->draw(Color(0.7, 0.7, 0.7));
 	glPopMatrix();
 
 	if (shadows) {

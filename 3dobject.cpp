@@ -22,13 +22,13 @@ extern void Normal (double vector1[3],double vector2[3],double resultado[3]);
 
 
 C3DObject::C3DObject(): ncaras(0), points(0), normales(0), caras(0), faceColors(NULL),
-                        display_list(-1), tx(0), ty(0), textures(0)
+                        displayList(-1), tx(0), ty(0), textures(0)
 {
 }
 
 
 C3DObject::C3DObject(const std::string& filename, const std::string& texturedir):
-  npoints(0), ncaras(0), points(0), normales(0), caras(0), faceColors(NULL), display_list(-1),
+  npoints(0), ncaras(0), points(0), normales(0), caras(0), faceColors(NULL), displayList(-1),
   tx(0), ty(0), textures(0)
 {
   int l = filename.length();
@@ -383,9 +383,9 @@ void C3DObject::draw(void)
 	int i;
 
 	if (textures!=0) {
-		if (display_list==-1) {
-			display_list=glGenLists(1);
-			glNewList(display_list,GL_COMPILE);
+		if (displayList==-1) {
+			displayList=glGenLists(1);
+			glNewList(displayList,GL_COMPILE);
 			/* Dibuja el objeto: */ 
 			{
 				glEnable(GL_TEXTURE_2D);
@@ -414,15 +414,15 @@ void C3DObject::draw(void)
 			} 
 			glEndList();
 
-			glCallList(display_list);
+			glCallList(displayList);
 		} else {
-			glCallList(display_list);
+			glCallList(displayList);
 		} /* if */ 
 
 	} else {
-		if (display_list==-1) {
-			display_list=glGenLists(1);
-			glNewList(display_list,GL_COMPILE);
+		if (displayList==-1) {
+			displayList=glGenLists(1);
+			glNewList(displayList,GL_COMPILE);
 			/* Dibuja el objeto: */ 
 			{
 				glEnableClientState(GL_VERTEX_ARRAY);
@@ -442,23 +442,23 @@ void C3DObject::draw(void)
 			} 
 			glEndList();
 
-			glCallList(display_list);
+			glCallList(displayList);
 		} else {
-			glCallList(display_list);
+			glCallList(displayList);
 		} /* if */ 
 	} /* if */ 
 	
 } /* C3DObject::draw */ 
 
 
-void C3DObject::draw(float r,float g,float b)
+void C3DObject::draw(const Color& color)
 {
 	int i,off1;
 
 	if (textures!=0) {
-		if (display_list==-1) {
-			display_list=glGenLists(1);
-			glNewList(display_list,GL_COMPILE);
+		if (displayList==-1) {
+			displayList=glGenLists(1);
+			glNewList(displayList,GL_COMPILE);
 			/* Dibuja el objeto: */ 
 			{
 				glEnable(GL_TEXTURE_2D);
@@ -487,9 +487,9 @@ void C3DObject::draw(float r,float g,float b)
 			} 
 			glEndList();
 
-			glCallList(display_list);
+			glCallList(displayList);
 		} else {
-			glCallList(display_list);
+			glCallList(displayList);
 		} /* if */ 
 	} else {
 //              if (display_list==-1) {
@@ -500,7 +500,7 @@ void C3DObject::draw(float r,float g,float b)
 				/* Dibuja el objeto: */ 
 				glEnableClientState(GL_VERTEX_ARRAY);
 				glVertexPointer(3,GL_FLOAT,0,points);
-				glColor3f(r,g,b);
+				glColor3f(color.red, color.green, color.blue);
 
 				for(i=0,off1=0;i<ncaras;i++) {
 					glBegin(GL_TRIANGLES);
@@ -521,65 +521,40 @@ void C3DObject::draw(float r,float g,float b)
 } /* C3DObject::draw */ 
 
 
-void C3DObject::draw_notexture(float r,float g,float b)
+void C3DObject::draw_notexture(const Color& color)
 {
-	int i,off1;
+  glEnableClientState(GL_VERTEX_ARRAY);
+  glVertexPointer(3, GL_FLOAT, 0, points);
 
-	/* Dibuja el objeto: */ 
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glVertexPointer(3,GL_FLOAT,0,points);
-	glColor3f(r,g,b);
+  if (color.alpha) {
+    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
+    glColor4f(color.red, color.green, color.blue, color.alpha);
+  } else {
+    glColor3f(color.red, color.green, color.blue);
+  }
 
-	for(i=0,off1=0;i<ncaras;i++) {
-		glBegin(GL_TRIANGLES);
-		glNormal3f(normales[i*9+0],normales[i*9+1],normales[i*9+2]);
-		glArrayElement(caras[off1++]);
-		glNormal3f(normales[i*9+3],normales[i*9+4],normales[i*9+5]);
-		glArrayElement(caras[off1++]);
-		glNormal3f(normales[i*9+6],normales[i*9+7],normales[i*9+8]);
-		glArrayElement(caras[off1++]);
-		glEnd();
-	} /* for */ 
-} /* draw_notexture */ 
+  for (int i = 0, off1 = 0; i < ncaras; i++) {
+    glBegin(GL_TRIANGLES);
+    glNormal3f(normales[i * 9 + 0], normales[i * 9 + 1],normales[i * 9 + 2]);
+    glArrayElement(caras[off1++]);
+    glNormal3f(normales[i * 9 + 3], normales[i * 9 + 4], normales[i * 9 + 5]);
+    glArrayElement(caras[off1++]);
+    glNormal3f(normales[i * 9 + 6], normales[i * 9 + 7], normales[i * 9 + 8]);
+    glArrayElement(caras[off1++]);
+    glEnd();
+  }
+}
 
 
-void C3DObject::draw_notexture(float r,float g,float b,float a)
+void C3DObject::drawcmc(const Color& color)
 {
-	int i,off1;
-
-	/* Dibuja el objeto: */ 
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glVertexPointer(3,GL_FLOAT,0,points);
-	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_BLEND);
-	glColor4f(r,g,b,a);
-
-	for(i=0,off1=0;i<ncaras;i++) {
-		glBegin(GL_TRIANGLES);
-		glNormal3f(normales[i*9+0],normales[i*9+1],normales[i*9+2]);
-		glArrayElement(caras[off1++]);
-		glNormal3f(normales[i*9+3],normales[i*9+4],normales[i*9+5]);
-		glArrayElement(caras[off1++]);
-		glNormal3f(normales[i*9+6],normales[i*9+7],normales[i*9+8]);
-		glArrayElement(caras[off1++]);
-		glEnd();
-	} /* for */ 
-
-	glDisable(GL_BLEND);
-} /* draw_notexture */ 
-
-
-void C3DObject::drawcmc(float r,float g,float b)
-{
-	cmc.draw(r,g,b);
-} /* C3DObject::drawcmc */ 
-
-
-
+  cmc.draw(color.red, color.green, color.blue);
+}
 
 
 void C3DObject::refresh_display_lists()
 {
-  glDeleteLists(display_list, 1);
-  display_list = -1;
+  glDeleteLists(displayList, 1);
+  displayList = -1;
 }

@@ -359,13 +359,13 @@ void mainmenu_draw(int width,int height)
 	switch(mainmenu_status) {
 	case 0:
 		glTranslatef(0,3,40-mainmenu_substatus);
-		nethertittle->draw(1.0,1.0,1.0);
+		nethertittle->draw(Color(1.0, 1.0, 1.0));
 		break;
 	case 1:
 		glTranslatef(0,3,0);
 		glPushMatrix();
 		glRotatef(sin(mainmenu_substatus*0.02)*5.0f,0,1,0);
-		nethertittle->draw(1.0,1.0,1.0);
+		nethertittle->draw(Color(1.0, 1.0, 1.0));
 		glPopMatrix();
 		glColor3f(0.5,0.5,1.0);
 		glTranslatef(-6,-6,0);
@@ -384,7 +384,7 @@ void mainmenu_draw(int width,int height)
 	case 5:
 	case 6:
 		glTranslatef(0,3,mainmenu_substatus);
-		nethertittle->draw(1.0,1.0,1.0);
+		nethertittle->draw(Color(1.0, 1.0, 1.0));
 		break;
 	case 3:
 		glColor3f(0.5,0.5,1.0);

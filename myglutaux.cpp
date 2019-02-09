@@ -40,9 +40,8 @@ C3DObject *characters[256]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 int TEXTURE_APPROXIMATION=GL_LINEAR;
 
 
-float draw3Dtext(char *text,float dx,float dy,float dz,float r,float g,float b)
+float draw3Dtext(char *text,float dx,float dy,float dz, const Color& color)
 {
-	int i;
 	int len=strlen(text);
 	float ancho=(float(len-1)*1.8F);
 
@@ -52,7 +51,7 @@ float draw3Dtext(char *text,float dx,float dy,float dz,float r,float g,float b)
 	glScalef(dx,dy,dz);
 	glTranslatef(-(ancho/2.0F),0,0);
 
-	for(i=0;i<len;i++) {
+	for (int i = 0; i < len; i++) {
 		if (characters[text[i]]==0) {
 			char filename[6];
 
@@ -66,7 +65,7 @@ float draw3Dtext(char *text,float dx,float dy,float dz,float r,float g,float b)
 			characters[text[i]]->normalize();
 		} /* if */ 
 		if (characters[text[i]]!=NULL) {
-			characters[text[i]]->draw(r,g,b);
+			characters[text[i]]->draw(color);
 		} /* if */ 
 		glTranslatef(1.8F,0,0);
 	} /* for */ 

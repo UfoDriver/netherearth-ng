@@ -91,9 +91,9 @@ void Bullet::draw(bool shadows, Piece3DObject **bullet_tile, List<Particle> &par
       glPushMatrix();
       glRotatef(angle, 0, 0, 1);
       glTranslatef(0, 0.2, 0);
-      bullet_tile[0]->draw(0.2f, 0.2f, 0.2f);
+      bullet_tile[0]->draw(Color(0.2f, 0.2f, 0.2f));
       glTranslatef(0, -0.4, 0);
-      bullet_tile[0]->draw(0.2f, 0.2f, 0.2f);
+      bullet_tile[0]->draw(Color(0.2f, 0.2f, 0.2f));
       glPopMatrix();
     }
     break;
@@ -103,9 +103,9 @@ void Bullet::draw(bool shadows, Piece3DObject **bullet_tile, List<Particle> &par
       glRotatef(angle, 0, 0, 1);
       glRotatef(180, 0, 0, 1);
       glTranslatef(0, 0.33, 0);
-      bullet_tile[1]->draw(0.8f, 0.8f, 0.8f);
+      bullet_tile[1]->draw(Color(0.8f, 0.8f, 0.8f));
       glTranslatef(0, -0.66, 0);
-      bullet_tile[1]->draw(0.8f, 0.8f, 0.8f);
+      bullet_tile[1]->draw(Color(0.8f, 0.8f, 0.8f));
       glPopMatrix();
       if (detaillevel >= 4) {
         drawParticles(particles);
@@ -119,9 +119,9 @@ void Bullet::draw(bool shadows, Piece3DObject **bullet_tile, List<Particle> &par
       glRotatef(90,0,0,1);
 
       if ((rand() % 4) !=0)
-        bullet_tile[2]->draw_notexture(1.0f, 0.5f, 1.0f, 0.9f);
+        bullet_tile[2]->draw_notexture(Color(1.0f, 0.5f, 1.0f, 0.9f));
       else
-        bullet_tile[2]->draw_notexture(1.0f,1.0f,1.0f,0.5f);
+        bullet_tile[2]->draw_notexture(Color(1.0f, 1.0f, 1.0f, 0.5f));
 
       glPopMatrix();
     }
