@@ -158,17 +158,15 @@ bool C3DObject::loadASE(const std::string& filename, const std::string& textured
 	caras=new int[ncaras*3];
 	smooth=new int[ncaras];
 	facematerial=new int[ncaras];
-	r=new float[ncaras];
-	g=new float[ncaras];
-	b=new float[ncaras];
-	for(i=0;i<ncaras*3;i++) {
-		caras[i]=0;
-	} /* for */ 
-	for(i=0;i<ncaras;i++) {
-		r[i]=0.5;
-		g[i]=0.5;
-		b[i]=0.5;
-	} /* for */ 
+    faceColors = new Color[ncaras];
+    for(int i = 0; i < ncaras * 3; i++) {
+      caras[i]=0;
+    }
+    for(int i = 0; i < ncaras; i++) {
+      faceColors[i].red = 0.5;
+      faceColors[i].green = 0.5;
+      faceColors[i].blue = 0.5;
+    }
 
 	if (!lookfor("MESH_VERTEX_LIST",fp)) {
 		fclose(fp);

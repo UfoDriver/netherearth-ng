@@ -21,14 +21,14 @@ extern void Normal (double vector1[3],double vector2[3],double resultado[3]);
 
 
 
-C3DObject::C3DObject(): ncaras(0), points(0), normales(0), caras(0), r(0), g(0), b(0),
+C3DObject::C3DObject(): ncaras(0), points(0), normales(0), caras(0), faceColors(NULL),
                         display_list(-1), tx(0), ty(0), textures(0)
 {
 }
 
 
 C3DObject::C3DObject(const std::string& filename, const std::string& texturedir):
-  npoints(0), ncaras(0), points(0), normales(0), caras(0), r(0), g(0), b(0), display_list(-1),
+  npoints(0), ncaras(0), points(0), normales(0), caras(0), faceColors(NULL), display_list(-1),
   tx(0), ty(0), textures(0)
 {
   int l = filename.length();
@@ -131,14 +131,12 @@ bool C3DObject::loadASC(const std::string& filename)
           iStr >> ncaras;
           caras = new int[ncaras * 3];
           smooth = new int[ncaras];
-          r = new float[ncaras];
-          g = new float[ncaras];
-          b = new float[ncaras];
+          faceColors = new Color[ncaras];
           for(int i = 0; i < ncaras * 3; i++) caras[i] = 0;
           for(int i = 0;i < ncaras; i++) {
-            r[i] = 0.5;
-            g[i] = 0.5;
-            b[i] = 0.5;
+            faceColors[i].red = 0.5;
+            faceColors[i].green = 0.5;
+            faceColors[i].blue = 0.5;
           }
           if (npoints != 0) state = ST_DATA;
         }
@@ -361,29 +359,23 @@ void C3DObject::CalculaNormales(int *smooth)
 
 C3DObject::~C3DObject()
 {
-	if (points!=NULL) delete []points;
-	if (normales!=NULL) delete []normales;
-	if (caras!=NULL) delete []caras;
-	if (r!=NULL) delete []r;
-	if (g!=NULL) delete []g;
-	if (b!=NULL) delete []b;
-	if (tx!=0) delete tx;
-	if (ty!=0) delete ty;
-	if (textures!=0) delete textures;
-	tx=0;
-	ty=0;
-	textures=0;
-} /* C3DObject::~CObject */ 
-
+  if (points != NULL) delete[] points;
+  if (normales != NULL) delete[] normales;
+  if (caras != NULL) delete[] caras;
+  if (faceColors != NULL) delete[] faceColors;
+  if (tx != 0) delete tx;
+  if (ty != 0) delete ty;
+  if (textures != 0) delete textures;
+  tx = 0;
+  ty = 0;
+  textures = 0;
+}
 
 
 bool C3DObject::valid(void)
 {
-	if (npoints!=0 && ncaras!=0 && points!=NULL && normales!=NULL && caras!=NULL) return true;
-
-	return false;
-} /* C3DObject::valid */ 
-
+  return npoints && ncaras && points && normales  && caras;
+}
 
 
 void C3DObject::draw(void)
@@ -438,7 +430,7 @@ void C3DObject::draw(void)
 
 				glBegin(GL_TRIANGLES);
 				for(i=0;i<ncaras;i++) {
-					glColor3f(r[i],g[i],b[i]);
+					glColor3f(faceColors[i].red, faceColors[i].green, faceColors[i].blue);
 					glNormal3f(normales[i*9+0],normales[i*9+1],normales[i*9+2]);
 					glArrayElement(caras[i*3]);
 					glNormal3f(normales[i*9+3],normales[i*9+4],normales[i*9+5]);
@@ -586,10 +578,8 @@ void C3DObject::drawcmc(float r,float g,float b)
 
 
 
-void C3DObject::refresh_display_lists(void)
+void C3DObject::refresh_display_lists()
 {
-	glDeleteLists(display_list,1);
-	display_list=-1;
-} /* C3DObject::refresh_display_lists */ 
-
-
+  glDeleteLists(display_list, 1);
+  display_list = -1;
+}

@@ -4,9 +4,9 @@
 #include <string>
 #include <fstream>
 
-#include "vector.h"
 #include "cmc.h"
-
+#include "color.h"
+#include "vector.h"
 
 
 class C3DObject {
@@ -14,14 +14,15 @@ public:
   C3DObject();
   C3DObject(const std::string& filename, const std::string& texturedir);
 
-	~C3DObject();
+  ~C3DObject();
 
-	void refresh_display_lists(void);
+  void refresh_display_lists(void);
 
   bool loadASC(const std::string& filename);
   bool loadASE(const std::string& filename, const std::string& texturedir);
 
-	bool valid(void);
+  bool valid(void);
+
 	void draw(void);
 	void draw(float r,float g,float b);
 	void draw_notexture(float r,float g,float b);
@@ -47,7 +48,7 @@ public:
 	float *normales;
 	int *caras;
 
-	float *r,*g,*b;	/* Color de las caras: */ 
+  Color* faceColors;
 
 	int display_list;
 
