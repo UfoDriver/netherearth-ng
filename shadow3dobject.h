@@ -16,9 +16,9 @@ public:
 
 	/* 2D Shadow: */
 	int shdw_npuntos;
-	int shdw_ncaras;
+	int shdw_nfaces;
 	Vector* shdw_puntos;
-	int *shdw_caras;
+	int *shdw_faces;
 	CMC shdw_cmc;
 };
 

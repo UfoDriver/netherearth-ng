@@ -41,10 +41,10 @@ public:
 
 
 	int npoints;
-	int ncaras;
+	int nfaces;
 	Vector *points;
 	float *normales;
-	int *caras;
+	int *faces;
 
   Color* faceColors;
 

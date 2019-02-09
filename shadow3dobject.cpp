@@ -13,22 +13,22 @@
 #include "myglutaux.h"
 
 
-Shadow3DObject::Shadow3DObject() : C3DObject(), shdw_npuntos(0), shdw_ncaras(0), shdw_puntos(0),
-                                   shdw_caras(0)
+Shadow3DObject::Shadow3DObject() : C3DObject(), shdw_npuntos(0), shdw_nfaces(0), shdw_puntos(0),
+                                   shdw_faces(0)
 {}
 
 
 Shadow3DObject::Shadow3DObject(const char* file, const char* texturedir) :
-  C3DObject(file,texturedir), shdw_npuntos(0), shdw_ncaras(0), shdw_puntos(0), shdw_caras(0)
+  C3DObject(file,texturedir), shdw_npuntos(0), shdw_nfaces(0), shdw_puntos(0), shdw_faces(0)
 {}
 
 
 Shadow3DObject::~Shadow3DObject()
 {
   delete shdw_puntos;
-  delete shdw_caras;
+  delete shdw_faces;
   shdw_puntos = 0;
-  shdw_caras = 0;
+  shdw_faces = 0;
 }
 
 
@@ -44,10 +44,10 @@ void Shadow3DObject::DrawShadow(float r, float g, float b, float a)
     glEnable(GL_BLEND);
   }
   glBegin(GL_TRIANGLES);
-  for(int i = 0; i < shdw_ncaras; i++) {
-    glArrayElement(shdw_caras[i*3]);
-    glArrayElement(shdw_caras[i*3+1]);
-    glArrayElement(shdw_caras[i*3+2]);
+  for(int i = 0; i < shdw_nfaces; i++) {
+    glArrayElement(shdw_faces[i*3]);
+    glArrayElement(shdw_faces[i*3+1]);
+    glArrayElement(shdw_faces[i*3+2]);
   }
   glEnd();
 
@@ -59,7 +59,7 @@ void Shadow3DObject::ComputeShadow(Vector light)
 {
 	int pry_npuntos;
 	Vector* pry_puntos;
-	int *pry_caras;
+	int *pry_faces;
 	float plane[4];
 	float l[3];
 	float n[3],v[3],w[3];
@@ -91,26 +91,26 @@ void Shadow3DObject::ComputeShadow(Vector light)
 	} /* for */ 
 
 	/* Crear los triángulos proyectadas: */ 
-	shdw_ncaras=0;
-	// pry_ncaras=ncaras;
-	pry_caras=new int[ncaras*3];
-	for(int i = 0; i < ncaras; i++) {
+	shdw_nfaces=0;
+	// pry_nfaces=nfaces;
+	pry_faces=new int[nfaces*3];
+	for(int i = 0; i < nfaces; i++) {
 		/* Comprobar que el triángulo es visible: */ 
 
-		v[0] = points[caras[i*3+1]].x - points[caras[i*3]].x;;
-		v[1] = points[caras[i*3+1]].y - points[caras[i*3]].y;
-		v[2] = points[caras[i*3+1]].z - points[caras[i*3]].z;
-		w[0] = points[caras[i*3+2]].x - points[caras[i*3+1]].x;
-		w[1] = points[caras[i*3+2]].y - points[caras[i*3+1]].y;
-		w[2] = points[caras[i*3+2]].z - points[caras[i*3+1]].z;
+		v[0] = points[faces[i*3+1]].x - points[faces[i*3]].x;;
+		v[1] = points[faces[i*3+1]].y - points[faces[i*3]].y;
+		v[2] = points[faces[i*3+1]].z - points[faces[i*3]].z;
+		w[0] = points[faces[i*3+2]].x - points[faces[i*3+1]].x;
+		w[1] = points[faces[i*3+2]].y - points[faces[i*3+1]].y;
+		w[2] = points[faces[i*3+2]].z - points[faces[i*3+1]].z;
 		Normalf(v,w,n);
 
 		float value=n[0]*l[0]+n[1]*l[1]+n[2]*l[2];
 		if (value>0) {
-			pry_caras[shdw_ncaras*3]=caras[i*3];
-			pry_caras[shdw_ncaras*3+1]=caras[i*3+1];
-			pry_caras[shdw_ncaras*3+2]=caras[i*3+2];
-			shdw_ncaras++;
+			pry_faces[shdw_nfaces*3]=faces[i*3];
+			pry_faces[shdw_nfaces*3+1]=faces[i*3+1];
+			pry_faces[shdw_nfaces*3+2]=faces[i*3+2];
+			shdw_nfaces++;
 		} /* if */ 
 	} /* for */ 
 
@@ -119,10 +119,10 @@ void Shadow3DObject::ComputeShadow(Vector light)
 	/* ... */ 
 
 	/* Copiarlos a las variables del objeto: */ 
-	shdw_caras = new int[shdw_ncaras*3];
-	for(int i = 0; i < shdw_ncaras * 3; i++) shdw_caras[i]=pry_caras[i];
-	delete pry_caras;
-	pry_caras=0;
+	shdw_faces = new int[shdw_nfaces*3];
+	for(int i = 0; i < shdw_nfaces * 3; i++) shdw_faces[i]=pry_faces[i];
+	delete pry_faces;
+	pry_faces=0;
 	shdw_npuntos=pry_npuntos;
 	shdw_puntos=pry_puntos;
 	shdw_cmc.set(shdw_puntos, shdw_npuntos);
