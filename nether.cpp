@@ -265,12 +265,12 @@ void NETHER::loadObjects()
     tile_b[i] = b[i];
   }
 
-  tile[4]->moveobject(0,0,-0.05);
-  tile[5]->moveobject(0,0,-0.05);
-  tile[6]->moveobject(0,0,-0.05);
-  tile[7]->moveobject(0,0,-0.05);
-  tile[8]->moveobject(0,0,-0.05);
-  tile[9]->moveobject(0,0,-0.05);
+  tile[4]->moveobject(Vector(0, 0, -0.05));
+  tile[5]->moveobject(Vector(0, 0, -0.05));
+  tile[6]->moveobject(Vector(0, 0, -0.05));
+  tile[7]->moveobject(Vector(0, 0, -0.05));
+  tile[8]->moveobject(Vector(0, 0, -0.05));
+  tile[9]->moveobject(Vector(0, 0, -0.05));
 
   building_tile=new Shadow3DObject *[n_buildings];
   for(int i=0;i<n_buildings;i++) {
@@ -278,8 +278,8 @@ void NETHER::loadObjects()
     building_tile[i]->normalize(bscale[i]);
     building_tile[i]->makepositive();
   } /* for */ 
-  building_tile[5]->moveobject(0,0,0.01);
-  building_tile[6]->moveobject(0.4,0.4,0.0);
+  building_tile[5]->moveobject(Vector(0, 0, 0.01));
+  building_tile[6]->moveobject(Vector(0.4, 0.4, 0.0));
 
   piece_tile[0]=new Piece3DObject *[n_pieces];
   piece_tile[1]=new Piece3DObject *[n_pieces];
@@ -291,31 +291,31 @@ void NETHER::loadObjects()
     piece_tile[1][i]->normalize(pscale[i]);
     piece_tile[1][i]->makepositive();
   } /* for */ 
-  piece_tile[0][0]->moveobject(-0.5,-0.5,0.0);
-  piece_tile[0][1]->moveobject(-0.5,-0.5,0.0);
-  piece_tile[0][2]->moveobject(-0.5,-0.5,0.2);
-  piece_tile[0][3]->moveobject(-0.5,-0.5,0.0);
-  piece_tile[0][4]->moveobject(-0.5,-0.45,0.0);
-  piece_tile[0][5]->moveobject(-0.5,-0.5,0.0);
-  piece_tile[0][6]->moveobject(-0.5,-0.5,0.0);
-  piece_tile[0][7]->moveobject(-0.32,-0.3,0.0);
-  piece_tile[0][8]->moveobject(-0.45,-0.45,0.6);
-  piece_tile[0][9]->moveobject(-0.4,-0.5,0.0);
-  piece_tile[0][10]->moveobject(-0.4,0.2,0.0);
+  piece_tile[0][0]->moveobject(Vector(-0.5, -0.5, 0.0));
+  piece_tile[0][1]->moveobject(Vector(-0.5, -0.5, 0.0));
+  piece_tile[0][2]->moveobject(Vector(-0.5, -0.5, 0.2));
+  piece_tile[0][3]->moveobject(Vector(-0.5, -0.5, 0.0));
+  piece_tile[0][4]->moveobject(Vector(-0.5, -0.45, 0.0));
+  piece_tile[0][5]->moveobject(Vector(-0.5, -0.5, 0.0));
+  piece_tile[0][6]->moveobject(Vector(-0.5, -0.5, 0.0));
+  piece_tile[0][7]->moveobject(Vector(-0.32, -0.3, 0.0));
+  piece_tile[0][8]->moveobject(Vector(-0.45, -0.45, 0.6));
+  piece_tile[0][9]->moveobject(Vector(-0.4, -0.5, 0.0));
+  piece_tile[0][10]->moveobject(Vector(-0.4, 0.2, 0.0));
 
-  piece_tile[1][0]->moveobject(-0.5,-0.5,0.0);
-  piece_tile[1][1]->moveobject(-0.5,-0.5,0.0);
-  piece_tile[1][2]->moveobject(-0.5,-0.5,0.2);
-  piece_tile[1][3]->moveobject(-0.5,-0.5,0.0);
-  piece_tile[1][4]->moveobject(-0.5,-0.45,0.0);
-  piece_tile[1][5]->moveobject(-0.5,-0.5,0.0);
-  piece_tile[1][6]->moveobject(-0.5,-0.5,0.0);
-  piece_tile[1][7]->moveobject(-0.32,-0.3,0.0);
-  piece_tile[1][8]->moveobject(-0.45,-0.45,0.6);
-  piece_tile[1][9]->moveobject(-0.4,-0.5,0.0);
-  piece_tile[1][10]->moveobject(-0.4,0.2,0.0);
+  piece_tile[1][0]->moveobject(Vector(-0.5, -0.5, 0.0));
+  piece_tile[1][1]->moveobject(Vector(-0.5, -0.5, 0.0));
+  piece_tile[1][2]->moveobject(Vector(-0.5, -0.5, 0.2));
+  piece_tile[1][3]->moveobject(Vector(-0.5, -0.5, 0.0));
+  piece_tile[1][4]->moveobject(Vector(-0.5, -0.45, 0.0));
+  piece_tile[1][5]->moveobject(Vector(-0.5, -0.5, 0.0));
+  piece_tile[1][6]->moveobject(Vector(-0.5, -0.5, 0.0));
+  piece_tile[1][7]->moveobject(Vector(-0.32, -0.3, 0.0));
+  piece_tile[1][8]->moveobject(Vector(-0.45, -0.45, 0.6));
+  piece_tile[1][9]->moveobject(Vector(-0.4, -0.5, 0.0));
+  piece_tile[1][10]->moveobject(Vector(-0.4, 0.2, 0.0));
 
-  ship=new Shadow3DObject("models/ship.asc","textures/");
+  ship = new Shadow3DObject("models/ship.asc", "textures/");
   ship->normalize(0.5f);
   ship->makepositive();
 

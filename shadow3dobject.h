@@ -1,6 +1,9 @@
 #ifndef __BRAIN_SHADOW3DOBJECT
 #define __BRAIN_SHADOW3DOBJECT
 
+#include "3dobject.h"
+
+
 class Shadow3DObject : public C3DObject {
 public:
 	Shadow3DObject();
@@ -11,11 +14,10 @@ public:
 	void DrawShadow(float r,float g,float b,float a);
 	void ComputeShadow(Vector light);
 
-	
-	/* 2D Shadow: */ 
+	/* 2D Shadow: */
 	int shdw_npuntos;
 	int shdw_ncaras;
-	float *shdw_puntos;
+	Vector* shdw_puntos;
 	int *shdw_caras;
 	CMC shdw_cmc;
 };

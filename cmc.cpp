@@ -89,25 +89,23 @@ void CMC::reset(void)
 } /* CMC::set */ 
 
 
-void CMC::set(float *p,int np)
+void CMC::set(const Vector *p, int np)
 {
-	int i,offs;
+  if (np > 0) {
+    x[0] = x[1] = p[0].x;
+    y[0] = y[1] = p[0].y;
+    z[0] = z[1] = p[0].z;
+  }
 
-	if (np>0) {
-		x[0]=x[1]=p[0];
-		y[0]=y[1]=p[1];
-		z[0]=z[1]=p[2];
-	} /* if */ 
-
-	for(i=1,offs=3;i<np;i++,offs+=3) {
-		if (p[offs]<x[0]) x[0]=p[offs];
-		if (p[offs]>x[1]) x[1]=p[offs];
-		if (p[offs+1]<y[0]) y[0]=p[offs+1];
-		if (p[offs+1]>y[1]) y[1]=p[offs+1];
-		if (p[offs+2]<z[0]) z[0]=p[offs+2];
-		if (p[offs+2]>z[1]) z[1]=p[offs+2];
-	} /* for */ 
-} /* CMC::set */ 
+  for(int i = 1; i < np; i++) {
+    if (p[i].x < x[0]) x[0] = p[i].x;
+    if (p[i].x > x[1]) x[1] = p[i].x;
+    if (p[i].y < y[0]) y[0] = p[i].y;
+    if (p[i].y > y[1]) y[1] = p[i].y;
+    if (p[i].z < z[0]) z[0] = p[i].z;
+    if (p[i].z > z[1]) z[1] = p[i].z;
+  }
+}
 
 
 void CMC::set(float *px,float *py,float *pz,int np)

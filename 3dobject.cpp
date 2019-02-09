@@ -21,14 +21,14 @@ extern void Normal (double vector1[3],double vector2[3],double resultado[3]);
 
 
 
-C3DObject::C3DObject(): ncaras(0), puntos(0), normales(0), caras(0), r(0), g(0), b(0),
+C3DObject::C3DObject(): ncaras(0), points(0), normales(0), caras(0), r(0), g(0), b(0),
                         display_list(-1), tx(0), ty(0), textures(0)
 {
 }
 
 
 C3DObject::C3DObject(const std::string& filename, const std::string& texturedir):
-  npuntos(0), ncaras(0), puntos(0), normales(0), caras(0), r(0), g(0), b(0), display_list(-1),
+  npoints(0), ncaras(0), points(0), normales(0), caras(0), r(0), g(0), b(0), display_list(-1),
   tx(0), ty(0), textures(0)
 {
   int l = filename.length();
@@ -56,10 +56,8 @@ bool C3DObject::readVertex(const std::string& data)
   inStr >> y;
   inStr.ignore(100, ':');
   inStr >> z;
-  puntos[vertexNumber * 3] = x;
-  puntos[vertexNumber * 3 + 1] = y;
-  puntos[vertexNumber * 3 + 2] = z;
-  // @TODO: fixme
+  points[vertexNumber] = Vector(x, y, z);
+  // @TODO: skipped for a while
   // if (textures) {
   //   if (2==fscanf(fp,"%s %s",buffer3,buffer4)) {
   //     if (1==sscanf(buffer3+2,"%f",&x) &&
@@ -123,9 +121,8 @@ bool C3DObject::loadASC(const std::string& filename)
         if (buffer.find("Vertices:") != std::string::npos) {
           std::istringstream iStr(buffer);
           iStr.seekg(buffer.find("Vertices:") + 9);
-          iStr >> npuntos;
-          puntos = new float[npuntos * 3];
-          for(int i = 0; i < npuntos * 3; i++) puntos[i] = 0.0F;
+          iStr >> npoints;
+          points = new Vector[npoints];
           if (ncaras != 0) state = ST_DATA;
         }
         if (buffer.find("Faces:") != std::string::npos) {
@@ -143,7 +140,7 @@ bool C3DObject::loadASC(const std::string& filename)
             g[i] = 0.5;
             b[i] = 0.5;
           }
-          if (npuntos != 0) state = ST_DATA;
+          if (npoints != 0) state = ST_DATA;
         }
         break;
       case ST_DATA:
@@ -165,17 +162,17 @@ bool C3DObject::loadASC(const std::string& filename)
   }
 
   if (state == ST_INIT) {
-    if (puntos != NULL) delete[] puntos;
+    if (points != NULL) delete[] points;
     if (caras != NULL) delete[] caras;
-    npuntos = 0;
+    npoints = 0;
     ncaras = 0;
-    puntos = NULL;
+    points = NULL;
     caras = NULL;
     return false;
   }
 
   CalculaNormales(smooth);
-  cmc.set(puntos, npuntos);
+  cmc.set(points, npoints);
   delete[] smooth;
 
   return true;
@@ -193,7 +190,7 @@ float C3DObject::normalize(float c)
 	int i;
 	float cx,fx,cy,fy,cz,fz,factor;
 
-	cmc.set(puntos,npuntos);
+	cmc.set(points, npoints);
 	fx=(cmc.x[1]-cmc.x[0])/2;
 	fy=(cmc.y[1]-cmc.y[0])/2;
 	fz=(cmc.z[1]-cmc.z[0])/2;
@@ -207,14 +204,14 @@ float C3DObject::normalize(float c)
 
 	factor/=c;
 
-	for(i=0;i<npuntos;i++) {
-		puntos[i*3]=(puntos[i*3]-cx)/factor;
-		puntos[i*3+1]=(puntos[i*3+1]-cy)/factor;
-		puntos[i*3+2]=(puntos[i*3+2]-cz)/factor;
-	} /* for */ 
-	cmc.set(puntos,npuntos);
+    for(int i = 0; i < npoints; i++) {
+      points[i].x = (points[i].x - cx) / factor;
+      points[i].y = (points[i].y - cy) / factor;
+      points[i].z = (points[i].z - cz) / factor;
+    }
+    cmc.set(points, npoints);
 
-	return factor;
+    return factor;
 } /* normalize */ 
 
 
@@ -223,7 +220,7 @@ float C3DObject::normalizexy(float c)
 	int i;
 	float cx,fx,cy,fy,cz,factor;
 
-	cmc.set(puntos,npuntos);
+	cmc.set(points, npoints);
 	fx=(cmc.x[1]-cmc.x[0])/2;
 	fy=(cmc.y[1]-cmc.y[0])/2;
 	cx=(cmc.x[1]+cmc.x[0])/2;
@@ -235,12 +232,12 @@ float C3DObject::normalizexy(float c)
 
 	factor/=c;
 
-	for(i=0;i<npuntos;i++) {
-		puntos[i*3]=(puntos[i*3]-cx)/factor;
-		puntos[i*3+1]=(puntos[i*3+1]-cy)/factor;
-		puntos[i*3+2]=(puntos[i*3+2]-cz)/factor;
-	} /* for */ 
-	cmc.set(puntos,npuntos);
+    for(int i = 0; i < npoints; i++) {
+      points[i].x = (points[i].x - cx) / factor;
+      points[i].y = (points[i].y - cy) / factor;
+      points[i].z = (points[i].z - cz) / factor;
+    }
+    cmc.set(points, npoints);
 
 	return factor;
 } /* normalizexy */ 
@@ -248,105 +245,92 @@ float C3DObject::normalizexy(float c)
 
 void C3DObject::makepositive(void)
 {
-	int i;
+  cmc.set(points, npoints);
 
-	cmc.set(puntos,npuntos);
-
-	for(i=0;i<npuntos;i++) {
-		puntos[i*3]-=cmc.x[0];
-		puntos[i*3+1]-=cmc.y[0];
-		puntos[i*3+2]-=cmc.z[0];
-	} /* for */ 
-	cmc.set(puntos,npuntos);
-} /* makepositive */ 
+  for (int i = 0; i < npoints; i++) {
+    points[i].x -= cmc.x[0];
+    points[i].y -= cmc.y[0];
+    points[i].z -= cmc.z[0];
+  }
+  cmc.set(points, npoints);
+}
 
 
 void C3DObject::makepositivex(void)
 {
-	int i;
+  cmc.set(points, npoints);
 
-	cmc.set(puntos,npuntos);
-
-	for(i=0;i<npuntos;i++) {
-		puntos[i*3]-=cmc.x[0];
-	} /* for */ 
-	cmc.set(puntos,npuntos);
-} /* makepositive */ 
+  for (int i = 0; i < npoints; i++) {
+    points[i].x -= cmc.x[0];
+  }
+  cmc.set(points, npoints);
+}
 
 
 void C3DObject::makepositivey(void)
 {
-	int i;
+  cmc.set(points, npoints);
 
-	cmc.set(puntos,npuntos);
-
-	for(i=0;i<npuntos;i++) {
-		puntos[i*3+1]-=cmc.y[0];
-	} /* for */ 
-	cmc.set(puntos,npuntos);
-} /* makepositive */ 
+  for (int i = 0; i < npoints; i++) {
+    points[i].y -= cmc.y[0];
+  }
+  cmc.set(points, npoints);
+}
 
 
 void C3DObject::makepositivez(void)
 {
-	int i;
+  cmc.set(points, npoints);
 
-	cmc.set(puntos,npuntos);
-
-	for(i=0;i<npuntos;i++) {
-		puntos[i*3+2]-=cmc.z[0];
-	} /* for */ 
-	cmc.set(puntos,npuntos);
-} /* makepositive */ 
+  for (int i = 0; i < npoints; i++) {
+    points[i].z -= cmc.z[0];
+  }
+  cmc.set(points, npoints);
+}
 
 
-void C3DObject::moveobject(float x,float y,float z)
+void C3DObject::moveobject(const Vector& distance)
 {
-	int i;
-
-	for(i=0;i<npuntos;i++) {
-		puntos[i*3]+=x;
-		puntos[i*3+1]+=y;
-		puntos[i*3+2]+=z;
-	} /* for */ 
-	cmc.set(puntos,npuntos);
-} /* moveobject */ 
-
+  for(int i = 0; i < npoints; i++) {
+    points[i] = points[i] + distance;
+  }
+  cmc.set(points, npoints);
+}
 
 
 void C3DObject::CalculaNormales(int *smooth)
 {
 
 	/* Calcular las normales a las caras: */ 
-	int i,j,k,act_vertex;
-	float *normales_tmp;
+	int j,k,act_vertex;
 	double vector1[3],vector2[3],normal[3];
 	int num;
 
 	normales=new float[ncaras*3*3];
-	normales_tmp=new float[ncaras*3];
 
-	for(i=0;i<ncaras;i++) {
-	    vector1[0]=puntos[caras[i*3+1]*3]-puntos[caras[i*3]*3];
-		vector1[1]=puntos[caras[i*3+1]*3+1]-puntos[caras[i*3]*3+1];
-	    vector1[2]=puntos[caras[i*3+1]*3+2]-puntos[caras[i*3]*3+2];
-	    vector2[0]=puntos[caras[i*3+2]*3]-puntos[caras[i*3]*3];
-	    vector2[1]=puntos[caras[i*3+2]*3+1]-puntos[caras[i*3]*3+1];
-	    vector2[2]=puntos[caras[i*3+2]*3+2]-puntos[caras[i*3]*3+2];
-	    Normal(vector1,vector2,normal);             
-		normales_tmp[i*3]=float(normal[0]);
-		normales_tmp[i*3+1]=float(normal[1]);
-		normales_tmp[i*3+2]=float(normal[2]);
+    Vector* normales_tmp = new Vector[ncaras];
+
+	for (int i = 0; i < ncaras; i++) {
+	    vector1[0]=points[caras[i*3+1]].x - points[caras[i*3]].x;
+		vector1[1]=points[caras[i*3+1]].y - points[caras[i*3]].y;
+	    vector1[2]=points[caras[i*3+1]].z - points[caras[i*3]].z;
+	    vector2[0]=points[caras[i*3+2]].x - points[caras[i*3]].x;
+	    vector2[1]=points[caras[i*3+2]].y - points[caras[i*3]].y;
+	    vector2[2]=points[caras[i*3+2]].z - points[caras[i*3]].z;
+	    Normal(vector1,vector2,normal);
+		normales_tmp[i].x = float(normal[0]);
+		normales_tmp[i].y = float(normal[1]);
+		normales_tmp[i].z = float(normal[2]);
 	} /* for */ 
 
 	/* Calcular las normales a cada vértice según sus grupos "smooth": */ 
-	for(i=0;i<ncaras;i++) {
+	for(int i = 0; i < ncaras; i++) {
 		for(j=0;j<3;j++) {
 			act_vertex=caras[i*3+j];
 			if (smooth[i]==0) {
-				normales[i*9+j*3]=normales_tmp[i*3];
-				normales[i*9+j*3+1]=normales_tmp[i*3+1];
-				normales[i*9+j*3+2]=normales_tmp[i*3+2];
+				normales[i*9+j*3]=normales_tmp[i].x;
+				normales[i*9+j*3+1]=normales_tmp[i].y;
+				normales[i*9+j*3+2]=normales_tmp[i].z;
 			} else {
 				num=0;
 				normales[i*9+j*3]=0.0F;
@@ -356,9 +340,9 @@ void C3DObject::CalculaNormales(int *smooth)
 					if (smooth[k]==smooth[i] &&
 						(caras[k*3]==act_vertex || caras[k*3+1]==act_vertex || caras[k*3+2]==act_vertex)) {
 						num++;
-						normales[i*9+j*3]+=normales_tmp[k*3];
-						normales[i*9+j*3+1]+=normales_tmp[k*3+1];
-						normales[i*9+j*3+2]+=normales_tmp[k*3+2];
+						normales[i*9+j*3]+=normales_tmp[k].x;
+						normales[i*9+j*3+1]+=normales_tmp[k].y;
+						normales[i*9+j*3+2]+=normales_tmp[k].z;
 					} /* if */ 
 				} /* for */ 
 				if (num!=0) {
@@ -370,14 +354,14 @@ void C3DObject::CalculaNormales(int *smooth)
 		} /* for */ 
 	} /* for */ 
 
-	delete []normales_tmp;
+	delete[] normales_tmp;
 
 } /* C3DObject::CalculaNormales */ 
 
 
 C3DObject::~C3DObject()
 {
-	if (puntos!=NULL) delete []puntos;
+	if (points!=NULL) delete []points;
 	if (normales!=NULL) delete []normales;
 	if (caras!=NULL) delete []caras;
 	if (r!=NULL) delete []r;
@@ -395,7 +379,7 @@ C3DObject::~C3DObject()
 
 bool C3DObject::valid(void)
 {
-	if (npuntos!=0 && ncaras!=0 && puntos!=NULL && normales!=NULL && caras!=NULL) return true;
+	if (npoints!=0 && ncaras!=0 && points!=NULL && normales!=NULL && caras!=NULL) return true;
 
 	return false;
 } /* C3DObject::valid */ 
@@ -414,7 +398,7 @@ void C3DObject::draw(void)
 			{
 				glEnable(GL_TEXTURE_2D);
 				glEnableClientState(GL_VERTEX_ARRAY);
-				glVertexPointer(3,GL_FLOAT,0,puntos);
+				glVertexPointer(3,GL_FLOAT,0,points);
 
 				for(i=0;i<ncaras;i++) {
 					glBindTexture(GL_TEXTURE_2D,textures[i]);
@@ -450,7 +434,7 @@ void C3DObject::draw(void)
 			/* Dibuja el objeto: */ 
 			{
 				glEnableClientState(GL_VERTEX_ARRAY);
-				glVertexPointer(3,GL_FLOAT,0,puntos);
+				glVertexPointer(3,GL_FLOAT,0,points);
 
 				glBegin(GL_TRIANGLES);
 				for(i=0;i<ncaras;i++) {
@@ -487,7 +471,7 @@ void C3DObject::draw(float r,float g,float b)
 			{
 				glEnable(GL_TEXTURE_2D);
 				glEnableClientState(GL_VERTEX_ARRAY);
-				glVertexPointer(3,GL_FLOAT,0,puntos);
+				glVertexPointer(3,GL_FLOAT,0,points);
 
 				for(i=0,off1=0;i<ncaras;i++) {
 					glBindTexture(GL_TEXTURE_2D,textures[i]);
@@ -523,7 +507,7 @@ void C3DObject::draw(float r,float g,float b)
 			{
 				/* Dibuja el objeto: */ 
 				glEnableClientState(GL_VERTEX_ARRAY);
-				glVertexPointer(3,GL_FLOAT,0,puntos);
+				glVertexPointer(3,GL_FLOAT,0,points);
 				glColor3f(r,g,b);
 
 				for(i=0,off1=0;i<ncaras;i++) {
@@ -551,7 +535,7 @@ void C3DObject::draw_notexture(float r,float g,float b)
 
 	/* Dibuja el objeto: */ 
 	glEnableClientState(GL_VERTEX_ARRAY);
-	glVertexPointer(3,GL_FLOAT,0,puntos);
+	glVertexPointer(3,GL_FLOAT,0,points);
 	glColor3f(r,g,b);
 
 	for(i=0,off1=0;i<ncaras;i++) {
@@ -573,7 +557,7 @@ void C3DObject::draw_notexture(float r,float g,float b,float a)
 
 	/* Dibuja el objeto: */ 
 	glEnableClientState(GL_VERTEX_ARRAY);
-	glVertexPointer(3,GL_FLOAT,0,puntos);
+	glVertexPointer(3,GL_FLOAT,0,points);
 	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
 	glColor4f(r,g,b,a);

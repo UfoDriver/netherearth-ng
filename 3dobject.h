@@ -4,6 +4,7 @@
 #include <string>
 #include <fstream>
 
+#include "vector.h"
 #include "cmc.h"
 
 
@@ -37,12 +38,12 @@ public:
 	void makepositivex(void);					/* Sets the minimum coordinates in X axis to 0 */ 
 	void makepositivey(void);					/* Sets the minimum coordinates in Y axis to 0 */ 
 	void makepositivez(void);					/* Sets the minimum coordinates in Z axis to 0 */ 
-	void moveobject(float x,float y,float z);
+	void moveobject(const Vector& distance);
 
 
-	int npuntos;
+	int npoints;
 	int ncaras;
-	float *puntos;
+	Vector *points;
 	float *normales;
 	int *caras;
 

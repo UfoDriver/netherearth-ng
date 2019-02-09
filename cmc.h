@@ -4,6 +4,8 @@
 #include <cstdio>
 #include <fstream>
 
+class Vector;
+
 
 class CMC {
 public:
@@ -16,8 +18,9 @@ public:
 	void draw(float r,float g,float b);
 	void drawabsolute(float r,float g,float b);
 
-	void set(float *p,int np);
+	void set(const Vector *p, int np);
 	void set(float *x,float *y,float *z,int np);
+
 	void expand(CMC *o2,float *m);
 
 	bool collision(CMC *o2);
