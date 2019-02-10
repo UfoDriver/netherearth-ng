@@ -3,6 +3,7 @@
 
 #include <cstdio>
 #include <fstream>
+#include <vector>
 
 class Vector;
 
@@ -18,7 +19,7 @@ public:
 	void draw(float r,float g,float b);
 	void drawabsolute(float r,float g,float b);
 
-	void set(const Vector *p, int np);
+  void set(const std::vector<Vector>& p);
 	void set(float *x,float *y,float *z,int np);
 
 	void expand(CMC *o2,float *m);

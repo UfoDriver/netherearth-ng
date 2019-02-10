@@ -21,23 +21,25 @@ extern void Normal (double vector1[3],double vector2[3],double resultado[3]);
 
 
 
-C3DObject::C3DObject(): nfaces(0), points(0), normales(0), faces(0), faceColors(NULL),
+C3DObject::C3DObject(): nfaces(0), normales(0), faces(0), faceColors(NULL),
                         displayList(-1), tx(0), ty(0), textures(0)
 {
 }
 
 
 C3DObject::C3DObject(const std::string& filename, const std::string& texturedir):
-  npoints(0), nfaces(0), points(0), normales(0), faces(0), faceColors(NULL), displayList(-1),
+  nfaces(0), normales(0), faces(0), faceColors(NULL), displayList(-1),
   tx(0), ty(0), textures(0)
 {
   int l = filename.length();
 
-  if (filename[l - 1] == 'c' || filename[l - 1] == 'C')
+  if (filename[l - 1] == 'c' || filename[l - 1] == 'C') {
     loadASC(filename);
-  else
+  } else {
     loadASE(filename, texturedir);
+  }
 }
+
 
 bool C3DObject::readVertex(const std::string& data)
 {
@@ -46,7 +48,6 @@ bool C3DObject::readVertex(const std::string& data)
   std::istringstream inStr(data);
   int vertexNumber = 0;
   float x, y, z;
-  // @TODO: fix me, puntos and indexing are ugly
   inStr.ignore(100, ' ');
   inStr >> vertexNumber;
   inStr.ignore(100, ':');
@@ -56,7 +57,8 @@ bool C3DObject::readVertex(const std::string& data)
   inStr >> y;
   inStr.ignore(100, ':');
   inStr >> z;
-  points[vertexNumber] = Vector(x, y, z);
+  points.emplace_back(x, y, z);
+ 
   // @TODO: skipped for a while
   // if (textures) {
   //   if (2==fscanf(fp,"%s %s",buffer3,buffer4)) {
@@ -111,18 +113,18 @@ bool C3DObject::loadASC(const std::string& filename)
   std::ifstream inFile(filename);
   if (!inFile.is_open()) return false;
 
-
   while (!inFile.eof()) {
     std::string buffer;
     std::getline(inFile, buffer);
 
-    switch(state) {
+    switch (state) {
       case ST_INIT:
         if (buffer.find("Vertices:") != std::string::npos) {
           std::istringstream iStr(buffer);
+          int npoints;
           iStr.seekg(buffer.find("Vertices:") + 9);
           iStr >> npoints;
-          points = new Vector[npoints];
+          points.reserve(npoints);
           if (nfaces != 0) state = ST_DATA;
         }
         if (buffer.find("Faces:") != std::string::npos) {
@@ -136,7 +138,7 @@ bool C3DObject::loadASC(const std::string& filename)
           for(int i = 0;i < nfaces; i++) {
             faceColors[i] = Color(0.5, 0.5, 0.5);
           }
-          if (npoints != 0) state = ST_DATA;
+          state = ST_DATA;
         }
         break;
       case ST_DATA:
@@ -158,17 +160,15 @@ bool C3DObject::loadASC(const std::string& filename)
   }
 
   if (state == ST_INIT) {
-    if (points != NULL) delete[] points;
+    points.clear();
     if (faces != NULL) delete[] faces;
-    npoints = 0;
     nfaces = 0;
-    points = NULL;
     faces = NULL;
     return false;
   }
 
   CalculaNormales(smooth);
-  cmc.set(points, npoints);
+  cmc.set(points);
   delete[] smooth;
 
   return true;
@@ -186,7 +186,7 @@ float C3DObject::normalize(float c)
 	int i;
 	float cx,fx,cy,fy,cz,fz,factor;
 
-	cmc.set(points, npoints);
+	cmc.set(points);
 	fx=(cmc.x[1]-cmc.x[0])/2;
 	fy=(cmc.y[1]-cmc.y[0])/2;
 	fz=(cmc.z[1]-cmc.z[0])/2;
@@ -198,14 +198,15 @@ float C3DObject::normalize(float c)
 	if (fy>factor) factor=fy;
 	if (fz>factor) factor=fz;
 
-	factor/=c;
+	factor /= c;
 
-    for(int i = 0; i < npoints; i++) {
-      points[i].x = (points[i].x - cx) / factor;
-      points[i].y = (points[i].y - cy) / factor;
-      points[i].z = (points[i].z - cz) / factor;
+    for (Vector& point: points) {
+      point.x = (point.x - cx) / factor;
+      point.y = (point.y - cy) / factor;
+      point.z = (point.z - cz) / factor;
     }
-    cmc.set(points, npoints);
+
+    cmc.set(points);
 
     return factor;
 } /* normalize */ 
@@ -216,7 +217,7 @@ float C3DObject::normalizexy(float c)
 	int i;
 	float cx,fx,cy,fy,cz,factor;
 
-	cmc.set(points, npoints);
+	cmc.set(points);
 	fx=(cmc.x[1]-cmc.x[0])/2;
 	fy=(cmc.y[1]-cmc.y[0])/2;
 	cx=(cmc.x[1]+cmc.x[0])/2;
@@ -228,12 +229,12 @@ float C3DObject::normalizexy(float c)
 
 	factor/=c;
 
-    for(int i = 0; i < npoints; i++) {
-      points[i].x = (points[i].x - cx) / factor;
-      points[i].y = (points[i].y - cy) / factor;
-      points[i].z = (points[i].z - cz) / factor;
+    for (Vector& point: points) {
+      point.x = (point.x - cx) / factor;
+      point.y = (point.y - cy) / factor;
+      point.z = (point.z - cz) / factor;
     }
-    cmc.set(points, npoints);
+    cmc.set(points);
 
 	return factor;
 } /* normalizexy */ 
@@ -241,56 +242,56 @@ float C3DObject::normalizexy(float c)
 
 void C3DObject::makepositive(void)
 {
-  cmc.set(points, npoints);
+  cmc.set(points);
 
-  for (int i = 0; i < npoints; i++) {
-    points[i].x -= cmc.x[0];
-    points[i].y -= cmc.y[0];
-    points[i].z -= cmc.z[0];
+  for (Vector& point: points) {
+    point.x -= cmc.x[0];
+    point.y -= cmc.y[0];
+    point.z -= cmc.z[0];
   }
-  cmc.set(points, npoints);
+  cmc.set(points);
 }
 
 
 void C3DObject::makepositivex(void)
 {
-  cmc.set(points, npoints);
+  cmc.set(points);
 
-  for (int i = 0; i < npoints; i++) {
-    points[i].x -= cmc.x[0];
+  for (Vector& point: points) {
+    point.x -= cmc.x[0];
   }
-  cmc.set(points, npoints);
+  cmc.set(points);
 }
 
 
 void C3DObject::makepositivey(void)
 {
-  cmc.set(points, npoints);
+  cmc.set(points);
 
-  for (int i = 0; i < npoints; i++) {
-    points[i].y -= cmc.y[0];
+  for (Vector& point: points) {
+    point.y -= cmc.y[0];
   }
-  cmc.set(points, npoints);
+  cmc.set(points);
 }
 
 
 void C3DObject::makepositivez(void)
 {
-  cmc.set(points, npoints);
+  cmc.set(points);
 
-  for (int i = 0; i < npoints; i++) {
-    points[i].z -= cmc.z[0];
+  for (Vector& point: points) {
+    point.z -= cmc.z[0];
   }
-  cmc.set(points, npoints);
+  cmc.set(points);
 }
 
 
 void C3DObject::moveobject(const Vector& distance)
 {
-  for(int i = 0; i < npoints; i++) {
-    points[i] = points[i] + distance;
+  for(Vector& point: points) {
+    point = point + distance;
   }
-  cmc.set(points, npoints);
+  cmc.set(points);
 }
 
 
@@ -357,7 +358,7 @@ void C3DObject::CalculaNormales(int *smooth)
 
 C3DObject::~C3DObject()
 {
-  if (points != NULL) delete[] points;
+  points.clear();
   if (normales != NULL) delete[] normales;
   if (faces != NULL) delete[] faces;
   if (faceColors != NULL) delete[] faceColors;
@@ -372,14 +373,12 @@ C3DObject::~C3DObject()
 
 bool C3DObject::valid(void)
 {
-  return npoints && nfaces && points && normales  && faces;
+  return points.size() && nfaces && normales && faces;
 }
 
 
 void C3DObject::draw(void)
 {
-	int i;
-
 	if (textures!=0) {
 		if (displayList==-1) {
 			displayList=glGenLists(1);
@@ -388,9 +387,9 @@ void C3DObject::draw(void)
 			{
 				glEnable(GL_TEXTURE_2D);
 				glEnableClientState(GL_VERTEX_ARRAY);
-				glVertexPointer(3,GL_FLOAT,0,points);
+				glVertexPointer(3,GL_FLOAT,0,points.data());
 
-				for(i=0;i<nfaces;i++) {
+				for(int i = 0; i < nfaces; i++) {
 					glBindTexture(GL_TEXTURE_2D,textures[i]);
 					glColor3f(1,1,1);
 
@@ -424,10 +423,10 @@ void C3DObject::draw(void)
 			/* Dibuja el objeto: */ 
 			{
 				glEnableClientState(GL_VERTEX_ARRAY);
-				glVertexPointer(3,GL_FLOAT,0,points);
+				glVertexPointer(3,GL_FLOAT,0,points.data());
 
 				glBegin(GL_TRIANGLES);
-				for(i=0;i<nfaces;i++) {
+				for(int i = 0; i < nfaces; i++) {
 					glColor3f(faceColors[i].red, faceColors[i].green, faceColors[i].blue);
 					glNormal3f(normales[i*9+0],normales[i*9+1],normales[i*9+2]);
 					glArrayElement(faces[i*3]);
@@ -451,8 +450,6 @@ void C3DObject::draw(void)
 
 void C3DObject::draw(const Color& color)
 {
-	int i,off1;
-
 	if (textures!=0) {
 		if (displayList==-1) {
 			displayList=glGenLists(1);
@@ -461,9 +458,9 @@ void C3DObject::draw(const Color& color)
 			{
 				glEnable(GL_TEXTURE_2D);
 				glEnableClientState(GL_VERTEX_ARRAY);
-				glVertexPointer(3,GL_FLOAT,0,points);
+				glVertexPointer(3,GL_FLOAT,0,points.data());
 
-				for(i=0,off1=0;i<nfaces;i++) {
+				for(int i=0,off1=0;i<nfaces;i++) {
 					glBindTexture(GL_TEXTURE_2D,textures[i]);
 					glColor3f(1,1,1);
 
@@ -495,12 +492,13 @@ void C3DObject::draw(const Color& color)
 //                      glNewList(display_list,GL_COMPILE_AND_EXECUTE);
 			/* Dibuja el objeto: */ 
 			{
-				/* Dibuja el objeto: */ 
+				/* Dibuja el objeto: */
+              
 				glEnableClientState(GL_VERTEX_ARRAY);
-				glVertexPointer(3,GL_FLOAT,0,points);
+				glVertexPointer(3, GL_FLOAT, 0, points.data());
 				glColor3f(color.red, color.green, color.blue);
 
-				for(i=0,off1=0;i<nfaces;i++) {
+				for(int i = 0, off1 = 0; i < nfaces; i++) {
 					glBegin(GL_TRIANGLES);
 					glNormal3f(normales[i*9+0],normales[i*9+1],normales[i*9+2]);
 					glArrayElement(faces[off1++]);
@@ -522,7 +520,7 @@ void C3DObject::draw(const Color& color)
 void C3DObject::draw_notexture(const Color& color)
 {
   glEnableClientState(GL_VERTEX_ARRAY);
-  glVertexPointer(3, GL_FLOAT, 0, points);
+  glVertexPointer(3, GL_FLOAT, 0, points.data());
 
   if (color.alpha) {
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);

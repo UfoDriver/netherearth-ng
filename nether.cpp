@@ -720,7 +720,7 @@ void NETHER::draw_game(bool shadows)
 
 		glPushMatrix();
 		glTranslatef(sx,sy,minz+0.05);
-		ship->DrawShadow(0,0,0,0.5);
+		ship->DrawShadow(Color(0, 0, 0, 0.5));
 		glPopMatrix();
 	} 
 

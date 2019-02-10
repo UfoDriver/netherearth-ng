@@ -141,13 +141,14 @@ bool C3DObject::loadASE(const std::string& filename, const std::string& textured
 		return false;
 	} /* if */ 
 
+    int npoints;
 	if (!lookfor("MESH_NUMVERTEX",fp) ||
 		1!=fscanf(fp,"%i",&npoints)) {
 		fclose(fp);
 		return false;
 	} /* if */ 
 
-	points = new Vector[npoints];
+	points.reserve(npoints);
 
 	if (!lookfor("MESH_NUMFACES",fp) ||
 		1!=fscanf(fp,"%i",&nfaces)) {
@@ -183,7 +184,7 @@ bool C3DObject::loadASE(const std::string& filename, const std::string& textured
 			return false;
 		} /* if */ 
 
-		points[p] = Vector(x, y, z);
+        points.emplace_back(x, y, z);
 	} /* for */ 
 
 	if (!lookfor("MESH_FACE_LIST",fp)) {
@@ -351,7 +352,7 @@ bool C3DObject::loadASE(const std::string& filename, const std::string& textured
 	delete materials;
 
 	CalculaNormales(smooth);
-	cmc.set(points, npoints);
+	cmc.set(points);
 
 	delete smooth;
 	delete facematerial;

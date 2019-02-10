@@ -89,21 +89,21 @@ void CMC::reset(void)
 } /* CMC::set */ 
 
 
-void CMC::set(const Vector *p, int np)
+void CMC::set(const std::vector<Vector> &p)
 {
-  if (np > 0) {
+  if (p.size() > 0) {
     x[0] = x[1] = p[0].x;
     y[0] = y[1] = p[0].y;
     z[0] = z[1] = p[0].z;
   }
 
-  for(int i = 1; i < np; i++) {
-    if (p[i].x < x[0]) x[0] = p[i].x;
-    if (p[i].x > x[1]) x[1] = p[i].x;
-    if (p[i].y < y[0]) y[0] = p[i].y;
-    if (p[i].y > y[1]) y[1] = p[i].y;
-    if (p[i].z < z[0]) z[0] = p[i].z;
-    if (p[i].z > z[1]) z[1] = p[i].z;
+  for (Vector point: p) {
+    if (point.x < x[0]) x[0] = point.x;
+    if (point.x > x[1]) x[1] = point.x;
+    if (point.y < y[0]) y[0] = point.y;
+    if (point.y > y[1]) y[1] = point.y;
+    if (point.z < z[0]) z[0] = point.z;
+    if (point.z > z[1]) z[1] = point.z;
   }
 }
 

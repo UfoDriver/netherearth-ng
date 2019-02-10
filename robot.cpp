@@ -163,14 +163,14 @@ void Robot::draw(int owner, bool shadows, Piece3DObject ***piece_tile, Vector li
       glPushMatrix();
       glTranslatef(-z*light.x,-z*light.y,0.05);
       glRotatef(angle,0,0,1);
-      piece_tile[owner][8]->DrawShadow(angle,lightposv,0,0,0,0.5);
+      piece_tile[owner][8]->DrawShadow(angle, lightposv, Color(0, 0, 0, 0.5));
       glPushMatrix();
       glTranslatef(bipod_v,0,0);
-      piece_tile[owner][9]->DrawShadow(angle,lightposv,0,0,0,0.5);
+      piece_tile[owner][9]->DrawShadow(angle, lightposv, Color(0, 0, 0, 0.5));
       glPopMatrix();
       glPushMatrix();
       glTranslatef(-bipod_v,0,0);
-      piece_tile[owner][10]->DrawShadow(angle,lightposv,0,0,0,0.5);
+      piece_tile[owner][10]->DrawShadow(angle, lightposv, Color(0, 0, 0, 0.5));
       glPopMatrix();
       //			piece_tile[owner][0]->DrawShadow(angle,lightposv,0,0,0,0.5);
       glPopMatrix();
@@ -188,7 +188,7 @@ void Robot::draw(int owner, bool shadows, Piece3DObject ***piece_tile, Vector li
       glPushMatrix();
       glTranslatef(-z*light.x,-z*light.y,0.05);
       glRotatef(angle,0,0,1);
-      piece_tile[owner][1]->DrawShadow(angle,lightposv,0,0,0,0.5);
+      piece_tile[owner][1]->DrawShadow(angle, lightposv, Color(0, 0, 0, 0.5));
       glPopMatrix();
     } /* if */
     z+=0.35;
@@ -206,7 +206,7 @@ void Robot::draw(int owner, bool shadows, Piece3DObject ***piece_tile, Vector li
       glPushMatrix();
       glTranslatef(-z*light.x,-z*light.y,0.05);
       glRotatef(angle,0,0,1);
-      piece_tile[owner][2]->DrawShadow(angle,lightposv,0,0,0,0.5);
+      piece_tile[owner][2]->DrawShadow(angle, lightposv, Color(0, 0, 0, 0.5));
       glPopMatrix();
     } /* if */
     z+=0.45;
@@ -224,7 +224,7 @@ void Robot::draw(int owner, bool shadows, Piece3DObject ***piece_tile, Vector li
       glPushMatrix();
       glTranslatef(-z*light.x,-z*light.y,0.05);
       glRotatef(angle,0,0,1);
-      piece_tile[owner][3]->DrawShadow(angle,lightposv,0,0,0,0.5);
+      piece_tile[owner][3]->DrawShadow(angle, lightposv, Color(0, 0, 0, 0.5));
       glPopMatrix();
     } /* if */
     z+=0.5;
@@ -241,7 +241,7 @@ void Robot::draw(int owner, bool shadows, Piece3DObject ***piece_tile, Vector li
       glPushMatrix();
       glTranslatef(-z*light.x,-z*light.y,0.05);
       glRotatef(angle,0,0,1);
-      piece_tile[owner][4]->DrawShadow(angle,lightposv,0,0,0,0.5);
+      piece_tile[owner][4]->DrawShadow(angle, lightposv, Color(0, 0, 0, 0.5));
       glPopMatrix();
     }
     z+=0.35;
@@ -258,7 +258,7 @@ void Robot::draw(int owner, bool shadows, Piece3DObject ***piece_tile, Vector li
       glPushMatrix();
       glTranslatef(-z*light.x,-z*light.y,0.05);
       glRotatef(angle,0,0,1);
-      piece_tile[owner][5]->DrawShadow(angle,lightposv,0,0,0,0.5);
+      piece_tile[owner][5]->DrawShadow(angle, lightposv, Color(0, 0, 0, 0.5));
       glPopMatrix();
     } /* if */
     z+=0.5;
@@ -275,7 +275,7 @@ void Robot::draw(int owner, bool shadows, Piece3DObject ***piece_tile, Vector li
       glPushMatrix();
       glTranslatef(-z*light.x,-z*light.y,0.05);
       glRotatef(angle,0,0,1);
-      piece_tile[owner][6]->DrawShadow(angle,lightposv,0,0,0,0.5);
+      piece_tile[owner][6]->DrawShadow(angle, lightposv, Color(0, 0, 0, 0.5));
       glPopMatrix();
     } /* if */
     z+=0.8;
@@ -294,7 +294,7 @@ void Robot::draw(int owner, bool shadows, Piece3DObject ***piece_tile, Vector li
       glPushMatrix();
       glTranslatef(-z*light.x,-z*light.y,0.05);
       glRotatef(angle+electronics_state,0,0,1);
-      piece_tile[owner][7]->DrawShadow(angle+electronics_state,lightposv,0,0,0,0.5);
+      piece_tile[owner][7]->DrawShadow(angle+electronics_state, lightposv, Color(0, 0, 0, 0.5));
       glPopMatrix();
     } /* if */
   } /* if */

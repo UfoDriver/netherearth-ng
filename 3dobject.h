@@ -1,8 +1,9 @@
 #ifndef __BRAIN_3DOBJECT
 #define __BRAIN_3DOBJECT
 
-#include <string>
 #include <fstream>
+#include <string>
+#include <vector>
 
 #include "cmc.h"
 #include "color.h"
@@ -39,20 +40,19 @@ public:
 	void makepositivez(void);					/* Sets the minimum coordinates in Z axis to 0 */ 
 	void moveobject(const Vector& distance);
 
+  std::vector<Vector> points;
 
-	int npoints;
-	int nfaces;
-	Vector *points;
-	float *normales;
-	int *faces;
+  int nfaces;
+  float *normales;
+  int *faces;
 
   Color* faceColors;
 
   int displayList;
   CMC cmc;
 
-	float *tx, *ty;
-	unsigned int *textures;
+  float *tx, *ty;
+  unsigned int *textures;
 
 private:
   bool readVertex(const std::string& data);
