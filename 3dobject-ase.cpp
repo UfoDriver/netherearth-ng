@@ -155,14 +155,12 @@ bool C3DObject::loadASE(const std::string& filename, const std::string& textured
 		return false;
 	} /* if */ 
 	
-	faces=new int[nfaces*3];
+	faces = new Face[nfaces];
 	smooth=new int[nfaces];
 	facematerial=new int[nfaces];
-    for(int i = 0; i < nfaces * 3; i++) {
-      faces[i]=0;
-    }
     for(int i = 0; i < nfaces; i++) {
       faceColors.emplace_back(0.5, 0.5, 0.5);
+      faces[i].a = faces[i].b = faces[i].c = 0;
     }
 
 	if (!lookfor("MESH_VERTEX_LIST",fp)) {
@@ -198,9 +196,9 @@ bool C3DObject::loadASE(const std::string& filename, const std::string& textured
 			return false;
 		} /* if */ 
 
-		faces[i*3]=p1;
-		faces[i*3+1]=p2;
-		faces[i*3+2]=p3;
+        faces[i].a = p1;
+        faces[i].b = p2;
+        faces[i].c = p3;
 
 		if (!lookfor("MESH_SMOOTHING",fp) ||
 			1!=fscanf(fp,"%i",&s)) {

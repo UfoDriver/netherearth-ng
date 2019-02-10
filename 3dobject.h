@@ -10,6 +10,17 @@
 #include "vector.h"
 
 
+class Face {
+public:
+  Face(int a, int b, int c): a(a), b(b), c(c) {}
+  Face(): a(0), b(0), c(0) {}
+  bool hasVertex(int vertex) {return a == vertex || b == vertex || c == vertex;}
+  int a;
+  int b;
+  int c;
+};
+
+
 class C3DObject {
 public:
   C3DObject();
@@ -46,7 +57,7 @@ public:
 
   int nfaces;
   float *normales;
-  int *faces;
+  Face* faces;
 
   int displayList;
   CMC cmc;

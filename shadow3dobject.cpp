@@ -76,19 +76,19 @@ void Shadow3DObject::ComputeShadow(Vector light)
   for (int i = 0; i < nfaces; i++) {
     /* Comprobar que el triángulo es visible: */
 
-    v[0] = points[faces[i * 3 + 1]].x - points[faces[i * 3]].x;;
-    v[1] = points[faces[i * 3 + 1]].y - points[faces[i * 3]].y;
-    v[2] = points[faces[i * 3 + 1]].z - points[faces[i * 3]].z;
-    w[0] = points[faces[i * 3 + 2]].x - points[faces[i * 3 + 1]].x;
-    w[1] = points[faces[i * 3 + 2]].y - points[faces[i * 3 + 1]].y;
-    w[2] = points[faces[i * 3 + 2]].z - points[faces[i * 3 + 1]].z;
+    v[0] = points[faces[i].b].x - points[faces[i].a].x;;
+    v[1] = points[faces[i].b].y - points[faces[i].a].y;
+    v[2] = points[faces[i].b].z - points[faces[i].a].z;
+    w[0] = points[faces[i].c].x - points[faces[i].b].x;
+    w[1] = points[faces[i].c].y - points[faces[i].b].y;
+    w[2] = points[faces[i].c].z - points[faces[i].b].z;
     Normalf(v,w,n);
 
     float value = n[0] * l[0] + n[1] * l[1] + n[2] * l[2];
     if (value > 0) {
-      pry_faces[shdw_nfaces * 3] = faces[i * 3];
-      pry_faces[shdw_nfaces * 3 + 1] = faces[i * 3 + 1];
-      pry_faces[shdw_nfaces * 3 + 2] = faces[i * 3 + 2];
+      pry_faces[shdw_nfaces * 3] = faces[i].a;
+      pry_faces[shdw_nfaces * 3 + 1] = faces[i].b;
+      pry_faces[shdw_nfaces * 3 + 2] = faces[i].c;
       shdw_nfaces++;
     }
   }
