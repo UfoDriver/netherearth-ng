@@ -62,7 +62,7 @@ public:
   CMC cmc;
 
   float *tx, *ty;
-  unsigned int *textures;
+  std::vector<int> textures;
 
 private:
   bool readVertex(const std::string& data);

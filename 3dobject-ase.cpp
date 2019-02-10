@@ -225,7 +225,6 @@ bool C3DObject::loadASE(const std::string& filename, const std::string& textured
 			int f;
 			float x,y,z;
 
-			textures=new unsigned int[nfaces];
 			tx=new float[nfaces*3];
 			ty=new float[nfaces*3];
 
@@ -289,7 +288,6 @@ bool C3DObject::loadASE(const std::string& filename, const std::string& textured
 				return false;
 			} /* if */ 
 
-			textures=new unsigned int[nfaces];
 			tx=new float[nfaces*3];
 			ty=new float[nfaces*3];
 
@@ -327,7 +325,7 @@ bool C3DObject::loadASE(const std::string& filename, const std::string& textured
 					material_bitmaps[mid][facematerial[i]]!=0) {
 					materials[mid][facematerial[i]]=createTexture(material_bitmaps[mid][facematerial[i]]);
 				} /* if */ 
-				textures[i]=materials[mid][facematerial[i]];
+				textures.emplace_back(materials[mid][facematerial[i]]);
 			} /* for */ 
 		}       
 	} /* if */ 

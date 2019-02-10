@@ -412,10 +412,8 @@ C3DObject::~C3DObject()
   if (normales != NULL) delete[] normales;
   if (tx != 0) delete tx;
   if (ty != 0) delete ty;
-  if (textures != 0) delete textures;
   tx = 0;
   ty = 0;
-  textures = 0;
 }
 
 
@@ -427,7 +425,7 @@ bool C3DObject::valid(void)
 
 void C3DObject::draw(void)
 {
-	if (textures!=0) {
+  if (textures.size() != 0) {
 		if (displayList==-1) {
 			displayList=glGenLists(1);
 			glNewList(displayList,GL_COMPILE);
@@ -500,7 +498,7 @@ void C3DObject::draw(void)
 
 void C3DObject::draw(const Color& color)
 {
-	if (textures!=0) {
+  if (textures.size() !=0 ) {
 		if (displayList==-1) {
 			displayList=glGenLists(1);
 			glNewList(displayList,GL_COMPILE);
