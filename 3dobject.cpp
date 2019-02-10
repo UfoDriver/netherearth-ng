@@ -21,14 +21,14 @@ extern void Normal (double vector1[3],double vector2[3],double resultado[3]);
 
 
 
-C3DObject::C3DObject(): nfaces(0), normales(0), faces(0), faceColors(NULL),
+C3DObject::C3DObject(): nfaces(0), normales(0), faces(0),
                         displayList(-1), tx(0), ty(0), textures(0)
 {
 }
 
 
 C3DObject::C3DObject(const std::string& filename, const std::string& texturedir):
-  nfaces(0), normales(0), faces(0), faceColors(NULL), displayList(-1),
+  nfaces(0), normales(0), faces(0), displayList(-1),
   tx(0), ty(0), textures(0)
 {
   int l = filename.length();
@@ -133,10 +133,9 @@ bool C3DObject::loadASC(const std::string& filename)
           iStr >> nfaces;
           faces = new int[nfaces * 3];
           smooth = new int[nfaces];
-          faceColors = new Color[nfaces];
           for(int i = 0; i < nfaces * 3; i++) faces[i] = 0;
           for(int i = 0;i < nfaces; i++) {
-            faceColors[i] = Color(0.5, 0.5, 0.5);
+            faceColors.emplace_back(0.5, 0.5, 0.5);
           }
           state = ST_DATA;
         }
@@ -361,7 +360,6 @@ C3DObject::~C3DObject()
   points.clear();
   if (normales != NULL) delete[] normales;
   if (faces != NULL) delete[] faces;
-  if (faceColors != NULL) delete[] faceColors;
   if (tx != 0) delete tx;
   if (ty != 0) delete ty;
   if (textures != 0) delete textures;

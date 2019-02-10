@@ -41,12 +41,12 @@ public:
 	void moveobject(const Vector& distance);
 
   std::vector<Vector> points;
+  //  std::vector<Vector> normales;
+  std::vector<Color> faceColors;
 
   int nfaces;
   float *normales;
   int *faces;
-
-  Color* faceColors;
 
   int displayList;
   CMC cmc;

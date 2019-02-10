@@ -27,7 +27,6 @@ bool readcomment(char *data, FILE *fp);
 
 bool C3DObject::loadASE(const std::string& filename, const std::string& texturedir)
 {
-	int i=0,j=0;
 	int *smooth=0;
 	int *facematerial=0;
 	int **materials=0,nmaterials=0,*nsubmaterials=0;
@@ -54,7 +53,7 @@ bool C3DObject::loadASE(const std::string& filename, const std::string& textured
 	nsubmaterials=new int[nmaterials];
 	material_bitmaps=new char **[nmaterials];
 
-	for(j=0;j<nmaterials;j++) {
+	for(int j = 0; j < nmaterials; j++) {
 		if (!lookfor("MATERIAL",fp) ||
 			!lookfor("MATERIAL_CLASS",fp) ||
 			!readcomment(buffer,fp)) {
@@ -100,11 +99,11 @@ bool C3DObject::loadASE(const std::string& filename, const std::string& textured
 			} /* if */ 
 
 			materials[j]=new int[nsubmaterials[j]];
-			for(i=0;i<nsubmaterials[j];i++) materials[j][i]=0;
-			material_bitmaps[j]=new char *[nsubmaterials[j]];
-			for(i=0;i<nsubmaterials[j];i++) material_bitmaps[j][i]=0;
+			for(int i = 0; i < nsubmaterials[j]; i++) materials[j][i] = 0;
+			material_bitmaps[j] = new char *[nsubmaterials[j]];
+			for(int i = 0; i < nsubmaterials[j]; i++) material_bitmaps[j][i] = 0;
 
-			for(i=0;i<nsubmaterials[j];i++) {
+			for(int i = 0; i < nsubmaterials[j]; i++) {
 				if (!lookfor("SUBMATERIAL",fp)) {
 					fclose(fp);
 					return false;
@@ -159,14 +158,11 @@ bool C3DObject::loadASE(const std::string& filename, const std::string& textured
 	faces=new int[nfaces*3];
 	smooth=new int[nfaces];
 	facematerial=new int[nfaces];
-    faceColors = new Color[nfaces];
     for(int i = 0; i < nfaces * 3; i++) {
       faces[i]=0;
     }
     for(int i = 0; i < nfaces; i++) {
-      faceColors[i].red = 0.5;
-      faceColors[i].green = 0.5;
-      faceColors[i].blue = 0.5;
+      faceColors.emplace_back(0.5, 0.5, 0.5);
     }
 
 	if (!lookfor("MESH_VERTEX_LIST",fp)) {
@@ -192,7 +188,7 @@ bool C3DObject::loadASE(const std::string& filename, const std::string& textured
 		return false;
 	} /* if */ 
 
-	for(i=0;i<nfaces;i++) {
+	for(int i = 0; i < nfaces; i++) {
 		int p1,p2,p3,s,mid;
 		char buffer[32];
 
@@ -234,7 +230,7 @@ bool C3DObject::loadASE(const std::string& filename, const std::string& textured
 			tx=new float[nfaces*3];
 			ty=new float[nfaces*3];
 
-			for(i=0;i<nfaces;i++) {
+			for(int i = 0; i < nfaces; i++) {
 				if (!lookfor("MESH_FACEMAP",fp) ||
 					1!=fscanf(fp,"%i",&f)) {
 					fclose(fp);
@@ -277,7 +273,7 @@ bool C3DObject::loadASE(const std::string& filename, const std::string& textured
 			} /* if */ 
 
 			tv=new float[ntv*2];
-			for(i=0;i<ntv;i++) {
+			for(int i = 0; i < ntv; i++) {
 				if (!lookfor("MESH_TVERT",fp) ||
 					3!=fscanf(fp,"%i %f %f",&n,&x,&y)) {
 					fclose(fp);
@@ -298,7 +294,7 @@ bool C3DObject::loadASE(const std::string& filename, const std::string& textured
 			tx=new float[nfaces*3];
 			ty=new float[nfaces*3];
 
-			for(i=0;i<ntf;i++) {
+			for(int i = 0; i < ntf; i++) {
 				if (!lookfor("MESH_TFACE",fp) ||
 					4!=fscanf(fp,"%i %i %i %i",&n,&p1,&p2,&p3)) {
 					fclose(fp);
@@ -326,7 +322,7 @@ bool C3DObject::loadASE(const std::string& filename, const std::string& textured
 				return false;
 			} /* if */ 
 
-			for(i=0;i<nfaces;i++) {
+			for(int i = 0; i < nfaces; i++) {
 				if (facematerial[i]>nsubmaterials[mid]) facematerial[i]=0;
 				if (materials[mid][facematerial[i]]==0 &&
 					material_bitmaps[mid][facematerial[i]]!=0) {
@@ -337,10 +333,10 @@ bool C3DObject::loadASE(const std::string& filename, const std::string& textured
 		}       
 	} /* if */ 
 
-	for(j=0;j<nmaterials;j++) {
+	for(int j = 0; j < nmaterials; j++) {
 		delete materials[j];
 		materials[j]=0;
-		for(i=0;i<nsubmaterials[j];i++) {
+		for(int i = 0; i < nsubmaterials[j]; i++) {
 			delete material_bitmaps[j][i];
 			material_bitmaps[j][i]=0;
 		} /* for */ 
