@@ -225,9 +225,6 @@ bool C3DObject::loadASE(const std::string& filename, const std::string& textured
 			int f;
 			float x,y,z;
 
-			tx=new float[nfaces*3];
-			ty=new float[nfaces*3];
-
 			for(int i = 0; i < nfaces; i++) {
 				if (!lookfor("MESH_FACEMAP",fp) ||
 					1!=fscanf(fp,"%i",&f)) {
@@ -240,23 +237,20 @@ bool C3DObject::loadASE(const std::string& filename, const std::string& textured
 					3!=fscanf(fp,"%f %f %f",&x,&y,&z)) {
 					fclose(fp);
 					return false;
-				} /* if */ 
-				tx[f*3]=x;
-				ty[f*3]=1-y;
+				} /* if */
+                textureCoord.emplace_back(x, 1 - y);
 				if (!lookfor("MESH_FACEMAPVERT",fp) ||
 					3!=fscanf(fp,"%f %f %f",&x,&y,&z)) {
 					fclose(fp);
 					return false;
-				} /* if */ 
-				tx[f*3+1]=x;
-				ty[f*3+1]=1-y;
+				} /* if */
+                textureCoord.emplace_back(x, 1 - y);
 				if (!lookfor("MESH_FACEMAPVERT",fp) ||
 					3!=fscanf(fp,"%f %f %f",&x,&y,&z)) {
 					fclose(fp);
 					return false;
-				} /* if */ 
-				tx[f*3+2]=x;
-				ty[f*3+2]=1-y;
+				} /* if */
+                textureCoord.emplace_back(x, 1 - y);
 			} /* for */   
 		} /* if */ 
 		if (v==2) {
@@ -288,21 +282,15 @@ bool C3DObject::loadASE(const std::string& filename, const std::string& textured
 				return false;
 			} /* if */ 
 
-			tx=new float[nfaces*3];
-			ty=new float[nfaces*3];
-
 			for(int i = 0; i < ntf; i++) {
 				if (!lookfor("MESH_TFACE",fp) ||
 					4!=fscanf(fp,"%i %i %i %i",&n,&p1,&p2,&p3)) {
 					fclose(fp);
 					return false;
-				} /* if */ 
-				tx[n*3]=tv[p1*2];
-				ty[n*3]=1-tv[p1*2+1];
-				tx[n*3+1]=tv[p2*2];
-				ty[n*3+1]=1-tv[p2*2+1];
-				tx[n*3+2]=tv[p3*2];
-				ty[n*3+2]=1-tv[p3*2+1];
+				} /* if */
+                textureCoord.emplace_back(tv[p1 * 2], 1 - tv[p1 * 2 + 1]);
+                textureCoord.emplace_back(tv[p2 * 2], 1 - tv[p2 * 2 + 1]);
+                textureCoord.emplace_back(tv[p3 * 2], 1 - tv[p3 * 2 + 1]);
 //                              textures[n]=materials[facematerial[n]];
 			} /* for */ 
 

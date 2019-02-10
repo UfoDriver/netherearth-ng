@@ -21,13 +21,13 @@ extern void Normal (double vector1[3],double vector2[3],double resultado[3]);
 
 
 
-C3DObject::C3DObject(): points(0), faces(0), normales(0), displayList(-1), tx(0), ty(0), textures(0)
+C3DObject::C3DObject(): points(0), faces(0), normales(0), displayList(-1), textures(0)
 {
 }
 
 
 C3DObject::C3DObject(const std::string& filename, const std::string& texturedir):
-  points(0), faces(0), normales(0), displayList(-1), tx(0), ty(0), textures(0)
+  points(0), faces(0), normales(0), displayList(-1), textures(0)
 {
   int l = filename.length();
 
@@ -410,10 +410,6 @@ C3DObject::~C3DObject()
 {
   points.clear();
   if (normales != NULL) delete[] normales;
-  if (tx != 0) delete tx;
-  if (ty != 0) delete ty;
-  tx = 0;
-  ty = 0;
 }
 
 
@@ -441,15 +437,15 @@ void C3DObject::draw(void)
 					glColor3f(1,1,1);
 
 					glBegin(GL_TRIANGLES);
-					glTexCoord2f(tx[i*3],ty[i*3]);
+					glTexCoord2f(textureCoord[i * 3].x, textureCoord[i * 3].y);
 					glNormal3f(normales[i*9+0],normales[i*9+1],normales[i*9+2]);
 					glArrayElement(faces[i].a);
 
-					glTexCoord2f(tx[i*3+1],ty[i*3+1]);
+					glTexCoord2f(textureCoord[i * 3 + 1].x, textureCoord[i * 3 + 1].y);
 					glNormal3f(normales[i*9+3],normales[i*9+4],normales[i*9+5]);
 					glArrayElement(faces[i].b);
 
-					glTexCoord2f(tx[i*3+2],ty[i*3+2]);
+					glTexCoord2f(textureCoord[i * 3 + 2].x, textureCoord[i * 3 + 2].y);
 					glNormal3f(normales[i*9+6],normales[i*9+7],normales[i*9+8]);
 					glArrayElement(faces[i].c);
 					glEnd();                
@@ -514,17 +510,17 @@ void C3DObject::draw(const Color& color)
 					glColor3f(1,1,1);
 
 					glBegin(GL_TRIANGLES);
-					glTexCoord2f(tx[off1],ty[off1]);
+					glTexCoord2f(textureCoord[off1].x, textureCoord[off1].y);
 					glNormal3f(normales[i*9+0],normales[i*9+1],normales[i*9+2]);
 					glArrayElement(faces[i].a);
                     off1++;
 
-					glTexCoord2f(tx[off1],ty[off1]);
+					glTexCoord2f(textureCoord[off1].x, textureCoord[off1].y);
 					glNormal3f(normales[i*9+3],normales[i*9+4],normales[i*9+5]);
 					glArrayElement(faces[i].b);
                     off1++;
 
-					glTexCoord2f(tx[off1],ty[off1]);
+					glTexCoord2f(textureCoord[off1].x, textureCoord[off1].y);
 					glNormal3f(normales[i*9+6],normales[i*9+7],normales[i*9+8]);
 					glArrayElement(faces[i].c);
                     off1++;

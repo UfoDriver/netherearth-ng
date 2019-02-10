@@ -21,6 +21,14 @@ public:
 };
 
 
+class TextureCoordinate {
+public:
+  TextureCoordinate(float x, float y): x(x), y(y) {}
+  float x;
+  float y;
+};
+
+
 class C3DObject {
 public:
   C3DObject();
@@ -61,7 +69,7 @@ public:
   int displayList;
   CMC cmc;
 
-  float *tx, *ty;
+  std::vector<TextureCoordinate> textureCoord;
   std::vector<int> textures;
 
 private:
