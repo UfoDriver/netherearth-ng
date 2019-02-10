@@ -21,15 +21,13 @@ extern void Normal (double vector1[3],double vector2[3],double resultado[3]);
 
 
 
-C3DObject::C3DObject(): nfaces(0), normales(0), faces(0),
-                        displayList(-1), tx(0), ty(0), textures(0)
+C3DObject::C3DObject(): points(0), faces(0), normales(0), displayList(-1), tx(0), ty(0), textures(0)
 {
 }
 
 
 C3DObject::C3DObject(const std::string& filename, const std::string& texturedir):
-  nfaces(0), normales(0), faces(0), displayList(-1),
-  tx(0), ty(0), textures(0)
+  points(0), faces(0), normales(0), displayList(-1), tx(0), ty(0), textures(0)
 {
   int l = filename.length();
 
@@ -71,6 +69,8 @@ bool C3DObject::readVertex(const std::string& data)
 
 
 int C3DObject::readFace(const std::string& data, int* smooth) {
+  if (!data.compare(0, 10, "Face list:")) return 0;
+
   std::istringstream inStr(data);
   int p1, p2, p3;
   int act_face;
@@ -84,11 +84,7 @@ int C3DObject::readFace(const std::string& data, int* smooth) {
   inStr.ignore(100, ':');
   inStr >> p3;
   inStr.ignore(100, '\n');
-
-  faces[act_face].a = p1;
-  faces[act_face].b = p2;
-  faces[act_face].c = p3;
-
+  faces.emplace_back(p1, p2, p3);
   smooth[act_face] = 0;
   return act_face;
 }
@@ -126,17 +122,19 @@ bool C3DObject::loadASC(const std::string& filename)
           iStr.seekg(buffer.find("Vertices:") + 9);
           iStr >> npoints;
           points.reserve(npoints);
-          if (nfaces != 0) state = ST_DATA;
         }
         if (buffer.find("Faces:") != std::string::npos) {
           std::istringstream iStr(buffer);
+          int nfaces;
           iStr.seekg(buffer.find("Faces:") + 6);
           iStr >> nfaces;
-          faces = new Face[nfaces];
+          faces.reserve(nfaces);
           smooth = new int[nfaces];
           for(int i = 0;i < nfaces; i++) {
             faceColors.emplace_back(0.5, 0.5, 0.5);
           }
+        }
+        if (points.capacity() && faces.capacity()) {
           state = ST_DATA;
         }
         break;
@@ -160,9 +158,8 @@ bool C3DObject::loadASC(const std::string& filename)
 
   if (state == ST_INIT) {
     points.clear();
-    if (faces != NULL) delete[] faces;
-    nfaces = 0;
-    faces = NULL;
+    faces.clear();
+    faceColors.clear();
     return false;
   }
 
@@ -296,12 +293,13 @@ void C3DObject::moveobject(const Vector& distance)
 
 void C3DObject::CalculaNormales(int *smooth)
 {
-  normales = new float[nfaces*3*3];
+  normales = new float[faces.size() * 3 * 3];
 
   int num;
-  Vector* normales_tmp = new Vector[nfaces];
+  Vector* normales_tmp = new Vector[faces.size()];
 
-  for (int i = 0; i < nfaces; i++) {
+  // @TODO: use iterator
+  for (int i = 0; i < faces.size(); i++) {
     double vector1[3], vector2[3], normal[3];
     vector1[0]=points[faces[i].b].x - points[faces[i].a].x;
     vector1[1]=points[faces[i].b].y - points[faces[i].a].y;
@@ -316,7 +314,8 @@ void C3DObject::CalculaNormales(int *smooth)
   }
 
   // @TODO: temporary copypaste
-  for (int i = 0; i < nfaces; i++) {
+  // @TODO: use iterator
+  for (int i = 0; i < faces.size(); i++) {
     int act_vertex = faces[i].a;
     int j = 0;
     if (smooth[i]==0) {
@@ -328,9 +327,9 @@ void C3DObject::CalculaNormales(int *smooth)
       normales[i*9+j*3]=0.0F;
       normales[i*9+j*3+1]=0.0F;
       normales[i*9+j*3+2]=0.0F;
-      for(int k = 0; k < nfaces; k++) {
+      // @TODO: use iterator
+      for(int k = 0; k < faces.size(); k++) {
         if (smooth[k]==smooth[i] && faces[k].hasVertex(act_vertex)) {
-          std::cerr << "Oh" << std::endl;
           num++;
           normales[i*9+j*3]+=normales_tmp[k].x;
           normales[i*9+j*3+1]+=normales_tmp[k].y;
@@ -338,14 +337,14 @@ void C3DObject::CalculaNormales(int *smooth)
         }
       }
       if (num!=0) {
-        std::cerr << "Num is not zero" << std::endl;
         normales[i*9+j*3]/=num;
         normales[i*9+j*3+1]/=num;
         normales[i*9+j*3+2]/=num;
       }
     }
   }
-  for (int i = 0; i < nfaces; i++) {
+  // @TODO: use iterator
+  for (int i = 0; i < faces.size(); i++) {
     int act_vertex = faces[i].b;
     int j = 1;
     if (smooth[i]==0) {
@@ -357,7 +356,8 @@ void C3DObject::CalculaNormales(int *smooth)
       normales[i*9+j*3]=0.0F;
       normales[i*9+j*3+1]=0.0F;
       normales[i*9+j*3+2]=0.0F;
-      for(int k = 0; k < nfaces; k++) {
+      // @TODO: use iterator
+      for(int k = 0; k < faces.size(); k++) {
         if (smooth[k]==smooth[i] && faces[k].hasVertex(act_vertex)) {
           num++;
           normales[i*9+j*3]+=normales_tmp[k].x;
@@ -372,7 +372,8 @@ void C3DObject::CalculaNormales(int *smooth)
       }
     }
   }
-  for (int i = 0; i < nfaces; i++) {
+  // @TODO: use iterator
+  for (int i = 0; i < faces.size(); i++) {
     int act_vertex = faces[i].c;
     int j = 2;
     if (smooth[i]==0) {
@@ -384,7 +385,8 @@ void C3DObject::CalculaNormales(int *smooth)
       normales[i*9+j*3]=0.0F;
       normales[i*9+j*3+1]=0.0F;
       normales[i*9+j*3+2]=0.0F;
-      for(int k = 0; k < nfaces; k++) {
+      // @TODO: use iterator
+      for(int k = 0; k < faces.size(); k++) {
         if (smooth[k]==smooth[i] && faces[k].hasVertex(act_vertex)) {
           num++;
           normales[i*9+j*3]+=normales_tmp[k].x;
@@ -408,7 +410,6 @@ C3DObject::~C3DObject()
 {
   points.clear();
   if (normales != NULL) delete[] normales;
-  if (faces != NULL) delete[] faces;
   if (tx != 0) delete tx;
   if (ty != 0) delete ty;
   if (textures != 0) delete textures;
@@ -420,7 +421,7 @@ C3DObject::~C3DObject()
 
 bool C3DObject::valid(void)
 {
-  return points.size() && nfaces && normales && faces;
+  return points.size() && faces.size() && normales;
 }
 
 
@@ -436,7 +437,8 @@ void C3DObject::draw(void)
 				glEnableClientState(GL_VERTEX_ARRAY);
 				glVertexPointer(3,GL_FLOAT,0,points.data());
 
-				for(int i = 0; i < nfaces; i++) {
+                // @TODO: use iterator
+				for(int i = 0; i < faces.size(); i++) {
 					glBindTexture(GL_TEXTURE_2D,textures[i]);
 					glColor3f(1,1,1);
 
@@ -473,7 +475,8 @@ void C3DObject::draw(void)
 				glVertexPointer(3,GL_FLOAT,0,points.data());
 
 				glBegin(GL_TRIANGLES);
-				for(int i = 0; i < nfaces; i++) {
+                // @TODO: use iterator
+				for(int i = 0; i < faces.size(); i++) {
 					glColor3f(faceColors[i].red, faceColors[i].green, faceColors[i].blue);
 					glNormal3f(normales[i*9+0],normales[i*9+1],normales[i*9+2]);
 					glArrayElement(faces[i].a);
@@ -507,7 +510,8 @@ void C3DObject::draw(const Color& color)
 				glEnableClientState(GL_VERTEX_ARRAY);
 				glVertexPointer(3,GL_FLOAT,0,points.data());
 
-				for(int i=0,off1=0;i<nfaces;i++) {
+                // @TODO: use iterator
+				for(int i=0,off1=0;i<faces.size();i++) {
 					glBindTexture(GL_TEXTURE_2D,textures[i]);
 					glColor3f(1,1,1);
 
@@ -548,8 +552,8 @@ void C3DObject::draw(const Color& color)
 				glEnableClientState(GL_VERTEX_ARRAY);
 				glVertexPointer(3, GL_FLOAT, 0, points.data());
 				glColor3f(color.red, color.green, color.blue);
-
-				for(int i = 0; i < nfaces; i++) {
+                // @TODO: use iterator
+				for(int i = 0; i < faces.size(); i++) {
 					glBegin(GL_TRIANGLES);
 					glNormal3f(normales[i*9+0],normales[i*9+1],normales[i*9+2]);
 					glArrayElement(faces[i].a);
@@ -581,7 +585,8 @@ void C3DObject::draw_notexture(const Color& color)
     glColor3f(color.red, color.green, color.blue);
   }
 
-  for (int i = 0; i < nfaces; i++) {
+  // @TODO: use iterator
+  for (int i = 0; i < faces.size(); i++) {
     glBegin(GL_TRIANGLES);
     glNormal3f(normales[i * 9 + 0], normales[i * 9 + 1],normales[i * 9 + 2]);
     glArrayElement(faces[i].a);

@@ -54,10 +54,9 @@ public:
   std::vector<Vector> points;
   //  std::vector<Vector> normales;
   std::vector<Color> faceColors;
+  std::vector<Face> faces;
 
-  int nfaces;
   float *normales;
-  Face* faces;
 
   int displayList;
   CMC cmc;

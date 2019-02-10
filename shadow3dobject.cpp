@@ -72,8 +72,9 @@ void Shadow3DObject::ComputeShadow(Vector light)
   /* Crear los triángulos proyectadas: */
   shdw_nfaces=0;
   // pry_nfaces=nfaces;
-  pry_faces=new int[nfaces * 3];
-  for (int i = 0; i < nfaces; i++) {
+  pry_faces=new int[faces.size() * 3];
+  // @TODO: use iterator
+  for (int i = 0; i < faces.size(); i++) {
     /* Comprobar que el triángulo es visible: */
 
     v[0] = points[faces[i].b].x - points[faces[i].a].x;;
