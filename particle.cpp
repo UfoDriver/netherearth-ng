@@ -18,7 +18,7 @@ Particle::Particle(Vector p, Vector spd1, Vector spd2, float sz1, float sz2, con
 }
 
 
-void Particle::draw()
+void Particle::draw() const
 {
   float val2 = float(acttime) / float(lifetime);
   float val = 1 - val2;

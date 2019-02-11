@@ -5,8 +5,9 @@
 #include "string.h"
 #include "stdlib.h"
 
-#include <sstream>
+#include <algorithm>
 #include <iomanip>
+#include <sstream>
 
 #include "stdio.h"
 #include "math.h"
@@ -1034,7 +1035,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 										pos.x+=((rand()%2)==0 ? -0.5 : 0.5);
 										break;
 									} /* switch */ 									
-									particles.Add(new Particle(pos, sp1, Vector(0, 0, 0.05), 0, 0.3, color, 1.0, 0.0, 20+ (rand() % 10)));
+									particles.emplace_back(pos, sp1, Vector(0, 0, 0.05), 0, 0.3, color, 1.0, 0.0, 20+ (rand() % 10));
 								} /* for */ 
 							} /* if */ 
 						} /* if */ 
@@ -1467,25 +1468,10 @@ bool NETHER::cycle(unsigned char *keyboard)
 	fflush(debug_fp);
 #endif
 
-		/* Particles: */ 
-		{
-			List<Particle> l,todelete;
-			Particle *p;
-
-			l.Instance(particles);
-			l.Rewind();
-			while(l.Iterate(p)) {
-				if (!p->cycle()) todelete.Add(p);
-			} /* while */ 
-
-			while(!todelete.EmptyP()) {
-				p=todelete.Extract();
-				particles.DeleteElement(p);
-				delete p;
-			} /* while */ 
-		}
-
-	}
+    particles.erase(std::remove_if(particles.begin(), particles.end(),
+                                   [](auto& particle) { return !particle.cycle(); }),
+                    particles.end());
+  }
 
 #ifdef _WRITE_REPORT_
 	fprintf(debug_fp,"Starting STATUS cycle\n");

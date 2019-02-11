@@ -83,7 +83,7 @@ CMC NETHER::BulletCMC(Bullet *b)
 } /* BULLET::BULLET */ 
 
 
-void Bullet::draw(bool shadows, Piece3DObject **bullet_tile, List<Particle> &particles)
+void Bullet::draw(bool shadows, Piece3DObject **bullet_tile, std::vector<Particle>& particles)
 {
   switch(type) {
   case BULLET_CANNONS:
@@ -130,7 +130,7 @@ void Bullet::draw(bool shadows, Piece3DObject **bullet_tile, List<Particle> &par
 }
 
 
-void Bullet::drawParticles(List<Particle> &particles)
+void Bullet::drawParticles(std::vector<Particle>& particles)
 {
   Vector pos, sp1;
 
@@ -162,7 +162,7 @@ void Bullet::drawParticles(List<Particle> &particles)
       pos.x += ((rand() % 2) == 0 ? -0.33 : 0.33);
       break;
     }
-    particles.Add(new Particle(pos, sp1, sp1, 0, 0.3, color, 1.0, 0.0, 10 + (rand() % 8)));
+    particles.emplace_back(pos, sp1, sp1, 0, 0.3, color, 1.0, 0.0, 10 + (rand() % 8));
   }
 }
 

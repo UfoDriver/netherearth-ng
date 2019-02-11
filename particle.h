@@ -17,7 +17,7 @@ public:
   float a1, a2;
   int lifetime, acttime;
 
-  void draw();
+  void draw() const;
   bool cycle();
 };
 

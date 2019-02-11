@@ -2,8 +2,9 @@
 #include "windows.h"
 #endif
 
-#include <string>
+#include <algorithm>
 #include <iostream>
+#include <string>
 
 #include "string.h"
 #include "stdio.h"
@@ -764,23 +765,17 @@ void NETHER::draw_game(bool shadows)
 		} /* while */ 
 	}
 
-	/* Draw the particles: */ 
-	if (!shadows) {
-		List<Particle> l;
-		Particle *p;
-
-		l.Instance(particles);
-		l.Rewind();
-		while(l.Iterate(p)) {
-			if (p->pos.y>=(viewp.y+MINY) &&
-				p->pos.y<=(viewp.y+MAXY) &&
-				p->pos.x>=(viewp.x+MINX) &&
-				p->pos.x<=(viewp.x+MAXX)) p->draw();
-		} /* if */ 
-
-	} /* if */ 
-
-} /* NETHER::draw_screen */ 
+  if (!shadows) {
+    std::for_each(particles.cbegin(), particles.cend(),
+                  [this](auto& particle) {
+                    if (particle.pos.y >= (viewp.y + MINY) &&
+                        particle.pos.y <= (viewp.y + MAXY) &&
+                        particle.pos.x >= (viewp.x + MINX) &&
+                        particle.pos.x <= (viewp.x + MAXX))
+                      particle.draw();
+                  });
+  }
+}
 
 
 void NETHER::options_draw(int w,int h)
