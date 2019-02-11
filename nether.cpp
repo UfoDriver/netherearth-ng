@@ -676,19 +676,18 @@ void NETHER::draw_game(bool shadows)
 			} /* while */ 
 		} /* for */ 
 
-		l2.Instance(bullets);
-		l2.Rewind();
-		while(l2.Iterate(b)) {
-			if (b->pos.y>=(viewp.y+MINY) &&
-				b->pos.y<=(viewp.y+MAXY) &&
-				b->pos.x>=(viewp.x+MINX) &&
-				b->pos.x<=(viewp.x+MAXX)) {
-				glPushMatrix();
-				glTranslatef(b->pos.x,b->pos.y,b->pos.z);
-				b->draw(shadows, bullet_tile, particles);
-				glPopMatrix();
-			} /* if */ 
-		} /* while */ 
+        std::for_each(bullets.cbegin(), bullets.cend(),
+                      [this, shadows](auto& bullet) {
+                        if (bullet.pos.y >= (viewp.y + MINY) &&
+                            bullet.pos.y <= (viewp.y + MAXY) &&
+                            bullet.pos.x >= (viewp.x + MINX) &&
+                            bullet.pos.x <= (viewp.x + MAXX)) {
+                          glPushMatrix();
+                          glTranslatef(bullet.pos.x, bullet.pos.y, bullet.pos.z);
+                          bullet.draw(shadows, bullet_tile, particles);
+                          glPopMatrix();
+                        }
+                      });
 	}
 
 	/* Draw the ship: */ 

@@ -2,6 +2,8 @@
 #include "windows.h"
 #endif
 
+#include <algorithm>
+
 #include "string.h"
 #include "stdio.h"
 #include "math.h"
@@ -133,31 +135,21 @@ bool NETHER::save_game(char *filename)
 		} /* while */ 
 	} /* for */ 
 
-	fprintf(fp,"%i\n",bullets.Length());
+	fprintf(fp,"%i\n", bullets.size());
 
-	bullets.Rewind();
-	while(bullets.Iterate(bul)) {
-/*
-		int type;
-		int step;
-		Vector pos;
-		int angle;
-		ROBOT *owner;
-		CMC cmc;
-*/
-		fprintf(fp,"%i %i %i\n",bul->type,bul->step,bul->angle);
-
-		bul->pos.save(fp);
-		i=robots[0].SearchObjRef(bul->owner);
-		if (i==-1) {
-			i=robots[1].SearchObjRef(bul->owner);
-			fprintf(fp,"1 %i\n",i);
-		} else {
-			fprintf(fp,"0 %i\n",i);
-		} /* if */ 
-
-		bul->cmc.save(fp);
-	} /* while */ 
+    std::for_each(bullets.begin(), bullets.end(),
+                  [fp, this](auto& bullet) {
+                    fprintf(fp,"%i %i %i\n", bullet.type, bullet.step, bullet.angle);
+                    bullet.pos.save(fp);
+                    int i = robots[0].SearchObjRef(bullet.owner);
+                    if (i==-1) {
+                      i=robots[1].SearchObjRef(bullet.owner);
+                      fprintf(fp,"1 %i\n",i);
+                    } else {
+                      fprintf(fp,"0 %i\n",i);
+                    }
+                    bullet.cmc.save(fp);
+                  });
 
 	fprintf(fp,"%i\n",explosions.Length());
 	explosions.Rewind();
@@ -222,7 +214,7 @@ bool NETHER::loadGame(const std::string& filename)
 	explosions.Delete();
 	buildings.Delete();
 	for(i=0;i<2;i++) robots[i].Delete();
-	bullets.Delete();
+	bullets.clear();
 	delete map;
 	map=new int[map_w*map_h];
 	for(i=0;i<map_h;i++) {
@@ -313,26 +305,18 @@ bool NETHER::loadGame(const std::string& filename)
 		} /* for */ 
 	} /* for */ 
 
-	if (1!=fscanf(fp,"%i",&length)) return false;	
-	for(k=0;k<length;k++) {
-/*
-		int type;
-		int step;
-		Vector pos;
-		int angle;
-		ROBOT *owner;
-		CMC cmc;
-*/
-		bul=new Bullet();
-		if (3!=fscanf(fp,"%i %i %i",&bul->type,&bul->step,&bul->angle)) return false;
-
-		bul->pos.load(fp);
-		if (2!=fscanf(fp,"%i %i",&j,&i)) return false;
-		if (i>=0) bul->owner=robots[j][i];
-			 else bul->owner=0;
-		bul->cmc.load(fp);
-		bullets.Add(bul);
-	} /* while */ 
+	if (1!=fscanf(fp,"%i",&length)) return false;
+    
+	for (int k = 0; k < length; k++) {
+      Bullet bullet;
+      if (3!=fscanf(fp,"%i %i %i", &bullet.type, &bullet.step, &bullet.angle)) return false;
+      bullet.pos.load(fp);
+      if (2!=fscanf(fp,"%i %i",&j,&i)) return false;
+      if (i>=0) bullet.owner=robots[j][i];
+      else bullet.owner=0;
+      bullet.cmc.load(fp);
+      bullets.push_back(bullet);
+	}
 
 	if (1!=fscanf(fp,"%i",&length)) return false;	
 	for(k=0;k<length;k++) {

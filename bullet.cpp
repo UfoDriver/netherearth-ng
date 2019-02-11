@@ -83,7 +83,7 @@ CMC NETHER::BulletCMC(Bullet *b)
 } /* BULLET::BULLET */ 
 
 
-void Bullet::draw(bool shadows, Piece3DObject **bullet_tile, std::vector<Particle>& particles)
+void Bullet::draw(bool shadows, Piece3DObject **bullet_tile, std::vector<Particle>& particles) const
 {
   switch(type) {
   case BULLET_CANNONS:
@@ -130,7 +130,7 @@ void Bullet::draw(bool shadows, Piece3DObject **bullet_tile, std::vector<Particl
 }
 
 
-void Bullet::drawParticles(std::vector<Particle>& particles)
+void Bullet::drawParticles(std::vector<Particle>& particles) const
 {
   Vector pos, sp1;
 

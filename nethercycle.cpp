@@ -1060,44 +1060,29 @@ bool NETHER::cycle(unsigned char *keyboard)
 					if (r->angle<0) r->angle+=360;
 
 					if (r->op==ROBOTOP_CANNONS && r->firetimer==0) {
-						Bullet *b;
-						Vector pos;
-
-						pos=r->pos;
-						pos.z=r->piecez(0)+0.3f;
-
-						b=new Bullet(Bullet::BULLET_CANNONS, pos,r->angle,r);
-						b->cmc=BulletCMC(b);
-
-						bullets.Add(b);
+						Vector pos(r->pos);
+						pos.z = r->piecez(0) + 0.3f;
+						Bullet bullet(Bullet::BULLET_CANNONS, pos, r->angle, r);
+						bullet.cmc = BulletCMC(&bullet);
+						bullets.push_back(bullet);
                         sManager.playShot(shipp, r->pos);
 					} /* if */ 
 
 					if (r->op==ROBOTOP_MISSILES && r->firetimer==0) {
-						Bullet *b;
-						Vector pos;
-
-						pos=r->pos;
-						pos.z=r->piecez(1)+0.2f;
-
-						b=new Bullet(Bullet::BULLET_MISSILES,pos,r->angle,r);
-						b->cmc=BulletCMC(b);
-
-						bullets.Add(b);
+						Vector pos (r->pos);
+						pos.z = r -> piecez(1) + 0.2f;
+                        Bullet bullet(Bullet::BULLET_MISSILES, pos, r->angle, r);
+						bullet.cmc=BulletCMC(&bullet);
+						bullets.push_back(bullet);
                         sManager.playShot(shipp, r->pos);
 					} /* if */ 
 
 					if (r->op==ROBOTOP_PHASERS && r->firetimer==0) {
-						Bullet *b;
-						Vector pos;
-
-						pos=r->pos;
-						pos.z=r->piecez(2)+0.3f;
-
-						b=new Bullet(Bullet::BULLET_PHASERS,pos,r->angle,r);
-						b->cmc=BulletCMC(b);
-
-						bullets.Add(b);
+						Vector pos(r->pos);
+						pos.z = r->piecez(2) + 0.3f;
+						Bullet bullet(Bullet::BULLET_PHASERS, pos, r->angle, r);
+						bullet.cmc=BulletCMC(&bullet);
+						bullets.push_back(bullet);
                         sManager.playShot(shipp, r->pos);
 					} /* if */ 
 
@@ -1374,68 +1359,50 @@ bool NETHER::cycle(unsigned char *keyboard)
 	fflush(debug_fp);
 #endif
 
-		/* Bullets: */ 
-		{
-			List<Bullet> l,todelete;
-			Bullet *b;
-			Robot *r;
-			int persistence=CANNON_PERSISTENCE;
-			
-			l.Instance(bullets);
-			l.Rewind();
-			while(l.Iterate(b)) {
-				r=0;
+		/* Bullets: */
 
-				if (b->angle==0) b->pos.x+=BULLET_SPEED;
-				if (b->angle==90) b->pos.y+=BULLET_SPEED;
-				if (b->angle==180) b->pos.x-=BULLET_SPEED;
-				if (b->angle==270) b->pos.y-=BULLET_SPEED;
-				b->step++;
+    bullets.erase(remove_if(bullets.begin(), bullets.end(),
+                            [this](auto& bullet) {
+                              int persistence = CANNON_PERSISTENCE;
+                              bool ret = false;
+                              Robot* r = 0;
 
-				if (b->type==1) persistence=MISSILE_PERSISTENCE;
-				if (b->type==2) persistence=PHASER_PERSISTENCE;
-				if (b->step>=persistence || BulletCollision(b,&r)) {
-					todelete.Add(b);
-					if (b->step<persistence) {
-						Explosion *n;
+                              if (bullet.angle == 0) bullet.pos.x += BULLET_SPEED;
+                              if (bullet.angle == 90) bullet.pos.y += BULLET_SPEED;
+                              if (bullet.angle == 180) bullet.pos.x -= BULLET_SPEED;
+                              if (bullet.angle == 270) bullet.pos.y -= BULLET_SPEED;
+                              bullet.step++;
 
-						n=new Explosion(b->pos,0);
-						explosions.Add(n);
-					} /* if */ 
-				} /* if */ 
-
-				if (r!=0) {
-					int damage=0;
-					/* The bullet has collided with a robot: */ 
-					if (!r->bulletHit(b->type)) {
-						/* Robot destroyed: */ 
-						Explosion *n;
-
-						n=new Explosion(r->pos,1);
-						explosions.Add(n);
-
-                        sManager.playExplosion(shipp, r->pos);
-						if (r==controlled) {
-							controlled->shipover=false;
-							controlled=0;
-							menu.killmenu(Menu::ALL_MENUS);
-							menu.newmenu(Menu::GENERAL_MENU);
-						} /* if */ 
-						AI_killrobot(r->pos);
-						if (robots[0].MemberRefP(r)) robots[0].DeleteElement(r);
-											    else robots[1].DeleteElement(r);
-						delete r;
-					} /* if */ 
-				} /* if */ 
-
-			} /* while */ 
-
-			while(!todelete.EmptyP()) {
-				b=todelete.Extract();
-				bullets.DeleteElement(b);
-				delete b;
-			} /* while */ 
-		}
+                              if (bullet.type==1) persistence = MISSILE_PERSISTENCE;
+                              if (bullet.type==2) persistence = PHASER_PERSISTENCE;
+                              if (bullet.step >= persistence || BulletCollision(&bullet, &r)) {
+                                ret = true;
+                                if (bullet.step < persistence) {
+                                  explosions.Add(new Explosion(bullet.pos, 0));
+                                }
+                              }
+                              if (r != 0) {
+                                int damage = 0;
+                                /* The bullet has collided with a robot: */
+                                if (!r->bulletHit(bullet.type)) {
+                                  /* Robot destroyed: */
+                                  explosions.Add(new Explosion(r->pos,1));
+                                  sManager.playExplosion(shipp, r->pos);
+                                  if (r == controlled) {
+                                    controlled->shipover = false;
+                                    controlled = 0;
+                                    menu.killmenu(Menu::ALL_MENUS);
+                                    menu.newmenu(Menu::GENERAL_MENU);
+                                  }
+                                  AI_killrobot(r->pos);
+                                  if (robots[0].MemberRefP(r)) robots[0].DeleteElement(r);
+                                  else robots[1].DeleteElement(r);
+                                  delete r;
+                                }
+                              }
+                              return ret;
+                            }),
+                  bullets.end());
 
 #ifdef _WRITE_REPORT_
 	fprintf(debug_fp,"Nuclear explosions\n");

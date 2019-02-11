@@ -15,7 +15,7 @@ public:
   enum BULLET_TYPE {BULLET_CANNONS, BULLET_MISSILES, BULLET_PHASERS};
   Bullet();
   Bullet(BULLET_TYPE type, Vector position, int angle, Robot *robot);
-  void draw(bool shadow, Piece3DObject **bullet_tile, std::vector<Particle>& particles);
+  void draw(bool shadow, Piece3DObject **bullet_tile, std::vector<Particle>& particles) const;
 
 
   BULLET_TYPE type;
@@ -28,7 +28,7 @@ public:
   CMC cmc;
 
 private:
-  void drawParticles(std::vector<Particle>& particles);
+  void drawParticles(std::vector<Particle>& particles) const;
 };
 
 #endif // BULLET_H

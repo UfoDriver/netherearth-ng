@@ -2,6 +2,7 @@
 #include "windows.h"
 #endif
 
+#include <algorithm>
 #include <fstream>
 #include <string>
 
@@ -104,27 +105,25 @@ bool NETHER::saveDebugReport(const std::string& filename)
     }
   }
 
-  log << "\n# BULLETS: " << bullets.Length() << '\n';
-  bullets.Rewind();
-  Bullet *bul;
-  while(bullets.Iterate(bul)) {
-    log << " BULLET:\n TYPE: " << bul->type
-        << "\n STEP: " << bul->step
-        << "\n ANGLE: " << bul->angle << '\n';
+  log << "\n# BULLETS: " << bullets.size() << '\n';
+  std::for_each(bullets.begin(), bullets.end(),
+                [&log, this](const auto& bullet) {
+                  log << " BULLET:\n TYPE: " << bullet.type
+                      << "\n STEP: " << bullet.step
+                      << "\n ANGLE: " << bullet.angle << '\n';
+                  log << " POSITION: ";
+                  log << bullet.pos;
+                  int pos = robots[0].SearchObjRef(bullet.owner);
+                  if (pos == -1) {
+                    pos = robots[1].SearchObjRef(bullet.owner);
+                    log << " OWNER: PLAYER 1 ROBOT " << pos << '\n';
+                  } else {
+                    log << " OWNER: PLAYER 0 ROBOT " << pos << '\n';
+                  }
 
-    log << " POSITION: ";
-    log << bul->pos;
-    int pos = robots[0].SearchObjRef(bul->owner);
-    if (pos == -1) {
-      pos = robots[1].SearchObjRef(bul->owner);
-      log << " OWNER: PLAYER 1 ROBOT " << pos << '\n';
-    } else {
-      log << " OWNER: PLAYER 0 ROBOT " << pos << '\n';
-    }
-
-    log << " MINIMUM CONTAINER BOX: \n";
-    log << bul->cmc << '\n';
-  }
+                  log << " MINIMUM CONTAINER BOX: \n";
+                  log << bullet.cmc << '\n';
+                });
 
   log << "# EXPLOSIONS " << explosions.Length() << '\n';
   explosions.Rewind();

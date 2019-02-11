@@ -171,7 +171,7 @@ private:
 
 	List<Building> buildings;
 	List<Robot> robots[2];
-	List<Bullet> bullets;
+  std::vector<Bullet> bullets;
 	List<Explosion> explosions;
   std::vector<Particle> particles;
 
