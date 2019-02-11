@@ -1091,10 +1091,9 @@ bool NETHER::cycle(unsigned char *keyboard)
 						r->op==ROBOTOP_PHASERS) r->firetimer++;
 
 					if (r->op==ROBOTOP_NUCLEAR) {
-						Explosion *n;
+                      Explosion exp(r->pos, 2);
 
-						n=new Explosion(r->pos,2);
-						explosions.Add(n);
+                      explosions.push_back(exp);
 
 						/* Robot destroyed: */ 
 						if (r==controlled) {
@@ -1115,7 +1114,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 								l.Instance(robots[i]);
 								l.Rewind();
 								while(l.Iterate(r)) {
-									distance=(r->pos-n->pos).norma();
+									distance=(r->pos-exp.pos).norma();
 									if (distance<=2.5f) robotstodelete.Add(r);
 								} /* while */ 
 							} /* for */ 
@@ -1130,7 +1129,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 							l.Instance(buildings);
 							l.Rewind();
 							while(l.Iterate(b)) {
-								distance=(b->pos-(n->pos-Vector(0.5,0.5,0.5))).norma();
+								distance=(b->pos-(exp.pos-Vector(0.5,0.5,0.5))).norma();
 								if (distance<=2.5f) todelete.Add(b);
 							} /* while */ 
 
@@ -1378,7 +1377,7 @@ bool NETHER::cycle(unsigned char *keyboard)
                               if (bullet.step >= persistence || BulletCollision(&bullet, &r)) {
                                 ret = true;
                                 if (bullet.step < persistence) {
-                                  explosions.Add(new Explosion(bullet.pos, 0));
+                                  explosions.emplace_back(bullet.pos, 0);
                                 }
                               }
                               if (r != 0) {
@@ -1386,7 +1385,7 @@ bool NETHER::cycle(unsigned char *keyboard)
                                 /* The bullet has collided with a robot: */
                                 if (!r->bulletHit(bullet.type)) {
                                   /* Robot destroyed: */
-                                  explosions.Add(new Explosion(r->pos,1));
+                                  explosions.emplace_back(r->pos,1);
                                   sManager.playExplosion(shipp, r->pos);
                                   if (r == controlled) {
                                     controlled->shipover = false;
@@ -1408,27 +1407,15 @@ bool NETHER::cycle(unsigned char *keyboard)
 	fprintf(debug_fp,"Nuclear explosions\n");
 	fflush(debug_fp);
 #endif
-
-		/* Nuclear explosions: */ 
-		{
-			List<Explosion> l,todelete;
-			Explosion *n;
-
-			l.Instance(explosions);
-			l.Rewind();
-			while(l.Iterate(n)) {
-				if (n->size==0) n->step+=2;
-				if (n->size==1) n->step++;
-				n->step++;
-				if (n->step>=128) todelete.Add(n);
-			} /* while */ 
-
-			while(!todelete.EmptyP()) {
-				n=todelete.Extract();
-				explosions.DeleteElement(n);
-				delete n;
-			} /* while */ 
-		}
+    /* Nuclear explosions: */
+    explosions.erase(std::remove_if(explosions.begin(), explosions.end(),
+                                    [](auto& exp) {
+                                      if (exp.size == 0) exp.step += 2;
+                                      if (exp.size == 1) exp.step++;
+                                      exp.step++;
+                                      return exp.step >= 128;
+                                    }),
+                     explosions.end());
 
 #ifdef _WRITE_REPORT_
 	fprintf(debug_fp,"Particles\n");

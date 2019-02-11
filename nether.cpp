@@ -618,40 +618,41 @@ void NETHER::draw(int width, int height)
 
 void NETHER::draw_game(bool shadows)
 {
-	{
-		MINY=-8*zoom;
-		MINX=-(10+viewp.z*4)*zoom;
-		MAXY=(9+viewp.z*4)*zoom;
-		MAXX=8*zoom;
-	}
+  MINY =- 8 * zoom;
+  MINX =- (10 + viewp.z * 4) * zoom;
+  MAXY = (9 + viewp.z * 4) * zoom;
+  MAXX = 8 * zoom;
 
-	if (!explosions.EmptyP()) {
-		int minstep=128;
-		List<Explosion> l;
-		Explosion *n;
-		float offs=0.0,r;
+  if (explosions.size()) {
+    int minstep = 128;
+    std::for_each(explosions.begin(), explosions.end(),
+                  [&minstep](const auto& explosion) {
+                    if (explosion.size == 2 && explosion.step < minstep) minstep = explosion.step;
+                  });
+    float r = (128 - minstep) / 256.0;
+    float offs = sin(minstep) * r;
+    gluLookAt(viewp.x + camera.x * zoom + offs,
+              viewp.y + camera.y * zoom + offs,
+              viewp.z + camera.z * zoom,
+              viewp.x + offs,
+              viewp.y + offs,
+              viewp.z,
+              0, 0, 1);
+  } else {
+    gluLookAt(viewp.x + camera.x * zoom,
+              viewp.y + camera.y * zoom,
+              viewp.z + camera.z * zoom,
+              viewp.x,
+              viewp.y,
+              viewp.z,
+              0, 0, 1);
+  }
 
-		l.Instance(explosions);
-		l.Rewind();
-		while(l.Iterate(n)) {
-			if (n->size==2 && n->step<minstep) minstep=n->step;
-		} /* while */ 
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
 
-		r=(128-minstep)/256.0;
-		offs=sin(minstep)*r;
-
-		gluLookAt(viewp.x+camera.x*zoom+offs,viewp.y+camera.y*zoom+offs,viewp.z+camera.z*zoom,viewp.x+offs,viewp.y+offs,viewp.z,0,0,1);
-	} else {
-		gluLookAt(viewp.x+camera.x*zoom,viewp.y+camera.y*zoom,viewp.z+camera.z*zoom,viewp.x,viewp.y,viewp.z,0,0,1);
-	} /* if */ 
-
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
-	/* Draw: */ 
-
-	/* Draw the map: */ 
-	drawmap(shadows);
+  /* Draw the map: */ 
+  drawmap(shadows);
 
 	/* Draw the robots and bullets: */ 
 	{
@@ -725,44 +726,39 @@ void NETHER::draw_game(bool shadows)
 	} 
 
 	/* Draw the extras: */ 
-	
-	/* Draw nuclear explosions: */ 
-	if (!shadows) {
-		List<Explosion> l;
-		Explosion *n;
-		float a,r;
 
-		l.Instance(explosions);
-		l.Rewind();
-		while(l.Iterate(n)) {
-			a=(128.0f-n->step)/80.0f;
-			r=1.0;
-			if (n->size==0) {
-				r=(float(n->step)/512.0f)+0.1;
-			} /* if */ 
-			if (n->size==1) {
-				r=(float(n->step)/96.0f)+0.5;
-			} /* if */ 
-			if (n->size==2) {
-				r=(float(n->step)/48.0f)+1.0;
-			} /* if */ 
-			if (a<0) a=0;
-			if (a>1) a=1;
+    /* Draw nuclear explosions: */ 
+    if (!shadows) {
+      std::for_each(explosions.begin(), explosions.end(),
+                    [](const auto& exp) {
+                      float a = (128.0f - exp.step) / 80.0f;
+                      float r = 1.0;
+                      if (exp.size == 0) {
+                        r = (float(exp.step) / 512.0f) + 0.1;
+                      }
+                      if (exp.size == 1) {
+                        r = (float(exp.step) / 96.0f) + 0.5;
+                      }
+                      if (exp.size == 2) {
+                        r = (float(exp.step) / 48.0f) + 1.0;
+                      }
+                      if (a < 0) a = 0;
+                      if (a > 1) a = 1;
 
-			glPushMatrix();
-			glTranslatef(n->pos.x,n->pos.y,n->pos.z);
-			glColor4f(1.0f,0.5f,0.0,a);
-			glDepthMask(GL_FALSE);
-			glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-			glEnable(GL_BLEND);
-            // Somehow solid sphere dumps core
-            // glutSolidSphere(r,8,8);
-			glutWireSphere(r,8,8);
-			glDisable(GL_BLEND);
-			glDepthMask(GL_TRUE);
-			glPopMatrix();
-		} /* while */ 
-	}
+                      glPushMatrix();
+                      glTranslatef(exp.pos.x, exp.pos.y, exp.pos.z);
+                      glColor4f(1.0f, 0.5f, 0.0,a);
+                      glDepthMask(GL_FALSE);
+                      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                      glEnable(GL_BLEND);
+                      // Somehow solid sphere dumps core
+                      // glutSolidSphere(r, 8, 8);
+                      glutWireSphere(r, 8, 8);
+                      glDisable(GL_BLEND);
+                      glDepthMask(GL_TRUE);
+                      glPopMatrix();
+                    });
+    }
 
   if (!shadows) {
     std::for_each(particles.cbegin(), particles.cend(),

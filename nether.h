@@ -172,7 +172,7 @@ private:
 	List<Building> buildings;
 	List<Robot> robots[2];
   std::vector<Bullet> bullets;
-	List<Explosion> explosions;
+  std::vector<Explosion> explosions;
   std::vector<Particle> particles;
 
 	int day,hour,minute,second;

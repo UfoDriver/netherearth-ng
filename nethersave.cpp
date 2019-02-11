@@ -151,18 +151,12 @@ bool NETHER::save_game(char *filename)
                     bullet.cmc.save(fp);
                   });
 
-	fprintf(fp,"%i\n",explosions.Length());
-	explosions.Rewind();
-	while(explosions.Iterate(e)) {
-/*
-		Vector pos;
-		int step;
-		int size;
-*/ 
-		e->pos.save(fp);
-		fprintf(fp,"%i %i\n",e->step,e->size);
-	} /* while */ 
-
+    fprintf(fp,"%i\n", explosions.size());
+    std::for_each(explosions.begin(), explosions.end(),
+                  [fp](auto& e) {
+                    e.pos.save(fp);
+                    fprintf(fp,"%i %i\n",e.step, e.size);
+                  });
 /*
 	int day,hour,minute,second;
 	int resources[2][7];
@@ -211,7 +205,7 @@ bool NETHER::loadGame(const std::string& filename)
 	AI_deleteprecomputations();
 	if (2!=fscanf(fp,"%i %i",&map_w,&map_h)) return false;
 
-	explosions.Delete();
+	explosions.clear();
 	buildings.Delete();
 	for(i=0;i<2;i++) robots[i].Delete();
 	bullets.clear();
@@ -319,18 +313,12 @@ bool NETHER::loadGame(const std::string& filename)
 	}
 
 	if (1!=fscanf(fp,"%i",&length)) return false;	
-	for(k=0;k<length;k++) {
-/*
-		Vector pos;
-		int step;
-		int size;
-*/ 
-		e=new Explosion();
-
-		e->pos.load(fp);
-		if (2!=fscanf(fp,"%i %i",&e->step,&e->size)) return false;
-		explosions.Add(e);
-	} /* while */ 
+    for(int k = 0; k < length; k++) {
+      Explosion e;
+      e.pos.load(fp);
+      if (2!=fscanf(fp,"%i %i",&e.step,&e.size)) return false;
+      explosions.push_back(e);
+    }
 
 /*
 	int day,hour,minute,second;

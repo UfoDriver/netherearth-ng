@@ -125,14 +125,14 @@ bool NETHER::saveDebugReport(const std::string& filename)
                   log << bullet.cmc << '\n';
                 });
 
-  log << "# EXPLOSIONS " << explosions.Length() << '\n';
-  explosions.Rewind();
-  Explosion *e;
-  while(explosions.Iterate(e)) {
-    log << "EXPLOSION:\n POSITION:\n";
-    log << e->pos;
-    log << " STEP: " << e->step << "\n SIZE: " << e->size << "\n\n";
-  }
+  log << "# EXPLOSIONS " << explosions.size() << '\n';
+
+  std::for_each(explosions.begin(), explosions.end(),
+                [&log](const auto& e) {
+                  log << "EXPLOSION:\n POSITION:\n";
+                  log << e.pos;
+                  log << " STEP: " << e.step << "\n SIZE: " << e.size << "\n\n";
+                });
 
   log << "\nTIME: DAY " << day << ' ' << hour << ':' << minute << ':' << second << '\n';
   log << "\nRESOURCES:\n";
