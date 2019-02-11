@@ -210,7 +210,6 @@ float C3DObject::normalize(float c)
 
 float C3DObject::normalizexy(float c)
 {
-	int i;
 	float cx,fx,cy,fy,cz,factor;
 
 	cmc.set(points);
@@ -419,151 +418,109 @@ bool C3DObject::valid(void)
 }
 
 
-void C3DObject::draw(void)
+void C3DObject::draw()
 {
-  if (textures.size() != 0) {
-		if (displayList==-1) {
-			displayList=glGenLists(1);
-			glNewList(displayList,GL_COMPILE);
-			/* Dibuja el objeto: */ 
-			{
-				glEnable(GL_TEXTURE_2D);
-				glEnableClientState(GL_VERTEX_ARRAY);
-				glVertexPointer(3,GL_FLOAT,0,points.data());
+  if (displayList != -1) {
+    glCallList(displayList);
+    return;
+  }
 
-                // @TODO: use iterator
-				for(int i = 0; i < faces.size(); i++) {
-					glBindTexture(GL_TEXTURE_2D,textures[i]);
-					glColor3f(1,1,1);
+  displayList = glGenLists(1);
+  glNewList(displayList, GL_COMPILE);
+  glEnableClientState(GL_VERTEX_ARRAY);
+  glVertexPointer(3, GL_FLOAT, 0, points.data());
 
-					glBegin(GL_TRIANGLES);
-					glTexCoord2f(textureCoord[i * 3].x, textureCoord[i * 3].y);
-					glNormal3f(normales[i*9+0],normales[i*9+1],normales[i*9+2]);
-					glArrayElement(faces[i].a);
+  if (textures.size()) {
+    glEnable(GL_TEXTURE_2D);
 
-					glTexCoord2f(textureCoord[i * 3 + 1].x, textureCoord[i * 3 + 1].y);
-					glNormal3f(normales[i*9+3],normales[i*9+4],normales[i*9+5]);
-					glArrayElement(faces[i].b);
+    for (int i = 0; i < faces.size(); i++) {
+      glBindTexture(GL_TEXTURE_2D, textures[i]);
+      glColor3f(1, 1, 1);
 
-					glTexCoord2f(textureCoord[i * 3 + 2].x, textureCoord[i * 3 + 2].y);
-					glNormal3f(normales[i*9+6],normales[i*9+7],normales[i*9+8]);
-					glArrayElement(faces[i].c);
-					glEnd();                
-				} /* for */             
-				glDisable(GL_TEXTURE_2D);
-			} 
-			glEndList();
+      glBegin(GL_TRIANGLES);
+      glTexCoord2f(textureCoord[i * 3].x, textureCoord[i * 3].y);
+      glNormal3f(normales[i*9+0],normales[i*9+1],normales[i*9+2]);
+      glArrayElement(faces[i].a);
 
-			glCallList(displayList);
-		} else {
-			glCallList(displayList);
-		} /* if */ 
+      glTexCoord2f(textureCoord[i * 3 + 1].x, textureCoord[i * 3 + 1].y);
+      glNormal3f(normales[i*9+3],normales[i*9+4],normales[i*9+5]);
+      glArrayElement(faces[i].b);
 
-	} else {
-		if (displayList==-1) {
-			displayList=glGenLists(1);
-			glNewList(displayList,GL_COMPILE);
-			/* Dibuja el objeto: */ 
-			{
-				glEnableClientState(GL_VERTEX_ARRAY);
-				glVertexPointer(3,GL_FLOAT,0,points.data());
+      glTexCoord2f(textureCoord[i * 3 + 2].x, textureCoord[i * 3 + 2].y);
+      glNormal3f(normales[i*9+6],normales[i*9+7],normales[i*9+8]);
+      glArrayElement(faces[i].c);
+      glEnd();
+    }
+    glDisable(GL_TEXTURE_2D);
+  } else {
+    glBegin(GL_TRIANGLES);
+    for(int i = 0; i < faces.size(); i++) {
+      glColor3f(faceColors[i].red, faceColors[i].green, faceColors[i].blue);
+      glNormal3f(normales[i*9+0],normales[i*9+1],normales[i*9+2]);
+      glArrayElement(faces[i].a);
+      glNormal3f(normales[i*9+3],normales[i*9+4],normales[i*9+5]);
+      glArrayElement(faces[i].b);
+      glNormal3f(normales[i*9+6],normales[i*9+7],normales[i*9+8]);
+      glArrayElement(faces[i].c);
+    }
+    glEnd();
+  }
 
-				glBegin(GL_TRIANGLES);
-                // @TODO: use iterator
-				for(int i = 0; i < faces.size(); i++) {
-					glColor3f(faceColors[i].red, faceColors[i].green, faceColors[i].blue);
-					glNormal3f(normales[i*9+0],normales[i*9+1],normales[i*9+2]);
-					glArrayElement(faces[i].a);
-					glNormal3f(normales[i*9+3],normales[i*9+4],normales[i*9+5]);
-					glArrayElement(faces[i].b);
-					glNormal3f(normales[i*9+6],normales[i*9+7],normales[i*9+8]);
-					glArrayElement(faces[i].c);
-				} /* for */ 
-				glEnd();                
-			} 
-			glEndList();
-
-			glCallList(displayList);
-		} else {
-			glCallList(displayList);
-		} /* if */ 
-	} /* if */ 
-	
-} /* C3DObject::draw */ 
+  glEndList();
+  glCallList(displayList);
+}
 
 
 void C3DObject::draw(const Color& color)
 {
-  if (textures.size() !=0 ) {
-		if (displayList==-1) {
-			displayList=glGenLists(1);
-			glNewList(displayList,GL_COMPILE);
-			/* Dibuja el objeto: */ 
-			{
-				glEnable(GL_TEXTURE_2D);
-				glEnableClientState(GL_VERTEX_ARRAY);
-				glVertexPointer(3,GL_FLOAT,0,points.data());
+  if (textures.size()) {
+    if (displayList == -1) {
+      displayList = glGenLists(1);
+      glNewList(displayList,GL_COMPILE);
+      glEnable(GL_TEXTURE_2D);
+      glEnableClientState(GL_VERTEX_ARRAY);
+      glVertexPointer(3, GL_FLOAT, 0, points.data());
 
-                // @TODO: use iterator
-				for(int i=0,off1=0;i<faces.size();i++) {
-					glBindTexture(GL_TEXTURE_2D,textures[i]);
-					glColor3f(1,1,1);
+      // @TODO: use iterator
+      for (int i = 0; i < faces.size(); i++) {
+        glBindTexture(GL_TEXTURE_2D, textures[i]);
+        glColor3f(1, 1, 1);
 
-					glBegin(GL_TRIANGLES);
-					glTexCoord2f(textureCoord[off1].x, textureCoord[off1].y);
-					glNormal3f(normales[i*9+0],normales[i*9+1],normales[i*9+2]);
-					glArrayElement(faces[i].a);
-                    off1++;
+        glBegin(GL_TRIANGLES);
+        glTexCoord2f(textureCoord[i * 3].x, textureCoord[i * 3].y);
+        glNormal3f(normales[i*9+0],normales[i*9+1],normales[i*9+2]);
+        glArrayElement(faces[i].a);
 
-					glTexCoord2f(textureCoord[off1].x, textureCoord[off1].y);
-					glNormal3f(normales[i*9+3],normales[i*9+4],normales[i*9+5]);
-					glArrayElement(faces[i].b);
-                    off1++;
+        glTexCoord2f(textureCoord[i * 3 + 1].x, textureCoord[i * 3 + 1].y);
+        glNormal3f(normales[i*9+3],normales[i*9+4],normales[i*9+5]);
+        glArrayElement(faces[i].b);
 
-					glTexCoord2f(textureCoord[off1].x, textureCoord[off1].y);
-					glNormal3f(normales[i*9+6],normales[i*9+7],normales[i*9+8]);
-					glArrayElement(faces[i].c);
-                    off1++;
-
-					glEnd();
-				} /* for */
-				glDisable(GL_TEXTURE_2D);
-			}
-			glEndList();
-
-			glCallList(displayList);
-		} else {
-			glCallList(displayList);
-		} /* if */ 
-	} else {
-//              if (display_list==-1) {
-//                      display_list=glGenLists(1);
-//                      glNewList(display_list,GL_COMPILE_AND_EXECUTE);
-			/* Dibuja el objeto: */ 
-			{
-				/* Dibuja el objeto: */
-              
-				glEnableClientState(GL_VERTEX_ARRAY);
-				glVertexPointer(3, GL_FLOAT, 0, points.data());
-				glColor3f(color.red, color.green, color.blue);
-                // @TODO: use iterator
-				for(int i = 0; i < faces.size(); i++) {
-					glBegin(GL_TRIANGLES);
-					glNormal3f(normales[i*9+0],normales[i*9+1],normales[i*9+2]);
-					glArrayElement(faces[i].a);
-					glNormal3f(normales[i*9+3],normales[i*9+4],normales[i*9+5]);
-					glArrayElement(faces[i].b);
-					glNormal3f(normales[i*9+6],normales[i*9+7],normales[i*9+8]);
-					glArrayElement(faces[i].c);
-					glEnd();
-				} /* for */ 
-			}
-//                      glEndList();
-//              } else {
-//                      glCallList(display_list);
-//              } /* if */ 
-	} /* if */ 
-} /* C3DObject::draw */ 
+        glTexCoord2f(textureCoord[i * 3 + 2].x, textureCoord[i * 3 + 2].y);
+        glNormal3f(normales[i*9+6],normales[i*9+7],normales[i*9+8]);
+        glArrayElement(faces[i].c);
+        glEnd();
+      }
+      glDisable(GL_TEXTURE_2D);
+      glEndList();
+    }
+    glCallList(displayList);
+  } else {
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glVertexPointer(3, GL_FLOAT, 0, points.data());
+    glColor3f(color.red, color.green, color.blue);
+    // @TODO: use iterator
+    for (int i = 0; i < faces.size(); i++) {
+      glBegin(GL_TRIANGLES);
+      glNormal3f(normales[i*9+0],normales[i*9+1],normales[i*9+2]);
+      glArrayElement(faces[i].a);
+      glNormal3f(normales[i*9+3],normales[i*9+4],normales[i*9+5]);
+      glArrayElement(faces[i].b);
+      glNormal3f(normales[i*9+6],normales[i*9+7],normales[i*9+8]);
+      glArrayElement(faces[i].c);
+      glEnd();
+    }
+  }
+}
 
 
 void C3DObject::draw_notexture(const Color& color)
