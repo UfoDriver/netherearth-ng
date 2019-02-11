@@ -22,8 +22,8 @@ C3DObject::C3DObject(): points(0), faces(0), displayList(-1), textured(false)
 }
 
 
-C3DObject::C3DObject(const std::string& filename, const std::string& texturedir):
-  points(0), faces(0), displayList(-1), textured(false)
+C3DObject::C3DObject(const std::string& filename, const std::string& texturedir, const Color& color):
+          points(0), faces(0), displayList(-1), textured(false), color(color)
 {
   int l = filename.length();
 

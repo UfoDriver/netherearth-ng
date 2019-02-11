@@ -192,7 +192,6 @@ private:
 	/* Graphics: */ 
 	const int n_objs;
 	C3DObject **tile;
-  Color* tileColors;
 	Shadow3DObject *ship;
 	const int n_buildings;
 	Shadow3DObject **building_tile;

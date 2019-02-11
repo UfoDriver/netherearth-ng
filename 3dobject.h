@@ -41,7 +41,8 @@ public:
 class C3DObject {
 public:
   C3DObject();
-  C3DObject(const std::string& filename, const std::string& texturedir);
+  C3DObject(const std::string& filename, const std::string& texturedir,
+            const Color& color=Color(1, 1, 1, 1));
 
   ~C3DObject();
 
@@ -81,6 +82,8 @@ private:
   int readFace(const std::string& data);
   bool readSmoothing(const std::string& data, int currentFace);
   bool textured;
+public:
+  Color color;
 };
 
 #endif

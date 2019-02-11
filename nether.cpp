@@ -261,12 +261,10 @@ void NETHER::loadObjects()
                       {0.0f, 0.733f, 0.0f}};
 
   tile = new C3DObject *[n_objs];
-  tileColors = new Color[n_objs];
   for (int i = 0; i < n_objs; i++) {
-    tile[i] = new C3DObject(tnames[i], "textures/");
+    tile[i] = new C3DObject(tnames[i], "textures/", colors[i]);
     tile[i]->normalize(0.50f);
     tile[i]->makepositive();
-    tileColors[i] = colors[i];
   }
 
   tile[4]->moveobject(Vector(0, 0, -0.05));
@@ -356,8 +354,6 @@ void NETHER::deleteObjects()
 	for(int i=0; i < n_objs; i++) delete tile[i];
 	delete tile;
 	tile = 0;
-    delete[] tileColors;
-    tileColors = NULL;
 	delete ship;
 	ship = 0;
 	for(int i = 0; i < n_buildings; i++) delete building_tile[i];

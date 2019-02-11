@@ -220,8 +220,8 @@ void NETHER::drawmap(bool shadows)
 							if (((i*3+j*7)%m[(i+j+1)%8])==0) o=11;
 						} else {
 						} /* if */ 
-						if (detaillevel>=1) tile[o]->draw(tileColors[o]);
-                        else tile[o]->draw_notexture(tileColors[o]);
+						if (detaillevel>=1) tile[o]->draw(tile[0]->color);
+                        else tile[o]->draw_notexture(tile[0]->color);
 					} /* if */ 
 					glTranslatef(1.0,0.0,0.0);
 				} /* for */ 
@@ -475,7 +475,7 @@ void NETHER::drawmap(bool shadows)
 								glTranslatef(float(-light.x),float(-light.y)-1,0.05f);
 								building_tile[6]->DrawShadow(Color(0, 0, 0, 0.5));
 							} /* if */ 
-						 } /* if */ 
+						 } /* if */ 
 						 break; 
 			case Building::B_FACTORY_CHASSIS:
 						 if (!shadows) {
