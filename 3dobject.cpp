@@ -17,10 +17,6 @@
 #include "myglutaux.h"
 
 
-extern void Normal (double vector1[3],double vector2[3],double resultado[3]);
-
-
-
 C3DObject::C3DObject(): points(0), faces(0), displayList(-1), textured(false)
 {
 }
@@ -288,21 +284,13 @@ void C3DObject::moveobject(const Vector& distance)
 
 void C3DObject::CalculaNormales(int *smooth)
 {
-  Vector* normales_tmp = new Vector[faces.size()];
+  std::vector<Vector> normales_tmp;
 
   // @TODO: use iterator
-  for (int i = 0; i < faces.size(); i++) {
-    double vector1[3], vector2[3], normal[3];
-    vector1[0]=points[faces[i].b].x - points[faces[i].a].x;
-    vector1[1]=points[faces[i].b].y - points[faces[i].a].y;
-    vector1[2]=points[faces[i].b].z - points[faces[i].a].z;
-    vector2[0]=points[faces[i].c].x - points[faces[i].a].x;
-    vector2[1]=points[faces[i].c].y - points[faces[i].a].y;
-    vector2[2]=points[faces[i].c].z - points[faces[i].a].z;
-    Normal(vector1,vector2,normal);
-    normales_tmp[i].x = float(normal[0]);
-    normales_tmp[i].y = float(normal[1]);
-    normales_tmp[i].z = float(normal[2]);
+  for (const Face& face: faces) {
+    Vector vector1 = points[face.b] - points[face.a];
+    Vector vector2 = points[face.c] - points[face.a];
+    normales_tmp.push_back(vector1.normal(vector2));
   }
 
   // @TODO: temporary copypaste
@@ -310,6 +298,8 @@ void C3DObject::CalculaNormales(int *smooth)
   for (int i = 0; i < faces.size(); i++) {
     if (smooth[i] == 0) {
       faces[i].norm1 = normales_tmp[i];
+      faces[i].norm2 = normales_tmp[i];
+      faces[i].norm3 = normales_tmp[i];
     } else {
       int num = 0;
       for(int k = 0; k < faces.size(); k++) {
@@ -321,14 +311,8 @@ void C3DObject::CalculaNormales(int *smooth)
       if (num != 0) {
         faces[i].norm1 = faces[i].norm1 / num;
       }
-    }
-  }
-  // @TODO: use iterator
-  for (int i = 0; i < faces.size(); i++) {
-    if (smooth[i] == 0) {
-      faces[i].norm2 = normales_tmp[i];
-    } else {
-      int num = 0;
+
+      num = 0;
       for(int k = 0; k < faces.size(); k++) {
         if (smooth[k]==smooth[i] && faces[k].hasVertex(faces[i].b)) {
           num++;
@@ -338,14 +322,8 @@ void C3DObject::CalculaNormales(int *smooth)
       if (num != 0) {
         faces[i].norm2 = faces[i].norm2 / num;
       }
-    }
-  }
-  // @TODO: use iterator
-  for (int i = 0; i < faces.size(); i++) {
-    if (smooth[i] == 0) {
-      faces[i].norm3 = normales_tmp[i];
-    } else {
-      int num = 0;
+
+      num = 0;
       for(int k = 0; k < faces.size(); k++) {
         if (smooth[k]==smooth[i] && faces[k].hasVertex(faces[i].c)) {
           num++;
@@ -357,8 +335,6 @@ void C3DObject::CalculaNormales(int *smooth)
       }
     }
   }
-
-  delete[] normales_tmp;
 }
 
 

@@ -13,12 +13,12 @@ public:
     load(fp);
   }
 
-  Vector operator+(const Vector &v);
-  Vector operator-(const Vector &v);
-  Vector operator-();
+  Vector operator+(const Vector &v) const;
+  Vector operator-(const Vector &v) const;
+  Vector operator-() const;
 
-  Vector operator^(const Vector &v);
-  double operator*(const Vector &v);
+  Vector operator^(const Vector &v) const;
+  double operator*(const Vector &v) const;
   Vector operator*(double ctnt);
 
   Vector operator/(double ctnt);
@@ -30,6 +30,7 @@ public:
 
   double norma() const;
   double normalize();
+  Vector normal(const Vector& v) const;
 
   bool load(FILE *fp);
   bool save(FILE *fp);

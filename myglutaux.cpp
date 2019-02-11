@@ -193,21 +193,6 @@ void glutPrintxy(float x,float y,char *str)
 } /* glutPrint */ 
 
 
-void Normal (double vector1[3],double vector2[3],double resultado[3])
-{
-	double norma;
-	resultado[0]=vector1[1]*vector2[2]-vector2[1]*vector1[2];
-    resultado[1]=vector1[2]*vector2[0]-vector2[2]*vector1[0];
-	resultado[2]=vector1[0]*vector2[1]-vector2[0]*vector1[1];
-	norma=sqrt(resultado[0]*resultado[0]+
-			   resultado[1]*resultado[1]+
-			   resultado[2]*resultado[2]);
-	resultado[0]/=norma;
-	resultado[1]/=norma;
-	resultado[2]/=norma;
-} /* Normal */ 
-
-
 void Normalf (float vector1[3],float vector2[3],float resultado[3])
 {
 	float norma;

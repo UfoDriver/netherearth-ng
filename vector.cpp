@@ -5,25 +5,25 @@
 #include "vector.h"
 
 
-Vector Vector::operator+(const Vector &v)
+Vector Vector::operator+(const Vector &v) const
 {
   return Vector(x + v.x, y + v.y, z + v.z);
 }
 
 
-Vector Vector::operator-(const Vector &v)
+Vector Vector::operator-(const Vector &v) const
 {
   return Vector(x - v.x, y - v.y, z - v.z);
 }
 
 
-Vector Vector::operator-()
+Vector Vector::operator-() const
 {
   return Vector(-x, -y, -z);
 }
 
 
-Vector Vector::operator^(const Vector &v)
+Vector Vector::operator^(const Vector &v) const
 {
   return Vector(y * v.z - v.y * z,
                 z * v.x - v.z * x,
@@ -31,7 +31,7 @@ Vector Vector::operator^(const Vector &v)
 }
 
 
-double Vector::operator*(const Vector &v)
+double Vector::operator*(const Vector &v) const
 {
   return x * v.x + y * v.y + z * v.z;
 }
@@ -69,6 +69,14 @@ bool Vector::operator!=(const Vector &v)
 double Vector::norma() const
 {
   return sqrt(x * x + y * y + z * z);
+}
+
+
+Vector Vector::normal(const Vector& v) const
+{
+  Vector res = *this ^ v;
+  res.normalize();
+  return res;
 }
 
 
