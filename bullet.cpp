@@ -133,15 +133,14 @@ void Bullet::draw(bool shadows, Piece3DObject **bullet_tile, List<Particle> &par
 void Bullet::drawParticles(List<Particle> &particles)
 {
   Vector pos, sp1;
-  float red, g, b;
 
   for(int i = 0; i < 10; i++) {
     pos.x = pos.x + float(rand() % 10) / 100.0;
     pos.y = pos.y + float(rand( )% 10) / 100.0;
     pos.z = pos.z;
-    red = 0.9F + float(rand() % 21 - 10) / 100.0;
-    g = 0.7F + float(rand() % 21 - 10) / 100.0;
-    b = 0.5F + float(rand() % 21 - 10) / 100.0;
+    Color color(0.9F + float(rand() % 21 - 10) / 100.0,
+                0.7F + float(rand() % 21 - 10) / 100.0,
+                0.5F + float(rand() % 21 - 10) / 100.0);
     switch(angle) {
     case 0:
       sp1 = Vector(-0.05, float(rand() % 9 - 4) / 200.0,0);
@@ -163,7 +162,7 @@ void Bullet::drawParticles(List<Particle> &particles)
       pos.x += ((rand() % 2) == 0 ? -0.33 : 0.33);
       break;
     }
-    particles.Add(new Particle(pos, sp1, sp1, 0, 0.3, red, g, b, 1.0, 0.0, 10 + (rand() % 8)));
+    particles.Add(new Particle(pos, sp1, sp1, 0, 0.3, color, 1.0, 0.0, 10 + (rand() % 8)));
   }
 }
 

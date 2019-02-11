@@ -1007,18 +1007,15 @@ bool NETHER::cycle(unsigned char *keyboard)
 						/* TRACKS PARTICLES: */ 
 						if (r->traction==1) {
 							if (detaillevel>=4) {
-								int i;
-								Particle *p;
 								Vector pos,sp1;
-								float red,g,b;
 
-								for(i=0;i<2;i++) {
+								for (int i= 0; i < 2; i++) {
 									pos.x=r->pos.x+float(rand()%10)/100.0;
 									pos.y=r->pos.y+float(rand()%10)/100.0;
 									pos.z=0;
-									red=0.9F+float(rand()%21-10)/100.0;
-									g=0.7F+float(rand()%21-10)/100.0;
-									b=0.5F+float(rand()%21-10)/100.0;
+                                    Color color(0.9F+float(rand()%21-10)/100.0,
+                                                0.7F+float(rand()%21-10)/100.0,
+                                                0.5F+float(rand()%21-10)/100.0);
 									switch(r->angle) {
 									case 0:sp1=Vector(-0.05,float(rand()%9-4)/200.0,0);
 										pos.x-=0.25;
@@ -1037,8 +1034,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 										pos.x+=((rand()%2)==0 ? -0.5 : 0.5);
 										break;
 									} /* switch */ 									
-									p=new Particle(pos,sp1,Vector(0,0,0.05),0,0.3, red,g,b, 1.0,0.0,20+(rand()%10));
-									particles.Add(p);
+									particles.Add(new Particle(pos, sp1, Vector(0, 0, 0.05), 0, 0.3, color, 1.0, 0.0, 20+ (rand() % 10)));
 								} /* for */ 
 							} /* if */ 
 						} /* if */ 
