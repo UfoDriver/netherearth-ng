@@ -21,13 +21,13 @@ extern void Normal (double vector1[3],double vector2[3],double resultado[3]);
 
 
 
-C3DObject::C3DObject(): points(0), faces(0), displayList(-1), textures(0)
+C3DObject::C3DObject(): points(0), faces(0), displayList(-1), textured(false)
 {
 }
 
 
 C3DObject::C3DObject(const std::string& filename, const std::string& texturedir):
-  points(0), faces(0), displayList(-1), textures(0)
+  points(0), faces(0), displayList(-1), textured(false)
 {
   int l = filename.length();
 
@@ -386,11 +386,11 @@ void C3DObject::draw()
   glEnableClientState(GL_VERTEX_ARRAY);
   glVertexPointer(3, GL_FLOAT, 0, points.data());
 
-  if (textures.size()) {
+  if (textured) {
     glEnable(GL_TEXTURE_2D);
 
     for (int i = 0; i < faces.size(); i++) {
-      glBindTexture(GL_TEXTURE_2D, textures[i]);
+      glBindTexture(GL_TEXTURE_2D, faces[i].texture);
       glColor3f(1, 1, 1);
 
       glBegin(GL_TRIANGLES);
@@ -429,7 +429,7 @@ void C3DObject::draw()
 
 void C3DObject::draw(const Color& color)
 {
-  if (textures.size()) {
+  if (textured) {
     if (displayList == -1) {
       displayList = glGenLists(1);
       glNewList(displayList,GL_COMPILE);
@@ -439,7 +439,7 @@ void C3DObject::draw(const Color& color)
 
       // @TODO: use iterator
       for (int i = 0; i < faces.size(); i++) {
-        glBindTexture(GL_TEXTURE_2D, textures[i]);
+        glBindTexture(GL_TEXTURE_2D, faces[i].texture);
         glColor3f(1, 1, 1);
 
         glBegin(GL_TRIANGLES);
@@ -464,7 +464,7 @@ void C3DObject::draw(const Color& color)
     glEnableClientState(GL_VERTEX_ARRAY);
     glVertexPointer(3, GL_FLOAT, 0, points.data());
     glColor3f(color.red, color.green, color.blue);
-    for (const Face face: faces) {
+    for (const Face& face: faces) {
       glBegin(GL_TRIANGLES);
       glNormal3f(face.norm1.x, face.norm1.y, face.norm1.z);
       glArrayElement(face.a);

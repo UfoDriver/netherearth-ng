@@ -306,13 +306,14 @@ bool C3DObject::loadASE(const std::string& filename, const std::string& textured
 				return false;
 			} /* if */ 
 
+            textured = true;
 			for(int i = 0; i < nfaces; i++) {
 				if (facematerial[i]>nsubmaterials[mid]) facematerial[i]=0;
 				if (materials[mid][facematerial[i]]==0 &&
 					material_bitmaps[mid][facematerial[i]]!=0) {
 					materials[mid][facematerial[i]]=createTexture(material_bitmaps[mid][facematerial[i]]);
-				} /* if */ 
-				textures.emplace_back(materials[mid][facematerial[i]]);
+				} /* if */
+                faces[i].texture = materials[mid][facematerial[i]];
 			} /* for */ 
 		}       
 	} /* if */ 

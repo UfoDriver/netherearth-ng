@@ -12,9 +12,9 @@
 
 class Face {
 public:
-  Face(int a, int b, int c): a(a), b(b), c(c) {}
-  Face(int a, int b, int c, const Color& color): a(a), b(b), c(c), color(color) {}
-  Face(): a(0), b(0), c(0) {}
+  Face(int a, int b, int c): a(a), b(b), c(c), texture(0) {}
+  Face(int a, int b, int c, const Color& color): a(a), b(b), c(c), color(color), texture(0) {}
+  Face(): a(0), b(0), c(0), texture(0) {}
   bool hasVertex(int vertex) {return a == vertex || b == vertex || c == vertex;}
   int a;
   int b;
@@ -25,6 +25,7 @@ public:
   Vector norm3;
 
   Color color;
+  int texture;
 };
 
 
@@ -73,12 +74,12 @@ public:
   CMC cmc;
 
   std::vector<TextureCoordinate> textureCoord;
-  std::vector<int> textures;
 
 private:
   bool readVertex(const std::string& data);
   int readFace(const std::string& data, int* smooth);
   bool readSmoothing(const std::string& data, int* smooth, int currentFace);
+  bool textured;
 };
 
 #endif
