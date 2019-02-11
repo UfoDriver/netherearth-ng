@@ -27,7 +27,6 @@ bool readcomment(char *data, FILE *fp);
 
 bool C3DObject::loadASE(const std::string& filename, const std::string& texturedir)
 {
-	int *smooth=0;
 	int *facematerial=0;
 	int **materials=0,nmaterials=0,*nsubmaterials=0;
 	char ***material_bitmaps=0;
@@ -157,7 +156,6 @@ bool C3DObject::loadASE(const std::string& filename, const std::string& textured
 	} /* if */ 
 
     faces.reserve(nfaces);
-	smooth=new int[nfaces];
 	facematerial=new int[nfaces];
     for(int i = 0; i < nfaces; i++) {
       faces.emplace_back(0, 0, 0, Color(0.5, 0.5, 0.5));
@@ -205,7 +203,7 @@ bool C3DObject::loadASE(const std::string& filename, const std::string& textured
 			fclose(fp);
 			return false;
 		} /* if */ 
-		smooth[i]=s;
+		faces[i].smooth = s;
 
 		if (!lookfor("MESH_MTLID",fp) ||
 			1!=fscanf(fp,"%i",&mid)) {
@@ -332,10 +330,9 @@ bool C3DObject::loadASE(const std::string& filename, const std::string& textured
 	delete nsubmaterials;
 	delete materials;
 
-	CalculaNormales(smooth);
+	calculateNormales();
 	cmc.set(points);
 
-	delete smooth;
 	delete facematerial;
 
 	fclose(fp);

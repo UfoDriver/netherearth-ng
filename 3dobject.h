@@ -12,9 +12,9 @@
 
 class Face {
 public:
-  Face(int a, int b, int c): a(a), b(b), c(c), texture(0) {}
-  Face(int a, int b, int c, const Color& color): a(a), b(b), c(c), color(color), texture(0) {}
-  Face(): a(0), b(0), c(0), texture(0) {}
+  Face(int a, int b, int c): a(a), b(b), c(c), texture(0), smooth(0) {}
+  Face(int a, int b, int c, const Color& color): a(a), b(b), c(c), color(color), texture(0), smooth(0) {}
+  Face(): a(0), b(0), c(0), texture(0), smooth(0) {}
   bool hasVertex(int vertex) {return a == vertex || b == vertex || c == vertex;}
   int a;
   int b;
@@ -26,6 +26,7 @@ public:
 
   Color color;
   int texture;
+  int smooth;
 };
 
 
@@ -56,7 +57,7 @@ public:
   void draw_notexture(const Color& color);
   void drawcmc(const Color& color);
 
-	void CalculaNormales(int *smooth);
+  void calculateNormales();
 
 	float normalize(void);						/* Sets the maximum axis size to 1.0 or -1.0 */ 
 	float normalize(float c);					/* Sets the maximum axis size to c or -c */ 
@@ -77,8 +78,8 @@ public:
 
 private:
   bool readVertex(const std::string& data);
-  int readFace(const std::string& data, int* smooth);
-  bool readSmoothing(const std::string& data, int* smooth, int currentFace);
+  int readFace(const std::string& data);
+  bool readSmoothing(const std::string& data, int currentFace);
   bool textured;
 };
 

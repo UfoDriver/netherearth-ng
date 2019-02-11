@@ -64,7 +64,7 @@ bool C3DObject::readVertex(const std::string& data)
 }
 
 
-int C3DObject::readFace(const std::string& data, int* smooth) {
+int C3DObject::readFace(const std::string& data) {
   if (!data.compare(0, 10, "Face list:")) return 0;
 
   std::istringstream inStr(data);
@@ -81,15 +81,14 @@ int C3DObject::readFace(const std::string& data, int* smooth) {
   inStr >> p3;
   inStr.ignore(100, '\n');
   faces.emplace_back(p1, p2, p3);
-  smooth[act_face] = 0;
   return act_face;
 }
 
 
-bool C3DObject::readSmoothing(const std::string& data, int* smooth, int currentFace) {
+bool C3DObject::readSmoothing(const std::string& data, int currentFace) {
   std::istringstream inStr(data);
   inStr.ignore(100, ':');
-  inStr >> smooth[currentFace];
+  inStr >> faces[currentFace].smooth;
   return true;
 }
 
@@ -99,7 +98,6 @@ bool C3DObject::loadASC(const std::string& filename)
   const int ST_INIT = 0;
   const int ST_DATA = 1;
 
-  int *smooth;
   int state = ST_INIT;
   int act_face;
 
@@ -125,7 +123,6 @@ bool C3DObject::loadASC(const std::string& filename)
           iStr.seekg(buffer.find("Faces:") + 6);
           iStr >> nfaces;
           faces.reserve(nfaces);
-          smooth = new int[nfaces];
         }
         if (points.capacity() && faces.capacity()) {
           state = ST_DATA;
@@ -134,8 +131,8 @@ bool C3DObject::loadASC(const std::string& filename)
       case ST_DATA:
         if (!buffer.compare(0, 6, "Mapped")) {}
         if (!buffer.compare(0, 6, "Vertex")) { readVertex(buffer); }
-        if (!buffer.compare(0, 4, "Face")) { act_face = readFace(buffer, smooth); }
-        if (!buffer.compare(0, 9, "Smoothing")) { readSmoothing(buffer, smooth, act_face); }
+        if (!buffer.compare(0, 4, "Face")) { act_face = readFace(buffer); }
+        if (!buffer.compare(0, 9, "Smoothing")) { readSmoothing(buffer, act_face); }
 
         if (buffer == "Material:") {
           // Not tested, we don't have models with material embedded
@@ -155,9 +152,8 @@ bool C3DObject::loadASC(const std::string& filename)
     return false;
   }
 
-  CalculaNormales(smooth);
+  calculateNormales();
   cmc.set(points);
-  delete[] smooth;
 
   return true;
 }
@@ -282,11 +278,10 @@ void C3DObject::moveobject(const Vector& distance)
 }
 
 
-void C3DObject::CalculaNormales(int *smooth)
+void C3DObject::calculateNormales()
 {
   std::vector<Vector> normales_tmp;
 
-  // @TODO: use iterator
   for (const Face& face: faces) {
     Vector vector1 = points[face.b] - points[face.a];
     Vector vector2 = points[face.c] - points[face.a];
@@ -296,14 +291,15 @@ void C3DObject::CalculaNormales(int *smooth)
   // @TODO: temporary copypaste
   // @TODO: use iterator
   for (int i = 0; i < faces.size(); i++) {
-    if (smooth[i] == 0) {
+    if (faces[i].smooth == 0) {
       faces[i].norm1 = normales_tmp[i];
       faces[i].norm2 = normales_tmp[i];
       faces[i].norm3 = normales_tmp[i];
     } else {
       int num = 0;
+      // Ineffective search
       for(int k = 0; k < faces.size(); k++) {
-        if (smooth[k] == smooth[i] && faces[k].hasVertex(faces[i].a)) {
+        if (faces[k].smooth == faces[i].smooth && faces[k].hasVertex(faces[i].a)) {
           num++;
           faces[i].norm1 = faces[i].norm1 + normales_tmp[k];
         }
@@ -313,8 +309,9 @@ void C3DObject::CalculaNormales(int *smooth)
       }
 
       num = 0;
+      // Ineffective search
       for(int k = 0; k < faces.size(); k++) {
-        if (smooth[k]==smooth[i] && faces[k].hasVertex(faces[i].b)) {
+        if (faces[k].smooth == faces[i].smooth && faces[k].hasVertex(faces[i].b)) {
           num++;
           faces[i].norm2 = faces[i].norm2 + normales_tmp[k];
         }
@@ -324,8 +321,9 @@ void C3DObject::CalculaNormales(int *smooth)
       }
 
       num = 0;
+      // Ineffective search
       for(int k = 0; k < faces.size(); k++) {
-        if (smooth[k]==smooth[i] && faces[k].hasVertex(faces[i].c)) {
+        if (faces[k].smooth == faces[i].smooth && faces[k].hasVertex(faces[i].c)) {
           num++;
           faces[i].norm3 = faces[i].norm3 + normales_tmp[k];
         }
