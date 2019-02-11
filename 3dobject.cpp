@@ -21,13 +21,13 @@ extern void Normal (double vector1[3],double vector2[3],double resultado[3]);
 
 
 
-C3DObject::C3DObject(): points(0), faces(0), normales(0), displayList(-1), textures(0)
+C3DObject::C3DObject(): points(0), faces(0), displayList(-1), textures(0)
 {
 }
 
 
 C3DObject::C3DObject(const std::string& filename, const std::string& texturedir):
-  points(0), faces(0), normales(0), displayList(-1), textures(0)
+  points(0), faces(0), displayList(-1), textures(0)
 {
   int l = filename.length();
 
@@ -292,9 +292,6 @@ void C3DObject::moveobject(const Vector& distance)
 
 void C3DObject::CalculaNormales(int *smooth)
 {
-  normales = new float[faces.size() * 3 * 3];
-
-  int num;
   Vector* normales_tmp = new Vector[faces.size()];
 
   // @TODO: use iterator
@@ -315,88 +312,52 @@ void C3DObject::CalculaNormales(int *smooth)
   // @TODO: temporary copypaste
   // @TODO: use iterator
   for (int i = 0; i < faces.size(); i++) {
-    int act_vertex = faces[i].a;
-    int j = 0;
-    if (smooth[i]==0) {
-      normales[i*9+j*3]=normales_tmp[i].x;
-      normales[i*9+j*3+1]=normales_tmp[i].y;
-      normales[i*9+j*3+2]=normales_tmp[i].z;
+    if (smooth[i] == 0) {
+      faces[i].norm1 = normales_tmp[i];
     } else {
-      num=0;
-      normales[i*9+j*3]=0.0F;
-      normales[i*9+j*3+1]=0.0F;
-      normales[i*9+j*3+2]=0.0F;
-      // @TODO: use iterator
+      int num = 0;
       for(int k = 0; k < faces.size(); k++) {
-        if (smooth[k]==smooth[i] && faces[k].hasVertex(act_vertex)) {
+        if (smooth[k] == smooth[i] && faces[k].hasVertex(faces[i].a)) {
           num++;
-          normales[i*9+j*3]+=normales_tmp[k].x;
-          normales[i*9+j*3+1]+=normales_tmp[k].y;
-          normales[i*9+j*3+2]+=normales_tmp[k].z;
+          faces[i].norm1 = faces[i].norm1 + normales_tmp[k];
         }
       }
-      if (num!=0) {
-        normales[i*9+j*3]/=num;
-        normales[i*9+j*3+1]/=num;
-        normales[i*9+j*3+2]/=num;
+      if (num != 0) {
+        faces[i].norm1 = faces[i].norm1 / num;
       }
     }
   }
   // @TODO: use iterator
   for (int i = 0; i < faces.size(); i++) {
-    int act_vertex = faces[i].b;
-    int j = 1;
-    if (smooth[i]==0) {
-      normales[i*9+j*3]=normales_tmp[i].x;
-      normales[i*9+j*3+1]=normales_tmp[i].y;
-      normales[i*9+j*3+2]=normales_tmp[i].z;
+    if (smooth[i] == 0) {
+      faces[i].norm2 = normales_tmp[i];
     } else {
-      num=0;
-      normales[i*9+j*3]=0.0F;
-      normales[i*9+j*3+1]=0.0F;
-      normales[i*9+j*3+2]=0.0F;
-      // @TODO: use iterator
+      int num = 0;
       for(int k = 0; k < faces.size(); k++) {
-        if (smooth[k]==smooth[i] && faces[k].hasVertex(act_vertex)) {
+        if (smooth[k]==smooth[i] && faces[k].hasVertex(faces[i].b)) {
           num++;
-          normales[i*9+j*3]+=normales_tmp[k].x;
-          normales[i*9+j*3+1]+=normales_tmp[k].y;
-          normales[i*9+j*3+2]+=normales_tmp[k].z;
+          faces[i].norm2 = faces[i].norm2 + normales_tmp[k];
         }
       }
-      if (num!=0) {
-        normales[i*9+j*3]/=num;
-        normales[i*9+j*3+1]/=num;
-        normales[i*9+j*3+2]/=num;
+      if (num != 0) {
+        faces[i].norm2 = faces[i].norm2 / num;
       }
     }
   }
   // @TODO: use iterator
   for (int i = 0; i < faces.size(); i++) {
-    int act_vertex = faces[i].c;
-    int j = 2;
-    if (smooth[i]==0) {
-      normales[i*9+j*3]=normales_tmp[i].x;
-      normales[i*9+j*3+1]=normales_tmp[i].y;
-      normales[i*9+j*3+2]=normales_tmp[i].z;
+    if (smooth[i] == 0) {
+      faces[i].norm3 = normales_tmp[i];
     } else {
-      num=0;
-      normales[i*9+j*3]=0.0F;
-      normales[i*9+j*3+1]=0.0F;
-      normales[i*9+j*3+2]=0.0F;
-      // @TODO: use iterator
+      int num = 0;
       for(int k = 0; k < faces.size(); k++) {
-        if (smooth[k]==smooth[i] && faces[k].hasVertex(act_vertex)) {
+        if (smooth[k]==smooth[i] && faces[k].hasVertex(faces[i].c)) {
           num++;
-          normales[i*9+j*3]+=normales_tmp[k].x;
-          normales[i*9+j*3+1]+=normales_tmp[k].y;
-          normales[i*9+j*3+2]+=normales_tmp[k].z;
+          faces[i].norm3 = faces[i].norm3 + normales_tmp[k];
         }
       }
-      if (num!=0) {
-        normales[i*9+j*3]/=num;
-        normales[i*9+j*3+1]/=num;
-        normales[i*9+j*3+2]/=num;
+      if ( num!=0 ) {
+        faces[i].norm3 = faces[i].norm3 / num;
       }
     }
   }
@@ -408,13 +369,12 @@ void C3DObject::CalculaNormales(int *smooth)
 C3DObject::~C3DObject()
 {
   points.clear();
-  if (normales != NULL) delete[] normales;
 }
 
 
 bool C3DObject::valid(void)
 {
-  return points.size() && faces.size() && normales;
+  return points.size() && faces.size();
 }
 
 
@@ -439,15 +399,15 @@ void C3DObject::draw()
 
       glBegin(GL_TRIANGLES);
       glTexCoord2f(textureCoord[i * 3].x, textureCoord[i * 3].y);
-      glNormal3f(normales[i*9+0],normales[i*9+1],normales[i*9+2]);
+      glNormal3f(faces[i].norm1.x, faces[i].norm1.y, faces[i].norm1.z);
       glArrayElement(faces[i].a);
 
       glTexCoord2f(textureCoord[i * 3 + 1].x, textureCoord[i * 3 + 1].y);
-      glNormal3f(normales[i*9+3],normales[i*9+4],normales[i*9+5]);
+      glNormal3f(faces[i].norm2.x, faces[i].norm2.y, faces[i].norm2.z);
       glArrayElement(faces[i].b);
 
       glTexCoord2f(textureCoord[i * 3 + 2].x, textureCoord[i * 3 + 2].y);
-      glNormal3f(normales[i*9+6],normales[i*9+7],normales[i*9+8]);
+      glNormal3f(faces[i].norm3.x, faces[i].norm3.y, faces[i].norm3.z);
       glArrayElement(faces[i].c);
       glEnd();
     }
@@ -456,11 +416,11 @@ void C3DObject::draw()
     glBegin(GL_TRIANGLES);
     for(int i = 0; i < faces.size(); i++) {
       glColor3f(faceColors[i].red, faceColors[i].green, faceColors[i].blue);
-      glNormal3f(normales[i*9+0],normales[i*9+1],normales[i*9+2]);
+      glNormal3f(faces[i].norm1.x, faces[i].norm1.y, faces[i].norm1.z);
       glArrayElement(faces[i].a);
-      glNormal3f(normales[i*9+3],normales[i*9+4],normales[i*9+5]);
+      glNormal3f(faces[i].norm2.x, faces[i].norm2.y, faces[i].norm2.z);
       glArrayElement(faces[i].b);
-      glNormal3f(normales[i*9+6],normales[i*9+7],normales[i*9+8]);
+      glNormal3f(faces[i].norm3.x, faces[i].norm3.y, faces[i].norm3.z);
       glArrayElement(faces[i].c);
     }
     glEnd();
@@ -488,15 +448,15 @@ void C3DObject::draw(const Color& color)
 
         glBegin(GL_TRIANGLES);
         glTexCoord2f(textureCoord[i * 3].x, textureCoord[i * 3].y);
-        glNormal3f(normales[i*9+0],normales[i*9+1],normales[i*9+2]);
+        glNormal3f(faces[i].norm1.x, faces[i].norm1.y, faces[i].norm1.z);
         glArrayElement(faces[i].a);
 
         glTexCoord2f(textureCoord[i * 3 + 1].x, textureCoord[i * 3 + 1].y);
-        glNormal3f(normales[i*9+3],normales[i*9+4],normales[i*9+5]);
+        glNormal3f(faces[i].norm2.x, faces[i].norm2.y, faces[i].norm2.z);
         glArrayElement(faces[i].b);
 
         glTexCoord2f(textureCoord[i * 3 + 2].x, textureCoord[i * 3 + 2].y);
-        glNormal3f(normales[i*9+6],normales[i*9+7],normales[i*9+8]);
+        glNormal3f(faces[i].norm3.x, faces[i].norm3.y, faces[i].norm3.z);
         glArrayElement(faces[i].c);
         glEnd();
       }
@@ -508,15 +468,14 @@ void C3DObject::draw(const Color& color)
     glEnableClientState(GL_VERTEX_ARRAY);
     glVertexPointer(3, GL_FLOAT, 0, points.data());
     glColor3f(color.red, color.green, color.blue);
-    // @TODO: use iterator
-    for (int i = 0; i < faces.size(); i++) {
+    for (const Face face: faces) {
       glBegin(GL_TRIANGLES);
-      glNormal3f(normales[i*9+0],normales[i*9+1],normales[i*9+2]);
-      glArrayElement(faces[i].a);
-      glNormal3f(normales[i*9+3],normales[i*9+4],normales[i*9+5]);
-      glArrayElement(faces[i].b);
-      glNormal3f(normales[i*9+6],normales[i*9+7],normales[i*9+8]);
-      glArrayElement(faces[i].c);
+      glNormal3f(face.norm1.x, face.norm1.y, face.norm1.z);
+      glArrayElement(face.a);
+      glNormal3f(face.norm2.x, face.norm2.y, face.norm2.z);
+      glArrayElement(face.b);
+      glNormal3f(face.norm3.x, face.norm3.y, face.norm3.z);
+      glArrayElement(face.c);
       glEnd();
     }
   }
@@ -536,15 +495,14 @@ void C3DObject::draw_notexture(const Color& color)
     glColor3f(color.red, color.green, color.blue);
   }
 
-  // @TODO: use iterator
-  for (int i = 0; i < faces.size(); i++) {
+  for (const Face face: faces) {
     glBegin(GL_TRIANGLES);
-    glNormal3f(normales[i * 9 + 0], normales[i * 9 + 1],normales[i * 9 + 2]);
-    glArrayElement(faces[i].a);
-    glNormal3f(normales[i * 9 + 3], normales[i * 9 + 4], normales[i * 9 + 5]);
-    glArrayElement(faces[i].b);
-    glNormal3f(normales[i * 9 + 6], normales[i * 9 + 7], normales[i * 9 + 8]);
-    glArrayElement(faces[i].c);
+    glNormal3f(face.norm1.x, face.norm1.y, face.norm1.z);
+    glArrayElement(face.a);
+    glNormal3f(face.norm2.x, face.norm2.y, face.norm2.z);
+    glArrayElement(face.b);
+    glNormal3f(face.norm3.x, face.norm3.y, face.norm3.z);
+    glArrayElement(face.c);
     glEnd();
   }
 }

@@ -18,6 +18,10 @@ public:
   int a;
   int b;
   int c;
+
+  Vector norm1;
+  Vector norm2;
+  Vector norm3;
 };
 
 
@@ -60,11 +64,9 @@ public:
 	void moveobject(const Vector& distance);
 
   std::vector<Vector> points;
-  //  std::vector<Vector> normales;
+  // @TODO: move color to face?
   std::vector<Color> faceColors;
   std::vector<Face> faces;
-
-  float *normales;
 
   int displayList;
   CMC cmc;
