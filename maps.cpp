@@ -74,7 +74,6 @@ bool NETHER::loadmap(const std::string& filename)
 		char tmp[80];
 
 		while(1==fscanf(fp,"%s",tmp)) {
-			Building *b;
 			float x,y;
 
 			if (strcmp(tmp,"fence")==0) {
@@ -82,42 +81,42 @@ bool NETHER::loadmap(const std::string& filename)
 					fclose(fp);
 					return false;
 				} /* if */ 
-				buildings.Add(new Building(Vector(x, y, 0), Building::B_FENCE));
+				buildings.emplace_back(Vector(x, y, 0), Building::B_FENCE);
 			} /* if */  
 			if (strcmp(tmp,"wall1")==0) {
 				if (2!=fscanf(fp,"%f %f",&x,&y)) {
 					fclose(fp);
 					return false;
 				} /* if */ 
-				buildings.Add(new Building(Vector(x, y, 0), Building::B_WALL1));
+				buildings.emplace_back(Vector(x, y, 0), Building::B_WALL1);
 			} /* if */  
 			if (strcmp(tmp,"wall2")==0) {
 				if (2!=fscanf(fp,"%f %f",&x,&y)) {
 					fclose(fp);
 					return false;
 				} /* if */ 
-				buildings.Add(new Building(Vector(x, y, 0), Building::B_WALL2));
+				buildings.emplace_back(Vector(x, y, 0), Building::B_WALL2);
 			} /* if */  
 			if (strcmp(tmp,"wall3")==0) {
 				if (2!=fscanf(fp,"%f %f",&x,&y)) {
 					fclose(fp);
 					return false;
 				} /* if */ 
-				buildings.Add(new Building(Vector(x, y, 0), Building::B_WALL3));
+				buildings.emplace_back(Vector(x, y, 0), Building::B_WALL3);
 			} /* if */  
 			if (strcmp(tmp,"wall4")==0) {
 				if (2!=fscanf(fp,"%f %f",&x,&y)) {
 					fclose(fp);
 					return false;
 				} /* if */ 
-				buildings.Add(new Building(Vector(x, y, 0), Building::B_WALL4));
+				buildings.emplace_back(Vector(x, y, 0), Building::B_WALL4);
 			} /* if */  
 			if (strcmp(tmp,"wall6")==0) {
 				if (2!=fscanf(fp,"%f %f",&x,&y)) {
 					fclose(fp);
 					return false;
 				} /* if */ 
-				buildings.Add(new Building(Vector(x, y, 0), Building::B_WALL6));
+				buildings.emplace_back(Vector(x, y, 0), Building::B_WALL6);
 			} /* if */  
 			if (strcmp(tmp,"factory")==0) {
 				char tmp2[80];
@@ -134,17 +133,17 @@ bool NETHER::loadmap(const std::string& filename)
 				} /* if */ 
 
 				for(int i=0;i<4;i++) {
-                  buildings.Add(new Building(Vector(x + xo[i], y + yo[i], 0), obj[i], 0, 0));
+                  buildings.emplace_back(Vector(x + xo[i], y + yo[i], 0), obj[i], 0, 0);
 				} /* for */ 
 
-				b=new Building(Vector(x, y + 1, 0), Building::B_FACTORY_ELECTRONICS);
-				if (strcmp(tmp2,"electronics")==0) b->type=Building::B_FACTORY_ELECTRONICS;
-				if (strcmp(tmp2,"nuclear")==0) b->type=Building::B_FACTORY_NUCLEAR;
-				if (strcmp(tmp2,"phasers")==0) b->type=Building::B_FACTORY_PHASERS;
-				if (strcmp(tmp2,"missiles")==0) b->type=Building::B_FACTORY_MISSILES;
-				if (strcmp(tmp2,"cannons")==0) b->type=Building::B_FACTORY_CANNONS;
-				if (strcmp(tmp2,"chassis")==0) b->type=Building::B_FACTORY_CHASSIS;
-				buildings.Add(b);
+				Building b(Vector(x, y + 1, 0), Building::B_FACTORY_ELECTRONICS);
+				if (strcmp(tmp2,"electronics")==0) b.type=Building::B_FACTORY_ELECTRONICS;
+				if (strcmp(tmp2,"nuclear")==0) b.type=Building::B_FACTORY_NUCLEAR;
+				if (strcmp(tmp2,"phasers")==0) b.type=Building::B_FACTORY_PHASERS;
+				if (strcmp(tmp2,"missiles")==0) b.type=Building::B_FACTORY_MISSILES;
+				if (strcmp(tmp2,"cannons")==0) b.type=Building::B_FACTORY_CANNONS;
+				if (strcmp(tmp2,"chassis")==0) b.type=Building::B_FACTORY_CHASSIS;
+				buildings.push_back(b);
 			} /* if */  
 			if (strcmp(tmp,"warbase")==0) {
 				Building::BUILDINGS_AND_WALLS obj[15]={Building::B_WALL4,
@@ -180,7 +179,7 @@ bool NETHER::loadmap(const std::string& filename)
 				} /* if */ 
 
 				for(int i=0;i<15;i++) {
-                  buildings.Add(new Building(Vector(x + xo[i], y + yo[i], 0), obj[i], o, 0));
+                                   buildings.emplace_back(Vector(x + xo[i], y + yo[i], 0), obj[i], o, 0);
 				} /* for */ 
 			} /* if */  
 		} /* while */ 
@@ -195,8 +194,6 @@ void NETHER::drawmap(bool shadows)
 {
 	int i,j;
 	int o,m[8]={13,15,17,19,7,23,21,25};
-	List<Building> l;
-	Building *b;
 	Vector light;
 
 	light.x=lightpos[0];
@@ -235,17 +232,15 @@ void NETHER::drawmap(bool shadows)
 		glPopMatrix();
 	} /* if */ 
 
-	l.Instance(buildings);
-	l.Rewind();
-	while(l.Iterate(b)) {	
+	for (const Building& b: buildings) {
 
-		if (b->pos.y>=(viewp.y+MINY) &&
-			b->pos.y<=(viewp.y+MAXY) &&
-			b->pos.x>=(viewp.x+MINX) &&
-			b->pos.x<=(viewp.x+MAXX)) {
+		if (b.pos.y>=(viewp.y+MINY) &&
+			b.pos.y<=(viewp.y+MAXY) &&
+			b.pos.x>=(viewp.x+MINX) &&
+			b.pos.x<=(viewp.x+MAXX)) {
 			glPushMatrix();
-			glTranslatef(float(b->pos.x),float(b->pos.y),float(b->pos.z));
-			switch(b->type) {
+			glTranslatef(float(b.pos.x),float(b.pos.y),float(b.pos.z));
+			switch(b.type) {
 			case Building::B_FENCE:if (!shadows) {
                 if (detaillevel>=2) building_tile[5]->draw(Color(0.2f, 0.2f, 0.2f));
                 else building_tile[5]->draw_notexture(Color(0.2f, 0.2f, 0.2f));
@@ -319,7 +314,7 @@ void NETHER::drawmap(bool shadows)
 							 glPopMatrix();
 						 } /* if */ 
 
-						 if (b->owner==1) {
+						 if (b.owner==1) {
 							if (!shadows) {
 								glTranslatef(0,-1,1);
 								building_tile[6]->draw(Color(0.3f, 0.3f, 0.8f));
@@ -328,7 +323,7 @@ void NETHER::drawmap(bool shadows)
 								building_tile[6]->DrawShadow(Color(0, 0, 0, 0.5));
 							} /* if */ 
 						 } /* if */ 
-						 if (b->owner==2) {
+						 if (b.owner==2) {
 							if (!shadows) {
 								glTranslatef(0,-1,1);
 								building_tile[6]->draw(Color(0.8f, 0.3f, 0.3f));
@@ -355,7 +350,7 @@ void NETHER::drawmap(bool shadows)
 							 glPopMatrix();
 						 } /* if */ 
 
-						 if (b->owner==1) {
+						 if (b.owner==1) {
 							if (!shadows) {
 								glTranslatef(0,-1,1);
 								building_tile[6]->draw(Color(0.3f, 0.3f, 0.8f));
@@ -364,7 +359,7 @@ void NETHER::drawmap(bool shadows)
 								building_tile[6]->DrawShadow(Color(0, 0, 0, 0.5));
 							} /* if */ 
 						 } /* if */ 
-						 if (b->owner==2) {
+						 if (b.owner==2) {
 							if (!shadows) {
 								glTranslatef(0,-1,1);
 								building_tile[6]->draw(Color(0.8f,0.3f,0.3f));
@@ -391,7 +386,7 @@ void NETHER::drawmap(bool shadows)
 							 glPopMatrix();
 						 } /* if */ 
 
-						 if (b->owner==1) {
+						 if (b.owner==1) {
 							if (!shadows) {
 								glTranslatef(0,-1,1);
 								building_tile[6]->draw(Color(0.3f, 0.3f, 0.8f));
@@ -400,7 +395,7 @@ void NETHER::drawmap(bool shadows)
 								building_tile[6]->DrawShadow(Color(0, 0, 0, 0.5));
 							} /* if */ 
 						 } /* if */ 
-						 if (b->owner==2) {
+						 if (b.owner==2) {
 							if (!shadows) {
 								glTranslatef(0,-1,1);
 								building_tile[6]->draw(Color(0.8f, 0.3f, 0.3f));
@@ -427,7 +422,7 @@ void NETHER::drawmap(bool shadows)
 							 glPopMatrix();
 						 } /* if */ 
 
-						 if (b->owner==1) {
+						 if (b.owner==1) {
 							if (!shadows) {
 								glTranslatef(0,-1,1);
 								building_tile[6]->draw(Color(0.3f, 0.3f, 0.8f));
@@ -436,7 +431,7 @@ void NETHER::drawmap(bool shadows)
 								building_tile[6]->DrawShadow(Color(0, 0, 0, 0.5));
 							} /* if */ 
 						 } /* if */ 
-						 if (b->owner==2) {
+						 if (b.owner==2) {
 							if (!shadows) {
 								glTranslatef(0,-1,1);
 								building_tile[6]->draw(Color(0.8f, 0.3f, 0.3f));
@@ -463,7 +458,7 @@ void NETHER::drawmap(bool shadows)
 							 glPopMatrix();
 						 } /* if */ 
 
-						 if (b->owner==1) {
+						 if (b.owner==1) {
 							if (!shadows) {
 								glTranslatef(0,-1,1);
 								building_tile[6]->draw(Color(0.3f, 0.3f, 0.8f));
@@ -472,7 +467,7 @@ void NETHER::drawmap(bool shadows)
 								building_tile[6]->DrawShadow(Color(0, 0, 0, 0.5));
 							} /* if */ 
 						 } /* if */ 
-						 if (b->owner==2) {
+						 if (b.owner==2) {
 							if (!shadows) {
 								glTranslatef(0,-1,1);
 								building_tile[6]->draw(Color(0.8f, 0.3f, 0.3f));
@@ -499,7 +494,7 @@ void NETHER::drawmap(bool shadows)
 							 glPopMatrix();
 						 } /* if */ 
 
-						 if (b->owner==1) {
+						 if (b.owner==1) {
 							if (!shadows) {
 								glTranslatef(0,-1,1);
 								building_tile[6]->draw(Color(0.3f, 0.3f, 0.8f));
@@ -508,7 +503,7 @@ void NETHER::drawmap(bool shadows)
 								building_tile[6]->DrawShadow(Color(0, 0, 0, 0.5));
 							} /* if */ 
 						 } /* if */ 
-						 if (b->owner==2) {
+						 if (b.owner==2) {
 							if (!shadows) {
 								glTranslatef(0,-1,1);
 								building_tile[6]->draw(Color(0.8f, 0.3f, 0.3f));
@@ -527,7 +522,7 @@ void NETHER::drawmap(bool shadows)
 							   building_tile[8]->DrawShadow(Color(0, 0, 0, 0.5));
 						   } /* if */ 
 
-						   if (b->owner==1) {
+						   if (b.owner==1) {
 							   if (!shadows) {
 								   glTranslatef(0,-2,1);
 								   building_tile[6]->draw(Color(0.3f, 0.3f, 0.8f));
@@ -536,7 +531,7 @@ void NETHER::drawmap(bool shadows)
 								   building_tile[6]->DrawShadow(Color(0, 0, 0, 0.5));
 							   } /* if */ 
 						   } /* if */ 
-						   if (b->owner==2) {
+						   if (b.owner==2) {
 							  if (!shadows) {
 								 glTranslatef(0,-2,1);
 								 building_tile[6]->draw(Color(0.8f, 0.3f, 0.3f));

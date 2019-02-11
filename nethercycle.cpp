@@ -38,6 +38,7 @@ extern int up_key,down_key,left_key,right_key,fire_key,pause_key;
 extern int level;
 extern float MINY,MAXY,MINX,MAXX;
 
+const float NUCLEAR_RADIUS = 2.5f;
 
 extern FILE *debug_fp;
 
@@ -64,9 +65,6 @@ bool NETHER::cycle(unsigned char *keyboard)
 	} /* if */ 
 
 	if (recomputestatistics) {
-		List<Building> l;
-		Building *b;
-
 		statistics[0][0]=0;
 		statistics[0][1]=0;
 		statistics[0][2]=0;
@@ -84,36 +82,34 @@ bool NETHER::cycle(unsigned char *keyboard)
 		statistics[1][6]=0;
 		statistics[1][7]=0;
 
-		l.Instance(buildings);
-		l.Rewind();
-		while(l.Iterate(b)) {
-			if (b->type==Building::B_WARBASE) {
-				if (b->owner==1) statistics[0][0]++;
-				if (b->owner==2) statistics[1][0]++;
+		for (const Building& b: buildings) {
+			if (b.type==Building::B_WARBASE) {
+				if (b.owner==1) statistics[0][0]++;
+				if (b.owner==2) statistics[1][0]++;
 			} /* if */ 
-			if (b->type==Building::B_FACTORY_ELECTRONICS) {
-				if (b->owner==1) statistics[0][1]++;
-				if (b->owner==2) statistics[1][1]++;
+			if (b.type==Building::B_FACTORY_ELECTRONICS) {
+				if (b.owner==1) statistics[0][1]++;
+				if (b.owner==2) statistics[1][1]++;
 			} /* if */ 
-			if (b->type==Building::B_FACTORY_NUCLEAR) {
-				if (b->owner==1) statistics[0][2]++;
-				if (b->owner==2) statistics[1][2]++;
+			if (b.type==Building::B_FACTORY_NUCLEAR) {
+				if (b.owner==1) statistics[0][2]++;
+				if (b.owner==2) statistics[1][2]++;
 			} /* if */ 
-			if (b->type==Building::B_FACTORY_PHASERS) {
-				if (b->owner==1) statistics[0][3]++;
-				if (b->owner==2) statistics[1][3]++;
+			if (b.type==Building::B_FACTORY_PHASERS) {
+				if (b.owner==1) statistics[0][3]++;
+				if (b.owner==2) statistics[1][3]++;
 			} /* if */ 
-			if (b->type==Building::B_FACTORY_MISSILES) {
-				if (b->owner==1) statistics[0][4]++;
-				if (b->owner==2) statistics[1][4]++;
+			if (b.type==Building::B_FACTORY_MISSILES) {
+				if (b.owner==1) statistics[0][4]++;
+				if (b.owner==2) statistics[1][4]++;
 			} /* if */ 
-			if (b->type==Building::B_FACTORY_CANNONS) {
-				if (b->owner==1) statistics[0][5]++;
-				if (b->owner==2) statistics[1][5]++;
+			if (b.type==Building::B_FACTORY_CANNONS) {
+				if (b.owner==1) statistics[0][5]++;
+				if (b.owner==2) statistics[1][5]++;
 			} /* if */ 
-			if (b->type==Building::B_FACTORY_CHASSIS) {
-				if (b->owner==1) statistics[0][6]++;
-				if (b->owner==2) statistics[1][6]++;
+			if (b.type==Building::B_FACTORY_CHASSIS) {
+				if (b.owner==1) statistics[0][6]++;
+				if (b.owner==2) statistics[1][6]++;
 			} /* if */ 
 		} /* while */ 
 		recomputestatistics=false;
@@ -863,14 +859,9 @@ bool NETHER::cycle(unsigned char *keyboard)
 
 		/* Test if the ship has landed over a Factory: */ 
 		{
-			List<Building> l;
-			Building *b;
-
-			l.Instance(buildings);
-			l.Rewind();
-			while(l.Iterate(b)) {
-				if (b->type==Building::B_WARBASE && b->owner==1 && 
-					shipp.x==b->pos.x && shipp.y==b->pos.y && shiplanded) {
+          for (const Building& b: buildings) {
+				if (b.type==Building::B_WARBASE && b.owner==1 && 
+					shipp.x==b.pos.x && shipp.y==b.pos.y && shiplanded) {
 					game_state=STATE_CONSTRUCTION;
 					construction_pointer=0;
 					construction[0]=false;
@@ -887,9 +878,9 @@ bool NETHER::cycle(unsigned char *keyboard)
 					in_construction.pieces[2]=false;
 					in_construction.pieces[3]=false;
 					in_construction.pieces[4]=false;
-					in_construction.pos.x=b->pos.x+2.5;
-					in_construction.pos.y=b->pos.y+0.5;
-					in_construction.pos.z=b->pos.z;
+					in_construction.pos.x=b.pos.x+2.5;
+					in_construction.pos.y=b.pos.y+0.5;
+					in_construction.pos.z=b.pos.z;
 				} /* if */ 
 			} /* while */ 
 		}
@@ -1115,34 +1106,25 @@ bool NETHER::cycle(unsigned char *keyboard)
 								l.Rewind();
 								while(l.Iterate(r)) {
 									distance=(r->pos-exp.pos).norma();
-									if (distance<=2.5f) robotstodelete.Add(r);
+									if (distance<=NUCLEAR_RADIUS) robotstodelete.Add(r);
 								} /* while */ 
 							} /* for */ 
 						}
 
 						/* Find buildings to destroy: */ 
-						{
-							List<Building> l,todelete;
-							Building *b;
-							float distance;
-
-							l.Instance(buildings);
-							l.Rewind();
-							while(l.Iterate(b)) {
-								distance=(b->pos-(exp.pos-Vector(0.5,0.5,0.5))).norma();
-								if (distance<=2.5f) todelete.Add(b);
-							} /* while */ 
-
-							while(!todelete.EmptyP()) {
-								b=todelete.Extract();
-								buildings.DeleteElement(b);
-								AI_removebuilding(b->pos);
-								delete b;
-							} /* while */ 
-						}
-
+                        buildings.erase(std::remove_if(buildings.begin(), buildings.end(),
+                                                       [exp, this](auto& b) {
+                                                         float distance = (b.pos - (exp.pos - Vector(0.5, 0.5, 0.5))).norma();
+                                                         if (distance <= NUCLEAR_RADIUS) {
+                                                           AI_removebuilding(b.pos);
+                                                           return true;
+                                                         } else {
+                                                           return false;
+                                                         }
+                                                       }),
+                                        buildings.end());
                         sManager.playExplosion(shipp, r->pos);
-						recomputestatistics=true;
+                        recomputestatistics=true;
 					} /* if */ 
 
 					if (r!=0) {
@@ -1293,72 +1275,63 @@ bool NETHER::cycle(unsigned char *keyboard)
 	fflush(debug_fp);
 #endif
 
-		/* Buildings: */ 
-		{
-			List<Building> l;
-			Building *b;
+    /* Buildings: */ 
+    for (Building& b: buildings) {
+      if (b.type==Building::B_FACTORY_ELECTRONICS ||
+          b.type==Building::B_FACTORY_NUCLEAR ||
+          b.type==Building::B_FACTORY_PHASERS ||
+          b.type==Building::B_FACTORY_MISSILES ||
+          b.type==Building::B_FACTORY_CANNONS	||
+          b.type==Building::B_FACTORY_CHASSIS) {
+        int robot=AI_robothere(b.pos+Vector(1,0,0));
+        if (robot==0) {
+          b.status=0;
+        } else {
+          if (robot==T_ROBOT) b.status++;
+          if (robot==T_EROBOT) b.status--;
 
-			l.Instance(buildings);
-			l.Rewind();
-			while(l.Iterate(b)) {
-				if (b->type==Building::B_FACTORY_ELECTRONICS ||
-					b->type==Building::B_FACTORY_NUCLEAR ||
-					b->type==Building::B_FACTORY_PHASERS ||
-					b->type==Building::B_FACTORY_MISSILES ||
-					b->type==Building::B_FACTORY_CANNONS	||
-					b->type==Building::B_FACTORY_CHASSIS) {
-					int robot=AI_robothere(b->pos+Vector(1,0,0));
-					if (robot==0) {
-						b->status=0;
-					} else {
-						if (robot==T_ROBOT) b->status++;
-						if (robot==T_EROBOT) b->status--;
+          if (b.status>=12*12*12) {
+            b.owner=1;
+            b.status=0;
+            recomputestatistics=true;
+          } /* if */ 
+          if (b.status<=-12*12*12) {
+            b.owner=2;
+            b.status=0;
+            recomputestatistics=true;
+          } /* if */ 
+        } /* if */ 
+      } /* if */ 
 
-						if (b->status>=12*12*12) {
-							b->owner=1;
-							b->status=0;
-							recomputestatistics=true;
-						} /* if */ 
+      if (b.type==Building::B_WARBASE) {
+        int robot=AI_robothere(b.pos+Vector(2,0,0));
+        if (robot==0) {
+          b.status=0;
+        } else {
+          if (robot==T_ROBOT) b.status++;
+          if (robot==T_EROBOT) b.status--;
+          if (b.status>=12*12*12) {
+            b.owner=1;
+            b.status=0;
+            recomputestatistics=true;
+          } /* if */ 
 
-						if (b->status<=-12*12*12) {
-							b->owner=2;
-							b->status=0;
-							recomputestatistics=true;
-						} /* if */ 
-					} /* if */ 
-				} /* if */ 
+          if (b.status<=-12*12*12) {
+            b.owner=2;
+            b.status=0;
+            recomputestatistics=true;
+          } /* if */ 
+        } /* if */ 
+      } /* if */ 
+    } /* while */ 
 
-				if (b->type==Building::B_WARBASE) {
-					int robot=AI_robothere(b->pos+Vector(2,0,0));
-					if (robot==0) {
-						b->status=0;
-					} else {
-						if (robot==T_ROBOT) b->status++;
-						if (robot==T_EROBOT) b->status--;
-
-						if (b->status>=12*12*12) {
-							b->owner=1;
-							b->status=0;
-							recomputestatistics=true;
-						} /* if */ 
-
-						if (b->status<=-12*12*12) {
-							b->owner=2;
-							b->status=0;
-							recomputestatistics=true;
-						} /* if */ 
-					} /* if */ 
-				} /* if */ 
-
-			} /* while */ 
-		}
 
 #ifdef _WRITE_REPORT_
 	fprintf(debug_fp,"Bullets\n");
 	fflush(debug_fp);
 #endif
 
-		/* Bullets: */
+    /* Bullets: */
 
     bullets.erase(remove_if(bullets.begin(), bullets.end(),
                             [this](auto& bullet) {
@@ -1374,14 +1347,13 @@ bool NETHER::cycle(unsigned char *keyboard)
 
                               if (bullet.type==1) persistence = MISSILE_PERSISTENCE;
                               if (bullet.type==2) persistence = PHASER_PERSISTENCE;
-                              if (bullet.step >= persistence || BulletCollision(&bullet, &r)) {
+                              if (bullet.step >= persistence || bulletCollision(bullet, &r)) {
                                 ret = true;
                                 if (bullet.step < persistence) {
                                   explosions.emplace_back(bullet.pos, 0);
                                 }
                               }
                               if (r != 0) {
-                                int damage = 0;
                                 /* The bullet has collided with a robot: */
                                 if (!r->bulletHit(bullet.type)) {
                                   /* Robot destroyed: */
@@ -1425,7 +1397,7 @@ bool NETHER::cycle(unsigned char *keyboard)
     particles.erase(std::remove_if(particles.begin(), particles.end(),
                                    [](auto& particle) { return !particle.cycle(); }),
                     particles.end());
-  }
+
 
 #ifdef _WRITE_REPORT_
 	fprintf(debug_fp,"Starting STATUS cycle\n");
@@ -1455,5 +1427,6 @@ bool NETHER::cycle(unsigned char *keyboard)
 #endif
 
 	return true;
+    }
 } /* NETHER::cycle */ 
 

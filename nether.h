@@ -116,7 +116,7 @@ private:
 
 	bool ShipCollision(C3DObject *ship,float x,float y,float z);
 	bool RobotCollision(Robot *r,bool complete);
-	bool BulletCollision(Bullet *b,Robot **r);
+	bool bulletCollision(const Bullet& b, Robot **r);
 
 	CMC  RobotCMC(Robot *r,int owner);
 	CMC  BulletCMC(Bullet *r);
@@ -169,7 +169,7 @@ private:
 	int ship_op,ship_op2,ship_op3;
 	int ship_timemoving;
 
-	List<Building> buildings;
+  std::vector<Building> buildings;
 	List<Robot> robots[2];
   std::vector<Bullet> bullets;
   std::vector<Explosion> explosions;

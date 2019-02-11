@@ -81,88 +81,79 @@ void NETHER::AI_enemy(void)
 	tmpr->shipover=false;
 
 
-	{
-		List<Building> l;
-		Building *b;
-		List<Robot> rl;
-		Robot *r;
-		int i;
-		int forces[2]={0,0};
+    {
+      List<Building> l;
+      Building *b;
+      List<Robot> rl;
+      Robot *r;
+      int i;
+      int forces[2]={0,0};
 
-		l.Instance(buildings);
-		l.Rewind();
-		mean_factory_position=Vector(0,0,0);
-		while(l.Iterate(b)) {
-			if (b->type==Building::B_FACTORY_ELECTRONICS ||
-				b->type==Building::B_FACTORY_NUCLEAR ||
-				b->type==Building::B_FACTORY_PHASERS ||
-				b->type==Building::B_FACTORY_MISSILES ||
-				b->type==Building::B_FACTORY_CANNONS) {
-				factories[b->owner]++;
-				if (b->owner!=2) mean_factory_position=mean_factory_position+b->pos;
-			} /* if */ 
-		} /* while */ 
-		mean_factory_position=mean_factory_position/(factories[0]+factories[1]);
+      mean_factory_position=Vector(0,0,0);
+      for (const Building& b: buildings) {
+        if (b.type==Building::B_FACTORY_ELECTRONICS ||
+            b.type==Building::B_FACTORY_NUCLEAR ||
+            b.type==Building::B_FACTORY_PHASERS ||
+            b.type==Building::B_FACTORY_MISSILES ||
+            b.type==Building::B_FACTORY_CANNONS) {
+          factories[b.owner]++;
+          if (b.owner!=2) mean_factory_position=mean_factory_position+b.pos;
+        }
+      }
+      mean_factory_position=mean_factory_position/(factories[0]+factories[1]);
 
-//		fprintf(fp,"Factories: %i %i %i\n", factories[0],factories[1],factories[2]);
+      for (Building& b: buildings) {
+        if (b.type==Building::B_WARBASE &&
+            b.owner==2) {
+          forces[0]=0;
+          forces[1]=0;
 
-		l.Instance(buildings);
-		l.Rewind();
-		while(l.Iterate(b)) {
-			if (b->type==Building::B_WARBASE &&
-				b->owner==2) {
-				forces[0]=0;
-				forces[1]=0;
+          tmpr->pos=b.pos+Vector(2.5,0.5,0);
+          if (!RobotCollision(tmpr,true)) {
+            /* Find the closest WARBASE to the available FACTORIES: */ 
+            if (closest_to_factories_warbase==0 ||
+                (closest_to_factories_warbase->pos-b.pos).norma()<distance_to_factories) {
+              closest_to_factories_warbase=&b;
+              distance_to_factories=float((closest_to_factories_warbase->pos-b.pos).norma());
+            } /* if */ 
 
-				tmpr->pos=b->pos+Vector(2.5,0.5,0);
-				if (!RobotCollision(tmpr,true)) {
-					/* Find the closest WARBASE to the available FACTORIES: */ 
-					if (closest_to_factories_warbase==0 ||
-						(closest_to_factories_warbase->pos-b->pos).norma()<distance_to_factories) {
-						closest_to_factories_warbase=b;
-						distance_to_factories=float((closest_to_factories_warbase->pos-b->pos).norma());
-					} /* if */ 
+            /* Find the closest WARBASE to the enemy: */ 
+            if (closest_to_enemy_warbase==0 ||
+                closest_to_enemy_warbase->pos.y<distance_to_enemy) {
+              closest_to_enemy_warbase=&b;
+              distance_to_enemy=float(closest_to_enemy_warbase->pos.y);
+            } /* if */ 
+          } /* if */ 
 
-					/* Find the closest WARBASE to the enemy: */ 
-					if (closest_to_enemy_warbase==0 ||
-						closest_to_enemy_warbase->pos.y<distance_to_enemy) {
-						closest_to_enemy_warbase=b;
-						distance_to_enemy=float(closest_to_enemy_warbase->pos.y);
-					} /* if */ 
-				} /* if */ 
+          /* Test for WARBASEs in danger: */ 
+          for(i=0;i<2;i++) {
+            rl.Instance(robots[i]);
+            rl.Rewind();
+            while(rl.Iterate(r)) {
+              if ((r->pos-b.pos).norma()<10.0) {
+                /* Robot near: */ 
+                forces[i]+= r->cost();
 
-				/* Test for WARBASEs in danger: */ 
-				for(i=0;i<2;i++) {
-					rl.Instance(robots[i]);
-					rl.Rewind();
-					while(rl.Iterate(r)) {
-						if ((r->pos-b->pos).norma()<10.0) {
-							/* Robot near: */ 
-                          forces[i]+= r->cost();
+                if (i==1) {
+                  if (forces[0]>forces[1] && 
+                      (r->program!=Robot::PROGRAM_DESTROY ||
+                       r->program_parameter.param != Robot::P_PARAM_ROBOTS)) {
+                    r->program=Robot::PROGRAM_DESTROY;
+                    r->program_parameter.param = Robot::P_PARAM_ROBOTS;
+                    return;
+                  } /* if */ 
+                } /* if */ 
+              } /* if */ 
+            } /* while */ 
+          } /* for */ 
+          if (forces[0]>forces[1]) {
+            state=AI_STATE_DEFENDING;
+            in_danger_warbase=&b;
+          } /* if */ 
+        } /* if */ 
+      } /* while */
 
-							if (i==1) {
-								if (forces[0]>forces[1] && 
-									(r->program!=Robot::PROGRAM_DESTROY ||
-									 r->program_parameter.param != Robot::P_PARAM_ROBOTS)) {
-								
-//									fprintf(fp,"Program of <%g,%g,%g> -> DESTROY ROBOTS\n",r->pos.x,r->pos.y,r->pos.z);
-
-                                  r->program=Robot::PROGRAM_DESTROY;
-                                  r->program_parameter.param = Robot::P_PARAM_ROBOTS;
-									return;
-								} /* if */ 
-							} /* if */ 
-						} /* if */ 
-					} /* while */ 
-				} /* for */ 
-				if (forces[0]>forces[1]) {
-					state=AI_STATE_DEFENDING;
-					in_danger_warbase=b;
-				} /* if */ 
-
-			} /* if */ 
-		} /* while */ 
-	}
+    }
 
 
 	/* If the warbase in danger id blocked, build robots from another warbase: */ 

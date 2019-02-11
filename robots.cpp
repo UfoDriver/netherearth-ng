@@ -179,17 +179,15 @@ bool NETHER::RobotCollision(Robot *r,bool complete)
 	if (!complete) return false;
 
 	/* Collision with buildings: */  
-	l.Instance(buildings);
-	l.Rewind();
-	while(l.Iterate(b)) {
-		if (((b->pos.x-r->pos.x)*(b->pos.x-r->pos.x)+
-			 (b->pos.y-r->pos.y)*(b->pos.y-r->pos.y)+
-			 (b->pos.z-r->pos.z)*(b->pos.z-r->pos.z))<COLISION_TEST_THRESHOLD) {
-			m2[12]=b->pos.x;
-			m2[13]=b->pos.y;
-			m2[14]=b->pos.z;
+	for (const Building& b: buildings) {
+		if (((b.pos.x-r->pos.x)*(b.pos.x-r->pos.x)+
+			 (b.pos.y-r->pos.y)*(b.pos.y-r->pos.y)+
+			 (b.pos.z-r->pos.z)*(b.pos.z-r->pos.z))<COLISION_TEST_THRESHOLD) {
+			m2[12]=b.pos.x;
+			m2[13]=b.pos.y;
+			m2[14]=b.pos.z;
 
-			switch(b->type) {
+			switch(b.type) {
 				case Building::B_FENCE:
 					if (r->cmc.collision_simple(m1,&(building_tile[5]->cmc),m2)) return true;
 					break;
@@ -213,69 +211,48 @@ bool NETHER::RobotCollision(Robot *r,bool complete)
 					break;
 				case Building::B_WARBASE:
 					if (r->cmc.collision_simple(m1,&(building_tile[8]->cmc),m2)) return true;
-					//m2[13]=b->pos.y-2;
-					//m2[14]=b->pos.z+1;
-					//if (b->owner!=0) if (r->cmc.collision_simple(m1,&(building_tile[6]->cmc),m2)) return true;
 					break;
 			case Building::B_FACTORY_ELECTRONICS:
 					if (r->cmc.collision_simple(m1,&(building_tile[4]->cmc),m2)) return true;
-					m2[12]=b->pos.x+0.5;
-					m2[13]=b->pos.y+0.5;
-					m2[14]=b->pos.z+1;
+					m2[12]=b.pos.x+0.5;
+					m2[13]=b.pos.y+0.5;
+					m2[14]=b.pos.z+1;
 					if (r->cmc.collision_simple(m1,&(piece_tile[0][7]->cmc),m2)) return true;
-					//m2[12]=b->pos.x;
-					//m2[13]=b->pos.y-1;
-					//if (b->owner!=0) if (r->cmc.collision_simple(m1,&(building_tile[6]->cmc),m2)) return true;
 					break;
 			case Building::B_FACTORY_NUCLEAR:
 					if (r->cmc.collision_simple(m1,&(building_tile[4]->cmc),m2)) return true;
-					m2[12]=b->pos.x+0.5;
-					m2[13]=b->pos.y+0.5;
-					m2[14]=b->pos.z+1;
+					m2[12]=b.pos.x+0.5;
+					m2[13]=b.pos.y+0.5;
+					m2[14]=b.pos.z+1;
 					if (r->cmc.collision_simple(m1,&(piece_tile[0][6]->cmc),m2)) return true;
-					//m2[12]=b->pos.x;
-					//m2[13]=b->pos.y-1;
-					//if (b->owner!=0) if (r->cmc.collision_simple(m1,&(building_tile[6]->cmc),m2)) return true;
 					break;
 			case Building::B_FACTORY_PHASERS:
 					if (r->cmc.collision_simple(m1,&(building_tile[4]->cmc),m2)) return true;
-					m2[12]=b->pos.x+0.5;
-					m2[13]=b->pos.y+0.5;
-					m2[14]=b->pos.z+1;
+					m2[12]=b.pos.x+0.5;
+					m2[13]=b.pos.y+0.5;
+					m2[14]=b.pos.z+1;
 					if (r->cmc.collision_simple(m1,&(piece_tile[0][5]->cmc),m2)) return true;
-					//m2[12]=b->pos.x;
-					//m2[13]=b->pos.y-1;
-					//if (b->owner!=0) if (r->cmc.collision_simple(m1,&(building_tile[6]->cmc),m2)) return true;
 					break;
 			case Building::B_FACTORY_MISSILES:
 					if (r->cmc.collision_simple(m1,&(building_tile[4]->cmc),m2)) return true;
-					m2[12]=b->pos.x+0.5;
-					m2[13]=b->pos.y+0.5;
-					m2[14]=b->pos.z+1;
+					m2[12]=b.pos.x+0.5;
+					m2[13]=b.pos.y+0.5;
+					m2[14]=b.pos.z+1;
 					if (r->cmc.collision_simple(m1,&(piece_tile[0][4]->cmc),m2)) return true;
-					//m2[12]=b->pos.x;
-					//m2[13]=b->pos.y-1;
-					//if (b->owner!=0) if (r->cmc.collision_simple(m1,&(building_tile[6]->cmc),m2)) return true;
 					break;
 			case Building::B_FACTORY_CANNONS:
 					if (r->cmc.collision_simple(m1,&(building_tile[4]->cmc),m2)) return true;
-					m2[12]=b->pos.x+0.5;
-					m2[13]=b->pos.y+0.5;
-					m2[14]=b->pos.z+1;
+					m2[12]=b.pos.x+0.5;
+					m2[13]=b.pos.y+0.5;
+					m2[14]=b.pos.z+1;
 					if (r->cmc.collision_simple(m1,&(piece_tile[0][3]->cmc),m2)) return true;
-					//m2[12]=b->pos.x;
-					//m2[13]=b->pos.y-1;
-					//if (b->owner!=0) if (r->cmc.collision_simple(m1,&(building_tile[6]->cmc),m2)) return true;
 					break;
 			case Building::B_FACTORY_CHASSIS:
 					if (r->cmc.collision_simple(m1,&(building_tile[4]->cmc),m2)) return true;
-					m2[12]=b->pos.x+0.5;
-					m2[13]=b->pos.y+0.5;
-					m2[14]=b->pos.z+1;
+					m2[12]=b.pos.x+0.5;
+					m2[13]=b.pos.y+0.5;
+					m2[14]=b.pos.z+1;
 					if (r->cmc.collision_simple(m1,&(piece_tile[0][1]->cmc),m2)) return true;
-					//m2[12]=b->pos.x;
-					//m2[13]=b->pos.y-1;
-					//if (b->owner!=0) if (r->cmc.collision_simple(m1,&(building_tile[6]->cmc),m2)) return true;
 					break;
 			} /* switch */ 
 			} /* if */ 

@@ -85,17 +85,16 @@ bool NETHER::save_game(char *filename)
 	List<EXPLOSION> explosions;
 */ 
 
-	fprintf(fp,"%i\n",buildings.Length());
-	buildings.Rewind();
-	while(buildings.Iterate(b)) {
+	fprintf(fp,"%i\n",buildings.size());
+	for (Building& b: buildings) {
 /*
 		int type;
 		Vector pos;
 		int owner;
 		int status;	
 */ 
-		fprintf(fp,"%i %i %i\n",b->type,b->owner,b->status);
-		b->pos.save(fp);
+		fprintf(fp,"%i %i %i\n",b.type,b.owner,b.status);
+		b.pos.save(fp);
 	} /* while */ 
 
 	for(i=0;i<2;i++) {
@@ -206,7 +205,7 @@ bool NETHER::loadGame(const std::string& filename)
 	if (2!=fscanf(fp,"%i %i",&map_w,&map_h)) return false;
 
 	explosions.clear();
-	buildings.Delete();
+	buildings.clear();
 	for(i=0;i<2;i++) robots[i].Delete();
 	bullets.clear();
 	delete map;
@@ -252,9 +251,9 @@ bool NETHER::loadGame(const std::string& filename)
       int owner;
       int status;
       if (3!=fscanf(fp,"%i %i %i", &type, &owner, &status)) return false;
-      b=new Building(Vector(0, 0, 0), type, owner, status);
-      if (!b->pos.load(fp)) return false;
-      buildings.Add(b);
+      Building b(Vector(0, 0, 0), type, owner, status);
+      if (!b.pos.load(fp)) return false;
+      buildings.push_back(b);
 	} /* for */ 
 
 	for(i=0;i<2;i++) {

@@ -167,159 +167,120 @@ void Bullet::drawParticles(std::vector<Particle>& particles) const
 }
 
 
-bool NETHER::BulletCollision(Bullet *bullet,Robot **r)
+bool NETHER::bulletCollision(const Bullet& bullet, Robot **r)
 {
-	int i;
-	List<Building> l;
-	Building *b;
-	List<Robot> l2;
-	Robot *rt;
-	float m1[16]={1,0,0,0,
-				  0,1,0,0,
-				  0,0,1,0,
-				  bullet->pos.x,bullet->pos.y,0.3,1};
-	float m2[16]={1,0,0,0,
-				  0,1,0,0,
-				  0,0,1,0,
-				  0,0,0,1}; 
+  List<Robot> l2;
+  Robot *rt;
+  float m1[16]={1, 0, 0, 0,
+                0, 1, 0, 0,
+                0, 0, 1, 0,
+                bullet.pos.x, bullet.pos.y, 0.3, 1};
+  float m2[16]={1, 0, 0, 0,
+                0, 1, 0, 0,
+                0, 0, 1, 0,
+                0, 0, 0, 1};
+  *r=0;
 
-	*r=0;
+  for (const Building& b: buildings) {
+    // @TODO: vector methods?
+    if (((b.pos.x - bullet.pos.x) * (b.pos.x - bullet.pos.x) +
+         (b.pos.y - bullet.pos.y) * (b.pos.y - bullet.pos.y) +
+         (b.pos.z - bullet.pos.z) * (b.pos.z - bullet.pos.z)) < COLISION_TEST_THRESHOLD) {
+      m2[12] = b.pos.x;
+      m2[13] = b.pos.y;
+      m2[14] = b.pos.z;
 
-	/* Collision with the ship: */ 
-	/* Bullets do not collide with SHIP!: */ 
-/*
-	{
-		float m2[16]={1,0,0,0,
-				 	  0,1,0,0,
-					  0,0,1,0,
-					  shipp.x,shipp.y,shipp.z,1}; 
-		if (bullet->cmc.collision_simple(m1,&(ship->cmc),m2)) return true;
-	}
-*/
+      switch(b.type) {
+      case Building::B_FENCE:
+        if (bullet.cmc.collision_simple(m1,&(building_tile[5]->cmc),m2)) return true;
+        break;
+      case Building::B_WALL1:
+        if (bullet.cmc.collision_simple(m1,&(building_tile[0]->cmc),m2)) return true;
+        break;
+      case Building::B_WALL2:
+        if (bullet.cmc.collision_simple(m1,&(building_tile[1]->cmc),m2)) return true;
+        break;
+      case Building::B_WALL3:
+        if (bullet.cmc.collision_simple(m1,&(building_tile[2]->cmc),m2)) return true;
+        break;
+      case Building::B_WALL4:
+        if (bullet.cmc.collision_simple(m1,&(building_tile[3]->cmc),m2)) return true;
+        break;
+      case Building::B_WALL5:
+        if (bullet.cmc.collision_simple(m1,&(building_tile[4]->cmc),m2)) return true;
+        break;
+      case Building::B_WALL6:
+        if (bullet.cmc.collision_simple(m1,&(building_tile[7]->cmc),m2)) return true;
+        break;
+      case Building::B_WARBASE:
+        if (bullet.cmc.collision_simple(m1,&(building_tile[8]->cmc),m2)) return true;
+        break;
+      case Building::B_FACTORY_ELECTRONICS:
+        if (bullet.cmc.collision_simple(m1,&(building_tile[4]->cmc),m2)) return true;
+        m2[12]=b.pos.x+0.5;
+        m2[13]=b.pos.y+0.5;
+        m2[14]=b.pos.z+1;
+        if (bullet.cmc.collision_simple(m1,&(piece_tile[0][7]->cmc),m2)) return true;
+        break;
+      case Building::B_FACTORY_NUCLEAR:
+        if (bullet.cmc.collision_simple(m1,&(building_tile[4]->cmc),m2)) return true;
+        m2[12]=b.pos.x+0.5;
+        m2[13]=b.pos.y+0.5;
+        m2[14]=b.pos.z+1;
+        if (bullet.cmc.collision_simple(m1,&(piece_tile[0][6]->cmc),m2)) return true;
+        break;
+      case Building::B_FACTORY_PHASERS:
+        if (bullet.cmc.collision_simple(m1,&(building_tile[4]->cmc),m2)) return true;
+        m2[12]=b.pos.x+0.5;
+        m2[13]=b.pos.y+0.5;
+        m2[14]=b.pos.z+1;
+        if (bullet.cmc.collision_simple(m1,&(piece_tile[0][5]->cmc),m2)) return true;
+        break;
+      case Building::B_FACTORY_MISSILES:
+        if (bullet.cmc.collision_simple(m1,&(building_tile[4]->cmc),m2)) return true;
+        m2[12]=b.pos.x+0.5;
+        m2[13]=b.pos.y+0.5;
+        m2[14]=b.pos.z+1;
+        if (bullet.cmc.collision_simple(m1,&(piece_tile[0][4]->cmc),m2)) return true;
+        break;
+      case Building::B_FACTORY_CANNONS:
+        if (bullet.cmc.collision_simple(m1,&(building_tile[4]->cmc),m2)) return true;
+        m2[12]=b.pos.x+0.5;
+        m2[13]=b.pos.y+0.5;
+        m2[14]=b.pos.z+1;
+        if (bullet.cmc.collision_simple(m1,&(piece_tile[0][3]->cmc),m2)) return true;
+        break;
+      case Building::B_FACTORY_CHASSIS:
+        if (bullet.cmc.collision_simple(m1,&(building_tile[4]->cmc),m2)) return true;
+        m2[12]=b.pos.x+0.5;
+        m2[13]=b.pos.y+0.5;
+        m2[14]=b.pos.z+1;
+        if (bullet.cmc.collision_simple(m1,&(piece_tile[0][1]->cmc),m2)) return true;
+        break;
+      }
+    }
+  }
 
-	/* Collision with buildings: */  
-	l.Instance(buildings);
-	l.Rewind();
-	while(l.Iterate(b)) {
-		if (((b->pos.x-bullet->pos.x)*(b->pos.x-bullet->pos.x)+
-			 (b->pos.y-bullet->pos.y)*(b->pos.y-bullet->pos.y)+
-			 (b->pos.z-bullet->pos.z)*(b->pos.z-bullet->pos.z))<COLISION_TEST_THRESHOLD) {
-			m2[12]=b->pos.x;
-			m2[13]=b->pos.y;
-			m2[14]=b->pos.z;
+  /* Collision with the robots: */
+  for(int i = 0; i < 2; i++) {
+    l2.Instance(robots[i]);
+    l2.Rewind();
+    while(l2.Iterate(rt)) {
+      if (((rt->pos.x-bullet.pos.x)*(rt->pos.x-bullet.pos.x)+
+           (rt->pos.y-bullet.pos.y)*(rt->pos.y-bullet.pos.y)+
+           (rt->pos.z-bullet.pos.z)*(rt->pos.z-bullet.pos.z))<COLISION_TEST_THRESHOLD) {
+        if (rt!=bullet.owner) {
+          m2[12]=rt->pos.x;
+          m2[13]=rt->pos.y;
+          m2[14]=rt->pos.z;
+          if (bullet.cmc.collision_simple(m1,&(rt->cmc),m2)) {
+            *r=rt;
+            return true;
+          } /* if */
+        } /* if */
+      } /* if */
+    } /* while */
+  } /* while */
 
-			switch(b->type) {
-            case Building::B_FENCE:
-              if (bullet->cmc.collision_simple(m1,&(building_tile[5]->cmc),m2)) return true;
-              break;
-            case Building::B_WALL1:
-              if (bullet->cmc.collision_simple(m1,&(building_tile[0]->cmc),m2)) return true;
-              break;
-            case Building::B_WALL2:
-              if (bullet->cmc.collision_simple(m1,&(building_tile[1]->cmc),m2)) return true;
-              break;
-            case Building::B_WALL3:
-              if (bullet->cmc.collision_simple(m1,&(building_tile[2]->cmc),m2)) return true;
-              break;
-            case Building::B_WALL4:
-              if (bullet->cmc.collision_simple(m1,&(building_tile[3]->cmc),m2)) return true;
-              break;
-            case Building::B_WALL5:
-              if (bullet->cmc.collision_simple(m1,&(building_tile[4]->cmc),m2)) return true;
-              break;
-            case Building::B_WALL6:
-              if (bullet->cmc.collision_simple(m1,&(building_tile[7]->cmc),m2)) return true;
-              break;
-            case Building::B_WARBASE:
-              if (bullet->cmc.collision_simple(m1,&(building_tile[8]->cmc),m2)) return true;
-              //m2[13]=b->pos.y-2;
-              //m2[14]=b->pos.z+1;
-              //if (b->owner!=0) if (bullet->cmc.collision_simple(m1,&(building_tile[6]->cmc),m2)) return true;
-              break;
-            case Building::B_FACTORY_ELECTRONICS:
-              if (bullet->cmc.collision_simple(m1,&(building_tile[4]->cmc),m2)) return true;
-              m2[12]=b->pos.x+0.5;
-              m2[13]=b->pos.y+0.5;
-              m2[14]=b->pos.z+1;
-              if (bullet->cmc.collision_simple(m1,&(piece_tile[0][7]->cmc),m2)) return true;
-              //m2[12]=b->pos.x;
-              //m2[13]=b->pos.y-1;
-              //if (b->owner!=0) if (bullet->cmc.collision_simple(m1,&(building_tile[6]->cmc),m2)) return true;
-              break;
-            case Building::B_FACTORY_NUCLEAR:
-              if (bullet->cmc.collision_simple(m1,&(building_tile[4]->cmc),m2)) return true;
-              m2[12]=b->pos.x+0.5;
-              m2[13]=b->pos.y+0.5;
-              m2[14]=b->pos.z+1;
-              if (bullet->cmc.collision_simple(m1,&(piece_tile[0][6]->cmc),m2)) return true;
-              //m2[12]=b->pos.x;
-              //m2[13]=b->pos.y-1;
-              //if (b->owner!=0) if (bullet->cmc.collision_simple(m1,&(building_tile[6]->cmc),m2)) return true;
-              break;
-            case Building::B_FACTORY_PHASERS:
-              if (bullet->cmc.collision_simple(m1,&(building_tile[4]->cmc),m2)) return true;
-              m2[12]=b->pos.x+0.5;
-              m2[13]=b->pos.y+0.5;
-              m2[14]=b->pos.z+1;
-              if (bullet->cmc.collision_simple(m1,&(piece_tile[0][5]->cmc),m2)) return true;
-              //m2[12]=b->pos.x;
-              //m2[13]=b->pos.y-1;
-              //if (b->owner!=0) if (bullet->cmc.collision_simple(m1,&(building_tile[6]->cmc),m2)) return true;
-              break;
-            case Building::B_FACTORY_MISSILES:
-              if (bullet->cmc.collision_simple(m1,&(building_tile[4]->cmc),m2)) return true;
-              m2[12]=b->pos.x+0.5;
-              m2[13]=b->pos.y+0.5;
-              m2[14]=b->pos.z+1;
-              if (bullet->cmc.collision_simple(m1,&(piece_tile[0][4]->cmc),m2)) return true;
-              //m2[12]=b->pos.x;
-              //m2[13]=b->pos.y-1;
-              //if (b->owner!=0) if (bullet->cmc.collision_simple(m1,&(building_tile[6]->cmc),m2)) return true;
-              break;
-            case Building::B_FACTORY_CANNONS:
-              if (bullet->cmc.collision_simple(m1,&(building_tile[4]->cmc),m2)) return true;
-              m2[12]=b->pos.x+0.5;
-              m2[13]=b->pos.y+0.5;
-              m2[14]=b->pos.z+1;
-              if (bullet->cmc.collision_simple(m1,&(piece_tile[0][3]->cmc),m2)) return true;
-              //m2[12]=b->pos.x;
-              //m2[13]=b->pos.y-1;
-              //if (b->owner!=0) if (bullet->cmc.collision_simple(m1,&(building_tile[6]->cmc),m2)) return true;
-              break;
-            case Building::B_FACTORY_CHASSIS:
-              if (bullet->cmc.collision_simple(m1,&(building_tile[4]->cmc),m2)) return true;
-              m2[12]=b->pos.x+0.5;
-              m2[13]=b->pos.y+0.5;
-              m2[14]=b->pos.z+1;
-              if (bullet->cmc.collision_simple(m1,&(piece_tile[0][1]->cmc),m2)) return true;
-              //m2[12]=b->pos.x;
-              //m2[13]=b->pos.y-1;
-              //if (b->owner!=0) if (bullet->cmc.collision_simple(m1,&(building_tile[6]->cmc),m2)) return true;
-              break;
-			} /* switch */ 
-		} /* if */ 
-	} /* while */ 
-
-	/* Collision with the robots: */ 
-	for(i=0;i<2;i++) {
-		l2.Instance(robots[i]);
-		l2.Rewind();
-		while(l2.Iterate(rt)) {
-			if (((rt->pos.x-bullet->pos.x)*(rt->pos.x-bullet->pos.x)+
-				 (rt->pos.y-bullet->pos.y)*(rt->pos.y-bullet->pos.y)+
-				 (rt->pos.z-bullet->pos.z)*(rt->pos.z-bullet->pos.z))<COLISION_TEST_THRESHOLD) {
-				if (rt!=bullet->owner) {
-					m2[12]=rt->pos.x;
-					m2[13]=rt->pos.y;
-					m2[14]=rt->pos.z; 
-					if (bullet->cmc.collision_simple(m1,&(rt->cmc),m2)) {
-						*r=rt;
-						return true;
-					} /* if */ 
-				} /* if */ 
-			} /* if */ 
-		} /* while */ 
-	} /* while */ 
-
-	return false;
-} /* NETHER::BulletCollision */ 
+  return false;
+} /* NETHER::BulletCollision */

@@ -27,7 +27,7 @@ public:
 	bool collision(CMC *o2);
 	bool collision(float *m,CMC *o2,float *m2);
 
-	bool collision_simple(float *m,CMC *o2,float *m2);
+	bool collision_simple(float *m,CMC *o2,float *m2) const;
 
 	bool load(FILE *fp);
 	bool save(FILE *fp);

@@ -61,14 +61,12 @@ bool NETHER::saveDebugReport(const std::string& filename)
   else
     log << "SHIP NOT LANDED\n";
 
-  log << "# OF BUILDINGS: " << buildings.Length() << '\n';
-  buildings.Rewind();
-  Building *b;
-  while(buildings.Iterate(b)) {
-    log << "BUILDING:\n TYPE: " << b->type
-        << "\n OWNER: " << b->owner
-        << "\n STATUS: " << b->status << "\n\n";
-    log << b->pos;
+  log << "# OF BUILDINGS: " << buildings.size() << '\n';
+  for (const Building& b: buildings) {
+    log << "BUILDING:\n TYPE: " << b.type
+        << "\n OWNER: " << b.owner
+        << "\n STATUS: " << b.status << "\n\n";
+    log << b.pos;
   }
 
   for(int i = 0; i < 2; i++) {

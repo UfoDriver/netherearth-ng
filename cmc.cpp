@@ -370,7 +370,7 @@ bool CMC::collision(float *m,CMC *o2,float *m2)
 } /* collision */ 
 
 
-bool CMC::collision_simple(float *m,CMC *o2,float *m2)
+bool CMC::collision_simple(float *m,CMC *o2,float *m2) const
 {
 	float a_points[24];
 	float b_points[24];

@@ -20,7 +20,8 @@ public:
                             B_FACTORY_CHASSIS,
                             B_WARBASE};
   Building(Vector position, BUILDINGS_AND_WALLS type, int owner=0, int status=0):
-    pos(position), type(type), owner(owner), status(status) {};
+    pos(position), type(type), owner(owner), status(status)
+  {}
 
   Vector pos;
   BUILDINGS_AND_WALLS type;
