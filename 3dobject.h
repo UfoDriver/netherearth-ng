@@ -13,6 +13,7 @@
 class Face {
 public:
   Face(int a, int b, int c): a(a), b(b), c(c) {}
+  Face(int a, int b, int c, const Color& color): a(a), b(b), c(c), color(color) {}
   Face(): a(0), b(0), c(0) {}
   bool hasVertex(int vertex) {return a == vertex || b == vertex || c == vertex;}
   int a;
@@ -22,6 +23,8 @@ public:
   Vector norm1;
   Vector norm2;
   Vector norm3;
+
+  Color color;
 };
 
 
@@ -64,8 +67,6 @@ public:
 	void moveobject(const Vector& distance);
 
   std::vector<Vector> points;
-  // @TODO: move color to face?
-  std::vector<Color> faceColors;
   std::vector<Face> faces;
 
   int displayList;

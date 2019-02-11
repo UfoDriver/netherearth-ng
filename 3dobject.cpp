@@ -130,9 +130,6 @@ bool C3DObject::loadASC(const std::string& filename)
           iStr >> nfaces;
           faces.reserve(nfaces);
           smooth = new int[nfaces];
-          for(int i = 0;i < nfaces; i++) {
-            faceColors.emplace_back(0.5, 0.5, 0.5);
-          }
         }
         if (points.capacity() && faces.capacity()) {
           state = ST_DATA;
@@ -159,7 +156,6 @@ bool C3DObject::loadASC(const std::string& filename)
   if (state == ST_INIT) {
     points.clear();
     faces.clear();
-    faceColors.clear();
     return false;
   }
 
@@ -414,14 +410,14 @@ void C3DObject::draw()
     glDisable(GL_TEXTURE_2D);
   } else {
     glBegin(GL_TRIANGLES);
-    for(int i = 0; i < faces.size(); i++) {
-      glColor3f(faceColors[i].red, faceColors[i].green, faceColors[i].blue);
-      glNormal3f(faces[i].norm1.x, faces[i].norm1.y, faces[i].norm1.z);
-      glArrayElement(faces[i].a);
-      glNormal3f(faces[i].norm2.x, faces[i].norm2.y, faces[i].norm2.z);
-      glArrayElement(faces[i].b);
-      glNormal3f(faces[i].norm3.x, faces[i].norm3.y, faces[i].norm3.z);
-      glArrayElement(faces[i].c);
+    for(const Face& face: faces) {
+      glColor3f(face.color.red, face.color.green, face.color.blue);
+      glNormal3f(face.norm1.x, face.norm1.y, face.norm1.z);
+      glArrayElement(face.a);
+      glNormal3f(face.norm2.x, face.norm2.y, face.norm2.z);
+      glArrayElement(face.b);
+      glNormal3f(face.norm3.x, face.norm3.y, face.norm3.z);
+      glArrayElement(face.c);
     }
     glEnd();
   }

@@ -160,8 +160,7 @@ bool C3DObject::loadASE(const std::string& filename, const std::string& textured
 	smooth=new int[nfaces];
 	facematerial=new int[nfaces];
     for(int i = 0; i < nfaces; i++) {
-      faceColors.emplace_back(0.5, 0.5, 0.5);
-      faces.emplace_back(0, 0, 0);
+      faces.emplace_back(0, 0, 0, Color(0.5, 0.5, 0.5));
     }
 
 	if (!lookfor("MESH_VERTEX_LIST",fp)) {
