@@ -55,7 +55,7 @@ void Radar::draw(void)
     for(int x = 0; x < maxx; x++) {
       if (x+startx<(nether->map_w*2) &&
           y+starty<(nether->map_h*2) &&
-          nether->discreetmap!=0) {
+          nether->discreetmap.size()) {
         switch(nether->discreetmap[x+startx+(y+starty)*(nether->map_w*2)]) {
         case T_GRASS:
           glColor3f(0.0,1.0,0.0);

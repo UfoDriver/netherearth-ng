@@ -64,67 +64,55 @@ void robot_zone(Vector pos,int *x,int *y,int *dx,int *dy)
 } /* robot_zone */ 
 
 
-void fill_zone(int *map,int w,int val,int x,int y,int dx,int dy) 
+void fill_zone(std::vector<int>& map, int w, int val, int x, int y, int dx, int dy)
 {
-	int i,j;
-
-	for(i=0;i<dx;i++) {
-		for(j=0;j<dy;j++) {
-			map[(y+j)*w+(x+i)]=val;
-		} /* for */ 
-	} /* for */ 
-} /* fill_zone */ 
+  for (int i = 0; i < dx; i++) {
+    for (int j = 0; j < dy; j++) {
+      map[(y + j) * w + (x + i)] = val;
+    }
+  }
+}
 
 
 void NETHER::AI_precomputations(void)
 {
-	int i;
-	int x,y;
+  discreetmap.clear();
+  discreetmap.reserve(map_w * 2 * map_h * 2);
+  bk_discreetmap.clear();
+  bk_discreetmap.reserve(map_w * 2 * map_h * 2);
+  searchmap=new AIOperator *[(map_w*2)*(map_h*2)];
+  atackmap.reserve(map_w * 2 * map_h * 2);
+  for (int i = 0; i < map_w * 2 * map_h * 2; i++) {
+    searchmap[i] = new AIOperator();
+    searchmap[i]->used = false;
+    atackmap[i] = 0;
+  }
 
-	discreetmap=new int[(map_w*2)*(map_h*2)];
-	bk_discreetmap=new int[(map_w*2)*(map_h*2)];
-	searchmap=new AIOperator *[(map_w*2)*(map_h*2)];
-	atackmap=new int[(map_w*2)*(map_h*2)];
-	for(i=0;i<(map_w*2)*(map_h*2);i++) {
-		searchmap[i]=new AIOperator();
-		searchmap[i]->used=false;
-		atackmap[i]=0;
-	} /* for */ 
+  /* Setup the terrains for the new map: */ 
+  for (int y = 0; y < map_h; y++) {
+    for(int x = 0; x < map_w; x++) {
+      fill_zone(discreetmap, map_w * 2, MapTerrain(float(x), float(y)), x * 2, y * 2, 2, 2);
+      fill_zone(bk_discreetmap, map_w * 2, MapTerrain(float(x), float(y)), x * 2, y * 2, 2, 2);
+    }
+  }
 
-	/* Setup the terrains for the new map: */ 
-	for(y=0;y<map_h;y++) {
-		for(x=0;x<map_w;x++) {
-			fill_zone(discreetmap,map_w*2,MapTerrain(float(x),float(y)),x*2,y*2,2,2);
-			fill_zone(bk_discreetmap,map_w*2,MapTerrain(float(x),float(y)),x*2,y*2,2,2);
-		} /* for */ 
-	} /* for */ 
-
-	/* Transfer all the buildings to the new map: */ 
-	{
-      for (const Building& b: buildings) {
-			x=int(b.pos.x/0.5);
-			y=int(b.pos.y/0.5);
-			fill_zone(discreetmap,map_w*2,T_BUILDING,x,y,2,2);
-		} /* while */ 
-	}
-} /* NETHER::AI_precomputations */ 
+  for (const Building& b: buildings) {
+    fill_zone(discreetmap, map_w * 2, T_BUILDING, int(b.pos.x / 0.5), int(b.pos.y / 0.5), 2, 2);
+  }
+}
 
 
 void NETHER::AI_deleteprecomputations(void)
 {
-	int i;
-
-	delete discreetmap;
-	discreetmap=0;
-	delete bk_discreetmap;
-	bk_discreetmap=0;
-	for(i=0;i<map_w*2*map_h*2;i++) {
-		delete searchmap[i];
-		searchmap[i]=0;
-	} /* for */ 
-	delete searchmap;
-	searchmap=0;
-} /* NETHER::AI_deleteprecomputations */ 
+  discreetmap.clear();
+  bk_discreetmap.clear();
+  for (int i = 0; i < map_w * 2 * map_h * 2; i++) {
+    delete searchmap[i];
+    searchmap[i] = 0;
+  }
+  delete searchmap;
+  searchmap = 0;
+}
 
 
 void NETHER::AI_removebuilding(Vector pos)
@@ -145,9 +133,8 @@ void NETHER::AI_removebuilding(Vector pos)
 
 void NETHER::AI_release(void)
 {
-	delete discreetmap;
-	discreetmap=0;
-} /* NETHER::AI_release */ 
+  discreetmap.clear();
+}
 
 
 void NETHER::AI_newrobot(Vector pos,int owner)

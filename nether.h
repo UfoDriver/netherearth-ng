@@ -156,18 +156,18 @@ private:
   Radar radar;
   SoundManager sManager;
 
-	int map_w,map_h;
+  int map_w, map_h;
   std::vector<int> map;
-	float lightpos[4];
-	Vector lightposv;
-	unsigned char old_keyboard[SDLK_LAST];
+  float lightpos[4];
+  Vector lightposv;
+  unsigned char old_keyboard[SDLK_LAST];
 
-	float zoom;
-	Vector camera,viewp;
-	Vector shipp;
-	bool shiplanded;
-	int ship_op,ship_op2,ship_op3;
-	int ship_timemoving;
+  float zoom;
+  Vector camera, viewp;
+  Vector shipp;
+  bool shiplanded;
+  int ship_op, ship_op2, ship_op3;
+  int ship_timemoving;
 
   std::vector<Building> buildings;
   std::vector<Robot> robots[2];
@@ -175,41 +175,41 @@ private:
   std::vector<Explosion> explosions;
   std::vector<Particle> particles;
 
-	int day,hour,minute,second;
-	int resources[2][7];
-	int statistics[2][8];
+  int day, hour, minute, second;
+  int resources[2][7];
+  int statistics[2][8];
 
-	float animation_timer;
-	int construction_pointer;
-	bool construction[8];
-	GAME_STATE game_state;
-	Robot in_construction;
-	Robot *controlled;
+  float animation_timer;
+  int construction_pointer;
+  bool construction[8];
+  GAME_STATE game_state;
+  Robot in_construction;
+  Robot *controlled;
 
-	int game_finished;
-	int game_started;
+  int game_finished;
+  int game_started;
 
-	/* Graphics: */ 
+  /* Graphics: */
   std::vector<C3DObject> tiles;
-	Shadow3DObject *ship;
+  Shadow3DObject *ship;
   std::vector<Shadow3DObject> building_tiles;
-	const int n_pieces;
+  const int n_pieces;
   Piece3DObject **piece_tile[2];
   std::vector<C3DObject> construction_tiles;
   std::vector<C3DObject> message_tiles;
   std::vector<Piece3DObject> bullet_tiles;
 
-	/* Status variables: */
-	bool recomputestatistics;
+  /* Status variables: */
+  bool recomputestatistics;
 
-	/* Option/Pause menu variables: */ 
-	int option_menu;
+  /* Option/Pause menu variables: */
+  int option_menu;
 
-	/* Artificial intelligence variables: */ 
-	int *discreetmap;
-	int *bk_discreetmap;
-	AIOperator **searchmap;
-	int *atackmap;
+  /* Artificial intelligence variables: */
+  std::vector<int> discreetmap;
+  std::vector<int> bk_discreetmap;
+  AIOperator **searchmap;
+  std::vector<int> atackmap;
 
   friend class Menu;
   friend class Radar;
