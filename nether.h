@@ -198,8 +198,7 @@ private:
 	Piece3DObject **piece_tile[2];
 	C3DObject *construction_tile[3];
 	C3DObject *message_tile[3];
-	const int n_bullets;
-	Piece3DObject **bullet_tile;
+  std::vector<Piece3DObject> bullet_tiles;
 
 	/* Status variables: */
 	bool recomputestatistics;

@@ -52,9 +52,9 @@ CMC NETHER::BulletCMC(Bullet *b)
 	switch(b->type) {
 	case 0:/* CANNON: */ 
 		m[13]=0.2;
-		cmc.expand(&(bullet_tile[0]->cmc),m);
+		cmc.expand(&(bullet_tiles[0].cmc),m);
 		m[13]=-0.2;
-		cmc.expand(&(bullet_tile[0]->cmc),m);
+		cmc.expand(&(bullet_tiles[0].cmc),m);
 		break;
 	case 1:/* MISSILES: */ 
 		{
@@ -63,9 +63,9 @@ CMC NETHER::BulletCMC(Bullet *b)
 			q.from_axis_angle(Vector(0,0,1),3.141592f);
 			q.to_matrix(m);
 			m[13]+=0.33;
-			cmc.expand(&(bullet_tile[1]->cmc),m);
+			cmc.expand(&(bullet_tiles[1].cmc),m);
 			m[13]-=0.66;
-			cmc.expand(&(bullet_tile[1]->cmc),m);
+			cmc.expand(&(bullet_tiles[1].cmc),m);
 		}
 		break;
 	case 2:/* PHASERS: */ 
@@ -74,7 +74,7 @@ CMC NETHER::BulletCMC(Bullet *b)
 
 			q.from_axis_angle(Vector(0,0,1),3.141592f/2);
 			q.to_matrix(m);
-			cmc.expand(&(bullet_tile[2]->cmc),m);
+			cmc.expand(&(bullet_tiles[2].cmc),m);
 		}
 		break;
 	} /* switch */ 
@@ -83,7 +83,8 @@ CMC NETHER::BulletCMC(Bullet *b)
 } /* BULLET::BULLET */ 
 
 
-void Bullet::draw(bool shadows, Piece3DObject **bullet_tile, std::vector<Particle>& particles) const
+void Bullet::draw(bool shadows, std::vector<Piece3DObject>& bullet_tiles,
+                  std::vector<Particle>& particles) const
 {
   switch(type) {
   case BULLET_CANNONS:
@@ -91,9 +92,9 @@ void Bullet::draw(bool shadows, Piece3DObject **bullet_tile, std::vector<Particl
       glPushMatrix();
       glRotatef(angle, 0, 0, 1);
       glTranslatef(0, 0.2, 0);
-      bullet_tile[0]->draw(Color(0.2f, 0.2f, 0.2f));
+      bullet_tiles[0].draw(Color(0.2f, 0.2f, 0.2f));
       glTranslatef(0, -0.4, 0);
-      bullet_tile[0]->draw(Color(0.2f, 0.2f, 0.2f));
+      bullet_tiles[0].draw(Color(0.2f, 0.2f, 0.2f));
       glPopMatrix();
     }
     break;
@@ -103,9 +104,9 @@ void Bullet::draw(bool shadows, Piece3DObject **bullet_tile, std::vector<Particl
       glRotatef(angle, 0, 0, 1);
       glRotatef(180, 0, 0, 1);
       glTranslatef(0, 0.33, 0);
-      bullet_tile[1]->draw(Color(0.8f, 0.8f, 0.8f));
+      bullet_tiles[1].draw(Color(0.8f, 0.8f, 0.8f));
       glTranslatef(0, -0.66, 0);
-      bullet_tile[1]->draw(Color(0.8f, 0.8f, 0.8f));
+      bullet_tiles[1].draw(Color(0.8f, 0.8f, 0.8f));
       glPopMatrix();
       if (detaillevel >= 4) {
         drawParticles(particles);
@@ -119,9 +120,9 @@ void Bullet::draw(bool shadows, Piece3DObject **bullet_tile, std::vector<Particl
       glRotatef(90,0,0,1);
 
       if ((rand() % 4) !=0)
-        bullet_tile[2]->draw_notexture(Color(1.0f, 0.5f, 1.0f, 0.9f));
+        bullet_tiles[2].draw_notexture(Color(1.0f, 0.5f, 1.0f, 0.9f));
       else
-        bullet_tile[2]->draw_notexture(Color(1.0f, 1.0f, 1.0f, 0.5f));
+        bullet_tiles[2].draw_notexture(Color(1.0f, 1.0f, 1.0f, 0.5f));
 
       glPopMatrix();
     }

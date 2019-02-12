@@ -39,14 +39,14 @@ extern float MINY,MAXY,MINX,MAXX;
 extern bool show_radar;
 
 const int N_BUILDINGS = 9;
+const int N_BULLETS = 3;
 
 #ifdef _WRITE_REPORT_
 FILE *debug_fp=0;
 #endif
 
 
-NETHER::NETHER(const std::string& mapname): menu(this), radar(this), n_objs(12),
-                                            n_pieces(11), n_bullets(3)
+NETHER::NETHER(const std::string& mapname): menu(this), radar(this), n_objs(12), n_pieces(11)
 {
 #ifdef _WRITE_REPORT_
 	debug_fp=fopen("report.txt","w");
@@ -322,17 +322,18 @@ void NETHER::loadObjects()
   ship->normalize(0.5f);
   ship->makepositive();
 
-  bullet_tile=new Piece3DObject *[n_bullets];
-  for(int i=0;i<n_bullets;i++) {
-    bullet_tile[i]=new Piece3DObject(bullnames[i],"textures/");
-    bullet_tile[i]->normalize(bullscale[i]);
-  } /* for */
+  bullet_tiles.reserve(N_BULLETS);
+  for (int i = 0; i < N_BULLETS; i++) {
+    Piece3DObject tile(bullnames[i],"textures/");
+    tile.normalize(bullscale[i]);
+    bullet_tiles.push_back(tile);
+  }
 
   ship->ComputeShadow(lightposv);
   for (Shadow3DObject& tile: building_tiles) tile.ComputeShadow(lightposv);
   for(int i=0;i<n_pieces;i++) piece_tile[0][i]->ComputeFixedShadows(lightposv);
   for(int i=0;i<n_pieces;i++) piece_tile[1][i]->ComputeFixedShadows(lightposv);
-  for(int i=0;i<n_bullets;i++) bullet_tile[i]->ComputeFixedShadows(lightposv);
+  for (Piece3DObject& tile: bullet_tiles) tile.ComputeFixedShadows(lightposv);
 
   construction_tile[0]=new C3DObject("models/construction1.asc","textures/");
   construction_tile[1]=new C3DObject("models/construction2.asc","textures/");
@@ -373,9 +374,7 @@ void NETHER::deleteObjects()
 	delete message_tile[0];
 	delete message_tile[1];
 	delete message_tile[2];
-	for(int i = 0; i < n_bullets; i++) delete bullet_tile[i];
-	delete bullet_tile;
-	bullet_tile = 0;
+    bullet_tiles.clear();
 }
 
 
@@ -650,11 +649,6 @@ void NETHER::draw_game(bool shadows)
 
 	/* Draw the robots and bullets: */ 
 	{
-		List<Robot> l;
-		List<Bullet> l2;
-		Robot *r;
-		Bullet *b;
-
 		for(int i = 0; i < 2; i++) {
           for (Robot& r: robots[i]) {
 				if (r.pos.y>=(viewp.y+MINY) &&
@@ -677,7 +671,7 @@ void NETHER::draw_game(bool shadows)
                             bullet.pos.x <= (viewp.x + MAXX)) {
                           glPushMatrix();
                           glTranslatef(bullet.pos.x, bullet.pos.y, bullet.pos.z);
-                          bullet.draw(shadows, bullet_tile, particles);
+                          bullet.draw(shadows, bullet_tiles, particles);
                           glPopMatrix();
                         }
                       });
@@ -691,7 +685,6 @@ void NETHER::draw_game(bool shadows)
 
 	if (shadows) {
 		float sx,sy;
-		float x[2],y[2];
 		float minz;
 		Vector light;
 
@@ -702,6 +695,7 @@ void NETHER::draw_game(bool shadows)
 		sy=shipp.y-light.y*shipp.z;
 
 		if (controlled==0) {
+          float x[2],y[2];
 			x[0]=sx+ship->shdw_cmc.x[0];
 			x[1]=sx+ship->shdw_cmc.x[1];
 			y[0]=sy+ship->shdw_cmc.y[0];
@@ -767,7 +761,6 @@ void NETHER::draw_game(bool shadows)
 
 void NETHER::options_draw(int w,int h)
 {
-	float lightpos2[4]={0,0,1000,0};
 	float tmpls[4]={1.0F,1.0F,1.0F,1.0};
 	float tmpld[4]={0.6F,0.6F,0.6F,1.0};
 	float tmpla[4]={0.2F,0.2F,0.2F,1.0};
@@ -830,7 +823,6 @@ void NETHER::options_draw(int w,int h)
 
 	if (game_state==STATE_SAVINGGAME) {
 		int i;
-		FILE *fp;
 		char filename[80];
 
 		glColor3f(0.5,0.5,1.0);
@@ -847,7 +839,7 @@ void NETHER::options_draw(int w,int h)
 						       else glColor3f(0.5,0.5,1.0);
 			glTranslatef(0,-2,0);
 			sprintf(filename,"savedgame%i.txt",i);
-			fp=fopen(filename,"r");
+            FILE *fp = fopen(filename,"r");
 			if (fp==0) {
 				scaledglprintf(0.01,0.01,"SLOT%i - EMPTY",i+1);
 			} else {
@@ -859,7 +851,6 @@ void NETHER::options_draw(int w,int h)
 
 	if (game_state==STATE_LOADINGGAME) {
 		int i;
-		FILE *fp;
 		char filename[80];
 
 		glColor3f(0.5,0.5,1.0);
@@ -876,7 +867,7 @@ void NETHER::options_draw(int w,int h)
 						       else glColor3f(0.5,0.5,1.0);
 			glTranslatef(0,-2,0);
 			sprintf(filename,"savedgame%i.txt",i);
-			fp=fopen(filename,"r");
+            FILE *fp = fopen(filename,"r");
 			if (fp==0) {
 				scaledglprintf(0.01,0.01,"SLOT%i - EMPTY",i+1);
 			} else {
@@ -1001,9 +992,6 @@ bool NETHER::option_cycle(unsigned char *keyboard)
 
 bool NETHER::ShipCollision(C3DObject *obj,float x,float y,float z)
 {
-	int i;
-	List<Robot> l2;
-	Robot *r;
 	float m1[16]={1,0,0,0,
 				  0,1,0,0,
 				  0,0,1,0,
@@ -1095,7 +1083,7 @@ bool NETHER::ShipCollision(C3DObject *obj,float x,float y,float z)
 	} /* while */ 
 
 	/* Collision with the robots: */ 
-	for(i=0;i<2;i++) {
+	for (int i = 0; i < 2; i++) {
       for (Robot& r: robots[i]) {
 			if (((r.pos.x-x)*(r.pos.x-x)+
 				 (r.pos.y-y)*(r.pos.y-y))<COLISION_TEST_THRESHOLD) {
