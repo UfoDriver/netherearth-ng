@@ -58,8 +58,8 @@ void Menu::drawStatus()
     {
       StatusButton* b = getbutton(StatusButton::STATUS_BUTTON);
       if (b != 0 && b->status == 0) {
-        int robots0 =  nether->robots[0].Length();
-        int robots1 = nether->robots[1].Length();
+        int robots0 =  nether->robots[0].size();
+        int robots1 = nether->robots[1].size();
 
         glColor3f(0.5f,0.5f,1.0f);
         glTranslatef(70,356,0);

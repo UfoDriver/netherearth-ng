@@ -27,6 +27,7 @@ public:
   void draw(int owner, bool shadows, Piece3DObject ***piece_tile, Vector lightposv);
   int cost();
   void cost(int player, int* res, int resources[2][7]);
+  bool operator==(const Robot& other) const { return id == other.id; };
 
   int traction;
   bool pieces[5];
@@ -50,6 +51,9 @@ public:
   /* Animation variables: */
   int electronics_state;
   int chassis_state;
+private:
+  int id;
+  static int counter;
 };
 
 #endif // ROBOT_H

@@ -52,7 +52,6 @@ NETHER::NETHER(const std::string& mapname): menu(this), radar(this), n_objs(12),
 	fprintf(debug_fp,"Creating game...\n");
 	fflush(debug_fp);
 #endif
-
 	if (shadows==1) {
 		lightpos[0]=-1000;
 		lightpos[1]=-3000;
@@ -657,16 +656,14 @@ void NETHER::draw_game(bool shadows)
 		Bullet *b;
 
 		for(int i = 0; i < 2; i++) {
-			l.Instance(robots[i]);
-			l.Rewind();
-			while(l.Iterate(r)) {
-				if (r->pos.y>=(viewp.y+MINY) &&
-					r->pos.y<=(viewp.y+MAXY) &&
-					r->pos.x>=(viewp.x+MINX) &&
-					r->pos.x<=(viewp.x+MAXX)) {
+          for (Robot& r: robots[i]) {
+				if (r.pos.y>=(viewp.y+MINY) &&
+					r.pos.y<=(viewp.y+MAXY) &&
+					r.pos.x>=(viewp.x+MINX) &&
+					r.pos.x<=(viewp.x+MAXX)) {
 					glPushMatrix();
-					glTranslatef(r->pos.x,r->pos.y,r->pos.z);
-					r->draw(i, shadows, piece_tile, lightposv);
+					glTranslatef(r.pos.x,r.pos.y,r.pos.z);
+					r.draw(i, shadows, piece_tile, lightposv);
 					glPopMatrix();
 				} /* if */ 
 			} /* while */ 
@@ -1099,15 +1096,13 @@ bool NETHER::ShipCollision(C3DObject *obj,float x,float y,float z)
 
 	/* Collision with the robots: */ 
 	for(i=0;i<2;i++) {
-		l2.Instance(robots[i]);
-		l2.Rewind();
-		while(l2.Iterate(r)) {
-			if (((r->pos.x-x)*(r->pos.x-x)+
-				 (r->pos.y-y)*(r->pos.y-y))<COLISION_TEST_THRESHOLD) {
-				m2[12]=r->pos.x;
-				m2[13]=r->pos.y;
-				m2[14]=r->pos.z; 
-				if (obj->cmc.collision_simple(m1,&(r->cmc),m2)) return true;
+      for (Robot& r: robots[i]) {
+			if (((r.pos.x-x)*(r.pos.x-x)+
+				 (r.pos.y-y)*(r.pos.y-y))<COLISION_TEST_THRESHOLD) {
+				m2[12]=r.pos.x;
+				m2[13]=r.pos.y;
+				m2[14]=r.pos.z; 
+				if (obj->cmc.collision_simple(m1,&(r.cmc),m2)) return true;
 			} /* if */ 
 		} /* while */ 
 	} /* while */ 

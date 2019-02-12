@@ -109,7 +109,7 @@ void NETHER::AI_enemy(void)
           forces[1]=0;
 
           tmpr->pos=b.pos+Vector(2.5,0.5,0);
-          if (!RobotCollision(tmpr,true)) {
+          if (!robotCollision(tmpr,true)) {
             /* Find the closest WARBASE to the available FACTORIES: */ 
             if (closest_to_factories_warbase==0 ||
                 (closest_to_factories_warbase->pos-b.pos).norma()<distance_to_factories) {
@@ -126,26 +126,25 @@ void NETHER::AI_enemy(void)
           } /* if */ 
 
           /* Test for WARBASEs in danger: */ 
-          for(i=0;i<2;i++) {
-            rl.Instance(robots[i]);
-            rl.Rewind();
-            while(rl.Iterate(r)) {
-              if ((r->pos-b.pos).norma()<10.0) {
+          for(int i = 0; i < 2; i++) {
+            for (Robot& r: robots[i]) {
+              if ((r.pos-b.pos).norma() < 10.0) {
                 /* Robot near: */ 
-                forces[i]+= r->cost();
+                forces[i]+= r.cost();
 
                 if (i==1) {
                   if (forces[0]>forces[1] && 
-                      (r->program!=Robot::PROGRAM_DESTROY ||
-                       r->program_parameter.param != Robot::P_PARAM_ROBOTS)) {
-                    r->program=Robot::PROGRAM_DESTROY;
-                    r->program_parameter.param = Robot::P_PARAM_ROBOTS;
+                      (r.program!=Robot::PROGRAM_DESTROY ||
+                       r.program_parameter.param != Robot::P_PARAM_ROBOTS)) {
+                    r.program=Robot::PROGRAM_DESTROY;
+                    r.program_parameter.param = Robot::P_PARAM_ROBOTS;
                     return;
                   } /* if */ 
                 } /* if */ 
               } /* if */ 
             } /* while */ 
-          } /* for */ 
+          } /* for */
+
           if (forces[0]>forces[1]) {
             state=AI_STATE_DEFENDING;
             in_danger_warbase=&b;
@@ -159,7 +158,7 @@ void NETHER::AI_enemy(void)
 	/* If the warbase in danger id blocked, build robots from another warbase: */ 
 	if (in_danger_warbase!=0) {
 		tmpr->pos=in_danger_warbase->pos+Vector(2.0,0.5,0);
-		if (RobotCollision(tmpr,true)) in_danger_warbase=closest_to_enemy_warbase;
+		if (robotCollision(tmpr,true)) in_danger_warbase=closest_to_enemy_warbase;
 	} /* if */ 
 
 	delete tmpr;
@@ -170,18 +169,11 @@ void NETHER::AI_enemy(void)
 
 
 	/* Count the number of robots: */ 
-	{
-		List<Robot> rl;
-		Robot *r;
-		
-		rl.Instance(robots[1]);
-		rl.Rewind();
-		while(rl.Iterate(r)) {
-          if (r->program==Robot::PROGRAM_CAPTURE) nrobots[0]++;
-          if (r->program==Robot::PROGRAM_DESTROY) nrobots[1]++;
-          if (r->program==Robot::PROGRAM_STOPDEFEND) nrobots[2]++;
-		} /* while */ 
-	}
+    for (Robot& r: robots[1]) {
+      if (r.program==Robot::PROGRAM_CAPTURE) nrobots[0]++;
+      if (r.program==Robot::PROGRAM_DESTROY) nrobots[1]++;
+      if (r.program==Robot::PROGRAM_STOPDEFEND) nrobots[2]++;
+    }
 
 	if (in_danger_warbase!=0 &&
 		(level>=2 ||
@@ -206,42 +198,37 @@ void NETHER::AI_enemy(void)
 			(level==1 && (rand()%2)==0) ||
 			(level==0 && (rand()%4)==0))) {
 			/* There are too many robots in STOP & DEFEND: */ 
-			List<Robot> rl;
-			Robot *r;
-			
-			rl.Instance(robots[1]);
-			rl.Rewind();
-			while(rl.Iterate(r)) {
-              if (r->program==Robot::PROGRAM_STOPDEFEND) {
-					if (nrobots[0]<6 && factories[2]<(factories[1]+factories[0]) && 
-						(robots[0].Length()*2)<=nrobots[1]) {
-						/* Convert the robot to a conquering one: */ 
-						if (factories[1]>factories[0]) {
-                          r->program=Robot::PROGRAM_CAPTURE;
-                          r->program_parameter.param = Robot::P_PARAM_EFACTORIES;
-							return;
-						} else {
-							r->program=Robot::PROGRAM_CAPTURE;
-							r->program_parameter.param = Robot::P_PARAM_NFACTORIES;
-							return;
-						} /* if */ 
-					} else {
-						if ((robots[0].Length()*2)>nrobots[1]) {
-							r->program=Robot::PROGRAM_DESTROY;
-							r->program_parameter.param =Robot::P_PARAM_ROBOTS;
-							return;
-						} else {
-							r->program=Robot::PROGRAM_CAPTURE;
-							r->program_parameter.param = Robot::P_PARAM_WARBASES;
-							return;
-						} /* if */ 
-					} /* if */ 
-				} /* if */ 
-			} /* while */ 
+          for (Robot& r: robots[1]) {
+            if (r.program==Robot::PROGRAM_STOPDEFEND) {
+              if (nrobots[0]<6 && factories[2]<(factories[1]+factories[0]) && 
+                  (robots[0].size()*2)<=nrobots[1]) {
+                /* Convert the robot to a conquering one: */ 
+                if (factories[1]>factories[0]) {
+                  r.program=Robot::PROGRAM_CAPTURE;
+                  r.program_parameter.param = Robot::P_PARAM_EFACTORIES;
+                  return;
+                } else {
+                  r.program=Robot::PROGRAM_CAPTURE;
+                  r.program_parameter.param = Robot::P_PARAM_NFACTORIES;
+                  return;
+                } /* if */ 
+              } else {
+                if ((robots[0].size()*2)>nrobots[1]) {
+                  r.program=Robot::PROGRAM_DESTROY;
+                  r.program_parameter.param =Robot::P_PARAM_ROBOTS;
+                  return;
+                } else {
+                  r.program=Robot::PROGRAM_CAPTURE;
+                  r.program_parameter.param = Robot::P_PARAM_WARBASES;
+                  return;
+                } /* if */ 
+              } /* if */ 
+            } /* if */ 
+          }
 		} /* if */ 
 		/* Test for near FACTORIES and CAPTURING ROBOTS: */ 
 		if (nrobots[0]<6 && factories[2]<(factories[1]+factories[0]) &&
-			(robots[0].Length()*2)<=nrobots[1]) {
+			(robots[0].size()*2)<=nrobots[1]) {
 			/* I need more conquering robots: */ 
 
 			/* Try to make better robots as time passes: */ 
@@ -461,10 +448,9 @@ Robot *NETHER::AI_enemy_newrobot(int state,Vector pos)
 	/* Build the robot: */ 
 	{
 		int i;
-		Robot *r;
 		int cost[7];
 
-		r=new Robot();
+		Robot *r = new Robot();
 		r->traction=traction;
 		r->pieces[0]=pieces[0];
 		r->pieces[1]=pieces[1];
@@ -473,7 +459,7 @@ Robot *NETHER::AI_enemy_newrobot(int state,Vector pos)
 		r->pieces[4]=pieces[4];
 		r->cost(1, cost, resources);
 
-		for(i=0;i<7;i++) {
+		for(int i=0;i<7;i++) {
 			if (resources[1][i]<cost[i]) {
 				/* Not enough resources! */ 
 				return 0;
@@ -489,8 +475,8 @@ Robot *NETHER::AI_enemy_newrobot(int state,Vector pos)
 		r->cmc=RobotCMC(r,1);
 		r->shipover=false;
 
-		if (!RobotCollision(r,true)) {
-			robots[1].Add(r);
+		if (!robotCollision(r,true)) {
+			robots[1].push_back(*r);
 			AI_newrobot(r->pos,0);
 
 			for(i=0;i<7;i++) resources[1][i]-=cost[i];

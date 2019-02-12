@@ -7,9 +7,10 @@
 
 extern int detaillevel;
 
+int Robot::counter = 0;
 
 Robot::Robot() : traction(-1), firetimer(0), strength(100),
-                 electronics_state(0), chassis_state(0)
+                 electronics_state(0), chassis_state(0), id(Robot::counter++)
 {
   pieces[0]=false;
   pieces[1]=false;

@@ -131,7 +131,7 @@ void NETHER::construction_draw(int width,int height)
 	glColor3f(1.0f,0.0f,0.0f);
 	glTranslatef(12,15,0);
 	in_construction.cmc=RobotCMC(&in_construction,0);
-	if (RobotCollision(&in_construction,true)) {
+	if (robotCollision(&in_construction,true)) {
 		if ((int(animation_timer*4)%2)==0) scaledglprintf(0.01f,0.01f,"ENTRANCE BLOCKED!");
 	} /* if */ 
 
@@ -250,104 +250,100 @@ void NETHER::construction_draw(int width,int height)
 
 bool NETHER::construction_cycle(unsigned char *keyboard)
 {
-	if (construction_pointer==10 && keyboard[right_key] && !old_keyboard[right_key]) construction_pointer=20;
-	if (construction_pointer==0 && keyboard[right_key] && !old_keyboard[right_key]) construction_pointer=10;
+  if (construction_pointer == 10 && keyboard[right_key] && !old_keyboard[right_key])
+    construction_pointer = 20;
+  if (construction_pointer == 0 && keyboard[right_key] && !old_keyboard[right_key])
+    construction_pointer = 10;
+  if (construction_pointer == 10 && keyboard[left_key] && !old_keyboard[left_key])
+    construction_pointer = 0;
+  if (construction_pointer >= 20 && keyboard[left_key] && !old_keyboard[left_key])
+    construction_pointer = 10;
 
-	if (construction_pointer==10 && keyboard[left_key] && !old_keyboard[left_key]) construction_pointer=0;
-	if (construction_pointer>=20 && keyboard[left_key] && !old_keyboard[left_key]) construction_pointer=10;
+  if (construction_pointer>=20 && construction_pointer<27 &&
+      keyboard[up_key] && !old_keyboard[up_key]) construction_pointer++;
+  if (construction_pointer>20 && construction_pointer<=27 &&
+      keyboard[down_key] && !old_keyboard[down_key]) construction_pointer--;
 
-	if (construction_pointer>=20 && construction_pointer<27 &&
-		keyboard[up_key] && !old_keyboard[up_key]) construction_pointer++;
-	if (construction_pointer>20 && construction_pointer<=27 &&
-		keyboard[down_key] && !old_keyboard[down_key]) construction_pointer--;
+  if (construction_pointer>=20 && keyboard[fire_key] && !old_keyboard[fire_key]) {
+    int cost[7];
+    bool tmp[8];
+    Robot r_tmp;
+    bool enoughresources=true;
 
-	if (construction_pointer>=20 && keyboard[fire_key] && !old_keyboard[fire_key]) {
-		int i;
-		int cost[7];
-		bool tmp[8];
-		Robot r_tmp;
-		bool enoughresources=true;
+    r_tmp=in_construction;
+    for (int i = 0; i < 8; i++) tmp[i]=construction[i];
 
-		r_tmp=in_construction;
-		for(i=0;i<8;i++) tmp[i]=construction[i];
+    if (construction[construction_pointer-20]) {
+      if (construction_pointer<=22) in_construction.traction=-1;
+      if (construction_pointer>=23) in_construction.pieces[construction_pointer-23]=false;
+      construction[construction_pointer-20]=false;
+    } else {
+      if (construction_pointer<=22) {
+        in_construction.traction=construction_pointer-20;
+        construction[0]=false;
+        construction[1]=false;
+        construction[2]=false;
+      }
+      if (construction_pointer>=23) in_construction.pieces[construction_pointer-23]=true;
+      construction[construction_pointer-20]=true;
+    }
 
-		if (construction[construction_pointer-20]) {
-			if (construction_pointer<=22) in_construction.traction=-1;
-			if (construction_pointer>=23) in_construction.pieces[construction_pointer-23]=false;
-			construction[construction_pointer-20]=false;
-		} else {
-			if (construction_pointer<=22) {
-				in_construction.traction=construction_pointer-20;
-				construction[0]=false;
-				construction[1]=false;
-				construction[2]=false;
-			} /* if */ 
-			if (construction_pointer>=23) in_construction.pieces[construction_pointer-23]=true;
-			construction[construction_pointer-20]=true;
-		} /* if */ 
+    in_construction.cost(0, cost, resources);
+    enoughresources=true;
+    for (int i = 0; i < 7; i++) {
+      if (resources[0][i]<cost[i]) {
+        /* Not enough resources! */
+        for (int j = 0; j < 8; j++) {
+          in_construction = r_tmp;
+          construction[j] = tmp[j];
+        }
+        enoughresources=false;
+      }
+    }
 
-		in_construction.cost(0, cost, resources);
-		enoughresources=true;
-		for(i=0;i<7;i++) {
-			if (resources[0][i]<cost[i]) {
-				int j;
-				/* Not enough resources! */ 
-				for(j=0;j<8;j++) {
-					in_construction=r_tmp;
-					construction[j]=tmp[j];
-				} /* for */ 
-				enoughresources=false;
-			} /* if */ 
-		} /* for */ 
+    if (enoughresources) {
+      sManager.playSelect();
+    } else {
+      sManager.playWrong();
+    }
+  }
 
-		if (enoughresources) {
-          sManager.playSelect();
-		} else {
-          sManager.playWrong();
-		} /* if */ 
-	} /* if */ 
+  if (construction_pointer==0 && keyboard[fire_key] && !old_keyboard[fire_key]) {
+    game_state = STATE_PLAYING;
+    shipp.z = 2.0;
+  }
 
-	if (construction_pointer==0 && keyboard[fire_key] && !old_keyboard[fire_key]) {
-		game_state=STATE_PLAYING;
-		shipp.z=2.0;
-	} /* if */ 
+  if (construction_pointer==10 && keyboard[fire_key] && !old_keyboard[fire_key]) {
+    if (in_construction.valid()) {
+      int cost[7];
 
-	if (construction_pointer==10 && keyboard[fire_key] && !old_keyboard[fire_key]) {
-		if (in_construction.valid()) {
-			int i;
-			int cost[7];
+      /* Valid robot, build it: */
+      Robot *r = new Robot();
+      *r=in_construction;
+      r->angle=0;
+      r->program=Robot::PROGRAM_FORWARD;
+      r->op=ROBOTOP_NONE;
+      r->cmc=RobotCMC(r,0);
+      r->shipover=false;
 
-			/* Valid robot, build it: */ 
-			Robot *r;
-			r=new Robot();
-			*r=in_construction;
-			r->angle=0;
-			r->program=Robot::PROGRAM_FORWARD;
-			r->op=ROBOTOP_NONE;
-			r->cmc=RobotCMC(r,0);
-			r->shipover=false;
+      if (!robotCollision(r,true)) {
+        robots[0].push_back(*r);
+        AI_newrobot(r->pos,0);
 
-			if (!RobotCollision(r,true)) {
-				robots[0].Add(r);
-				AI_newrobot(r->pos,0);
+        in_construction.cost(0, cost, resources);
+        for (int i = 0; i < 7; i++) resources[0][i] -= cost[i];
+        game_state=STATE_PLAYING;
+        shipp.z=2.0;
+        sManager.playConstruction();
+      } else {
+        delete r;
+      }
+    } else {
+      sManager.playWrong();
+    }
+  }
 
-				in_construction.cost(0, cost, resources);
-				for(i=0;i<7;i++) resources[0][i]-=cost[i];
-
-				game_state=STATE_PLAYING;
-				shipp.z=2.0;
-                sManager.playConstruction();
-			} else {
-				/* The factory entrance is blocked: */ 
-				delete r;
-			} /* if */ 
-		} else {
-			/* Wrong robot: */
-          sManager.playWrong();
-		} /* if */ 
-	} /* if */ 
-
-	menu.needsRedraw=2;
-	radar.needsRedraw=1;
-	return true;
-} /* NETHER::construction_cycle */ 
+  menu.needsRedraw = 2;
+  radar.needsRedraw = 1;
+  return true;
+}

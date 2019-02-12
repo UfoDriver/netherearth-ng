@@ -813,10 +813,9 @@ int NETHER::AI_program_capture(int goal,Vector *program_goal,Vector pos,int angl
 int NETHER::AI_RealShotPaths(int x,int y,int player,int persistence)
 {
 	int rsp=0;
-	int i;
 //	int persistence=CANNON_PERSISTENCE;
 
-	for(i=2;i<int((persistence*BULLET_SPEED)/0.5)+2 && (x+i<map_w*2);i++) {
+	for (int i = 2;i < int((persistence*BULLET_SPEED)/0.5)+2 && (x+i<map_w*2); i++) {
 		if (discreetmap[x+i+y*(map_w*2)]==T_BUILDING ||
 			discreetmap[x+i+(y+1)*(map_w*2)]==T_BUILDING) break;
 		if (player==1) {
@@ -838,7 +837,7 @@ int NETHER::AI_RealShotPaths(int x,int y,int player,int persistence)
 		} /* if */ 
 	} /* for */ 
 
-	for(i=1;i<int((persistence*BULLET_SPEED)/0.5)+1 && (x-i>=0);i++) {
+	for (int i = 1;i < int((persistence*BULLET_SPEED)/0.5)+1 && (x-i>=0); i++) {
 		if (discreetmap[x-i+y*(map_w*2)]==T_BUILDING ||
 			discreetmap[x-i+(y+1)*(map_w*2)]==T_BUILDING) break;
 		if (player==1) {
@@ -860,7 +859,7 @@ int NETHER::AI_RealShotPaths(int x,int y,int player,int persistence)
 		} /* if */ 
 	} /* for */ 
 
-	for(i=2;i<int((persistence*BULLET_SPEED)/0.5)+2 && (y+i<map_h*2);i++) {
+	for (int i = 2; i < int((persistence*BULLET_SPEED)/0.5)+2 && (y+i<map_h*2); i++) {
 		if (discreetmap[x+(y+i)*(map_w*2)]==T_BUILDING ||
 			discreetmap[(x+1)+(y+i)*(map_w*2)]==T_BUILDING) break;
 		if (player==1) {
@@ -882,7 +881,7 @@ int NETHER::AI_RealShotPaths(int x,int y,int player,int persistence)
 		} /* if */ 
 	} /* for */ 
 
-	for(i=1;i<int((persistence*BULLET_SPEED)/0.5)+1 && (y-i>=0);i++) {
+	for (int i = 1; i < int((persistence*BULLET_SPEED)/0.5)+1 && (y-i>=0); i++) {
 		if (discreetmap[x+(y-i)*(map_w*2)]==T_BUILDING ||
 			discreetmap[(x+1)+(y-i)*(map_w*2)]==T_BUILDING) break;
 		if (player==1) {
@@ -978,7 +977,6 @@ int NETHER::AI_program_destroy(int goal,Vector *program_goal,Vector pos,int angl
 		} else {
 			/* Find the nearest position to destroy an enemy robot: */ 
 			List<Robot> l;
-			Robot *r;
 			int x,y,dx,dy,i,j,k;
 			bool collided;
 			bool first=true;
@@ -990,17 +988,15 @@ int NETHER::AI_program_destroy(int goal,Vector *program_goal,Vector pos,int angl
 			for(i=0;i<map_w*2*map_h*2;i++) atackmap[i]=0;
 
 			/* Find the nearest FIRE position: */ 
-			l.Instance(robots[2-player]);
-			l.Rewind();
-			while(l.Iterate(r)) {
+			for (Robot& r: robots[2 - player]) {
 				if (first ||
 					(*program_goal-pos).norma()<distance) {
 					first=false;
 					distance=float((*program_goal-pos).norma());
-					*program_goal=r->pos;
+					*program_goal=r.pos;
 				} /* if */ 
 
-				robot_zone(r->pos,&x,&y,&dx,&dy);
+				robot_zone(r.pos,&x,&y,&dx,&dy);
 				for(i=0;i<dx;i++) {
 					for(j=0;j<dy;j++) {
 						collided=false;
@@ -1152,10 +1148,8 @@ int NETHER::AI_program_stopdefend(Vector *program_goal,Vector pos,int angle,int 
 		for(i=0;i<map_w*2*map_h*2;i++) atackmap[i]=0;
 
 		/* Find the nearest FIRE position: */ 
-		l.Instance(robots[2-player]);
-		l.Rewind();
-		while(l.Iterate(r)) {
-			robot_zone(r->pos,&x,&y,&dx,&dy);
+		for (Robot& r: robots[2 - player]) {
+			robot_zone(r.pos,&x,&y,&dx,&dy);
 			for(i=0;i<dx;i++) {
 				for(j=0;j<dy;j++) {
 					collided=false;
@@ -1206,7 +1200,7 @@ int NETHER::AI_program_stopdefend(Vector *program_goal,Vector pos,int angle,int 
 		} /* while */ 
 
 
-		if (!robots[2-player].EmptyP()) {
+		if (robots[2 - player].size()) {
 			robot_zone(pos,&x,&y,&dx,&dy);
 			if ((atackmap[y*(map_w*2)+x]!=0 ||
 				atackmap[(y+1)*(map_w*2)+x]!=0 ||

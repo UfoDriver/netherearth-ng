@@ -22,6 +22,7 @@
 #include "piece3dobject.h"
 #include "myglutaux.h"
 #include "nether.h"
+#include "utils.h"
 
 #include "glprintf.h"
 
@@ -70,67 +71,63 @@ bool NETHER::saveDebugReport(const std::string& filename)
   }
 
   for(int i = 0; i < 2; i++) {
-    log << "\n# OF ROBOTS PLAYER " << i << ": " << robots[i].Length() << '\n';
-    robots[i].Rewind();
-    Robot *r;
+    log << "\n# OF ROBOTS PLAYER " << i << ": " << robots[i].size() << '\n';
 
     const char* tractions[3] = {"BIPOD", "TRACKS", "ANTIGRAV"};
     const char* pieces[5] = {"CANNONS", "MISSILES", "PHASERS", "NUCLEAR", "ELECTRONICS"};
-    while(robots[i].Iterate(r)) {
+    for (Robot& r: robots[i]) {
       log << "ROBOT:\n";
-      log << ' ' << tractions[r->traction] << '\n';
+      log << ' ' << tractions[r.traction] << '\n';
       for (int j = 0; j < 5; j++) {
-        if (r->pieces[j])
+        if (r.pieces[j])
           log << ' ' << pieces[j] << '\n';
       }
-      log << " PROGRAM: " << r->program << "\n PROGRAM PARAMETER: " << r->program_parameter.as_int << '\n';
+      log << " PROGRAM: " << r.program << "\n PROGRAM PARAMETER: " << r.program_parameter.as_int << '\n';
       log << " PROGRAM GOAL: ";
-      log << r->program_goal;
-      log << " ACTUAL OPERATOR: " << r->op << '\n';
-      if (r->shipover)
+      log << r.program_goal;
+      log << " ACTUAL OPERATOR: " << r.op << '\n';
+      if (r.shipover)
         log << " HAS THE SHIP OVER IT\n";
       else
         log << " HAS NO SHIP OVER IT\n";
-      log << " FIRETIMER: " << r->firetimer << "\n STRENGTH: " << r->strength << '\n';
+      log << " FIRETIMER: " << r.firetimer << "\n STRENGTH: " << r.strength << '\n';
       log << " POSITION: ";
-      log << r->pos;
-      log << " ANGLE: " << r->angle << '\n';
+      log << r.pos;
+      log << " ANGLE: " << r.angle << '\n';
       log << " MINIMUM CONTAINER BOX: \n";
-      log << r->cmc;
-      log << " ELECTRONICS STATE: " << r->electronics_state
-          <<"\n CHASSIS STATE: " << r->chassis_state;
+      log << r.cmc;
+      log << " ELECTRONICS STATE: " << r.electronics_state
+          <<"\n CHASSIS STATE: " << r.chassis_state;
       log << "\n\n";
     }
   }
 
   log << "\n# BULLETS: " << bullets.size() << '\n';
-  std::for_each(bullets.begin(), bullets.end(),
-                [&log, this](const auto& bullet) {
-                  log << " BULLET:\n TYPE: " << bullet.type
-                      << "\n STEP: " << bullet.step
-                      << "\n ANGLE: " << bullet.angle << '\n';
-                  log << " POSITION: ";
-                  log << bullet.pos;
-                  int pos = robots[0].SearchObjRef(bullet.owner);
-                  if (pos == -1) {
-                    pos = robots[1].SearchObjRef(bullet.owner);
-                    log << " OWNER: PLAYER 1 ROBOT " << pos << '\n';
-                  } else {
-                    log << " OWNER: PLAYER 0 ROBOT " << pos << '\n';
-                  }
+  for (Bullet& bullet: bullets) {
+    log << " BULLET:\n TYPE: " << bullet.type
+        << "\n STEP: " << bullet.step
+        << "\n ANGLE: " << bullet.angle << '\n';
+    log << " POSITION: ";
+    log << bullet.pos;
 
-                  log << " MINIMUM CONTAINER BOX: \n";
-                  log << bullet.cmc << '\n';
-                });
+    int pos = find_index(robots[0], *bullet.owner);
+    if (pos == -1) {
+      log << " OWNER: PLAYER 0 ROBOT " << (find_index(robots[1], *bullet.owner)) << '\n';
+    } else {
+      log << " OWNER: PLAYER 1 ROBOT " << pos << '\n';
+    }
+
+    log << " MINIMUM CONTAINER BOX: \n";
+    log << bullet.cmc << '\n';
+  }
 
   log << "# EXPLOSIONS " << explosions.size() << '\n';
 
-  std::for_each(explosions.begin(), explosions.end(),
-                [&log](const auto& e) {
-                  log << "EXPLOSION:\n POSITION:\n";
-                  log << e.pos;
-                  log << " STEP: " << e.step << "\n SIZE: " << e.size << "\n\n";
-                });
+  for (Explosion& e: explosions) {
+    log << "EXPLOSION:\n POSITION:\n";
+    log << e.pos;
+    log << " STEP: " << e.step << "\n SIZE: " << e.size << "\n\n";
+  }
 
   log << "\nTIME: DAY " << day << ' ' << hour << ':' << minute << ':' << second << '\n';
   log << "\nRESOURCES:\n";
@@ -143,7 +140,8 @@ bool NETHER::saveDebugReport(const std::string& filename)
     log << '\n';
   }
 
-  log << "\nROBOT UNDER CONTROL: " << robots[0].SearchObjRef(controlled) << "\n";
+  int index = find_index(robots[0], *controlled);
+  log << "\nROBOT UNDER CONTROL: " << index << "\n";
   log << "\nMENU " << menu.act_menu << "\nACT BUTTON: " << menu.act_button << "\n";
 
   return true;

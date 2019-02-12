@@ -262,19 +262,18 @@ bool NETHER::bulletCollision(const Bullet& bullet, Robot **r)
   }
 
   /* Collision with the robots: */
-  for(int i = 0; i < 2; i++) {
-    l2.Instance(robots[i]);
-    l2.Rewind();
-    while(l2.Iterate(rt)) {
-      if (((rt->pos.x-bullet.pos.x)*(rt->pos.x-bullet.pos.x)+
-           (rt->pos.y-bullet.pos.y)*(rt->pos.y-bullet.pos.y)+
-           (rt->pos.z-bullet.pos.z)*(rt->pos.z-bullet.pos.z))<COLISION_TEST_THRESHOLD) {
-        if (rt!=bullet.owner) {
-          m2[12]=rt->pos.x;
-          m2[13]=rt->pos.y;
-          m2[14]=rt->pos.z;
-          if (bullet.cmc.collision_simple(m1,&(rt->cmc),m2)) {
-            *r=rt;
+  for (int i = 0; i < 2; i++) {
+    for (Robot& rt: robots[i]) {
+      // @TODO: evaluate vector's method or create new one
+      if (((rt.pos.x-bullet.pos.x)*(rt.pos.x-bullet.pos.x)+
+           (rt.pos.y-bullet.pos.y)*(rt.pos.y-bullet.pos.y)+
+           (rt.pos.z-bullet.pos.z)*(rt.pos.z-bullet.pos.z))<COLISION_TEST_THRESHOLD) {
+        if (&rt != bullet.owner) {
+          m2[12]=rt.pos.x;
+          m2[13]=rt.pos.y;
+          m2[14]=rt.pos.z;
+          if (bullet.cmc.collision_simple(m1,&(rt.cmc),m2)) {
+            *r=&rt;
             return true;
           } /* if */
         } /* if */
