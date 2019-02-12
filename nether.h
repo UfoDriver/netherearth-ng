@@ -193,8 +193,7 @@ private:
 	const int n_objs;
 	C3DObject **tile;
 	Shadow3DObject *ship;
-	const int n_buildings;
-	Shadow3DObject **building_tile;
+  std::vector<Shadow3DObject> building_tiles;
 	const int n_pieces;
 	Piece3DObject **piece_tile[2];
 	C3DObject *construction_tile[3];

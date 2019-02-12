@@ -38,13 +38,14 @@ extern int level;
 extern float MINY,MAXY,MINX,MAXX;
 extern bool show_radar;
 
+const int N_BUILDINGS = 9;
 
 #ifdef _WRITE_REPORT_
 FILE *debug_fp=0;
 #endif
 
 
-NETHER::NETHER(const std::string& mapname): menu(this), radar(this), n_objs(12), n_buildings(9),
+NETHER::NETHER(const std::string& mapname): menu(this), radar(this), n_objs(12),
                                             n_pieces(11), n_bullets(3)
 {
 #ifdef _WRITE_REPORT_
@@ -273,14 +274,15 @@ void NETHER::loadObjects()
   tile[8]->moveobject(Vector(0, 0, -0.05));
   tile[9]->moveobject(Vector(0, 0, -0.05));
 
-  building_tile=new Shadow3DObject *[n_buildings];
-  for(int i=0;i<n_buildings;i++) {
-    building_tile[i]=new Shadow3DObject(bnames[i], "textures/");
-    building_tile[i]->normalize(bscale[i]);
-    building_tile[i]->makepositive();
-  } /* for */ 
-  building_tile[5]->moveobject(Vector(0, 0, 0.01));
-  building_tile[6]->moveobject(Vector(0.4, 0.4, 0.0));
+  building_tiles.reserve(N_BUILDINGS);
+  for (int i = 0; i < N_BUILDINGS; i++) {
+    Shadow3DObject tile(bnames[i], "textures/");
+    tile.normalize(bscale[i]);
+    tile.makepositive();
+    building_tiles.push_back(tile);
+  }
+  building_tiles[5].moveobject(Vector(0, 0, 0.01));
+  building_tiles[6].moveobject(Vector(0.4, 0.4, 0.0));
 
   piece_tile[0]=new Piece3DObject *[n_pieces];
   piece_tile[1]=new Piece3DObject *[n_pieces];
@@ -327,7 +329,7 @@ void NETHER::loadObjects()
   } /* for */
 
   ship->ComputeShadow(lightposv);
-  for(int i=0;i<n_buildings;i++) building_tile[i]->ComputeShadow(lightposv);
+  for (Shadow3DObject& tile: building_tiles) tile.ComputeShadow(lightposv);
   for(int i=0;i<n_pieces;i++) piece_tile[0][i]->ComputeFixedShadows(lightposv);
   for(int i=0;i<n_pieces;i++) piece_tile[1][i]->ComputeFixedShadows(lightposv);
   for(int i=0;i<n_bullets;i++) bullet_tile[i]->ComputeFixedShadows(lightposv);
@@ -355,9 +357,7 @@ void NETHER::deleteObjects()
 	tile = 0;
 	delete ship;
 	ship = 0;
-	for(int i = 0; i < n_buildings; i++) delete building_tile[i];
-	delete building_tile;
-	building_tile = 0;
+    building_tiles.clear();
 	for(int i = 0;i < n_pieces; i++) delete piece_tile[0][i];
 	for(int i = 0; i < n_pieces;i++) delete piece_tile[1][i];
 	delete piece_tile[0];
@@ -389,9 +389,9 @@ void NETHER::refresh_display_lists(void)
  
  	ship->refresh_display_lists();
  
- 	for(i=0;i<n_buildings;i++) {
- 		building_tile[i]->refresh_display_lists();
- 	} /* for */ 
+ 	for (Shadow3DObject& tile: building_tiles) {
+ 		tile.refresh_display_lists();
+ 	}
  
  	for(i=0;i<n_pieces;i++) {
  		piece_tile[0][i]->refresh_display_lists();
@@ -1025,66 +1025,66 @@ bool NETHER::ShipCollision(C3DObject *obj,float x,float y,float z)
 
 			switch(b.type) {
 				case Building::B_FENCE:
-					if (obj->cmc.collision_simple(m1,&(building_tile[5]->cmc),m2)) return true;
+					if (obj->cmc.collision_simple(m1,&(building_tiles[5].cmc),m2)) return true;
 					break;
 				case Building::B_WALL1:
-					if (obj->cmc.collision_simple(m1,&(building_tile[0]->cmc),m2)) return true;
+					if (obj->cmc.collision_simple(m1,&(building_tiles[0].cmc),m2)) return true;
 					break;
 				case Building::B_WALL2:
-					if (obj->cmc.collision_simple(m1,&(building_tile[1]->cmc),m2)) return true;
+					if (obj->cmc.collision_simple(m1,&(building_tiles[1].cmc),m2)) return true;
 					break;
 				case Building::B_WALL3:
-					if (obj->cmc.collision_simple(m1,&(building_tile[2]->cmc),m2)) return true;
+					if (obj->cmc.collision_simple(m1,&(building_tiles[2].cmc),m2)) return true;
 					break;
 				case Building::B_WALL4:
-					if (obj->cmc.collision_simple(m1,&(building_tile[3]->cmc),m2)) return true;
+					if (obj->cmc.collision_simple(m1,&(building_tiles[3].cmc),m2)) return true;
 					break;
 				case Building::B_WALL5:
-					if (obj->cmc.collision_simple(m1,&(building_tile[4]->cmc),m2)) return true;
+					if (obj->cmc.collision_simple(m1,&(building_tiles[4].cmc),m2)) return true;
 					break;
 				case Building::B_WALL6:
-					if (obj->cmc.collision_simple(m1,&(building_tile[7]->cmc),m2)) return true;
+					if (obj->cmc.collision_simple(m1,&(building_tiles[7].cmc),m2)) return true;
 					break;
 				case Building::B_WARBASE:
-					if (obj->cmc.collision_simple(m1,&(building_tile[8]->cmc),m2)) return true;
+					if (obj->cmc.collision_simple(m1,&(building_tiles[8].cmc),m2)) return true;
 					break;
 			case Building::B_FACTORY_ELECTRONICS:
-					if (obj->cmc.collision_simple(m1,&(building_tile[4]->cmc),m2)) return true;
+					if (obj->cmc.collision_simple(m1,&(building_tiles[4].cmc),m2)) return true;
 					m2[12]=b.pos.x+0.5;
 					m2[13]=b.pos.y+0.5;
 					m2[14]=b.pos.z+1;
 					if (obj->cmc.collision_simple(m1,&(piece_tile[0][7]->cmc),m2)) return true;
 					break;
 			case Building::B_FACTORY_NUCLEAR:
-					if (obj->cmc.collision_simple(m1,&(building_tile[4]->cmc),m2)) return true;
+					if (obj->cmc.collision_simple(m1,&(building_tiles[4].cmc),m2)) return true;
 					m2[12]=b.pos.x+0.5;
 					m2[13]=b.pos.y+0.5;
 					m2[14]=b.pos.z+1;
 					if (obj->cmc.collision_simple(m1,&(piece_tile[0][6]->cmc),m2)) return true;
 					break;
 			case Building::B_FACTORY_PHASERS:
-					if (obj->cmc.collision_simple(m1,&(building_tile[4]->cmc),m2)) return true;
+					if (obj->cmc.collision_simple(m1,&(building_tiles[4].cmc),m2)) return true;
 					m2[12]=b.pos.x+0.5;
 					m2[13]=b.pos.y+0.5;
 					m2[14]=b.pos.z+1;
 					if (obj->cmc.collision_simple(m1,&(piece_tile[0][5]->cmc),m2)) return true;
 					break;
 			case Building::B_FACTORY_MISSILES:
-					if (obj->cmc.collision_simple(m1,&(building_tile[4]->cmc),m2)) return true;
+					if (obj->cmc.collision_simple(m1,&(building_tiles[4].cmc),m2)) return true;
 					m2[12]=b.pos.x+0.5;
 					m2[13]=b.pos.y+0.5;
 					m2[14]=b.pos.z+1;
 					if (obj->cmc.collision_simple(m1,&(piece_tile[0][4]->cmc),m2)) return true;
 					break;
 			case Building::B_FACTORY_CANNONS:
-					if (obj->cmc.collision_simple(m1,&(building_tile[4]->cmc),m2)) return true;
+					if (obj->cmc.collision_simple(m1,&(building_tiles[4].cmc),m2)) return true;
 					m2[12]=b.pos.x+0.5;
 					m2[13]=b.pos.y+0.5;
 					m2[14]=b.pos.z+1;
 					if (obj->cmc.collision_simple(m1,&(piece_tile[0][3]->cmc),m2)) return true;
 					break;
 			case Building::B_FACTORY_CHASSIS:
-					if (obj->cmc.collision_simple(m1,&(building_tile[4]->cmc),m2)) return true;
+					if (obj->cmc.collision_simple(m1,&(building_tiles[4].cmc),m2)) return true;
 					m2[12]=b.pos.x+0.5;
 					m2[13]=b.pos.y+0.5;
 					m2[14]=b.pos.z+1;

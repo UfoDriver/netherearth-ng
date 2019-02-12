@@ -192,66 +192,66 @@ bool NETHER::bulletCollision(const Bullet& bullet, Robot **r)
 
       switch(b.type) {
       case Building::B_FENCE:
-        if (bullet.cmc.collision_simple(m1,&(building_tile[5]->cmc),m2)) return true;
+        if (bullet.cmc.collision_simple(m1,&(building_tiles[5].cmc),m2)) return true;
         break;
       case Building::B_WALL1:
-        if (bullet.cmc.collision_simple(m1,&(building_tile[0]->cmc),m2)) return true;
+        if (bullet.cmc.collision_simple(m1,&(building_tiles[0].cmc),m2)) return true;
         break;
       case Building::B_WALL2:
-        if (bullet.cmc.collision_simple(m1,&(building_tile[1]->cmc),m2)) return true;
+        if (bullet.cmc.collision_simple(m1,&(building_tiles[1].cmc),m2)) return true;
         break;
       case Building::B_WALL3:
-        if (bullet.cmc.collision_simple(m1,&(building_tile[2]->cmc),m2)) return true;
+        if (bullet.cmc.collision_simple(m1,&(building_tiles[2].cmc),m2)) return true;
         break;
       case Building::B_WALL4:
-        if (bullet.cmc.collision_simple(m1,&(building_tile[3]->cmc),m2)) return true;
+        if (bullet.cmc.collision_simple(m1,&(building_tiles[3].cmc),m2)) return true;
         break;
       case Building::B_WALL5:
-        if (bullet.cmc.collision_simple(m1,&(building_tile[4]->cmc),m2)) return true;
+        if (bullet.cmc.collision_simple(m1,&(building_tiles[4].cmc),m2)) return true;
         break;
       case Building::B_WALL6:
-        if (bullet.cmc.collision_simple(m1,&(building_tile[7]->cmc),m2)) return true;
+        if (bullet.cmc.collision_simple(m1,&(building_tiles[7].cmc),m2)) return true;
         break;
       case Building::B_WARBASE:
-        if (bullet.cmc.collision_simple(m1,&(building_tile[8]->cmc),m2)) return true;
+        if (bullet.cmc.collision_simple(m1,&(building_tiles[8].cmc),m2)) return true;
         break;
       case Building::B_FACTORY_ELECTRONICS:
-        if (bullet.cmc.collision_simple(m1,&(building_tile[4]->cmc),m2)) return true;
+        if (bullet.cmc.collision_simple(m1,&(building_tiles[4].cmc),m2)) return true;
         m2[12]=b.pos.x+0.5;
         m2[13]=b.pos.y+0.5;
         m2[14]=b.pos.z+1;
         if (bullet.cmc.collision_simple(m1,&(piece_tile[0][7]->cmc),m2)) return true;
         break;
       case Building::B_FACTORY_NUCLEAR:
-        if (bullet.cmc.collision_simple(m1,&(building_tile[4]->cmc),m2)) return true;
+        if (bullet.cmc.collision_simple(m1,&(building_tiles[4].cmc),m2)) return true;
         m2[12]=b.pos.x+0.5;
         m2[13]=b.pos.y+0.5;
         m2[14]=b.pos.z+1;
         if (bullet.cmc.collision_simple(m1,&(piece_tile[0][6]->cmc),m2)) return true;
         break;
       case Building::B_FACTORY_PHASERS:
-        if (bullet.cmc.collision_simple(m1,&(building_tile[4]->cmc),m2)) return true;
+        if (bullet.cmc.collision_simple(m1,&(building_tiles[4].cmc),m2)) return true;
         m2[12]=b.pos.x+0.5;
         m2[13]=b.pos.y+0.5;
         m2[14]=b.pos.z+1;
         if (bullet.cmc.collision_simple(m1,&(piece_tile[0][5]->cmc),m2)) return true;
         break;
       case Building::B_FACTORY_MISSILES:
-        if (bullet.cmc.collision_simple(m1,&(building_tile[4]->cmc),m2)) return true;
+        if (bullet.cmc.collision_simple(m1,&(building_tiles[4].cmc),m2)) return true;
         m2[12]=b.pos.x+0.5;
         m2[13]=b.pos.y+0.5;
         m2[14]=b.pos.z+1;
         if (bullet.cmc.collision_simple(m1,&(piece_tile[0][4]->cmc),m2)) return true;
         break;
       case Building::B_FACTORY_CANNONS:
-        if (bullet.cmc.collision_simple(m1,&(building_tile[4]->cmc),m2)) return true;
+        if (bullet.cmc.collision_simple(m1,&(building_tiles[4].cmc),m2)) return true;
         m2[12]=b.pos.x+0.5;
         m2[13]=b.pos.y+0.5;
         m2[14]=b.pos.z+1;
         if (bullet.cmc.collision_simple(m1,&(piece_tile[0][3]->cmc),m2)) return true;
         break;
       case Building::B_FACTORY_CHASSIS:
-        if (bullet.cmc.collision_simple(m1,&(building_tile[4]->cmc),m2)) return true;
+        if (bullet.cmc.collision_simple(m1,&(building_tiles[4].cmc),m2)) return true;
         m2[12]=b.pos.x+0.5;
         m2[13]=b.pos.y+0.5;
         m2[14]=b.pos.z+1;
