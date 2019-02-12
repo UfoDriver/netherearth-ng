@@ -80,15 +80,16 @@ void NETHER::AI_precomputations(void)
   discreetmap.reserve(map_w * 2 * map_h * 2);
   bk_discreetmap.clear();
   bk_discreetmap.reserve(map_w * 2 * map_h * 2);
-  searchmap=new AIOperator *[(map_w*2)*(map_h*2)];
+  searchmap.reserve(map_w * 2 * map_h * 2);
   atackmap.reserve(map_w * 2 * map_h * 2);
   for (int i = 0; i < map_w * 2 * map_h * 2; i++) {
-    searchmap[i] = new AIOperator();
-    searchmap[i]->used = false;
+    AIOperator op;
+    op.used = false;
+    searchmap.push_back(op);
     atackmap[i] = 0;
   }
 
-  /* Setup the terrains for the new map: */ 
+  /* Setup the terrains for the new map: */
   for (int y = 0; y < map_h; y++) {
     for(int x = 0; x < map_w; x++) {
       fill_zone(discreetmap, map_w * 2, MapTerrain(float(x), float(y)), x * 2, y * 2, 2, 2);
@@ -106,12 +107,7 @@ void NETHER::AI_deleteprecomputations(void)
 {
   discreetmap.clear();
   bk_discreetmap.clear();
-  for (int i = 0; i < map_w * 2 * map_h * 2; i++) {
-    delete searchmap[i];
-    searchmap[i] = 0;
-  }
-  delete searchmap;
-  searchmap = 0;
+  searchmap.clear();
 }
 
 
@@ -174,54 +170,40 @@ void NETHER::AI_moverobot(Vector oldpos,Vector newpos,int owner)
 
 void NETHER::AI_availableoperators(Vector pos,int angle,int traction,List<AIOperator> *l)
 {
-	int i;
-	int x,y,dx,dy;
-	int terrain;
-	int n_turns;
-	int dif;
-	int cost;
-	AIOperator *op;
+  int x, y, dx, dy;
 
-	robot_zone(pos,&x,&y,&dx,&dy);
+  robot_zone(pos, &x, &y, &dx, &dy);
 
-	for(i=0;i<4;i++) {
-		terrain=AI_WorseMapTerrain(x+xd2[i],y+yd2[i],2+xd3[i],2+yd3[i]);
-		if (terrain<=T_HOLE &&
-			Walkable(traction,terrain)) {
+  for (int i = 0; i < 4; i++) {
+    int terrain = AI_WorseMapTerrain(x + xd2[i], y + yd2[i], 2 + xd3[i], 2 + yd3[i]);
+    if (terrain <= T_HOLE && Walkable(traction, terrain)) {
+      /* Rotation cost: */
+      int dif = dangle[i] - angle;
+      if (dif > 360) dif -= 360;
+      if (dif < 0) dif += 360;
+      int n_turns = 0;
+      if (dif == 90 || dif == 270) n_turns=1;
+      if (dif == 180) n_turns = 2;
+      int cost=n_turns*int(90 / float(RobotRotationSpeed(terrain,traction)));
 
-			/* Rotation cost: */ 
-			dif=dangle[i]-angle;
-			if (dif>360) dif-=360;
-			if (dif<0) dif+=360;
-			n_turns=0;
-			if (dif==90 || dif==270) n_turns=1;
-			if (dif==180) n_turns=2;
-			{
-				float tmp=float(RobotRotationSpeed(terrain,traction));
-				cost=n_turns*int(90/tmp);
-			}
+      /* Displacement cost: */
+      terrain=AI_WorseMapTerrain(x + xd[i], y + yd[i], 2, 2);
+      cost += int(0.5 / RobotSpeed(terrain,traction));
 
-			/* Displacement cost: */ 
-			terrain=AI_WorseMapTerrain(x+xd[i],y+yd[i],2,2);
-			{
-				float tmp=RobotSpeed(terrain,traction);
-				cost+=int(0.5/tmp);
-			}
-
-			/* Build a new AI_operator: */ 
-			op=new AIOperator();
-			op->cost=cost;
-			op->previous=-1;
-			op->deadend=false;
-			if (dif==0) op->first_robotop=ROBOTOP_FORWARD;
-			if (dif==90) op->first_robotop=ROBOTOP_RIGHT;
-			if (dif==180) op->first_robotop=ROBOTOP_RIGHT;
-			if (dif==270) op->first_robotop=ROBOTOP_LEFT;
-			op->newpos=Vector(pos.x+xd[i]*0.5,pos.y+yd[i]*0.5,pos.z);
-			l->Add(op);
-		} /* if */ 
-	} /* for */ 
-} /* NETHER::AI_availableoperators */ 
+      /* Build a new AI_operator: */
+      AIOperator *op = new AIOperator();
+      op->cost = cost;
+      op->previous = -1;
+      op->deadend = false;
+      if (dif == 0) op->first_robotop = ROBOTOP_FORWARD;
+      if (dif == 90) op->first_robotop = ROBOTOP_RIGHT;
+      if (dif == 180) op->first_robotop = ROBOTOP_RIGHT;
+      if (dif == 270) op->first_robotop = ROBOTOP_LEFT;
+      op->newpos = Vector(pos.x + xd[i] * 0.5, pos.y + yd[i] * 0.5, pos.z);
+      l->Add(op);
+    }
+  }
+}
 
 
 bool NETHER::AI_expandoperators(int x,int y,int angle,int traction,int previous,int oldcost,int depth)
@@ -232,11 +214,11 @@ bool NETHER::AI_expandoperators(int x,int y,int angle,int traction,int previous,
 	int n_turns;
 	int dif;
 	int cost;
-	bool deadend=true; 
+	bool deadend=true;
 
 	for(i=0;i<4;i++) {
 		newpos=previous+xd[i]+yd[i]*(map_w*2);
-		if (newpos!=searchmap[previous]->previous) {
+		if (newpos!=searchmap[previous].previous) {
 			terrain=AI_WorseMapTerrain(x+xd2[i],y+yd2[i],2+xd3[i],2+yd3[i]);
 			if (terrain<=T_HOLE &&
 				Walkable(traction,terrain)) {
@@ -257,19 +239,19 @@ bool NETHER::AI_expandoperators(int x,int y,int angle,int traction,int previous,
 				cost+=int(0.5/RobotSpeed(traction,terrain));
 
 				/* Replace the an old operator by a new one: */ 
-				if (!searchmap[newpos]->used ||
-					searchmap[newpos]->cost>cost) {
+				if (!searchmap[newpos].used ||
+					searchmap[newpos].cost>cost) {
 
 					/* Set the new AI_operator: */  
-					searchmap[newpos]->used=true;
-					searchmap[newpos]->cost=cost;
-					searchmap[newpos]->previous=previous;
-					searchmap[newpos]->deadend=false;
-					if (dif==0) searchmap[newpos]->first_robotop=ROBOTOP_FORWARD;
-					if (dif==90) searchmap[newpos]->first_robotop=ROBOTOP_RIGHT;
-					if (dif==180) searchmap[newpos]->first_robotop=ROBOTOP_RIGHT;
-					if (dif==270) searchmap[newpos]->first_robotop=ROBOTOP_LEFT;
-					searchmap[newpos]->newpos=Vector((x+xd[i])*0.5,(y+yd[i])*0.5,0); 
+					searchmap[newpos].used=true;
+					searchmap[newpos].cost=cost;
+					searchmap[newpos].previous=previous;
+					searchmap[newpos].deadend=false;
+					if (dif==0) searchmap[newpos].first_robotop=ROBOTOP_FORWARD;
+					if (dif==90) searchmap[newpos].first_robotop=ROBOTOP_RIGHT;
+					if (dif==180) searchmap[newpos].first_robotop=ROBOTOP_RIGHT;
+					if (dif==270) searchmap[newpos].first_robotop=ROBOTOP_LEFT;
+					searchmap[newpos].newpos=Vector((x+xd[i])*0.5,(y+yd[i])*0.5,0);
 
 					/* Continue the search process: */ 
 					if (depth>0) {
@@ -284,7 +266,7 @@ bool NETHER::AI_expandoperators(int x,int y,int angle,int traction,int previous,
 		} /* if */ 
 	} /* for */ 
 
-	searchmap[previous]->deadend=deadend;
+	searchmap[previous].deadend=deadend;
 
 	return deadend;
 } /* NETHER::AI_expandoperators */ 
@@ -305,12 +287,12 @@ int NETHER::AI_searchengine(Vector pos,int angle,int goaltype,Vector goalpos,int
 
 	/* Build a new AI_operator: */ 
 	offs=y*(map_w*2)+x;
-	searchmap[offs]->used=true;
-	searchmap[offs]->cost=0;
-	searchmap[offs]->previous=-1;
-	searchmap[offs]->first_robotop=ROBOTOP_NONE;
-	searchmap[offs]->newpos=pos;
-	searchmap[offs]->deadend=false;
+	searchmap[offs].used=true;
+	searchmap[offs].cost=0;
+	searchmap[offs].previous=-1;
+	searchmap[offs].first_robotop=ROBOTOP_NONE;
+	searchmap[offs].newpos=pos;
+	searchmap[offs].deadend=false;
 	AI_expandoperators(x,y,angle,traction,y*(map_w*2)+x,0,depth);
 
 #ifdef _WRITE_REPORT_
@@ -332,7 +314,7 @@ int NETHER::AI_searchengine(Vector pos,int angle,int goaltype,Vector goalpos,int
 				if ((x+i)>=0 && (x+i)<(map_w*2) &&
 					(y+j)>=0 && (y+j)<(map_h*2) &&
 					(i!=0 || j!=0)) {
-					op=searchmap[(y+j)*(map_w*2)+(x+i)];
+					op=&searchmap[(y+j)*(map_w*2)+(x+i)];
 					if (op->used) {
 						if (first ||
 							(op->deadend==bestop->deadend &&
@@ -354,9 +336,9 @@ int NETHER::AI_searchengine(Vector pos,int angle,int goaltype,Vector goalpos,int
 			AIOperator *prev;
 
 			prev=bestop;
-			while(bestop->previous!=-1 && searchmap[bestop->previous]->used) {
+			while(bestop->previous!=-1 && searchmap[bestop->previous].used) {
 				prev=bestop;
-				bestop=searchmap[bestop->previous];
+				bestop=&searchmap[bestop->previous];
 			} /* while */ 
 			rop=prev->first_robotop;
 
@@ -385,7 +367,7 @@ int NETHER::AI_searchengine(Vector pos,int angle,int goaltype,Vector goalpos,int
 				if ((x+i)>=0 && (x+i)<(map_w*2) &&
 					(y+j)>=0 && (y+j)<(map_h*2) &&
 					(i!=0 || j!=0)) {
-					op=searchmap[(y+j)*(map_w*2)+(x+i)];
+					op=&searchmap[(y+j)*(map_w*2)+(x+i)];
 					if (op->used) {
 						if (first ||
 							(op->deadend==bestop->deadend &&
@@ -407,9 +389,9 @@ int NETHER::AI_searchengine(Vector pos,int angle,int goaltype,Vector goalpos,int
 			AIOperator *prev;
 
 			prev=bestop;
-			while(bestop->previous!=-1 && searchmap[bestop->previous]->used) {
+			while(bestop->previous!=-1 && searchmap[bestop->previous].used) {
 				prev=bestop;
-				bestop=searchmap[bestop->previous];
+				bestop=&searchmap[bestop->previous];
 			} /* while */ 
 			rop=prev->first_robotop;
 
@@ -443,7 +425,7 @@ int NETHER::AI_searchengine(Vector pos,int angle,int goaltype,Vector goalpos,int
 				if ((x+i)>=0 && (x+i)<(map_w*2) &&
 					(y+j)>=0 && (y+j)<(map_h*2) &&
 					(i!=0 || j!=0)) {
-					op=searchmap[(y+j)*(map_w*2)+(x+i)];
+					op=&searchmap[(y+j)*(map_w*2)+(x+i)];
 					if (op->used) {
 						if (first ||
 							((op->deadend==bestop->deadend || (op->newpos+Vector(0.5,0.5,0)-goalpos).norma()==0) &&
@@ -470,9 +452,9 @@ int NETHER::AI_searchengine(Vector pos,int angle,int goaltype,Vector goalpos,int
 			AIOperator *prev;
 
 			prev=bestop;
-			while(bestop->previous!=-1 && searchmap[bestop->previous]->used) {
+			while(bestop->previous!=-1 && searchmap[bestop->previous].used) {
 				prev=bestop;
-				bestop=searchmap[bestop->previous];
+				bestop=&searchmap[bestop->previous];
 			} /* while */ 
 			rop=prev->first_robotop;
 
@@ -504,7 +486,7 @@ int NETHER::AI_searchengine(Vector pos,int angle,int goaltype,Vector goalpos,int
 				if ((x+i)>=0 && (x+i)<(map_w*2) &&
 					(y+j)>=0 && (y+j)<(map_h*2) &&
 					(i!=0 || j!=0)) {
-					op=searchmap[(y+j)*(map_w*2)+(x+i)];
+					op=&searchmap[(y+j)*(map_w*2)+(x+i)];
 					if (op->used) {
 						if (first ||
 							((op->deadend==bestop->deadend || (op->newpos+Vector(0.5,0.5,0)-goalpos).norma()==0) &&
@@ -540,9 +522,9 @@ int NETHER::AI_searchengine(Vector pos,int angle,int goaltype,Vector goalpos,int
 			AIOperator *prev;
 
 			prev=bestop;
-			while(bestop->previous!=-1 && searchmap[bestop->previous]->used) {
+			while(bestop->previous!=-1 && searchmap[bestop->previous].used) {
 				prev=bestop;
-				bestop=searchmap[bestop->previous];
+				bestop=&searchmap[bestop->previous];
 			} /* while */ 
 			rop=prev->first_robotop;
 
@@ -573,7 +555,7 @@ void NETHER::AI_resetsearch(Vector pos,int depth)
 		for(j=-depth;j<depth;j++) {
 			if ((x+i)>=0 && (x+i)<(map_w*2) &&
 				(y+j)>=0 && (y+j)<(map_h*2)) {
-				searchmap[(y+j)*(map_w*2)+(x+i)]->used=false;
+				searchmap[(y+j)*(map_w*2)+(x+i)].used=false;
 			} /* if */ 
 		} /* for */ 
 	} /* for */ 

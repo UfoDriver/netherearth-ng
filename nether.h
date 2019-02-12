@@ -208,7 +208,7 @@ private:
   /* Artificial intelligence variables: */
   std::vector<int> discreetmap;
   std::vector<int> bk_discreetmap;
-  AIOperator **searchmap;
+  std::vector<AIOperator> searchmap;
   std::vector<int> atackmap;
 
   friend class Menu;
