@@ -190,8 +190,7 @@ private:
 	int game_started;
 
 	/* Graphics: */ 
-	const int n_objs;
-	C3DObject **tile;
+  std::vector<C3DObject> tiles;
 	Shadow3DObject *ship;
   std::vector<Shadow3DObject> building_tiles;
 	const int n_pieces;

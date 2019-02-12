@@ -40,13 +40,15 @@ extern bool show_radar;
 
 const int N_BUILDINGS = 9;
 const int N_BULLETS = 3;
+const int N_OBJECTS = 12;
+
 
 #ifdef _WRITE_REPORT_
 FILE *debug_fp=0;
 #endif
 
 
-NETHER::NETHER(const std::string& mapname): menu(this), radar(this), n_objs(12), n_pieces(11)
+NETHER::NETHER(const std::string& mapname): menu(this), radar(this), n_pieces(11)
 {
 #ifdef _WRITE_REPORT_
 	debug_fp=fopen("report.txt","w");
@@ -260,19 +262,20 @@ void NETHER::loadObjects()
                       {0.0f, 0.733f, 0.0f},
                       {0.0f, 0.733f, 0.0f}};
 
-  tile = new C3DObject *[n_objs];
-  for (int i = 0; i < n_objs; i++) {
-    tile[i] = new C3DObject(tnames[i], "textures/", colors[i]);
-    tile[i]->normalize(0.50f);
-    tile[i]->makepositive();
+  tiles.reserve(N_OBJECTS);
+  for (int i = 0; i < N_OBJECTS; i++) {
+    C3DObject tile(tnames[i], "textures/", colors[i]);
+    tile.normalize(0.50f);
+    tile.makepositive();
+    tiles.push_back(tile);
   }
 
-  tile[4]->moveobject(Vector(0, 0, -0.05));
-  tile[5]->moveobject(Vector(0, 0, -0.05));
-  tile[6]->moveobject(Vector(0, 0, -0.05));
-  tile[7]->moveobject(Vector(0, 0, -0.05));
-  tile[8]->moveobject(Vector(0, 0, -0.05));
-  tile[9]->moveobject(Vector(0, 0, -0.05));
+  tiles[4].moveobject(Vector(0, 0, -0.05));
+  tiles[5].moveobject(Vector(0, 0, -0.05));
+  tiles[6].moveobject(Vector(0, 0, -0.05));
+  tiles[7].moveobject(Vector(0, 0, -0.05));
+  tiles[8].moveobject(Vector(0, 0, -0.05));
+  tiles[9].moveobject(Vector(0, 0, -0.05));
 
   building_tiles.reserve(N_BUILDINGS);
   for (int i = 0; i < N_BUILDINGS; i++) {
@@ -352,9 +355,7 @@ void NETHER::loadObjects()
 
 void NETHER::deleteObjects()
 {
-	for(int i=0; i < n_objs; i++) delete tile[i];
-	delete tile;
-	tile = 0;
+  tiles.clear();
 	delete ship;
 	ship = 0;
     building_tiles.clear();
@@ -372,8 +373,8 @@ void NETHER::deleteObjects()
 
 void NETHER::refresh_display_lists(void)
 {
-  for (int i = 0; i < n_objs; i++) {
-    tile[i]->refresh_display_lists();
+  for (C3DObject& tile: tiles) {
+    tile.refresh_display_lists();
   }
 
   ship->refresh_display_lists();
