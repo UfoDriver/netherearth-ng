@@ -335,12 +335,12 @@ void NETHER::loadObjects()
   for(int i=0;i<n_pieces;i++) piece_tile[1][i]->ComputeFixedShadows(lightposv);
   for (Piece3DObject& tile: bullet_tiles) tile.ComputeFixedShadows(lightposv);
 
-  construction_tile[0]=new C3DObject("models/construction1.asc","textures/");
-  construction_tile[1]=new C3DObject("models/construction2.asc","textures/");
-  construction_tile[2]=new C3DObject("models/construction3.asc","textures/");
-  construction_tile[0]->normalize(10.0);
-  construction_tile[1]->normalize(9.0);
-  construction_tile[2]->normalize(7.0);
+  construction_tiles.emplace_back("models/construction1.asc","textures/");
+  construction_tiles.emplace_back("models/construction2.asc","textures/");
+  construction_tiles.emplace_back("models/construction3.asc","textures/");
+  construction_tiles[0].normalize(10.0);
+  construction_tiles[1].normalize(9.0);
+  construction_tiles[2].normalize(7.0);
 
   message_tiles.reserve(3);
   message_tiles.emplace_back("models/go.ase","textures/");
@@ -364,12 +364,7 @@ void NETHER::deleteObjects()
 	delete piece_tile[1];
 	piece_tile[0]=0;
 	piece_tile[1]=0;
-	delete construction_tile[0];
-	delete construction_tile[1];
-	delete construction_tile[2];
-	construction_tile[0]=0;
-	construction_tile[1]=0;
-	construction_tile[2]=0;
+    construction_tiles.clear();
     message_tiles.clear();
     bullet_tiles.clear();
 }
@@ -377,28 +372,25 @@ void NETHER::deleteObjects()
 
 void NETHER::refresh_display_lists(void)
 {
-	int i;
- 
- 	for(i=0;i<n_objs;i++) {
- 		tile[i]->refresh_display_lists();
- 	} /* for */ 
- 
- 	ship->refresh_display_lists();
- 
- 	for (Shadow3DObject& tile: building_tiles) {
- 		tile.refresh_display_lists();
- 	}
- 
- 	for(i=0;i<n_pieces;i++) {
- 		piece_tile[0][i]->refresh_display_lists();
- 		piece_tile[1][i]->refresh_display_lists();
- 	} /* for */ 
- 
- 	for(i=0;i<3;i++) {
- 		construction_tile[i]->refresh_display_lists();
- 	} /* for */ 
-} /* NETHER::refresh_display_lists */ 
+  for (int i = 0; i < n_objs; i++) {
+    tile[i]->refresh_display_lists();
+  }
 
+  ship->refresh_display_lists();
+
+  for (Shadow3DObject& tile: building_tiles) {
+      tile.refresh_display_lists();
+  }
+
+  for (int i = 0; i < n_pieces; i++) {
+    piece_tile[0][i]->refresh_display_lists();
+    piece_tile[1][i]->refresh_display_lists();
+  }
+
+  for (C3DObject& tile: construction_tiles) {
+    tile.refresh_display_lists();
+  }
+}
 
 
 bool NETHER::gamecycle(int w, int h)
