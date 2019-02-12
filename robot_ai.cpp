@@ -77,7 +77,7 @@ void fill_zone(std::vector<int>& map, int w, int val, int x, int y, int dx, int 
 void NETHER::AI_precomputations(void)
 {
   discreetmap.clear();
-  discreetmap.reserve(map_w * 2 * map_h * 2);
+  discreetmap.resize(map_w * 2 * map_h * 2, 0);
   bk_discreetmap.clear();
   bk_discreetmap.reserve(map_w * 2 * map_h * 2);
   searchmap.reserve(map_w * 2 * map_h * 2);
