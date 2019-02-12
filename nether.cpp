@@ -342,13 +342,12 @@ void NETHER::loadObjects()
   construction_tile[1]->normalize(9.0);
   construction_tile[2]->normalize(7.0);
 
-  message_tile[0]=new C3DObject("models/go.ase","textures/");
-  message_tile[1]=new C3DObject("models/youwin.ase","textures/");
-  message_tile[2]=new C3DObject("models/gameover.ase","textures/");
-  message_tile[0]->normalize(4.0);
-  message_tile[1]->normalize(4.0);
-  message_tile[2]->normalize(4.0);
-} /* NETHER::loadobjects */ 
+  message_tiles.reserve(3);
+  message_tiles.emplace_back("models/go.ase","textures/");
+  message_tiles.emplace_back("models/youwin.ase","textures/");
+  message_tiles.emplace_back("models/gameover.ase","textures/");
+  for (auto& tile: message_tiles) tile.normalize(4.0);
+}
 
 
 void NETHER::deleteObjects()
@@ -371,9 +370,7 @@ void NETHER::deleteObjects()
 	construction_tile[0]=0;
 	construction_tile[1]=0;
 	construction_tile[2]=0;
-	delete message_tile[0];
-	delete message_tile[1];
-	delete message_tile[2];
+    message_tiles.clear();
     bullet_tiles.clear();
 }
 
@@ -570,7 +567,7 @@ void NETHER::draw(int width, int height)
 
 		if (game_started>40) glTranslatef(0,0,(game_started-40)*2);
 		if (game_started<20) glTranslatef(0,0,(20-game_started)*2);
-		message_tile[0]->draw(Color(1.0, 1.0, 1.0));
+		message_tiles[0].draw(Color(1.0, 1.0, 1.0));
 	} /* if */ 
 
 	if (game_finished>100) {
@@ -584,8 +581,8 @@ void NETHER::draw(int width, int height)
 
 		if (game_finished<120) glTranslatef(0,0,(120-game_finished)*2);
 		if (game_finished>240) glTranslatef(0,0,(game_finished-240)*2);
-		if (statistics[0][0]==0) message_tile[2]->draw(Color(1.0, 1.0, 1.0));
-        else message_tile[1]->draw(Color(1.0, 1.0, 1.0));
+		if (statistics[0][0]==0) message_tiles[2].draw(Color(1.0, 1.0, 1.0));
+        else message_tiles[1].draw(Color(1.0, 1.0, 1.0));
 	} /* if */ 
 
 	/* Draw the RADAR screen: */ 

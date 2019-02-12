@@ -197,7 +197,7 @@ private:
 	const int n_pieces;
 	Piece3DObject **piece_tile[2];
 	C3DObject *construction_tile[3];
-	C3DObject *message_tile[3];
+  std::vector<C3DObject> message_tiles;
   std::vector<Piece3DObject> bullet_tiles;
 
 	/* Status variables: */
