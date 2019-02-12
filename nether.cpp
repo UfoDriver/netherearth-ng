@@ -88,7 +88,7 @@ NETHER::NETHER(const std::string& mapname): menu(this), radar(this), n_pieces(11
 	/* Load map: */ 
 	if (!loadmap(mapname)) {
 		map_w=map_h=0;
-		map=0;
+		map.clear();
 	} /* if */ 
 
 #ifdef _WRITE_REPORT_
@@ -214,8 +214,7 @@ NETHER::~NETHER()
 #endif
 
 	/* Delete map: */ 
-	if (map!=0) delete map;
-	map=0;
+	map.clear();
 	map_w=map_h=0;
 
 #ifdef _WRITE_REPORT_

@@ -28,23 +28,16 @@ extern float MINY,MAXY,MINX,MAXX;
 
 bool NETHER::loadmap(const std::string& filename)
 {
-	FILE *fp;
-	int i;
-
-	fp=fopen(filename.c_str(),"r");
+	FILE *fp = fopen(filename.c_str(),"r");
 	if (fp==0) return false;
 
 	if (2!=fscanf(fp,"%i %i",&map_w,&map_h)) {
 		fclose(fp);
 		return false;
 	} /* if */ 
-	map=new int[map_w*map_h];
-	if (map==0) {
-		fclose(fp);
-		return false;
-	} /* if */ 
+	map.reserve(map_w * map_h);
 
-	for(i=0;i<map_w*map_h;i++) {
+	for (int i = 0; i < map_w * map_h; i++) {
 		int tile;
 		char tilestr[16];
 		const char *tiles[]={"G","S","S2","M","H1",

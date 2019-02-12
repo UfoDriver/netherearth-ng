@@ -157,7 +157,7 @@ private:
   SoundManager sManager;
 
 	int map_w,map_h;
-	int *map;
+  std::vector<int> map;
 	float lightpos[4];
 	Vector lightposv;
 	unsigned char old_keyboard[SDLK_LAST];
@@ -194,7 +194,7 @@ private:
 	Shadow3DObject *ship;
   std::vector<Shadow3DObject> building_tiles;
 	const int n_pieces;
-	Piece3DObject **piece_tile[2];
+  Piece3DObject **piece_tile[2];
   std::vector<C3DObject> construction_tiles;
   std::vector<C3DObject> message_tiles;
   std::vector<Piece3DObject> bullet_tiles;

@@ -146,8 +146,8 @@ bool NETHER::loadGame(const std::string& filename)
   buildings.clear();
   for(int i = 0; i < 2; i++) robots[i].clear();
   bullets.clear();
-  delete map;
-  map=new int[map_w*map_h];
+  map.clear();
+  map.reserve(map_w * map_h);
   for(int i = 0; i < map_h; i++) {
     for(int j = 0; j < map_w; j++) {
       if (1!=fscanf(fp,"%i",&(map[j+i*map_w]))) return false;
