@@ -170,7 +170,7 @@ private:
   int ship_timemoving;
 
   std::vector<Building> buildings;
-  std::vector<Robot> robots[2];
+  std::vector<Robot *> robots[2];
   std::vector<Bullet> bullets;
   std::vector<Explosion> explosions;
   std::vector<Particle> particles;

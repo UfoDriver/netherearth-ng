@@ -957,15 +957,15 @@ int NETHER::AI_program_destroy(int goal,Vector *program_goal,Vector pos,int angl
 			for(i=0;i<map_w*2*map_h*2;i++) atackmap[i]=0;
 
 			/* Find the nearest FIRE position: */ 
-			for (Robot& r: robots[2 - player]) {
+			for (Robot* r: robots[2 - player]) {
 				if (first ||
 					(*program_goal-pos).norma()<distance) {
 					first=false;
 					distance=float((*program_goal-pos).norma());
-					*program_goal=r.pos;
+					*program_goal=r->pos;
 				} /* if */ 
 
-				robot_zone(r.pos,&x,&y,&dx,&dy);
+				robot_zone(r->pos,&x,&y,&dx,&dy);
 				for(i=0;i<dx;i++) {
 					for(j=0;j<dy;j++) {
 						collided=false;
@@ -1117,8 +1117,8 @@ int NETHER::AI_program_stopdefend(Vector *program_goal,Vector pos,int angle,int 
 		for(i=0;i<map_w*2*map_h*2;i++) atackmap[i]=0;
 
 		/* Find the nearest FIRE position: */ 
-		for (Robot& r: robots[2 - player]) {
-			robot_zone(r.pos,&x,&y,&dx,&dy);
+		for (Robot* r: robots[2 - player]) {
+			robot_zone(r->pos,&x,&y,&dx,&dy);
 			for(i=0;i<dx;i++) {
 				for(j=0;j<dy;j++) {
 					collided=false;

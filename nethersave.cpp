@@ -70,27 +70,27 @@ bool NETHER::save_game(char *filename)
 
   for (int i = 0; i < 2; i++) {
     fprintf(fp,"%i\n",robots[i].size());
-    for (Robot& r: robots[i]) {
-      fprintf(fp,"%i\n",r.traction);
+    for (Robot* r: robots[i]) {
+      fprintf(fp,"%i\n",r->traction);
       for (int j = 0; j < 5; j++) {
-        if (r.pieces[j])
+        if (r->pieces[j])
           fprintf(fp,"1\n");
         else
           fprintf(fp,"0\n");
       }
-      fprintf(fp,"%i %i\n",r.program,r.program_parameter);
-      r.program_goal.save(fp);
-      fprintf(fp,"%i\n",r.op);
-      if (r.shipover)
+      fprintf(fp,"%i %i\n",r->program,r->program_parameter);
+      r->program_goal.save(fp);
+      fprintf(fp,"%i\n",r->op);
+      if (r->shipover)
         fprintf(fp,"1\n");
       else
         fprintf(fp,"0\n");
-      fprintf(fp,"%i %i\n",r.firetimer,r.strength);
-      r.pos.save(fp);
-      fprintf(fp,"%i\n",r.angle);
-      r.cmc.save(fp);
+      fprintf(fp,"%i %i\n",r->firetimer,r->strength);
+      r->pos.save(fp);
+      fprintf(fp,"%i\n",r->angle);
+      r->cmc.save(fp);
 
-      fprintf(fp,"%i %i\n",r.electronics_state,r.chassis_state);
+      fprintf(fp,"%i %i\n",r->electronics_state,r->chassis_state);
     }
   }
 
@@ -99,10 +99,10 @@ bool NETHER::save_game(char *filename)
   for (Bullet& bullet: bullets) {
     fprintf(fp,"%i %i %i\n", bullet.type, bullet.step, bullet.angle);
     bullet.pos.save(fp);
-    int i = find_index(robots[0], *bullet.owner);
+    int i = find_index(robots[0], bullet.owner);
     if (i==-1) {
-      i = find_index(robots[1], *bullet.owner);
-      fprintf(fp,"1 %i\n",i);
+      i = find_index(robots[1], bullet.owner);
+      fprintf(fp,"1 %i\n", bullet.owner->getId());
     } else {
       fprintf(fp,"0 %i\n",i);
     }
@@ -122,7 +122,7 @@ bool NETHER::save_game(char *filename)
     }
     fprintf(fp,"\n");
   }
-  fprintf(fp,"%i\n", find_index(robots[0], *controlled));
+  fprintf(fp,"%i\n", find_index(robots[0], controlled));
 
   fprintf(fp,"%i %i\n",menu.act_menu,menu.act_button);
 
@@ -144,7 +144,10 @@ bool NETHER::loadGame(const std::string& filename)
 
   explosions.clear();
   buildings.clear();
-  for(int i = 0; i < 2; i++) robots[i].clear();
+  for(int i = 0; i < 2; i++) {
+    for (Robot* r: robots[i]) delete r;
+    robots[i].clear();
+  }
   bullets.clear();
   map.clear();
   map.reserve(map_w * map_h);
@@ -177,29 +180,29 @@ bool NETHER::loadGame(const std::string& filename)
   for (int i = 0; i < 2; i++) {
     if (1!=fscanf(fp,"%i",&length)) return false;
     for (int k = 0; k < length; k++) {
-      Robot r;
-      if (1!=fscanf(fp,"%i", &r.traction)) return false;
+      Robot* r = new Robot();
+      if (1!=fscanf(fp,"%i", &r->traction)) return false;
       for (int j = 0; j < 5; j++) {
         if (1!=fscanf(fp,"%i",&booltmp)) return false;
         if (booltmp==1)
-          r.pieces[j]=true;
+          r->pieces[j]=true;
         else
-          r.pieces[j]=false;
+          r->pieces[j]=false;
       }
-      if (2!=fscanf(fp,"%i %i",&r.program,&r.program_parameter)) return false;
-      r.program_goal.load(fp);
-      if (1!=fscanf(fp,"%i\n",&r.op)) return false;
+      if (2!=fscanf(fp,"%i %i",&r->program,&r->program_parameter.as_int)) return false;
+      r->program_goal.load(fp);
+      if (1!=fscanf(fp,"%i\n",&r->op)) return false;
       if (1!=fscanf(fp,"%i",&booltmp)) return false;
       if (booltmp==1)
-        r.shipover=true;
+        r->shipover=true;
       else
-        r.shipover=false;
-      if (2!=fscanf(fp,"%i %i",&r.firetimer,&r.strength)) return false;
-      r.pos.load(fp);
-      if (1!=fscanf(fp,"%i",&r.angle)) return false;
-      r.cmc.load(fp);
+        r->shipover=false;
+      if (2!=fscanf(fp,"%i %i",&r->firetimer,&r->strength)) return false;
+      r->pos.load(fp);
+      if (1!=fscanf(fp,"%i",&r->angle)) return false;
+      r->cmc.load(fp);
 
-      if (2!=fscanf(fp,"%i %i",&r.electronics_state,&r.chassis_state)) return false;
+      if (2!=fscanf(fp,"%i %i",&r->electronics_state,&r->chassis_state)) return false;
 
       robots[i].push_back(r);
     }
@@ -213,7 +216,7 @@ bool NETHER::loadGame(const std::string& filename)
     if (3!=fscanf(fp,"%i %i %i", &bullet.type, &bullet.step, &bullet.angle)) return false;
     bullet.pos.load(fp);
     if (2!=fscanf(fp,"%i %i", &j, &i )) return false;
-    if (i >= 0) bullet.owner=&robots[j][i];
+    if (i >= 0) bullet.owner=robots[j][i];
       else bullet.owner=0;
       bullet.cmc.load(fp);
       bullets.push_back(bullet);
@@ -236,7 +239,7 @@ bool NETHER::loadGame(const std::string& filename)
   int i;
   if (1!=fscanf(fp,"%i",&i)) return false;
   if ( i>=0 )
-    controlled=&robots[0][i];
+    controlled=robots[0][i];
   else
     controlled=0;
 

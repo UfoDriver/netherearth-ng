@@ -251,15 +251,15 @@ bool NETHER::robotCollision(Robot *r, bool complete)
   }
 
   for (int i = 0; i < 2; i++) {
-    for(Robot& rt: robots[i]) {
-      if (((rt.pos.x-r->pos.x)*(rt.pos.x-r->pos.x)+
-           (rt.pos.y-r->pos.y)*(rt.pos.y-r->pos.y)+
-           (rt.pos.z-r->pos.z)*(rt.pos.z-r->pos.z))<COLISION_TEST_THRESHOLD) {
-        if (&rt != r) {
-          m2[12]=rt.pos.x;
-          m2[13]=rt.pos.y;
-          m2[14]=rt.pos.z;
-          if (r->cmc.collision_simple(m1,&(rt.cmc),m2)) return true;
+    for(Robot* rt: robots[i]) {
+      if (((rt->pos.x-r->pos.x)*(rt->pos.x-r->pos.x)+
+           (rt->pos.y-r->pos.y)*(rt->pos.y-r->pos.y)+
+           (rt->pos.z-r->pos.z)*(rt->pos.z-r->pos.z))<COLISION_TEST_THRESHOLD) {
+        if (rt != r) {
+          m2[12]=rt->pos.x;
+          m2[13]=rt->pos.y;
+          m2[14]=rt->pos.z;
+          if (r->cmc.collision_simple(m1,&(rt->cmc),m2)) return true;
         }
       }
     }

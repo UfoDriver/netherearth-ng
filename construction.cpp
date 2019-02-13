@@ -327,7 +327,7 @@ bool NETHER::construction_cycle(unsigned char *keyboard)
       r->shipover=false;
 
       if (!robotCollision(r,true)) {
-        robots[0].push_back(*r);
+        robots[0].push_back(r);
         AI_newrobot(r->pos,0);
 
         in_construction.cost(0, cost, resources);

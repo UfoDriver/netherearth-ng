@@ -29,6 +29,8 @@ public:
   void cost(int player, int* res, int resources[2][7]);
   bool operator==(const Robot& other) const { return id == other.id; };
 
+  int getId() const { return id; }
+
   int traction;
   bool pieces[5];
 

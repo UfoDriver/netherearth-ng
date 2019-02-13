@@ -75,29 +75,29 @@ bool NETHER::saveDebugReport(const std::string& filename)
 
     const char* tractions[3] = {"BIPOD", "TRACKS", "ANTIGRAV"};
     const char* pieces[5] = {"CANNONS", "MISSILES", "PHASERS", "NUCLEAR", "ELECTRONICS"};
-    for (Robot& r: robots[i]) {
+    for (Robot* r: robots[i]) {
       log << "ROBOT:\n";
-      log << ' ' << tractions[r.traction] << '\n';
+      log << ' ' << tractions[r->traction] << '\n';
       for (int j = 0; j < 5; j++) {
-        if (r.pieces[j])
+        if (r->pieces[j])
           log << ' ' << pieces[j] << '\n';
       }
-      log << " PROGRAM: " << r.program << "\n PROGRAM PARAMETER: " << r.program_parameter.as_int << '\n';
+      log << " PROGRAM: " << r->program << "\n PROGRAM PARAMETER: " << r->program_parameter.as_int << '\n';
       log << " PROGRAM GOAL: ";
-      log << r.program_goal;
-      log << " ACTUAL OPERATOR: " << r.op << '\n';
-      if (r.shipover)
+      log << r->program_goal;
+      log << " ACTUAL OPERATOR: " << r->op << '\n';
+      if (r->shipover)
         log << " HAS THE SHIP OVER IT\n";
       else
         log << " HAS NO SHIP OVER IT\n";
-      log << " FIRETIMER: " << r.firetimer << "\n STRENGTH: " << r.strength << '\n';
+      log << " FIRETIMER: " << r->firetimer << "\n STRENGTH: " << r->strength << '\n';
       log << " POSITION: ";
-      log << r.pos;
-      log << " ANGLE: " << r.angle << '\n';
+      log << r->pos;
+      log << " ANGLE: " << r->angle << '\n';
       log << " MINIMUM CONTAINER BOX: \n";
-      log << r.cmc;
-      log << " ELECTRONICS STATE: " << r.electronics_state
-          <<"\n CHASSIS STATE: " << r.chassis_state;
+      log << r->cmc;
+      log << " ELECTRONICS STATE: " << r->electronics_state
+          <<"\n CHASSIS STATE: " << r->chassis_state;
       log << "\n\n";
     }
   }
@@ -110,11 +110,10 @@ bool NETHER::saveDebugReport(const std::string& filename)
     log << " POSITION: ";
     log << bullet.pos;
 
-    int pos = find_index(robots[0], *bullet.owner);
-    if (pos == -1) {
-      log << " OWNER: PLAYER 0 ROBOT " << (find_index(robots[1], *bullet.owner)) << '\n';
+    if (std::count(robots[0].cbegin(), robots[0].cend(), bullet.owner)) {
+      log << " OWNER: PLAYER 0 ROBOT " << bullet.owner->getId() << '\n';
     } else {
-      log << " OWNER: PLAYER 1 ROBOT " << pos << '\n';
+      log << " OWNER: PLAYER 1 ROBOT " << bullet.owner->getId() << '\n';
     }
 
     log << " MINIMUM CONTAINER BOX: \n";
@@ -140,8 +139,7 @@ bool NETHER::saveDebugReport(const std::string& filename)
     log << '\n';
   }
 
-  int index = find_index(robots[0], *controlled);
-  log << "\nROBOT UNDER CONTROL: " << index << "\n";
+  log << "\nROBOT UNDER CONTROL: " << controlled->getId() << "\n";
   log << "\nMENU " << menu.act_menu << "\nACT BUTTON: " << menu.act_button << "\n";
 
   return true;

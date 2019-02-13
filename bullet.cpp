@@ -170,8 +170,6 @@ void Bullet::drawParticles(std::vector<Particle>& particles) const
 
 bool NETHER::bulletCollision(const Bullet& bullet, Robot **r)
 {
-  List<Robot> l2;
-  Robot *rt;
   float m1[16]={1, 0, 0, 0,
                 0, 1, 0, 0,
                 0, 0, 1, 0,
@@ -180,7 +178,6 @@ bool NETHER::bulletCollision(const Bullet& bullet, Robot **r)
                 0, 1, 0, 0,
                 0, 0, 1, 0,
                 0, 0, 0, 1};
-  *r=0;
 
   for (const Building& b: buildings) {
     // @TODO: vector methods?
@@ -264,17 +261,17 @@ bool NETHER::bulletCollision(const Bullet& bullet, Robot **r)
 
   /* Collision with the robots: */
   for (int i = 0; i < 2; i++) {
-    for (Robot& rt: robots[i]) {
+    for (Robot* rt: robots[i]) {
       // @TODO: evaluate vector's method or create new one
-      if (((rt.pos.x-bullet.pos.x)*(rt.pos.x-bullet.pos.x)+
-           (rt.pos.y-bullet.pos.y)*(rt.pos.y-bullet.pos.y)+
-           (rt.pos.z-bullet.pos.z)*(rt.pos.z-bullet.pos.z))<COLISION_TEST_THRESHOLD) {
-        if (&rt != bullet.owner) {
-          m2[12]=rt.pos.x;
-          m2[13]=rt.pos.y;
-          m2[14]=rt.pos.z;
-          if (bullet.cmc.collision_simple(m1,&(rt.cmc),m2)) {
-            *r=&rt;
+      if (((rt->pos.x - bullet.pos.x) * (rt->pos.x - bullet.pos.x) +
+           (rt->pos.y - bullet.pos.y) * (rt->pos.y - bullet.pos.y) +
+           (rt->pos.z - bullet.pos.z) * (rt->pos.z-bullet.pos.z)) < COLISION_TEST_THRESHOLD) {
+        if (rt != bullet.owner) {
+          m2[12] = rt->pos.x;
+          m2[13] = rt->pos.y;
+          m2[14] = rt->pos.z;
+          if (bullet.cmc.collision_simple(m1,&(rt->cmc),m2)) {
+            *r=rt;
             return true;
           } /* if */
         } /* if */
