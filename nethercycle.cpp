@@ -1057,7 +1057,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 						Vector pos(r->pos);
 						pos.z = r->piecez(0) + 0.3f;
 						Bullet bullet(Bullet::BULLET_CANNONS, pos, r->angle, r);
-						bullet.cmc = BulletCMC(&bullet);
+						bullet.computeCMC(bullet_tiles);
 						bullets.push_back(bullet);
                         sManager.playShot(shipp, r->pos);
 					} /* if */ 
@@ -1066,7 +1066,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 						Vector pos (r->pos);
 						pos.z = r->piecez(1) + 0.2f;
                         Bullet bullet(Bullet::BULLET_MISSILES, pos, r->angle, r);
-						bullet.cmc=BulletCMC(&bullet);
+						bullet.computeCMC(bullet_tiles);
 						bullets.push_back(bullet);
                         sManager.playShot(shipp, r->pos);
 					} /* if */ 
@@ -1075,7 +1075,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 						Vector pos(r->pos);
 						pos.z = r->piecez(2) + 0.3f;
 						Bullet bullet(Bullet::BULLET_PHASERS, pos, r->angle, r);
-						bullet.cmc=BulletCMC(&bullet);
+						bullet.computeCMC(bullet_tiles);
 						bullets.push_back(bullet);
                         sManager.playShot(shipp, r->pos);
 					} /* if */ 

@@ -58,6 +58,7 @@ public:
   Vector pos;
   int angle;
   CMC cmc;
+  void calculateCMC(std::vector<Piece3DObject>& pieceTiles);
 
   /* Animation variables: */
   int electronics_state;

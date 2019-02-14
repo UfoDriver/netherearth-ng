@@ -129,25 +129,24 @@ void CMC::set(float *px,float *py,float *pz,int np)
 } /* CMC::set */ 
 
 
-void CMC::expand(CMC *o2,float *m)
+void CMC::expand(CMC *o2, float *m)
 {
-	float v[4],out[4];
-	int i;
+  float v[4], out[4];
 
-	for(i=0;i<8;i++) {
-		v[0]=((i&1)==0 ? o2->x[0]:o2->x[1]);
-		v[1]=((i&2)==0 ? o2->y[0]:o2->y[1]);
-		v[2]=((i&4)==0 ? o2->z[0]:o2->z[1]);
-		v[3]=1;
-		ApplyMatrix(v,m,out);
-		if (out[0]<x[0]) x[0]=out[0];
-		if (out[0]>x[1]) x[1]=out[0];
-		if (out[1]<y[0]) y[0]=out[1];
-		if (out[1]>y[1]) y[1]=out[1];
-		if (out[2]<z[0]) z[0]=out[2];
-		if (out[2]>z[1]) z[1]=out[2];
-	} /* for */ 
-} /* expand */ 
+  for (int i = 0; i < 8; i++) {
+    v[0] =((i & 1)== 0 ? o2->x[0] : o2->x[1]);
+    v[1] =((i & 2)== 0 ? o2->y[0] : o2->y[1]);
+    v[2] = ((i & 4)==0 ? o2->z[0] : o2->z[1]);
+    v[3] = 1;
+    ApplyMatrix(v, m, out);
+    if (out[0] < x[0]) x[0] = out[0];
+    if (out[0] > x[1]) x[1] = out[0];
+    if (out[1] < y[0]) y[0] = out[1];
+    if (out[1] > y[1]) y[1] = out[1];
+    if (out[2] < z[0]) z[0] = out[2];
+    if (out[2] > z[1]) z[1] = out[2];
+  }
+}
 
 
 void CMC::drawabsolute(float r,float g,float b)

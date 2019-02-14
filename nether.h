@@ -117,9 +117,6 @@ private:
 	bool robotCollision(Robot *r,bool complete);
 	bool bulletCollision(const Bullet& b, Robot **r);
 
-	CMC  RobotCMC(Robot *r,int owner);
-	CMC  BulletCMC(Bullet *r);
-
 	void AI_enemy();
 	Robot* AI_enemy_newrobot(int state,Vector pos);
 	void AI_precomputations();

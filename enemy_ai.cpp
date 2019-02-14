@@ -76,7 +76,7 @@ void NETHER::AI_enemy()
 	tmpr->angle=0;
 	tmpr->program=Robot::PROGRAM_FORWARD;
 	tmpr->op=ROBOTOP_NONE;
-	tmpr->cmc=RobotCMC(tmpr,1);
+	tmpr->calculateCMC(piece_tiles[1]);
 	tmpr->shipover=false;
 
 
@@ -466,7 +466,7 @@ Robot *NETHER::AI_enemy_newrobot(int state,Vector pos)
 		r->angle=0;
 		r->program=Robot::PROGRAM_FORWARD;
 		r->op=ROBOTOP_NONE;
-		r->cmc=RobotCMC(r,1);
+		r->calculateCMC(piece_tiles[1]);
 		r->shipover=false;
 
 		if (!robotCollision(r,true)) {

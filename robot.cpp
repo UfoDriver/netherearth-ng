@@ -408,3 +408,47 @@ int Robot::robotRotationSpeed(int terrain) const
 bool Robot::walkable(int terrain) const {
   return robotSpeed(terrain) !=0;
 }
+
+
+void Robot::calculateCMC(std::vector<Piece3DObject>& pieceTiles)
+{
+  float m[16] = {1, 0, 0, 0,
+                 0, 1, 0, 0,
+                 0, 0, 1, 0,
+                 0, 0, 0, 1};
+
+  switch(traction) {
+  case 0:
+    cmc = pieceTiles[0].cmc;
+    m[14] = 1.0;
+    break;
+  case 1:
+    cmc = pieceTiles[1].cmc;
+    m[14] = 0.35;
+    break;
+  case 2:
+    cmc = pieceTiles[2].cmc;
+    m[14] = 0.45;
+    break;
+  }
+
+  if (pieces[0]) {
+    cmc.expand(&(pieceTiles[3].cmc), m);
+    m[14] += 0.5;
+  }
+  if (pieces[1]) {
+    cmc.expand(&(pieceTiles[4].cmc), m);
+    m[14] += 0.35;
+  }
+  if (pieces[2]) {
+    cmc.expand(&(pieceTiles[5].cmc), m);
+    m[14] += 0.5;
+  }
+  if (pieces[3]) {
+    cmc.expand(&(pieceTiles[6].cmc), m);
+    m[14] += 0.8;
+  }
+  if (pieces[4]) {
+    cmc.expand(&(pieceTiles[7].cmc), m);
+  }
+}

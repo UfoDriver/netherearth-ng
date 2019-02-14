@@ -27,53 +27,6 @@
 extern int detaillevel;
 
 
-CMC NETHER::RobotCMC(Robot *r,int owner)
-{
-	CMC cmc;
-	float m[16]={1,0,0,0,
-				 0,1,0,0,
-				 0,0,1,0,
-				 0,0,0,1};
-
-	switch(r->traction) {
-	case 0:
-		cmc=piece_tiles[owner][0].cmc;
-		m[14]=1.0;
-		break;
-	case 1:
-		cmc=piece_tiles[owner][1].cmc;
-		m[14]=0.35;
-		break;
-	case 2:
-		cmc=piece_tiles[owner][2].cmc;
-		m[14]=0.45;
-		break;
-	} /* switch */ 
-
-	if (r->pieces[0]) {
-		cmc.expand(&(piece_tiles[owner][3].cmc),m);
-		m[14]+=0.5;
-	} /* if */ 
-	if (r->pieces[1]) {
-		cmc.expand(&(piece_tiles[owner][4].cmc),m);
-		m[14]+=0.35;
-	} /* if */ 
-	if (r->pieces[2]) {
-		cmc.expand(&(piece_tiles[owner][5].cmc),m);
-		m[14]+=0.5;
-	} /* if */ 
-	if (r->pieces[3]) {
-		cmc.expand(&(piece_tiles[owner][6].cmc),m);
-		m[14]+=0.8;
-	} /* if */ 
-	if (r->pieces[4]) {
-		cmc.expand(&(piece_tiles[owner][7].cmc),m);
-	} /* if */ 
-
-	return cmc;
-} /* ROBOT::buildCMC */ 
-
-
 bool NETHER::robotCollision(Robot *r, bool complete)
 {
   float m1[16] = {1, 0, 0, 0,

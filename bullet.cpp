@@ -54,47 +54,37 @@ Bullet::Bullet(std::istream& in, std::vector<Robot*> robots[2])
 }
 
 
-CMC NETHER::BulletCMC(Bullet *b)
+void Bullet::computeCMC(std::vector<Piece3DObject>& bulletTiles)
 {
-	CMC cmc;
-	float m[16]={1,0,0,0,
-				 0,1,0,0,
-				 0,0,1,0,
-				 0,0,0,1};
+  float m[16] = {1, 0, 0, 0,
+                 0, 1, 0, 0,
+                 0, 0, 1, 0,
+                 0, 0, 0, 1};
+  Quaternion q;
 
-	/* compute CMC: */ 
-	switch(b->type) {
-	case 0:/* CANNON: */ 
-		m[13]=0.2;
-		cmc.expand(&(bullet_tiles[0].cmc),m);
-		m[13]=-0.2;
-		cmc.expand(&(bullet_tiles[0].cmc),m);
-		break;
-	case 1:/* MISSILES: */ 
-		{
-			Quaternion q;
-
-			q.from_axis_angle(Vector(0,0,1),3.141592f);
-			q.to_matrix(m);
-			m[13]+=0.33;
-			cmc.expand(&(bullet_tiles[1].cmc),m);
-			m[13]-=0.66;
-			cmc.expand(&(bullet_tiles[1].cmc),m);
-		}
-		break;
-	case 2:/* PHASERS: */ 
-		{
-			Quaternion q;
-
-			q.from_axis_angle(Vector(0,0,1),3.141592f/2);
-			q.to_matrix(m);
-			cmc.expand(&(bullet_tiles[2].cmc),m);
-		}
-		break;
-	} /* switch */ 
-
-	return cmc;
-} /* BULLET::BULLET */ 
+  // compute CMC:
+  switch(type) {
+  case 0: // CANNON:
+    m[13] = 0.2;
+    cmc.expand(&(bulletTiles[0].cmc), m);
+    m[13] = -0.2;
+    cmc.expand(&(bulletTiles[0].cmc), m);
+    break;
+  case 1: // MISSILES:
+    q.from_axis_angle(Vector(0,0,1), 3.141592f);
+    q.to_matrix(m);
+    m[13] += 0.33;
+    cmc.expand(&(bulletTiles[1].cmc), m);
+    m[13] -= 0.66;
+    cmc.expand(&(bulletTiles[1].cmc), m);
+    break;
+  case 2: // PHASERS:
+    q.from_axis_angle(Vector(0, 0, 1), 3.141592f/2);
+    q.to_matrix(m);
+    cmc.expand(&(bulletTiles[2].cmc), m);
+    break;
+  }
+}
 
 
 void Bullet::draw(bool shadows, std::vector<Piece3DObject>& bullet_tiles,

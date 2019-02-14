@@ -17,7 +17,6 @@ public:
   explicit Bullet(std::istream& in, std::vector<Robot*> robot[2]);
   void draw(bool shadow, std::vector<Piece3DObject>& bullet_tiles, std::vector<Particle>& particles) const;
 
-
   BULLET_TYPE type;
   int step;
 
@@ -26,6 +25,7 @@ public:
   Robot *owner;	/* The robot who fired this bullet */
 
   CMC cmc;
+  void computeCMC(std::vector<Piece3DObject>& bulletTiles);
 
 private:
   void drawParticles(std::vector<Particle>& particles) const;
