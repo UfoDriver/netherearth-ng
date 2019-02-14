@@ -228,7 +228,7 @@ int main(int argc, char** argv)
 				if ((act_time-time)>50*REDRAWING_PERIOD) time=act_time;
 			
 				if (game!=0) {
-					if (!game->gamecycle(SCREEN_X,SCREEN_Y)) {
+					if (!game->gamecycle()) {
 						delete game;
 						game=0;
 						mainmenu_status=0;

@@ -22,6 +22,7 @@
 #include "myglutaux.h"
 #include "nether.h"
 #include "bullet.h"
+#include "utils.h"
 
 #include "glprintf.h"
 
@@ -36,6 +37,20 @@ Bullet::Bullet(): type(BULLET_CANNONS), step(0), angle(0), owner(0)
 Bullet::Bullet(BULLET_TYPE type, Vector position, int angle, Robot *robot):
   type(type), step(0), pos(position), angle(angle), owner(robot)
 {
+}
+
+
+Bullet::Bullet(std::istream& in, std::vector<Robot*> robots[2])
+{
+  int i, j;
+  in >> type >> step >> angle;
+  in >> pos;
+  in >> j >> i;
+  if (i >= 0)
+    owner = robots[j][i];
+  else
+    owner = 0;
+  in >> cmc;
 }
 
 

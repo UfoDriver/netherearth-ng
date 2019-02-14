@@ -127,3 +127,8 @@ std::ostream& operator<<(std::ostream& out, const Vector& vector)
       << '\n';
   return out;
 }
+
+std::istream& operator>>(std::istream& in, Vector& vector)
+{
+  return in >> vector.x >> vector.y >> vector.z;
+}

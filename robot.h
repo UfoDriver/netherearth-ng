@@ -21,6 +21,7 @@ public:
                       P_PARAM_NFACTORIES,
                       P_PARAM_EFACTORIES};
   Robot();
+  explicit Robot(std::istream& in);
   bool valid();
   float piecez(int piece);
   bool bulletHit(Bullet::BULLET_TYPE type);

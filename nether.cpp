@@ -394,19 +394,12 @@ void NETHER::refresh_display_lists(void)
 }
 
 
-bool NETHER::gamecycle(int w, int h)
+bool NETHER::gamecycle()
 {
   bool retval = true;
-  unsigned char *keyboard;
 
   SDL_PumpEvents();
-  keyboard = SDL_GetKeyState(NULL);
-
-#ifdef _WRITE_REPORT_
-  fprintf(debug_fp,"Cycle start.\n");
-  fprintf(debug_fp,"game_state: %i\n",game_state);
-  fflush(debug_fp);
-#endif
+  unsigned char* keyboard = SDL_GetKeyState(NULL);
 
   switch(game_state) {
   case STATE_PLAYING:
@@ -424,11 +417,6 @@ bool NETHER::gamecycle(int w, int h)
 
   for (int i = 0; i < SDLK_LAST; i++)
     old_keyboard[i] = keyboard[i];
-
-#ifdef _WRITE_REPORT_
-  fprintf(debug_fp,"Cycle end: %i\n",retval);
-  fflush(debug_fp);
-#endif
 
   return retval;
 }

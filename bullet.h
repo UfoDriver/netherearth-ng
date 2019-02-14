@@ -14,6 +14,7 @@ public:
   enum BULLET_TYPE {BULLET_CANNONS, BULLET_MISSILES, BULLET_PHASERS};
   Bullet();
   Bullet(BULLET_TYPE type, Vector position, int angle, Robot *robot);
+  explicit Bullet(std::istream& in, std::vector<Robot*> robot[2]);
   void draw(bool shadow, std::vector<Piece3DObject>& bullet_tiles, std::vector<Particle>& particles) const;
 
 

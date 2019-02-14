@@ -132,119 +132,75 @@ bool NETHER::save_game(char *filename)
 
 bool NETHER::loadGame(const std::string& filename)
 {
-  int booltmp,length;
-  FILE *fp;
-
-  fp=fopen(filename.c_str(),"r");
-  if (fp==0) return false;
+  std::ifstream inFile(filename);
 
   AI_deleteprecomputations();
-  if (2!=fscanf(fp,"%i %i",&map_w,&map_h)) return false;
+
+  inFile >> map_w >> map_h;
 
   explosions.clear();
   buildings.clear();
-  for(int i = 0; i < 2; i++) {
+  for (int i = 0; i < 2; i++) {
     for (Robot* r: robots[i]) delete r;
     robots[i].clear();
   }
   bullets.clear();
   map.clear();
   map.reserve(map_w * map_h);
-  for(int i = 0; i < map_h; i++) {
-    for(int j = 0; j < map_w; j++) {
-      if (1!=fscanf(fp,"%i",&(map[j+i*map_w]))) return false;
+  for (int i = 0; i < map_h; i++) {
+    for (int j = 0; j < map_w; j++) {
+      inFile >> map[j + i * map_w];
     }
   }
-  if (4!=fscanf(fp,"%f %f %f %f",&(lightpos[0]),&(lightpos[1]),&(lightpos[2]),&(lightpos[3]))) return false;
-  lightposv.load(fp);
 
-  if (!camera.load(fp) ||
-      !viewp.load(fp) ||
-      !shipp.load(fp)) return false;
-  if (1!=fscanf(fp,"%i",&booltmp)) return false;
-  if (booltmp==1) shiplanded=true;
-  else shiplanded=false;
+  inFile >> lightpos[0] >> lightpos[1] >> lightpos[2] >> lightpos[3];
+  inFile >> lightposv
+         >> camera
+         >> viewp
+         >> shipp;
 
-  if (1!=fscanf(fp,"%i",&length)) return false;
+  inFile >> shiplanded;
+
+  int length;
+  inFile >> length;
   for (int k = 0; k < length; k++) {
-    Building::BUILDINGS_AND_WALLS type;
-    int owner;
-    int status;
-    if (3!=fscanf(fp,"%i %i %i", &type, &owner, &status)) return false;
-    Building b(Vector(0, 0, 0), type, owner, status);
-    if (!b.pos.load(fp)) return false;
-    buildings.push_back(b);
+    buildings.push_back(Building(inFile));
   }
 
   for (int i = 0; i < 2; i++) {
-    if (1!=fscanf(fp,"%i",&length)) return false;
+    inFile >> length;
     for (int k = 0; k < length; k++) {
-      Robot* r = new Robot();
-      if (1!=fscanf(fp,"%i", &r->traction)) return false;
-      for (int j = 0; j < 5; j++) {
-        if (1!=fscanf(fp,"%i",&booltmp)) return false;
-        if (booltmp==1)
-          r->pieces[j]=true;
-        else
-          r->pieces[j]=false;
-      }
-      if (2!=fscanf(fp,"%i %i",&r->program,&r->program_parameter.as_int)) return false;
-      r->program_goal.load(fp);
-      if (1!=fscanf(fp,"%i\n",&r->op)) return false;
-      if (1!=fscanf(fp,"%i",&booltmp)) return false;
-      if (booltmp==1)
-        r->shipover=true;
-      else
-        r->shipover=false;
-      if (2!=fscanf(fp,"%i %i",&r->firetimer,&r->strength)) return false;
-      r->pos.load(fp);
-      if (1!=fscanf(fp,"%i",&r->angle)) return false;
-      r->cmc.load(fp);
-
-      if (2!=fscanf(fp,"%i %i",&r->electronics_state,&r->chassis_state)) return false;
-
-      robots[i].push_back(r);
+      robots[i].push_back(new Robot(inFile));
     }
   }
 
-  if (1!=fscanf(fp,"%i",&length)) return false;
+  inFile >> length;
 
   for (int k = 0; k < length; k++) {
-    Bullet bullet;
-    int i, j;
-    if (3!=fscanf(fp,"%i %i %i", &bullet.type, &bullet.step, &bullet.angle)) return false;
-    bullet.pos.load(fp);
-    if (2!=fscanf(fp,"%i %i", &j, &i )) return false;
-    if (i >= 0) bullet.owner=robots[j][i];
-      else bullet.owner=0;
-      bullet.cmc.load(fp);
-      bullets.push_back(bullet);
+    bullets.emplace_back(inFile, robots);
   }
 
-  if (1!=fscanf(fp,"%i",&length)) return false;
+  inFile >> length;
   for (int k = 0; k < length; k++) {
-    Explosion e;
-    e.pos.load(fp);
-    if (2!=fscanf(fp,"%i %i",&e.step,&e.size)) return false;
-    explosions.push_back(e);
+    explosions.emplace_back(inFile);
   }
 
-  if (4!=fscanf(fp,"%i %i %i %i",&day,&hour,&minute,&second)) return false;
+  inFile >> day >> hour >> minute >> second;
   for (int i = 0; i < 2; i++) {
     for (int j = 0; j < 7; j++) {
-      if (1!=fscanf(fp,"%i",&(resources[i][j]))) return false;
+      inFile >> resources[i][j];
     }
   }
+
   int i;
-  if (1!=fscanf(fp,"%i",&i)) return false;
-  if ( i>=0 )
-    controlled=robots[0][i];
+  inFile >> i;
+  if (i >= 0)
+    controlled = robots[0][i];
   else
-    controlled=0;
+    controlled = 0;
 
-  if (2!=fscanf(fp,"%i %i",&menu.act_menu,&menu.act_button)) return false;
+  inFile >> menu.act_menu >> menu.act_button;
 
-  fclose(fp);
   AI_precomputations();
   return true;
 }

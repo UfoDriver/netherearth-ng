@@ -88,7 +88,7 @@ public:
   void loadObjects();
   void deleteObjects();
 
-	bool gamecycle(int w,int h);
+  bool gamecycle();
 	void gameredraw(int w,int h);
 	void refresh_display_lists(void);
 

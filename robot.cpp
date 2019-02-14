@@ -3,9 +3,11 @@
 #include "cmath"
 #include "piece3dobject.h"
 #include "robot.h"
+#include "utils.h"
 
 
 extern int detaillevel;
+
 
 int Robot::counter = 0;
 
@@ -18,6 +20,24 @@ Robot::Robot() : traction(-1), firetimer(0), strength(100),
   pieces[3]=false;
   pieces[4]=false;
 };
+
+
+Robot::Robot(std::istream& in)
+{
+  in >> traction;
+  for (int j = 0; j < 5; j++) {
+    in >> pieces[j];
+  }
+  in >> program >> program_parameter.as_int;
+  in >> program_goal;
+  in >> op;
+  in >> shipover;
+  in >> firetimer >> strength;
+  in >> pos;
+  in >> angle;
+  in >> cmc;
+  in >> electronics_state >> chassis_state;
+}
 
 
 bool Robot::valid()

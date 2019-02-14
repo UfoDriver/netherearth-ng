@@ -3,6 +3,7 @@
 
 #include "vector.h"
 
+
 class Building {
 public:
   enum BUILDINGS_AND_WALLS {B_FENCE,
@@ -22,6 +23,7 @@ public:
   Building(Vector position, BUILDINGS_AND_WALLS type, int owner=0, int status=0):
     pos(position), type(type), owner(owner), status(status)
   {}
+  explicit Building(std::istream& in);
 
   Vector pos;
   BUILDINGS_AND_WALLS type;

@@ -36,5 +36,6 @@ public:
 };
 
 std::ostream& operator<<(std::ostream& out, const CMC& cmc);
+std::istream& operator>>(std::istream& in, CMC& cmc);
 
 #endif

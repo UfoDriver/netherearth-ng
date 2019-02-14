@@ -1,4 +1,11 @@
 #include <algorithm>
+#include <iostream>
+
+#include "building.h"
+#include "bullet.h"
+#include "menu.h"
+#include "robot.h"
+#include "statusbutton.h"
 
 
 template <class T, class V>
@@ -11,4 +18,12 @@ int find_index(const T& container, const V& value)
   } else {
     return -1;
   }
+}
+
+template <class T>
+inline std::istream& operator>>(std::istream &str, T &v) {
+  unsigned int type = 0;
+  if (str >> type)
+    v = static_cast<T>(type);
+  return str;
 }

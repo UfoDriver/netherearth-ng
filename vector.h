@@ -39,6 +39,6 @@ public:
 };
 
 std::ostream& operator<<(std::ostream& out, const Vector& vector);
-
+std::istream& operator>>(std::istream& in, Vector& vector);
 
 #endif

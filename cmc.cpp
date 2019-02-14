@@ -746,3 +746,12 @@ std::ostream& operator<<(std::ostream& out, const CMC& cmc)
       << cmc.z[0] << ' ' << cmc.z[1] << '\n';
   return out;
 }
+
+std::istream& operator>>(std::istream& in, CMC& cmc)
+{
+  in >> cmc.x[0] >> cmc.x[1];
+  in >> cmc.y[0] >> cmc.y[1];
+  in >> cmc.z[0] >> cmc.z[1];
+
+  return in;
+}
