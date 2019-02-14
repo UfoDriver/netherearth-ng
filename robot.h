@@ -29,6 +29,10 @@ public:
   int cost();
   void cost(int player, int* res, int resources[2][7]);
   bool operator==(const Robot& other) const { return id == other.id; };
+  bool hasCannons() { return pieces[0]; }
+  bool hasMissiles() { return pieces[1]; }
+  bool hasPhasers() { return pieces[2]; }
+  bool hasElectronics() { return pieces[4]; }
 
   int getId() const { return id; }
 

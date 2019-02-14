@@ -567,26 +567,25 @@ int NETHER::AI_WorseMapTerrain(int x,int y,int dx,int dy)
 } /* NETHER::AI_WorseMapTerrain */ 
 
 
-int NETHER::AI_program_advance(int amount, Vector pos, int angle, int traction, bool electronics,
-                               int player, bool *pieces)
+int NETHER::AI_program_advance(Robot& robot, int player)
 {
   std::vector<AIOperator> operators;
   Vector tmp_goal;
 
-  int op = AI_program_stopdefend(&tmp_goal, pos, angle, traction, electronics, player, pieces);
+  int op = AI_program_stopdefend(robot, &tmp_goal, player);
   if (op != ROBOTOP_NONE) return op;
 
-  int type = AI_killrobot(pos);
+  int type = AI_killrobot(robot.pos);
 
-  AI_availableoperators(pos, angle, traction, operators);
+  AI_availableoperators(robot.pos, robot.angle, robot.traction, operators);
 
   if (operators.size()) {
-    if (electronics) {
-      op = AI_searchengine(pos, angle, Robot::PROGRAM_ADVANCE, Vector(0, 0, 0), traction,
+    if (robot.hasElectronics()) {
+      op = AI_searchengine(robot.pos, robot.angle, Robot::PROGRAM_ADVANCE, Vector(0, 0, 0), robot.traction,
                            WE_SEARCH_DEPTH);
     } else {
       if ((rand() % 4) != 0) {
-        op = AI_searchengine(pos, angle, Robot::PROGRAM_ADVANCE, Vector(0, 0, 0), traction,
+        op = AI_searchengine(robot.pos, robot.angle, Robot::PROGRAM_ADVANCE, Vector(0, 0, 0), robot.traction,
                              WOE_SEARCH_DEPTH);
       } else {
         AI_rankoperators_advance(operators);
@@ -597,35 +596,34 @@ int NETHER::AI_program_advance(int amount, Vector pos, int angle, int traction, 
 
   /* Reconstruct the decreet map: */
   if (type == T_ROBOT)
-    AI_newrobot(pos, 0);
+    AI_newrobot(robot.pos, 0);
   else
-    AI_newrobot(pos, 2);
+    AI_newrobot(robot.pos, 2);
 
   return op;
 }
 
 
-int NETHER::AI_program_retreat(int amount, Vector pos, int angle, int traction, bool electronics,
-                               int player, bool *pieces)
+int NETHER::AI_program_retreat(Robot& robot, int player)
 {
   int type;
   std::vector<AIOperator> operators;
 
   Vector tmp_goal;
-  int op = AI_program_stopdefend(&tmp_goal, pos, angle, traction, electronics, player, pieces);
+  int op = AI_program_stopdefend(robot, &tmp_goal, player);
   if (op != ROBOTOP_NONE) return op;
 
-  type = AI_killrobot(pos);
+  type = AI_killrobot(robot.pos);
 
-  AI_availableoperators(pos, angle, traction, operators);
+  AI_availableoperators(robot.pos, robot.angle, robot.traction, operators);
 
   if (operators.size()) {
     /* Choose one operator: */
-    if (electronics) {
-      op = AI_searchengine(pos, angle, Robot::PROGRAM_RETREAT, Vector(0, 0, 0), traction, WE_SEARCH_DEPTH);
+    if (robot.hasElectronics()) {
+      op = AI_searchengine(robot.pos, robot.angle, Robot::PROGRAM_RETREAT, Vector(0, 0, 0), robot.traction, WE_SEARCH_DEPTH);
     } else {
       if ((rand() % 4) != 0) {
-        op = AI_searchengine(pos, angle, Robot::PROGRAM_RETREAT, Vector(0, 0, 0), traction, WOE_SEARCH_DEPTH);
+        op = AI_searchengine(robot.pos, robot.angle, Robot::PROGRAM_RETREAT, Vector(0, 0, 0), robot.traction, WOE_SEARCH_DEPTH);
       } else {
         AI_rankoperators_retreat(operators);
         op = AI_chooseoperator(operators, 8).first_robotop;
@@ -635,25 +633,24 @@ int NETHER::AI_program_retreat(int amount, Vector pos, int angle, int traction, 
 
   /* Reconstruct the decreet map: */
   if (type == T_ROBOT)
-    AI_newrobot(pos, 0);
+    AI_newrobot(robot.pos, 0);
   else
-    AI_newrobot(pos, 1);
+    AI_newrobot(robot.pos, 1);
 
   return op;
 }
 
 
-int NETHER::AI_program_capture(int goal, Vector *program_goal, Vector pos, int angle, int traction,
-                               bool electronics, int player, bool *pieces)
+int NETHER::AI_program_capture(Robot& robot, Vector *program_goal, int player)
 {
   /* First of all, delete the robot from the discreet map: */
   std::vector<AIOperator> l;
 
-  int op = AI_program_stopdefend(program_goal, pos, angle, traction, electronics, player, pieces);
+  int op = AI_program_stopdefend(robot, program_goal, player);
   if (op != ROBOTOP_NONE) return op;
 
-  int type=AI_killrobot(pos);
-  AI_availableoperators(pos, angle, traction, l);
+  int type = AI_killrobot(robot.pos);
+  AI_availableoperators(robot.pos, robot.angle, robot.traction, l);
 
   if (l.size()) {
     /* Choose one operator: */
@@ -665,75 +662,75 @@ int NETHER::AI_program_capture(int goal, Vector *program_goal, Vector pos, int a
       *program_goal = Vector(-1, -1, -1);
 
       for (const Building& b: buildings) {
-        if (goal == Robot::P_PARAM_WARBASES &&
-            b.type==Building::B_WARBASE && b.owner != player &&
-            AI_WorseMapTerrain(int((b.pos.x + 2.0) / 0.5), int(b.pos.y / 0.5),2,2)<=T_HOLE) {
-					distance=float(((b.pos+Vector(2.5,0.5,0))-pos).norma());
-					if (!anygoal || distance<minimumdistance) {
-						anygoal=true;
-						minimumdistance=distance;
-						*program_goal=b.pos+Vector(2.5,0.5,0);
-					} /* if */ 
-				} /* if */ 
-				if (goal==Robot::P_PARAM_NFACTORIES && 
-					(b.type==Building::B_FACTORY_ELECTRONICS ||
-					 b.type==Building::B_FACTORY_NUCLEAR ||
-					 b.type==Building::B_FACTORY_PHASERS ||
-					 b.type==Building::B_FACTORY_MISSILES ||
-					 b.type==Building::B_FACTORY_CANNONS ||
-					 b.type==Building::B_FACTORY_CHASSIS) && b.owner==0 &&
-					AI_WorseMapTerrain(int((b.pos.x+1.0)/0.5),int(b.pos.y/0.5),2,2)<=T_HOLE) {
-					distance=float(((b.pos+Vector(1.5,0.5,0))-pos).norma());
-					if (!anygoal || distance<minimumdistance) {
-						anygoal=true;
-						minimumdistance=distance;
-						*program_goal=b.pos+Vector(1.5,0.5,0);
-					} /* if */ 
-				} /* if */ 
-				if (goal==Robot::P_PARAM_EFACTORIES && 
-					(b.type==Building::B_FACTORY_ELECTRONICS ||
-					 b.type==Building::B_FACTORY_NUCLEAR ||
-					 b.type==Building::B_FACTORY_PHASERS ||
-					 b.type==Building::B_FACTORY_MISSILES ||
-					 b.type==Building::B_FACTORY_CANNONS ||
-					 b.type==Building::B_FACTORY_CHASSIS) && b.owner!=0 && b.owner!=player &&
-					AI_WorseMapTerrain(int((b.pos.x+1.0)/0.5),int(b.pos.y/0.5),2,2)<=T_HOLE) {
-					distance=float(((b.pos+Vector(1.5,0.5,0))-pos).norma());
-					if (!anygoal || distance<minimumdistance) {
-						anygoal=true;
-						minimumdistance=distance;
-						*program_goal=b.pos+Vector(1.5,0.5,0);
-					} /* if */ 
-				} /* if */ 
-			} /* while */ 
-		} 
+        if (robot.program_parameter.as_int == Robot::P_PARAM_WARBASES &&
+            b.type == Building::B_WARBASE &&
+            b.owner != player &&
+            AI_WorseMapTerrain(int((b.pos.x + 2.0) / 0.5), int(b.pos.y / 0.5), 2, 2) <= T_HOLE) {
+          distance = float(((b.pos + Vector(2.5, 0.5, 0)) - robot.pos).norma());
+          if (!anygoal || distance < minimumdistance) {
+            anygoal = true;
+            minimumdistance = distance;
+            *program_goal = b.pos + Vector(2.5, 0.5, 0);
+          }
+        }
+        if (robot.program_parameter.as_int == Robot::P_PARAM_NFACTORIES &&
+            (b.type == Building::B_FACTORY_ELECTRONICS ||
+             b.type == Building::B_FACTORY_NUCLEAR ||
+             b.type == Building::B_FACTORY_PHASERS ||
+             b.type == Building::B_FACTORY_MISSILES ||
+             b.type == Building::B_FACTORY_CANNONS ||
+             b.type == Building::B_FACTORY_CHASSIS)
+            && b.owner == 0 &&
+            AI_WorseMapTerrain(int((b.pos.x + 1.0) / 0.5), int(b.pos.y / 0.5), 2, 2) <= T_HOLE) {
+          distance = float(((b.pos + Vector(1.5, 0.5,0 )) - robot.pos).norma());
+          if (!anygoal || distance < minimumdistance) {
+            anygoal = true;
+            minimumdistance = distance;
+            *program_goal = b.pos + Vector(1.5, 0.5, 0);
+          }
+        }
+        if (robot.program_parameter.as_int == Robot::P_PARAM_EFACTORIES &&
+            (b.type == Building::B_FACTORY_ELECTRONICS ||
+             b.type == Building::B_FACTORY_NUCLEAR ||
+             b.type == Building::B_FACTORY_PHASERS ||
+             b.type == Building::B_FACTORY_MISSILES ||
+             b.type == Building::B_FACTORY_CANNONS ||
+             b.type == Building::B_FACTORY_CHASSIS) &&
+            b.owner!=0 &&
+            b.owner!=player &&
+            AI_WorseMapTerrain(int((b.pos.x + 1.0) / 0.5), int(b.pos.y / 0.5), 2, 2) <= T_HOLE) {
+          distance=float(((b.pos + Vector(1.5, 0.5, 0)) - robot.pos).norma());
+          if (!anygoal || distance < minimumdistance) {
+            anygoal = true;
+            minimumdistance = distance;
+            *program_goal = b.pos + Vector(1.5, 0.5, 0);
+          }
+        }
+      }
+    }
 
-		if (program_goal->x!=-1 &&
-			(*program_goal)!=pos) {
-			if (electronics) {
-				op=AI_searchengine(pos,angle,Robot::PROGRAM_CAPTURE,*program_goal,traction,WE_SEARCH_DEPTH);
-			} else {
-				if ((rand()%4)!=0) {
-					op=AI_searchengine(pos,angle,Robot::PROGRAM_CAPTURE,*program_goal,traction,WOE_SEARCH_DEPTH);
-				} else {
-					AI_rankoperators_capture(l, *program_goal);
-					op = AI_chooseoperator(l, 8).first_robotop;
-				} /* if */ 
-			} /* if */ 
-		} /* if */ 
-	} /* if */ 
+    if (program_goal->x != -1 &&
+        (*program_goal) != robot.pos) {
+      if (robot.hasElectronics()) {
+        op = AI_searchengine(robot.pos, robot.angle,Robot::PROGRAM_CAPTURE, *program_goal, robot.traction, WE_SEARCH_DEPTH);
+      } else {
+        if ((rand() % 4) != 0) {
+          op = AI_searchengine(robot.pos, robot.angle, Robot::PROGRAM_CAPTURE, *program_goal, robot.traction, WOE_SEARCH_DEPTH);
+        } else {
+          AI_rankoperators_capture(l, *program_goal);
+          op = AI_chooseoperator(l, 8).first_robotop;
+        }
+      }
+    }
+  }
 
-	/* Reconstruct the decreet map: */ 
-	if (type==T_ROBOT) AI_newrobot(pos,0);
-				  else AI_newrobot(pos,1);
+  /* Reconstruct the decreet map: */
+  if (type==T_ROBOT)
+    AI_newrobot(robot.pos,0);
+  else AI_newrobot(robot.pos, 1);
 
-#ifdef _WRITE_REPORT_
-	fprintf(debug_fp,"AI_program_capture FINISHED\n");
-	fflush(debug_fp);
-#endif
-
-	return op;
-} /* NETHER::AI_program_capture */ 
+  return op;
+}
 
 
 int NETHER::AI_RealShotPaths(int x,int y,int player,int persistence)
@@ -833,19 +830,18 @@ int NETHER::AI_RealShotPaths(int x,int y,int player,int persistence)
 } /* NETHER::AI_RealShotPaths */ 
 
 
-int NETHER::AI_program_destroy(int goal, Vector *program_goal, Vector pos, int angle, int traction,
-                               bool electronics, int player, bool *pieces)
+int NETHER::AI_program_destroy(Robot& robot, Vector *program_goal, int player)
 {
   /* First of all, delete the robot from the discreet map: */
   int op = ROBOTOP_NONE;
-  int type = AI_killrobot(pos);
+  int type = AI_killrobot(robot.pos);
   std::vector<AIOperator> lops;
 
-  AI_availableoperators(pos, angle, traction, lops);
+  AI_availableoperators(robot.pos, robot.angle, robot.traction, lops);
 
   if (lops.size()) {
     /* Choose one operator: */
-    if (goal != Robot::P_PARAM_ROBOTS) {
+    if (robot.program_parameter.as_int != Robot::P_PARAM_ROBOTS) {
       /* Seek a goal: */
       bool anygoal = false;
       float distance, minimumdistance;
@@ -853,18 +849,18 @@ int NETHER::AI_program_destroy(int goal, Vector *program_goal, Vector pos, int a
       *program_goal = Vector(-1, -1, -1);
 
       for (const Building& b: buildings) {
-        if (goal == Robot::P_PARAM_WARBASES &&
+        if (robot.program_parameter.as_int == Robot::P_PARAM_WARBASES &&
             b.type == Building::B_WARBASE &&
             b.owner!=player &&
             AI_WorseMapTerrain(int((b.pos.x + 2.0) / 0.5), int(b.pos.y / 0.5), 2, 2) <= T_HOLE) {
-          distance = float(((b.pos + Vector(2.5, 0.5, 0)) - pos).norma());
+          distance = float(((b.pos + Vector(2.5, 0.5, 0)) - robot.pos).norma());
           if (!anygoal || distance < minimumdistance) {
             anygoal = true;
             minimumdistance = distance;
             *program_goal = b.pos+Vector(2.5,0.5,0);
           }
         }
-        if (goal == Robot::P_PARAM_EFACTORIES
+        if (robot.program_parameter.as_int == Robot::P_PARAM_EFACTORIES
             && (b.type == Building::B_FACTORY_ELECTRONICS ||
                 b.type == Building::B_FACTORY_NUCLEAR ||
                 b.type == Building::B_FACTORY_PHASERS ||
@@ -872,7 +868,7 @@ int NETHER::AI_program_destroy(int goal, Vector *program_goal, Vector pos, int a
                 b.type == Building::B_FACTORY_CANNONS ||
                 b.type == Building::B_FACTORY_CHASSIS) && b.owner != 0 && b.owner != player &&
             AI_WorseMapTerrain(int((b.pos.x + 1.0) / 0.5), int(b.pos.y / 0.5), 2, 2) <= T_HOLE) {
-          distance=float(((b.pos + Vector(1.5, 0.5, 0)) - pos).norma());
+          distance=float(((b.pos + Vector(1.5, 0.5, 0)) - robot.pos).norma());
           if (!anygoal || distance < minimumdistance) {
             anygoal = true;
             minimumdistance = distance;
@@ -882,12 +878,12 @@ int NETHER::AI_program_destroy(int goal, Vector *program_goal, Vector pos, int a
       }
 
       if (program_goal->x != -1 &&
-          (*program_goal) != pos) {
-        if (electronics) {
-          op = AI_searchengine(pos, angle, Robot::PROGRAM_CAPTURE, *program_goal, traction, WE_SEARCH_DEPTH);
+          (*program_goal) != robot.pos) {
+        if (robot.hasElectronics()) {
+          op = AI_searchengine(robot.pos, robot.angle, Robot::PROGRAM_CAPTURE, *program_goal, robot.traction, WE_SEARCH_DEPTH);
         } else {
           if ((rand() % 4) != 0) {
-            op = AI_searchengine(pos, angle, Robot::PROGRAM_CAPTURE, *program_goal, traction, WOE_SEARCH_DEPTH);
+            op = AI_searchengine(robot.pos, robot.angle, Robot::PROGRAM_CAPTURE, *program_goal, robot.traction, WOE_SEARCH_DEPTH);
           } else {
             AI_rankoperators_capture(lops, *program_goal);
             op = AI_chooseoperator(lops, 8).first_robotop;
@@ -904,7 +900,7 @@ int NETHER::AI_program_destroy(int goal, Vector *program_goal, Vector pos, int a
       bool first = true;
       float distance;
       int persistence = CANNON_PERSISTENCE;
-      if (pieces[1]) persistence = MISSILE_PERSISTENCE;
+      if (robot.hasMissiles()) persistence = MISSILE_PERSISTENCE;
 
       *program_goal = Vector(-1,-1,-1);
       std::fill(attackmap.begin(), attackmap.end(), 0);
@@ -912,9 +908,9 @@ int NETHER::AI_program_destroy(int goal, Vector *program_goal, Vector pos, int a
       /* Find the nearest FIRE position: */
       for (Robot* r: robots[2 - player]) {
         if (first ||
-            (*program_goal-pos).norma() < distance) {
+            (*program_goal - robot.pos).norma() < distance) {
           first = false;
-          distance = float((*program_goal - pos).norma());
+          distance = float((*program_goal - robot.pos).norma());
           *program_goal = r->pos;
         }
 
@@ -969,23 +965,23 @@ int NETHER::AI_program_destroy(int goal, Vector *program_goal, Vector pos, int a
       }
 
       if (!first) {
-        robot_zone(pos, &x, &y, &dx, &dy);
+        robot_zone(robot.pos, &x, &y, &dx, &dy);
         if ((attackmap[y * (map_w * 2) + x] !=0 ||
              attackmap[(y + 1) * (map_w * 2) + x] != 0 ||
              attackmap[y * (map_w * 2) + x + 1] !=0 ||
              attackmap[(y + 1) * (map_w * 2) + x + 1] != 0)) {
           int prsp = 0, mrsp = 0,crsp = 0,rsp = 0;
-          if (pieces[2]) prsp = AI_RealShotPaths(x, y, player, PHASER_PERSISTENCE);
-          if (pieces[1]) mrsp = AI_RealShotPaths(x, y, player, MISSILE_PERSISTENCE);
-          if (pieces[0]) crsp = AI_RealShotPaths(x, y, player, CANNON_PERSISTENCE);
+          if (robot.hasPhasers()) prsp = AI_RealShotPaths(x, y, player, PHASER_PERSISTENCE);
+          if (robot.hasMissiles()) mrsp = AI_RealShotPaths(x, y, player, MISSILE_PERSISTENCE);
+          if (robot.hasCannons()) crsp = AI_RealShotPaths(x, y, player, CANNON_PERSISTENCE);
           rsp = prsp | mrsp | crsp;
 
           if (rsp != 0) {
             int dirmask = 0;
-            if (angle == 0) dirmask = 1;
-            if (angle == 90) dirmask = 2;
-            if (angle == 180) dirmask = 4;
-            if (angle == 270) dirmask = 8;
+            if (robot.angle == 0) dirmask = 1;
+            if (robot.angle == 90) dirmask = 2;
+            if (robot.angle == 180) dirmask = 4;
+            if (robot.angle == 270) dirmask = 8;
             if ((rsp & dirmask) != 0) {
               if ((prsp & dirmask) != 0) {
                 op = ROBOTOP_PHASERS;
@@ -1006,11 +1002,11 @@ int NETHER::AI_program_destroy(int goal, Vector *program_goal, Vector pos, int a
               }
             }
           } else {
-            if (electronics) {
-              op = AI_searchengine(pos, angle, Robot::PROGRAM_DESTROY, *program_goal, traction, WE_SEARCH_DEPTH);
+            if (robot.hasElectronics()) {
+              op = AI_searchengine(robot.pos, robot.angle, Robot::PROGRAM_DESTROY, *program_goal, robot.traction, WE_SEARCH_DEPTH);
             } else {
               if ((rand() % 4) != 0) {
-                op = AI_searchengine(pos, angle, Robot::PROGRAM_DESTROY, *program_goal, traction, WOE_SEARCH_DEPTH);
+                op = AI_searchengine(robot.pos, robot.angle, Robot::PROGRAM_DESTROY, *program_goal, robot.traction, WOE_SEARCH_DEPTH);
               } else {
                 AI_rankoperators_capture(lops, *program_goal);
                 op = AI_chooseoperator(lops, 8).first_robotop;
@@ -1018,11 +1014,11 @@ int NETHER::AI_program_destroy(int goal, Vector *program_goal, Vector pos, int a
             }
           }
         } else {
-          if (electronics) {
-            op = AI_searchengine(pos, angle, Robot::PROGRAM_DESTROY, *program_goal, traction, WE_SEARCH_DEPTH);
+          if (robot.hasElectronics()) {
+            op = AI_searchengine(robot.pos, robot.angle, Robot::PROGRAM_DESTROY, *program_goal, robot.traction, WE_SEARCH_DEPTH);
           } else {
             if ((rand() % 4) != 0) {
-              op = AI_searchengine(pos, angle, Robot::PROGRAM_DESTROY, *program_goal, traction, WOE_SEARCH_DEPTH);
+              op = AI_searchengine(robot.pos, robot.angle, Robot::PROGRAM_DESTROY, *program_goal, robot.traction, WOE_SEARCH_DEPTH);
             } else {
               AI_rankoperators_capture(lops, *program_goal);
               op = AI_chooseoperator(lops, 8).first_robotop;
@@ -1038,23 +1034,22 @@ int NETHER::AI_program_destroy(int goal, Vector *program_goal, Vector pos, int a
 
   /* Reconstruct the decreet map: */
   if (type == T_ROBOT)
-    AI_newrobot(pos, 0);
+    AI_newrobot(robot.pos, 0);
   else
-    AI_newrobot(pos, 1);
+    AI_newrobot(robot.pos, 1);
 
   return op;
 }
 
 
-int NETHER::AI_program_stopdefend(Vector *program_goal, Vector pos, int angle, int traction,
-                                  bool electronics, int player, bool *pieces)
+int NETHER::AI_program_stopdefend(Robot& robot, Vector *program_goal, int player)
 {
   /* First of all, delete the robot from the discreet map: */
   int op = ROBOTOP_NONE;
-  int type = AI_killrobot(pos);
+  int type = AI_killrobot(robot.pos);
   std::vector<AIOperator> lops;
 
-  AI_availableoperators(pos, angle, traction, lops);
+  AI_availableoperators(robot.pos, robot.angle, robot.traction, lops);
 
   if (lops.size()) {
     /* Choose one operator: */
@@ -1063,7 +1058,7 @@ int NETHER::AI_program_stopdefend(Vector *program_goal, Vector pos, int angle, i
     int x, y, dx, dy;
     bool collided;
     int persistence = CANNON_PERSISTENCE;
-    if (pieces[1]) persistence = MISSILE_PERSISTENCE;
+    if (robot.hasMissiles()) persistence = MISSILE_PERSISTENCE;
 
     *program_goal = Vector(-1, -1, -1);
     std::fill(attackmap.begin(), attackmap.end(), 0);
@@ -1122,15 +1117,15 @@ int NETHER::AI_program_stopdefend(Vector *program_goal, Vector pos, int angle, i
 
 
     if (robots[2 - player].size()) {
-      robot_zone(pos, &x, &y, &dx, &dy);
+      robot_zone(robot.pos, &x, &y, &dx, &dy);
       if ((attackmap[y * (map_w * 2) + x] != 0 ||
            attackmap[(y + 1) * (map_w * 2) + x] != 0 ||
            attackmap[y * (map_w * 2) + x + 1] != 0 ||
            attackmap[(y + 1) * (map_w * 2) + x + 1] != 0)) {
         int prsp = 0, mrsp = 0, crsp = 0, rsp = 0;
-        if (pieces[2]) prsp = AI_RealShotPaths(x, y, player, PHASER_PERSISTENCE);
-        if (pieces[1]) mrsp = AI_RealShotPaths(x, y, player, MISSILE_PERSISTENCE);
-        if (pieces[0]) crsp = AI_RealShotPaths(x, y, player, CANNON_PERSISTENCE);
+        if (robot.pieces[2]) prsp = AI_RealShotPaths(x, y, player, PHASER_PERSISTENCE);
+        if (robot.pieces[1]) mrsp = AI_RealShotPaths(x, y, player, MISSILE_PERSISTENCE);
+        if (robot.pieces[0]) crsp = AI_RealShotPaths(x, y, player, CANNON_PERSISTENCE);
         rsp = prsp | mrsp | crsp;
 
         if (rsp != 0) {
@@ -1139,10 +1134,10 @@ int NETHER::AI_program_stopdefend(Vector *program_goal, Vector pos, int angle, i
           /* This is just to make the program not to think that the robot doesn't have any goal: */
           *program_goal = Vector(0, 0, 0);
 
-          if (angle == 0) dirmask = 1;
-          if (angle == 90) dirmask = 2;
-          if (angle == 180) dirmask = 4;
-          if (angle == 270) dirmask = 8;
+          if (robot.angle == 0) dirmask = 1;
+          if (robot.angle == 90) dirmask = 2;
+          if (robot.angle == 180) dirmask = 4;
+          if (robot.angle == 270) dirmask = 8;
           if ((rsp & dirmask) != 0) {
             if ((prsp & dirmask) !=0 ) {
               op = ROBOTOP_PHASERS;
@@ -1178,9 +1173,9 @@ int NETHER::AI_program_stopdefend(Vector *program_goal, Vector pos, int angle, i
 
   /* Reconstruct the decreet map: */
   if (type == T_ROBOT)
-    AI_newrobot(pos, 0);
+    AI_newrobot(robot.pos, 0);
   else
-    AI_newrobot(pos, 1);
+    AI_newrobot(robot.pos, 1);
 
   return op;
 }

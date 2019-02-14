@@ -121,14 +121,14 @@ private:
 	CMC  BulletCMC(Bullet *r);
 
 	float RobotSpeed(int traction,int terrain);
-	int RobotRotationSpeed(int traction,int terrain);
-	bool Walkable(int traction,int terrain);
+	int RobotRotationSpeed(int traction, int terrain);
+	bool Walkable(int traction, int terrain);
 
 	void AI_enemy(void);
 	Robot *AI_enemy_newrobot(int state,Vector pos);
-	void AI_precomputations(void);
-	void AI_deleteprecomputations(void);
-	void AI_release(void);
+	void AI_precomputations();
+	void AI_deleteprecomputations();
+	void AI_release();
 	int  AI_WorseMapTerrain(int x,int y,int dx,int dy);
 	void AI_newrobot(Vector pos,int owner);
 	int  AI_killrobot(Vector pos);
@@ -138,11 +138,11 @@ private:
 	bool AI_expandoperators(int x,int y,int angle,int traction,int previous,int oldcost,int depth);
 	int  AI_searchengine(Vector pos,int angle,int goaltype,Vector goalpos,int traction,int depth);
 	void AI_resetsearch(Vector pos,int depth);
-	int  AI_program_advance(int amount,Vector pos,int angle,int traction,bool electronics,int player,bool *pieces);
-	int  AI_program_retreat(int amount,Vector pos,int angle,int traction,bool electronics,int player,bool *pieces);
-	int  AI_program_capture(int goal,Vector *program_goal,Vector pos,int angle,int traction,bool electronics,int player,bool *pieces);
-	int  AI_program_destroy(int goal,Vector *program_goal,Vector pos,int angle,int traction,bool electronics,int player,bool *pieces);
-	int  AI_program_stopdefend(Vector *program_goal,Vector pos,int angle,int traction,bool electronics,int player,bool *pieces);
+  int  AI_program_advance(Robot& robot, int player);
+  int  AI_program_retreat(Robot& robot, int player);
+  int  AI_program_capture(Robot& robot, Vector *program_goal, int player);
+  int  AI_program_destroy(Robot& robot, Vector *program_goal, int player);
+  int  AI_program_stopdefend(Robot& robot, Vector *program_goal, int player);
   void AI_rankoperators_advance(std::vector<AIOperator>& l);
   void AI_rankoperators_retreat(std::vector<AIOperator>& l);
   void AI_rankoperators_capture(std::vector<AIOperator>&l, Vector goal);

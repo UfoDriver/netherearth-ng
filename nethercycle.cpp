@@ -1187,26 +1187,26 @@ bool NETHER::cycle(unsigned char *keyboard)
 								r->op=ROBOTOP_FORWARD;
 								break;
 							case Robot::PROGRAM_STOPDEFEND:
-								r->op=AI_program_stopdefend(&(r->program_goal),r->pos,r->angle,r->traction,r->pieces[4],i+1,r->pieces);
+                              r->op = AI_program_stopdefend(*r, &(r->program_goal), i + 1);
 								break;
 							case Robot::PROGRAM_ADVANCE:
-                              r->op=AI_program_advance(r->program_parameter.as_int ,r->pos,r->angle,r->traction,r->pieces[4],i+1,r->pieces);
+                              r->op=AI_program_advance(*r, i + 1);
 								if (r->op==ROBOTOP_FORWARD && r->angle==90) r->program_parameter.as_int--;
 								if (r->op==ROBOTOP_FORWARD && r->angle==270) r->program_parameter.as_int++;
 								if (r->program_parameter.as_int == 0) r->program=Robot::PROGRAM_STOPDEFEND;
 								break;
 							case Robot::PROGRAM_RETREAT:
-                              r->op=AI_program_retreat(r->program_parameter.as_int, r->pos,r->angle,r->traction,r->pieces[4],i+1,r->pieces);
+                              r->op=AI_program_retreat(*r, i + 1);
 								if (r->op==ROBOTOP_FORWARD && r->angle==270) r->program_parameter.as_int--;
 								if (r->op==ROBOTOP_FORWARD && r->angle==90) r->program_parameter.as_int++;
 								if (r->program_parameter.as_int == 0) r->program=Robot::PROGRAM_STOPDEFEND;
 								break;
 							case Robot::PROGRAM_DESTROY:
-								r->op=AI_program_destroy(r->program_parameter.as_int,&(r->program_goal),r->pos,r->angle,r->traction,r->pieces[4],i+1,r->pieces);
+								r->op = AI_program_destroy(*r, &(r->program_goal), i + 1);
 								// if (r->program_goal.x==-1) r->program=PROGRAM_STOPDEFEND;
 								break;
 							case Robot::PROGRAM_CAPTURE:
-								r->op=AI_program_capture(r->program_parameter.as_int,&(r->program_goal),r->pos,r->angle,r->traction,r->pieces[4],i+1,r->pieces);
+								r->op = AI_program_capture(*r, &(r->program_goal), i + 1);
 								// if (r.program_goal.x==-1) r.program=PROGRAM_STOPDEFEND;
 								break;
 							} /* switch */ 
@@ -1216,10 +1216,6 @@ bool NETHER::cycle(unsigned char *keyboard)
 						if (r->op==ROBOTOP_NONE && r->shipover &&
 							(menu.act_menu==Menu::DIRECTCONTROL_MENU ||
 							 menu.act_menu==Menu::DIRECTCONTROL2_MENU)) {
-#ifdef _WRITE_REPORT_
-	fprintf(debug_fp,"User command\n",i);
-	fflush(debug_fp);
-#endif
 							if (keyboard[right_key]) {
 								if (r->angle==0) {
 									r->op=ROBOTOP_FORWARD;
