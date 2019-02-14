@@ -26,7 +26,7 @@ extern int level;
 
 /* Only 1 action per turn will be allowed: */ 
 
-void NETHER::AI_enemy(void)
+void NETHER::AI_enemy()
 {
 	Building *in_danger_warbase=0;
 	int state=AI_STATE_EXPANDING;

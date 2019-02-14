@@ -991,7 +991,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 	fflush(debug_fp);
 #endif
 					if (r->op==ROBOTOP_FORWARD) {
-						float speed=RobotSpeed(r->traction,terrain);
+						float speed = r->robotSpeed(terrain);
 
 						/* BIPOD ANIMATION: */ 
 						if (r->traction==0) {
@@ -1048,8 +1048,8 @@ bool NETHER::cycle(unsigned char *keyboard)
 						if (r->traction==0) r->chassis_state=0;
 					} /* if */ 
 
-					if (r->op==ROBOTOP_LEFT) r->angle-=RobotRotationSpeed(r->traction,terrain);
-					if (r->op==ROBOTOP_RIGHT) r->angle+=RobotRotationSpeed(r->traction,terrain);
+					if (r->op==ROBOTOP_LEFT) r->angle -= r->robotRotationSpeed(terrain);
+					if (r->op==ROBOTOP_RIGHT) r->angle += r->robotRotationSpeed(terrain);
 					if (r->angle>=360) r->angle-=360;
 					if (r->angle<0) r->angle+=360;
 
@@ -1145,7 +1145,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 						} /* if */ 
 
 						/* Collision: */ 
-						if (robotCollision(r,false) || !Walkable(r->traction,terrain)) {
+						if (robotCollision(r,false) || !r->walkable(terrain)) {
 							r->pos=old_pos;
 							if (r->traction==0) r->chassis_state=old_chassis_state;
 							if (r->shipover) {

@@ -120,12 +120,8 @@ private:
 	CMC  RobotCMC(Robot *r,int owner);
 	CMC  BulletCMC(Bullet *r);
 
-	float RobotSpeed(int traction,int terrain);
-	int RobotRotationSpeed(int traction, int terrain);
-	bool Walkable(int traction, int terrain);
-
-	void AI_enemy(void);
-	Robot *AI_enemy_newrobot(int state,Vector pos);
+	void AI_enemy();
+	Robot* AI_enemy_newrobot(int state,Vector pos);
 	void AI_precomputations();
 	void AI_deleteprecomputations();
 	void AI_release();
@@ -134,10 +130,10 @@ private:
 	int  AI_killrobot(Vector pos);
 	void AI_moverobot(Vector oldpos,Vector newpos,int owner);
 	void AI_removebuilding(Vector pos);
-  void AI_availableoperators(Vector pos, int angle, int traction, std::vector<AIOperator>& l);
-	bool AI_expandoperators(int x,int y,int angle,int traction,int previous,int oldcost,int depth);
-	int  AI_searchengine(Vector pos,int angle,int goaltype,Vector goalpos,int traction,int depth);
-	void AI_resetsearch(Vector pos,int depth);
+  void AI_availableoperators(const Robot& robot, std::vector<AIOperator>& l);
+  bool AI_expandoperators(int x, int y, int angle, const Robot& robot, int previous, int oldcost, int depth);
+  int  AI_searchengine(const Robot& robot, int goaltype, Vector goalpos, int depth);
+  void AI_resetsearch(Vector pos, int depth);
   int  AI_program_advance(Robot& robot, int player);
   int  AI_program_retreat(Robot& robot, int player);
   int  AI_program_capture(Robot& robot, Vector *program_goal, int player);

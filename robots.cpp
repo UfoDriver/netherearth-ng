@@ -24,15 +24,6 @@
 #include "glprintf.h"
 
 
-const float ms[4][3]={{0.0078125,0.015625,0.03125},
-					{0.00390625,0.0078125,0.03125},
-					{0,0.0078125,0.015625},
-					{0,0,0.03125}};
-
-const int rs[4][3]={{2,3,5},
-					{1,2,5},
-					{0,2,3},
-					{0,0,5}};
 extern int detaillevel;
 
 
@@ -81,74 +72,6 @@ CMC NETHER::RobotCMC(Robot *r,int owner)
 
 	return cmc;
 } /* ROBOT::buildCMC */ 
-
-
-float NETHER::RobotSpeed(int traction,int terrain)
-{
-	if (terrain<4 && traction<3) return ms[terrain][traction];
-
-/*	switch(terrain) {
-	case T_GRASS:
-		if (traction==0) return 0.0078125;
-		if (traction==1) return 0.015625;
-		return 0.03125;
-		break;
-	case T_SAND:
-		if (traction==0) return 0.00390625;
-		if (traction==1) return 0.0078125;
-		return 0.03125;
-		break;
-	case T_MOUNTAINS:
-		if (traction==0) return 0;
-		if (traction==1) return 0.0078125;
-		return 0.015625;
-		break;
-	case T_HOLE:
-		if (traction==0) return 0;
-		if (traction==1) return 0;
-		return 0.03125;
-		break;
-	} /* switch */ 
-	return 0;
-} /* NETHER::RobotSpeed */ 
-
-
-int NETHER::RobotRotationSpeed(int traction,int terrain)
-{
-	if (terrain<4 && traction<3) return rs[terrain][traction];
-
-/*	switch(terrain) {
-	case T_GRASS:
-		if (traction==0) return 2;
-		if (traction==1) return 3;
-		return 5;
-		break;
-	case T_SAND:
-		if (traction==0) return 1;
-		if (traction==1) return 2;
-		return 5;
-		break;
-	case T_MOUNTAINS:
-		if (traction==0) return 0;
-		if (traction==1) return 2;
-		return 3;
-		break;
-	case T_HOLE:
-		if (traction==0) return 0;
-		if (traction==1) return 0;
-		return 5;
-		break;
-	} /* switch */ 
-	return 0;
-} /* NETHER::RobotRotationSpeed */ 
-
-
-bool NETHER::Walkable(int traction,int terrain)
-{
-	if (RobotSpeed(traction,terrain)!=0) return true;
-
-	return false;
-} /* NETHER::Walkable */ 
 
 
 bool NETHER::robotCollision(Robot *r, bool complete)

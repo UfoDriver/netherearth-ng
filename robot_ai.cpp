@@ -168,27 +168,27 @@ void NETHER::AI_moverobot(Vector oldpos,Vector newpos,int owner)
 } /* NETHER::AI_moverobot */ 
 
 
-void NETHER::AI_availableoperators(Vector pos, int angle, int traction, std::vector<AIOperator>& l)
+void NETHER::AI_availableoperators(const Robot& robot, std::vector<AIOperator>& l)
 {
   int x, y, dx, dy;
 
-  robot_zone(pos, &x, &y, &dx, &dy);
+  robot_zone(robot.pos, &x, &y, &dx, &dy);
 
   for (int i = 0; i < 4; i++) {
     int terrain = AI_WorseMapTerrain(x + xd2[i], y + yd2[i], 2 + xd3[i], 2 + yd3[i]);
-    if (terrain <= T_HOLE && Walkable(traction, terrain)) {
+    if (terrain <= T_HOLE && robot.walkable(terrain)) {
       /* Rotation cost: */
-      int dif = dangle[i] - angle;
+      int dif = dangle[i] - robot.angle;
       if (dif > 360) dif -= 360;
       if (dif < 0) dif += 360;
       int n_turns = 0;
       if (dif == 90 || dif == 270) n_turns=1;
       if (dif == 180) n_turns = 2;
-      int cost = n_turns * int(90.f / RobotRotationSpeed(terrain, traction));
+      int cost = n_turns * int(90.f / robot.robotRotationSpeed(terrain));
 
       /* Displacement cost: */
       terrain = AI_WorseMapTerrain(x + xd[i], y + yd[i], 2, 2);
-      cost += int(0.5 / RobotSpeed(terrain,traction));
+      cost += int(0.5 / robot.robotSpeed(terrain));
 
       /* Build a new AI_operator: */
       AIOperator op;
@@ -199,14 +199,15 @@ void NETHER::AI_availableoperators(Vector pos, int angle, int traction, std::vec
       if (dif == 90) op.first_robotop = ROBOTOP_RIGHT;
       if (dif == 180) op.first_robotop = ROBOTOP_RIGHT;
       if (dif == 270) op.first_robotop = ROBOTOP_LEFT;
-      op.newpos = Vector(pos.x + xd[i] * 0.5, pos.y + yd[i] * 0.5, pos.z);
+      op.newpos = Vector(robot.pos.x + xd[i] * 0.5, robot.pos.y + yd[i] * 0.5, robot.pos.z);
       l.push_back(op);
     }
   }
 }
 
 
-bool NETHER::AI_expandoperators(int x,int y,int angle,int traction,int previous,int oldcost,int depth)
+bool NETHER::AI_expandoperators(int x, int y, int angle, const Robot& robot, int previous,
+                                int oldcost, int depth)
 {
 	int terrain,terrain2;
 	int n_turns;
@@ -219,11 +220,11 @@ bool NETHER::AI_expandoperators(int x,int y,int angle,int traction,int previous,
 		if (newpos!=searchmap[previous].previous) {
 			terrain=AI_WorseMapTerrain(x+xd2[i],y+yd2[i],2+xd3[i],2+yd3[i]);
 			if (terrain<=T_HOLE &&
-				Walkable(traction,terrain)) {
+				robot.walkable(terrain)) {
 				cost=oldcost;
 
 				/* Rotation cost: */ 
-				dif=dangle[i]-angle;
+				dif = dangle[i] - angle;
 				if (dif>360) dif-=360;
 				if (dif<0) dif+=360;
 				n_turns=0;
@@ -231,10 +232,10 @@ bool NETHER::AI_expandoperators(int x,int y,int angle,int traction,int previous,
 				if (dif==180) n_turns=2;
 
 				terrain2=AI_WorseMapTerrain(x,y,2,2);
-				cost+=n_turns*int(90/float(RobotRotationSpeed(traction,terrain2)));
+				cost+=n_turns*int(90/float(robot.robotRotationSpeed(terrain2)));
 
 				/* Displacement cost: */ 
-				cost+=int(0.5/RobotSpeed(traction,terrain));
+				cost+=int(0.5/robot.robotSpeed(terrain));
 
 				/* Replace the an old operator by a new one: */ 
 				if (!searchmap[newpos].used ||
@@ -253,7 +254,7 @@ bool NETHER::AI_expandoperators(int x,int y,int angle,int traction,int previous,
 
 					/* Continue the search process: */ 
 					if (depth>0) {
-						if (!AI_expandoperators(x+xd[i],y+yd[i],dangle[i],traction,newpos,cost,depth-1)) {
+						if (!AI_expandoperators(x+xd[i],y+yd[i],dangle[i],robot,newpos,cost,depth-1)) {
 							deadend=false;
 						} /* if */ 
 					} else {
@@ -270,88 +271,88 @@ bool NETHER::AI_expandoperators(int x,int y,int angle,int traction,int previous,
 } /* NETHER::AI_expandoperators */ 
 
 
-int NETHER::AI_searchengine(Vector pos, int angle, int goaltype, Vector goalpos, int traction,
-                            int depth)
+int NETHER::AI_searchengine(const Robot& robot, int goaltype, Vector goalpos, int depth)
 {
-	int x, y, dx, dy;
-	/* Expand the search tree: */
-	robot_zone(pos, &x, &y, &dx, &dy);
+  int x, y, dx, dy;
+  /* Expand the search tree: */
+  robot_zone(robot.pos, &x, &y, &dx, &dy);
 
-	/* Build a new AI_operator: */
-	int offs = y * (map_w * 2) + x;
-	searchmap[offs].used = true;
-	searchmap[offs].cost = 0;
-	searchmap[offs].previous = -1;
-	searchmap[offs].first_robotop = ROBOTOP_NONE;
-	searchmap[offs].newpos = pos;
-	searchmap[offs].deadend = false;
-	AI_expandoperators(x, y, angle, traction, y * (map_w * 2) + x, 0 ,depth);
+  /* Build a new AI_operator: */
+  int offs = y * (map_w * 2) + x;
+  searchmap[offs].used = true;
+  searchmap[offs].cost = 0;
+  searchmap[offs].previous = -1;
+  searchmap[offs].first_robotop = ROBOTOP_NONE;
+  searchmap[offs].newpos = robot.pos;
+  searchmap[offs].deadend = false;
+  AI_expandoperators(x, y, robot.angle, robot, y * (map_w * 2) + x, 0, depth);
 
-	/* ADVANCE PROGRAM: */ 
-	if (goaltype==Robot::PROGRAM_ADVANCE) {
-		int i,j;
-		double further;
-		int mincost;
-		bool first=true;
-		AIOperator *op,*bestop=0;
+  /* ADVANCE PROGRAM: */
+  if (goaltype==Robot::PROGRAM_ADVANCE) {
+    double further;
+    int mincost;
+    bool first = true;
+    AIOperator* op;
+    AIOperator* bestop = 0;
 
-		for(i=-depth;i<depth;i++) {
-			for(j=-depth;j<depth;j++) {
-				if ((x+i)>=0 && (x+i)<(map_w*2) &&
-					(y+j)>=0 && (y+j)<(map_h*2) &&
-					(i!=0 || j!=0)) {
-					op=&searchmap[(y+j)*(map_w*2)+(x+i)];
-					if (op->used) {
-						if (first ||
-							(op->deadend==bestop->deadend &&
-							 (op->newpos.y>further ||
-							  (op->newpos.y==further && op->cost<mincost))) ||
-							 (!op->deadend && bestop->deadend)) {
-							bestop=op;
-							further=op->newpos.y;
-							mincost=op->cost;
-							first=false;
-						} /*if */ 
-					} /* if */ 
-				} /* if */ 
-			} /* for */ 
-		} /* for */ 
+    for(int i = -depth; i < depth; i++) {
+      for(int j = -depth; j < depth; j++) {
+        if ((x + i) >= 0 && (x + i) < (map_w * 2) &&
+            (y + j) >= 0 && (y + j) < (map_h * 2) &&
+            (i != 0 || j != 0)) {
+          op = &searchmap[(y + j) * (map_w * 2) + (x + i)];
+          if (op->used) {
+            if (first ||
+                (op->deadend == bestop->deadend &&
+                 (op->newpos.y > further ||
+                  (op->newpos.y == further && op->cost < mincost))) ||
+                (!op->deadend && bestop->deadend)) {
+              bestop = op;
+              further = op->newpos.y;
+              mincost = op->cost;
+              first = false;
+            }
+          }
+        }
+      }
+    }
 
-		if (bestop!=0) {
-			int rop;
-			AIOperator *prev;
+    if (bestop != 0) {
+      int rop;
+      AIOperator *prev;
 
-			prev=bestop;
-			while(bestop->previous!=-1 && searchmap[bestop->previous].used) {
-				prev=bestop;
-				bestop=&searchmap[bestop->previous];
-			} /* while */ 
-			rop=prev->first_robotop;
+      prev = bestop;
+      while (bestop->previous != -1 && searchmap[bestop->previous].used) {
+        prev = bestop;
+        bestop = &searchmap[bestop->previous];
+      }
+      rop = prev->first_robotop;
+      AI_resetsearch(robot.pos, depth);
+      return rop;
+    } else {
+      AI_resetsearch(robot.pos, depth);
+      return ROBOTOP_NONE;
+    }
 
-			AI_resetsearch(pos,depth);
-			return rop;
-		} else {
-			AI_resetsearch(pos,depth);
-			return ROBOTOP_NONE;
-		} /* if */ 
+    AI_resetsearch(robot.pos, depth);
+    if (bestop != 0)
+      return bestop->first_robotop;
+    else
+      return ROBOTOP_NONE;
+  }
 
-		AI_resetsearch(pos,depth);
-		if (bestop!=0) return bestop->first_robotop;
-				  else return ROBOTOP_NONE;
-	} /* if */ 
+  /* RETREAT PROGRAM: */
+  if (goaltype==Robot::PROGRAM_RETREAT) {
+    double further;
+    int mincost;
+    bool first = true;
+    AIOperator* op;
+    AIOperator* bestop = 0;
 
-	/* RETREAT PROGRAM: */ 
-	if (goaltype==Robot::PROGRAM_RETREAT) {
-		int i,j;
-		double further;
-		int mincost;
-		bool first=true;
-		AIOperator *op,*bestop=0;
-
-		for(i=-depth;i<depth;i++) {
-			for(j=-depth;j<depth;j++) {
-				if ((x+i)>=0 && (x+i)<(map_w*2) &&
-					(y+j)>=0 && (y+j)<(map_h*2) &&
+    for (int i = -depth; i < depth; i++) {
+      for(int j = -depth; j < depth; j++) {
+        if ((x + i) >= 0 && (x + i) < (map_w * 2) &&
+            (y+j)>=0 && (y+j)<(map_h*2) &&
 					(i!=0 || j!=0)) {
 					op=&searchmap[(y+j)*(map_w*2)+(x+i)];
 					if (op->used) {
@@ -381,14 +382,14 @@ int NETHER::AI_searchengine(Vector pos, int angle, int goaltype, Vector goalpos,
 			} /* while */ 
 			rop=prev->first_robotop;
 
-			AI_resetsearch(pos,depth);
+			AI_resetsearch(robot.pos,depth);
 			return rop;
 		} else {
-			AI_resetsearch(pos,depth);
+			AI_resetsearch(robot.pos,depth);
 			return ROBOTOP_NONE;
 		} /* if */ 
 
-		AI_resetsearch(pos,depth);
+		AI_resetsearch(robot.pos,depth);
 		if (bestop!=0) return bestop->first_robotop;
 				  else return ROBOTOP_NONE;
 	} /* if */ 
@@ -406,8 +407,8 @@ int NETHER::AI_searchengine(Vector pos, int angle, int goaltype, Vector goalpos,
 	fflush(debug_fp);
 #endif
 
-		for(i=-depth;i<depth;i++) {
-			for(j=-depth;j<depth;j++) {
+		for(int i=-depth;i<depth;i++) {
+			for(int j=-depth;j<depth;j++) {
 				if ((x+i)>=0 && (x+i)<(map_w*2) &&
 					(y+j)>=0 && (y+j)<(map_h*2) &&
 					(i!=0 || j!=0)) {
@@ -444,14 +445,14 @@ int NETHER::AI_searchengine(Vector pos, int angle, int goaltype, Vector goalpos,
 			} /* while */ 
 			rop=prev->first_robotop;
 
-			AI_resetsearch(pos,depth);
+			AI_resetsearch(robot.pos,depth);
 			return rop;
 		} else {
-			AI_resetsearch(pos,depth);
+			AI_resetsearch(robot.pos,depth);
 			return ROBOTOP_NONE;
 		} /* if */ 
 
-		AI_resetsearch(pos,depth);
+		AI_resetsearch(robot.pos,depth);
 		if (bestop!=0) return bestop->first_robotop;
 				  else return ROBOTOP_NONE;
 	} /* if */ 
@@ -514,14 +515,14 @@ int NETHER::AI_searchengine(Vector pos, int angle, int goaltype, Vector goalpos,
 			} /* while */ 
 			rop=prev->first_robotop;
 
-			AI_resetsearch(pos,depth);
+			AI_resetsearch(robot.pos,depth);
 			return rop;
 		} else {
-			AI_resetsearch(pos,depth);
+			AI_resetsearch(robot.pos,depth);
 			return ROBOTOP_NONE;
 		} /* if */ 
 
-		AI_resetsearch(pos,depth);
+		AI_resetsearch(robot.pos, depth);
 		if (bestop!=0) return bestop->first_robotop;
 				  else return ROBOTOP_NONE;
 	} /* if */ 
@@ -530,23 +531,21 @@ int NETHER::AI_searchengine(Vector pos, int angle, int goaltype, Vector goalpos,
 } /* AI_searchengine */ 
 
 
-void NETHER::AI_resetsearch(Vector pos,int depth)
+void NETHER::AI_resetsearch(Vector pos, int depth)
 {
-	int i,j;
-	int x,y,dx,dy;
+  int x, y, dx, dy;
 
-	robot_zone(pos,&x,&y,&dx,&dy);
+  robot_zone(pos, &x, &y, &dx, &dy);
 
-	for(i=-depth;i<depth;i++) {
-		for(j=-depth;j<depth;j++) {
-			if ((x+i)>=0 && (x+i)<(map_w*2) &&
-				(y+j)>=0 && (y+j)<(map_h*2)) {
-				searchmap[(y+j)*(map_w*2)+(x+i)].used=false;
-			} /* if */ 
-		} /* for */ 
-	} /* for */ 
-
-} /* AI_resetsearch */ 
+  for (int i = -depth; i < depth; i++) {
+    for(int j = -depth; j < depth; j++) {
+      if ((x + i) >= 0 && (x + i) < (map_w * 2) &&
+          (y + j) >= 0 && (y + j) < (map_h * 2)) {
+        searchmap[(y + j) * (map_w * 2) + (x + i)].used = false;
+      }
+    }
+  }
+}
 
 
 int NETHER::AI_WorseMapTerrain(int x,int y,int dx,int dy)
@@ -577,16 +576,14 @@ int NETHER::AI_program_advance(Robot& robot, int player)
 
   int type = AI_killrobot(robot.pos);
 
-  AI_availableoperators(robot.pos, robot.angle, robot.traction, operators);
+  AI_availableoperators(robot, operators);
 
   if (operators.size()) {
     if (robot.hasElectronics()) {
-      op = AI_searchengine(robot.pos, robot.angle, Robot::PROGRAM_ADVANCE, Vector(0, 0, 0), robot.traction,
-                           WE_SEARCH_DEPTH);
+      op = AI_searchengine(robot, Robot::PROGRAM_ADVANCE, Vector(0, 0, 0), WE_SEARCH_DEPTH);
     } else {
       if ((rand() % 4) != 0) {
-        op = AI_searchengine(robot.pos, robot.angle, Robot::PROGRAM_ADVANCE, Vector(0, 0, 0), robot.traction,
-                             WOE_SEARCH_DEPTH);
+        op = AI_searchengine(robot, Robot::PROGRAM_ADVANCE, Vector(0, 0, 0), WOE_SEARCH_DEPTH);
       } else {
         AI_rankoperators_advance(operators);
         op = AI_chooseoperator(operators, 8).first_robotop;
@@ -615,15 +612,15 @@ int NETHER::AI_program_retreat(Robot& robot, int player)
 
   type = AI_killrobot(robot.pos);
 
-  AI_availableoperators(robot.pos, robot.angle, robot.traction, operators);
+  AI_availableoperators(robot, operators);
 
   if (operators.size()) {
     /* Choose one operator: */
     if (robot.hasElectronics()) {
-      op = AI_searchengine(robot.pos, robot.angle, Robot::PROGRAM_RETREAT, Vector(0, 0, 0), robot.traction, WE_SEARCH_DEPTH);
+      op = AI_searchengine(robot, Robot::PROGRAM_RETREAT, Vector(0, 0, 0), WE_SEARCH_DEPTH);
     } else {
       if ((rand() % 4) != 0) {
-        op = AI_searchengine(robot.pos, robot.angle, Robot::PROGRAM_RETREAT, Vector(0, 0, 0), robot.traction, WOE_SEARCH_DEPTH);
+        op = AI_searchengine(robot, Robot::PROGRAM_RETREAT, Vector(0, 0, 0), WOE_SEARCH_DEPTH);
       } else {
         AI_rankoperators_retreat(operators);
         op = AI_chooseoperator(operators, 8).first_robotop;
@@ -650,7 +647,7 @@ int NETHER::AI_program_capture(Robot& robot, Vector *program_goal, int player)
   if (op != ROBOTOP_NONE) return op;
 
   int type = AI_killrobot(robot.pos);
-  AI_availableoperators(robot.pos, robot.angle, robot.traction, l);
+  AI_availableoperators(robot, l);
 
   if (l.size()) {
     /* Choose one operator: */
@@ -712,10 +709,10 @@ int NETHER::AI_program_capture(Robot& robot, Vector *program_goal, int player)
     if (program_goal->x != -1 &&
         (*program_goal) != robot.pos) {
       if (robot.hasElectronics()) {
-        op = AI_searchengine(robot.pos, robot.angle,Robot::PROGRAM_CAPTURE, *program_goal, robot.traction, WE_SEARCH_DEPTH);
+        op = AI_searchengine(robot, Robot::PROGRAM_CAPTURE, *program_goal, WE_SEARCH_DEPTH);
       } else {
         if ((rand() % 4) != 0) {
-          op = AI_searchengine(robot.pos, robot.angle, Robot::PROGRAM_CAPTURE, *program_goal, robot.traction, WOE_SEARCH_DEPTH);
+          op = AI_searchengine(robot, Robot::PROGRAM_CAPTURE, *program_goal, WOE_SEARCH_DEPTH);
         } else {
           AI_rankoperators_capture(l, *program_goal);
           op = AI_chooseoperator(l, 8).first_robotop;
@@ -837,7 +834,7 @@ int NETHER::AI_program_destroy(Robot& robot, Vector *program_goal, int player)
   int type = AI_killrobot(robot.pos);
   std::vector<AIOperator> lops;
 
-  AI_availableoperators(robot.pos, robot.angle, robot.traction, lops);
+  AI_availableoperators(robot, lops);
 
   if (lops.size()) {
     /* Choose one operator: */
@@ -880,10 +877,10 @@ int NETHER::AI_program_destroy(Robot& robot, Vector *program_goal, int player)
       if (program_goal->x != -1 &&
           (*program_goal) != robot.pos) {
         if (robot.hasElectronics()) {
-          op = AI_searchengine(robot.pos, robot.angle, Robot::PROGRAM_CAPTURE, *program_goal, robot.traction, WE_SEARCH_DEPTH);
+          op = AI_searchengine(robot, Robot::PROGRAM_CAPTURE, *program_goal, WE_SEARCH_DEPTH);
         } else {
           if ((rand() % 4) != 0) {
-            op = AI_searchengine(robot.pos, robot.angle, Robot::PROGRAM_CAPTURE, *program_goal, robot.traction, WOE_SEARCH_DEPTH);
+            op = AI_searchengine(robot, Robot::PROGRAM_CAPTURE, *program_goal, WOE_SEARCH_DEPTH);
           } else {
             AI_rankoperators_capture(lops, *program_goal);
             op = AI_chooseoperator(lops, 8).first_robotop;
@@ -1003,10 +1000,10 @@ int NETHER::AI_program_destroy(Robot& robot, Vector *program_goal, int player)
             }
           } else {
             if (robot.hasElectronics()) {
-              op = AI_searchengine(robot.pos, robot.angle, Robot::PROGRAM_DESTROY, *program_goal, robot.traction, WE_SEARCH_DEPTH);
+              op = AI_searchengine(robot, Robot::PROGRAM_DESTROY, *program_goal, WE_SEARCH_DEPTH);
             } else {
               if ((rand() % 4) != 0) {
-                op = AI_searchengine(robot.pos, robot.angle, Robot::PROGRAM_DESTROY, *program_goal, robot.traction, WOE_SEARCH_DEPTH);
+                op = AI_searchengine(robot, Robot::PROGRAM_DESTROY, *program_goal, WOE_SEARCH_DEPTH);
               } else {
                 AI_rankoperators_capture(lops, *program_goal);
                 op = AI_chooseoperator(lops, 8).first_robotop;
@@ -1015,10 +1012,10 @@ int NETHER::AI_program_destroy(Robot& robot, Vector *program_goal, int player)
           }
         } else {
           if (robot.hasElectronics()) {
-            op = AI_searchengine(robot.pos, robot.angle, Robot::PROGRAM_DESTROY, *program_goal, robot.traction, WE_SEARCH_DEPTH);
+            op = AI_searchengine(robot, Robot::PROGRAM_DESTROY, *program_goal, WE_SEARCH_DEPTH);
           } else {
             if ((rand() % 4) != 0) {
-              op = AI_searchengine(robot.pos, robot.angle, Robot::PROGRAM_DESTROY, *program_goal, robot.traction, WOE_SEARCH_DEPTH);
+              op = AI_searchengine(robot, Robot::PROGRAM_DESTROY, *program_goal, WOE_SEARCH_DEPTH);
             } else {
               AI_rankoperators_capture(lops, *program_goal);
               op = AI_chooseoperator(lops, 8).first_robotop;
@@ -1049,7 +1046,7 @@ int NETHER::AI_program_stopdefend(Robot& robot, Vector *program_goal, int player
   int type = AI_killrobot(robot.pos);
   std::vector<AIOperator> lops;
 
-  AI_availableoperators(robot.pos, robot.angle, robot.traction, lops);
+  AI_availableoperators(robot, lops);
 
   if (lops.size()) {
     /* Choose one operator: */

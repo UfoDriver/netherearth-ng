@@ -36,6 +36,10 @@ public:
 
   int getId() const { return id; }
 
+  float robotSpeed(int terrain) const;
+  int robotRotationSpeed(int terrain) const;
+  bool walkable(int terrain) const;
+
   int traction;
   bool pieces[5];
 
@@ -61,6 +65,8 @@ public:
 private:
   int id;
   static int counter;
+  static const float MS[4][3];
+  static const int RS[4][3];
 };
 
 #endif // ROBOT_H

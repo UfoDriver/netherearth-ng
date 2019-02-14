@@ -10,6 +10,16 @@ extern int detaillevel;
 
 
 int Robot::counter = 0;
+const float Robot::MS[4][3]={{0.0078125, 0.015625, 0.03125},
+                             {0.00390625, 0.0078125, 0.03125},
+                             {0, 0.0078125, 0.015625},
+                             {0, 0, 0.03125}};
+
+const int Robot::RS[4][3]={{2, 3, 5},
+                           {1, 2, 5},
+                           {0, 2, 3},
+                           {0, 0, 5}};
+
 
 Robot::Robot() : traction(-1), firetimer(0), strength(100),
                  electronics_state(0), chassis_state(0), id(Robot::counter++)
@@ -375,4 +385,26 @@ int Robot::cost()
   }
 
   return tmp;
+}
+
+
+float Robot::robotSpeed(int terrain) const
+{
+  if (terrain < 4 && traction < 3)
+    return MS[terrain][traction];
+  else
+    return 0;
+}
+
+int Robot::robotRotationSpeed(int terrain) const
+{
+  if (terrain < 4 && traction < 3)
+    return RS[terrain][traction];
+  else
+    return 0;
+}
+
+
+bool Robot::walkable(int terrain) const {
+  return robotSpeed(terrain) !=0;
 }
