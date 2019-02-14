@@ -24,7 +24,7 @@ public:
   bool valid();
   float piecez(int piece);
   bool bulletHit(Bullet::BULLET_TYPE type);
-  void draw(int owner, bool shadows, Piece3DObject ***piece_tile, Vector lightposv);
+  void draw(int owner, bool shadows, std::vector<Piece3DObject> piece_tiles[2], Vector lightposv);
   int cost();
   void cost(int player, int* res, int resources[2][7]);
   bool operator==(const Robot& other) const { return id == other.id; };

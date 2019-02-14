@@ -295,14 +295,14 @@ void NETHER::drawmap(bool shadows)
                            else building_tiles[4].draw_notexture(Color(0.5, 0.5, 0.5));
 							 glPushMatrix();
 							 glTranslatef(0.5,0.5,1);
-							 piece_tile[0][7]->draw_notexture(Color(0.8f, 0.8f, 0.8f));
+							 piece_tiles[0][7].draw_notexture(Color(0.8f, 0.8f, 0.8f));
 							 glPopMatrix();
 						 } else {
 							 glPushMatrix();
 							 glTranslatef(0,0,0.05f);
 							 building_tiles[4].DrawShadow(Color(0, 0, 0, 0.5));
 							 glTranslatef(float(-light.x),float(-light.y),0);
-							 piece_tile[0][7]->DrawShadow(0, lightposv, Color(0, 0, 0, 0.5));
+							 piece_tiles[0][7].DrawShadow(0, lightposv, Color(0, 0, 0, 0.5));
 							 glPopMatrix();
 						 } /* if */ 
 
@@ -331,14 +331,14 @@ void NETHER::drawmap(bool shadows)
                            else building_tiles[4].draw_notexture(Color(0.5, 0.5, 0.5));
 							 glPushMatrix();
 							 glTranslatef(0.5,0.5,1);
-							 piece_tile[0][6]->draw_notexture(Color(0.8f, 0.8f, 0.8f));
+							 piece_tiles[0][6].draw_notexture(Color(0.8f, 0.8f, 0.8f));
 							 glPopMatrix();
 						 } else {
 							 glPushMatrix();
 							 glTranslatef(0,0,0.05f);
 							 building_tiles[4].DrawShadow(Color(0, 0, 0, 0.5));
 							 glTranslatef(float(-light.x),float(-light.y),0);
-							 piece_tile[0][6]->DrawShadow(0, lightposv, Color(0, 0, 0, 0.5));
+							 piece_tiles[0][6].DrawShadow(0, lightposv, Color(0, 0, 0, 0.5));
 							 glPopMatrix();
 						 } /* if */ 
 
@@ -367,14 +367,14 @@ void NETHER::drawmap(bool shadows)
                            else building_tiles[4].draw_notexture(Color(0.5, 0.5, 0.5));
 							 glPushMatrix();
 							 glTranslatef(0.5,0.5,1);
-							 piece_tile[0][5]->draw_notexture(Color(0.8f, 0.8f, 0.8f));
+							 piece_tiles[0][5].draw_notexture(Color(0.8f, 0.8f, 0.8f));
 							 glPopMatrix();
 						 } else {
 							 glPushMatrix();
 							 glTranslatef(0,0,0.05f);
 							 building_tiles[4].DrawShadow(Color(0, 0, 0, 0.5));
 							 glTranslatef(float(-light.x),float(-light.y),0);
-							 piece_tile[0][5]->DrawShadow(0, lightposv, Color(0, 0, 0, 0.5));
+							 piece_tiles[0][5].DrawShadow(0, lightposv, Color(0, 0, 0, 0.5));
 							 glPopMatrix();
 						 } /* if */ 
 
@@ -403,14 +403,14 @@ void NETHER::drawmap(bool shadows)
                            else building_tiles[4].draw_notexture(Color(0.5, 0.5, 0.5));
 							 glPushMatrix();
 							 glTranslatef(0.5,0.5,1);
-							 piece_tile[0][4]->draw_notexture(Color(0.8f, 0.8f, 0.8f));
+							 piece_tiles[0][4].draw_notexture(Color(0.8f, 0.8f, 0.8f));
 							 glPopMatrix();
 						 } else {
 							 glPushMatrix();
 							 glTranslatef(0,0,0.05f);
 							 building_tiles[4].DrawShadow(Color(0, 0, 0, 0.5));
 							 glTranslatef(float(-light.x),float(-light.y),0);
-							 piece_tile[0][4]->DrawShadow(0, lightposv, Color(0, 0, 0, 0.5));
+							 piece_tiles[0][4].DrawShadow(0, lightposv, Color(0, 0, 0, 0.5));
 							 glPopMatrix();
 						 } /* if */ 
 
@@ -439,14 +439,14 @@ void NETHER::drawmap(bool shadows)
                            else building_tiles[4].draw_notexture(Color(0.5, 0.5, 0.5));
 							 glPushMatrix();
 							 glTranslatef(0.5,0.5,1);
-							 piece_tile[0][3]->draw_notexture(Color(0.8f, 0.8f, 0.8f));
+							 piece_tiles[0][3].draw_notexture(Color(0.8f, 0.8f, 0.8f));
 							 glPopMatrix();
 						 } else {
 							 glPushMatrix();
 							 glTranslatef(0,0,0.05f);
 							 building_tiles[4].DrawShadow(Color(0, 0, 0, 0.5));
 							 glTranslatef(float(-light.x),float(-light.y),0);
-							 piece_tile[0][3]->DrawShadow(0, lightposv, Color(0, 0, 0, 0.5));
+							 piece_tiles[0][3].DrawShadow(0, lightposv, Color(0, 0, 0, 0.5));
 							 glPopMatrix();
 						 } /* if */ 
 
@@ -475,14 +475,14 @@ void NETHER::drawmap(bool shadows)
                            else building_tiles[4].draw_notexture(Color(0.5, 0.5, 0.5));
 							 glPushMatrix();
 							 glTranslatef(0.5,0.5,1);
-							 piece_tile[0][1]->draw_notexture(Color(0.8f, 0.8f, 0.8f));
+							 piece_tiles[0][1].draw_notexture(Color(0.8f, 0.8f, 0.8f));
 							 glPopMatrix();
 						 } else {
 							 glPushMatrix();
 							 glTranslatef(0,0,0.05f);
 							 building_tiles[4].DrawShadow(Color(0, 0, 0, 0.5));
 							 glTranslatef(float(-light.x),float(-light.y),0);
-							 piece_tile[0][1]->DrawShadow(0, lightposv, Color(0, 0, 0, 0.5));
+							 piece_tiles[0][1].DrawShadow(0, lightposv, Color(0, 0, 0, 0.5));
 							 glPopMatrix();
 						 } /* if */ 
 

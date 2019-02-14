@@ -1,3 +1,4 @@
+
 #ifdef _WIN32
 #include "windows.h"
 #endif
@@ -45,37 +46,37 @@ CMC NETHER::RobotCMC(Robot *r,int owner)
 
 	switch(r->traction) {
 	case 0:
-		cmc=piece_tile[owner][0]->cmc;
+		cmc=piece_tiles[owner][0].cmc;
 		m[14]=1.0;
 		break;
 	case 1:
-		cmc=piece_tile[owner][1]->cmc;
+		cmc=piece_tiles[owner][1].cmc;
 		m[14]=0.35;
 		break;
 	case 2:
-		cmc=piece_tile[owner][2]->cmc;
+		cmc=piece_tiles[owner][2].cmc;
 		m[14]=0.45;
 		break;
 	} /* switch */ 
 
 	if (r->pieces[0]) {
-		cmc.expand(&(piece_tile[owner][3]->cmc),m);
+		cmc.expand(&(piece_tiles[owner][3].cmc),m);
 		m[14]+=0.5;
 	} /* if */ 
 	if (r->pieces[1]) {
-		cmc.expand(&(piece_tile[owner][4]->cmc),m);
+		cmc.expand(&(piece_tiles[owner][4].cmc),m);
 		m[14]+=0.35;
 	} /* if */ 
 	if (r->pieces[2]) {
-		cmc.expand(&(piece_tile[owner][5]->cmc),m);
+		cmc.expand(&(piece_tiles[owner][5].cmc),m);
 		m[14]+=0.5;
 	} /* if */ 
 	if (r->pieces[3]) {
-		cmc.expand(&(piece_tile[owner][6]->cmc),m);
+		cmc.expand(&(piece_tiles[owner][6].cmc),m);
 		m[14]+=0.8;
 	} /* if */ 
 	if (r->pieces[4]) {
-		cmc.expand(&(piece_tile[owner][7]->cmc),m);
+		cmc.expand(&(piece_tiles[owner][7].cmc),m);
 	} /* if */ 
 
 	return cmc;
@@ -208,42 +209,42 @@ bool NETHER::robotCollision(Robot *r, bool complete)
         m2[12]=b.pos.x+0.5;
         m2[13]=b.pos.y+0.5;
         m2[14]=b.pos.z+1;
-        if (r->cmc.collision_simple(m1,&(piece_tile[0][7]->cmc),m2)) return true;
+        if (r->cmc.collision_simple(m1,&(piece_tiles[0][7].cmc),m2)) return true;
         break;
       case Building::B_FACTORY_NUCLEAR:
         if (r->cmc.collision_simple(m1,&(building_tiles[4].cmc),m2)) return true;
         m2[12]=b.pos.x+0.5;
         m2[13]=b.pos.y+0.5;
         m2[14]=b.pos.z+1;
-        if (r->cmc.collision_simple(m1,&(piece_tile[0][6]->cmc),m2)) return true;
+        if (r->cmc.collision_simple(m1,&(piece_tiles[0][6].cmc),m2)) return true;
         break;
       case Building::B_FACTORY_PHASERS:
         if (r->cmc.collision_simple(m1,&(building_tiles[4].cmc),m2)) return true;
         m2[12]=b.pos.x+0.5;
         m2[13]=b.pos.y+0.5;
         m2[14]=b.pos.z+1;
-        if (r->cmc.collision_simple(m1,&(piece_tile[0][5]->cmc),m2)) return true;
+        if (r->cmc.collision_simple(m1,&(piece_tiles[0][5].cmc),m2)) return true;
         break;
       case Building::B_FACTORY_MISSILES:
         if (r->cmc.collision_simple(m1,&(building_tiles[4].cmc),m2)) return true;
         m2[12]=b.pos.x+0.5;
         m2[13]=b.pos.y+0.5;
         m2[14]=b.pos.z+1;
-        if (r->cmc.collision_simple(m1,&(piece_tile[0][4]->cmc),m2)) return true;
+        if (r->cmc.collision_simple(m1,&(piece_tiles[0][4].cmc),m2)) return true;
         break;
       case Building::B_FACTORY_CANNONS:
         if (r->cmc.collision_simple(m1,&(building_tiles[4].cmc),m2)) return true;
         m2[12]=b.pos.x+0.5;
         m2[13]=b.pos.y+0.5;
         m2[14]=b.pos.z+1;
-        if (r->cmc.collision_simple(m1,&(piece_tile[0][3]->cmc),m2)) return true;
+        if (r->cmc.collision_simple(m1,&(piece_tiles[0][3].cmc),m2)) return true;
         break;
       case Building::B_FACTORY_CHASSIS:
         if (r->cmc.collision_simple(m1,&(building_tiles[4].cmc),m2)) return true;
         m2[12]=b.pos.x+0.5;
         m2[13]=b.pos.y+0.5;
         m2[14]=b.pos.z+1;
-        if (r->cmc.collision_simple(m1,&(piece_tile[0][1]->cmc),m2)) return true;
+        if (r->cmc.collision_simple(m1,&(piece_tiles[0][1].cmc),m2)) return true;
         break;
       }
     }

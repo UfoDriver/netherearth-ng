@@ -183,9 +183,9 @@ void NETHER::construction_draw(int width,int height)
 			glRotatef(animation_timer*32,0,1,0);
 			glRotatef(-90,1,0,0);
 			if (construction[i])
-              piece_tile[0][i]->draw_notexture(Color(1.0, 1.0, 1.0));
+              piece_tiles[0][i].draw_notexture(Color(1.0, 1.0, 1.0));
             else
-              piece_tile[0][i]->draw_notexture(Color(0.5, 0.5, 0.5));
+              piece_tiles[0][i].draw_notexture(Color(0.5, 0.5, 0.5));
 			glPopMatrix();
 		} /* for */ 
 
@@ -195,7 +195,7 @@ void NETHER::construction_draw(int width,int height)
 		glRotatef(30,1,0,0);
 		glRotatef(animation_timer*32,0,1,0);
 		glRotatef(-90,1,0,0);
-		in_construction.draw(0, false, piece_tile, lightposv);
+		in_construction.draw(0, false, piece_tiles, lightposv);
 		glPopMatrix();
 	}
 

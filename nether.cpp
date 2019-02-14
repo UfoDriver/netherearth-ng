@@ -40,6 +40,7 @@ extern bool show_radar;
 const int N_BUILDINGS = 9;
 const int N_BULLETS = 3;
 const int N_OBJECTS = 12;
+const int N_PIECES = 11;
 
 
 #ifdef _WRITE_REPORT_
@@ -47,7 +48,7 @@ FILE *debug_fp=0;
 #endif
 
 
-NETHER::NETHER(const std::string& mapname): menu(this), radar(this), n_pieces(11)
+NETHER::NETHER(const std::string& mapname): menu(this), radar(this)
 {
 #ifdef _WRITE_REPORT_
 	debug_fp=fopen("report.txt","w");
@@ -287,39 +288,40 @@ void NETHER::loadObjects()
   building_tiles[5].moveobject(Vector(0, 0, 0.01));
   building_tiles[6].moveobject(Vector(0.4, 0.4, 0.0));
 
-  piece_tile[0]=new Piece3DObject *[n_pieces];
-  piece_tile[1]=new Piece3DObject *[n_pieces];
-  for(int i=0; i <n_pieces;i++) {
-    piece_tile[0][i]=new Piece3DObject(pnames[i],"textures/");
-    piece_tile[0][i]->normalize(pscale[i]);
-    piece_tile[0][i]->makepositive();
-    piece_tile[1][i]=new Piece3DObject(pnames2[i],"textures/");
-    piece_tile[1][i]->normalize(pscale[i]);
-    piece_tile[1][i]->makepositive();
-  } /* for */ 
-  piece_tile[0][0]->moveobject(Vector(-0.5, -0.5, 0.0));
-  piece_tile[0][1]->moveobject(Vector(-0.5, -0.5, 0.0));
-  piece_tile[0][2]->moveobject(Vector(-0.5, -0.5, 0.2));
-  piece_tile[0][3]->moveobject(Vector(-0.5, -0.5, 0.0));
-  piece_tile[0][4]->moveobject(Vector(-0.5, -0.45, 0.0));
-  piece_tile[0][5]->moveobject(Vector(-0.5, -0.5, 0.0));
-  piece_tile[0][6]->moveobject(Vector(-0.5, -0.5, 0.0));
-  piece_tile[0][7]->moveobject(Vector(-0.32, -0.3, 0.0));
-  piece_tile[0][8]->moveobject(Vector(-0.45, -0.45, 0.6));
-  piece_tile[0][9]->moveobject(Vector(-0.4, -0.5, 0.0));
-  piece_tile[0][10]->moveobject(Vector(-0.4, 0.2, 0.0));
+  for (int i = 0; i < N_PIECES; i++) {
+    Piece3DObject tile(pnames[i], "textures/");
+    tile.normalize(pscale[i]);
+    tile.makepositive();
+    piece_tiles[0].push_back(tile);
 
-  piece_tile[1][0]->moveobject(Vector(-0.5, -0.5, 0.0));
-  piece_tile[1][1]->moveobject(Vector(-0.5, -0.5, 0.0));
-  piece_tile[1][2]->moveobject(Vector(-0.5, -0.5, 0.2));
-  piece_tile[1][3]->moveobject(Vector(-0.5, -0.5, 0.0));
-  piece_tile[1][4]->moveobject(Vector(-0.5, -0.45, 0.0));
-  piece_tile[1][5]->moveobject(Vector(-0.5, -0.5, 0.0));
-  piece_tile[1][6]->moveobject(Vector(-0.5, -0.5, 0.0));
-  piece_tile[1][7]->moveobject(Vector(-0.32, -0.3, 0.0));
-  piece_tile[1][8]->moveobject(Vector(-0.45, -0.45, 0.6));
-  piece_tile[1][9]->moveobject(Vector(-0.4, -0.5, 0.0));
-  piece_tile[1][10]->moveobject(Vector(-0.4, 0.2, 0.0));
+    Piece3DObject tile2(pnames2[i], "textures/");
+    tile2.normalize(pscale[i]);
+    tile2.makepositive();
+    piece_tiles[1].push_back(tile2);
+  } /* for */ 
+  piece_tiles[0][0].moveobject(Vector(-0.5, -0.5, 0.0));
+  piece_tiles[0][1].moveobject(Vector(-0.5, -0.5, 0.0));
+  piece_tiles[0][2].moveobject(Vector(-0.5, -0.5, 0.2));
+  piece_tiles[0][3].moveobject(Vector(-0.5, -0.5, 0.0));
+  piece_tiles[0][4].moveobject(Vector(-0.5, -0.45, 0.0));
+  piece_tiles[0][5].moveobject(Vector(-0.5, -0.5, 0.0));
+  piece_tiles[0][6].moveobject(Vector(-0.5, -0.5, 0.0));
+  piece_tiles[0][7].moveobject(Vector(-0.32, -0.3, 0.0));
+  piece_tiles[0][8].moveobject(Vector(-0.45, -0.45, 0.6));
+  piece_tiles[0][9].moveobject(Vector(-0.4, -0.5, 0.0));
+  piece_tiles[0][10].moveobject(Vector(-0.4, 0.2, 0.0));
+
+  piece_tiles[1][0].moveobject(Vector(-0.5, -0.5, 0.0));
+  piece_tiles[1][1].moveobject(Vector(-0.5, -0.5, 0.0));
+  piece_tiles[1][2].moveobject(Vector(-0.5, -0.5, 0.2));
+  piece_tiles[1][3].moveobject(Vector(-0.5, -0.5, 0.0));
+  piece_tiles[1][4].moveobject(Vector(-0.5, -0.45, 0.0));
+  piece_tiles[1][5].moveobject(Vector(-0.5, -0.5, 0.0));
+  piece_tiles[1][6].moveobject(Vector(-0.5, -0.5, 0.0));
+  piece_tiles[1][7].moveobject(Vector(-0.32, -0.3, 0.0));
+  piece_tiles[1][8].moveobject(Vector(-0.45, -0.45, 0.6));
+  piece_tiles[1][9].moveobject(Vector(-0.4, -0.5, 0.0));
+  piece_tiles[1][10].moveobject(Vector(-0.4, 0.2, 0.0));
 
   ship = new Shadow3DObject("models/ship.asc", "textures/");
   ship->normalize(0.5f);
@@ -334,8 +336,10 @@ void NETHER::loadObjects()
 
   ship->ComputeShadow(lightposv);
   for (Shadow3DObject& tile: building_tiles) tile.ComputeShadow(lightposv);
-  for(int i=0;i<n_pieces;i++) piece_tile[0][i]->ComputeFixedShadows(lightposv);
-  for(int i=0;i<n_pieces;i++) piece_tile[1][i]->ComputeFixedShadows(lightposv);
+  for(int i = 0; i < N_PIECES; i++) {
+    piece_tiles[0][i].ComputeFixedShadows(lightposv);
+    piece_tiles[1][i].ComputeFixedShadows(lightposv);
+  }
   for (Piece3DObject& tile: bullet_tiles) tile.ComputeFixedShadows(lightposv);
 
   construction_tiles.emplace_back("models/construction1.asc","textures/");
@@ -356,18 +360,14 @@ void NETHER::loadObjects()
 void NETHER::deleteObjects()
 {
   tiles.clear();
-	delete ship;
-	ship = 0;
-    building_tiles.clear();
-	for(int i = 0;i < n_pieces; i++) delete piece_tile[0][i];
-	for(int i = 0; i < n_pieces;i++) delete piece_tile[1][i];
-	delete piece_tile[0];
-	delete piece_tile[1];
-	piece_tile[0]=0;
-	piece_tile[1]=0;
-    construction_tiles.clear();
-    message_tiles.clear();
-    bullet_tiles.clear();
+  delete ship;
+  ship = 0;
+  building_tiles.clear();
+  piece_tiles[0].clear();
+  piece_tiles[1].clear();
+  construction_tiles.clear();
+  message_tiles.clear();
+  bullet_tiles.clear();
 }
 
 
@@ -383,9 +383,9 @@ void NETHER::refresh_display_lists(void)
       tile.refresh_display_lists();
   }
 
-  for (int i = 0; i < n_pieces; i++) {
-    piece_tile[0][i]->refresh_display_lists();
-    piece_tile[1][i]->refresh_display_lists();
+  for (int i = 0; i < N_PIECES; i++) {
+    piece_tiles[0][i].refresh_display_lists();
+    piece_tiles[1][i].refresh_display_lists();
   }
 
   for (C3DObject& tile: construction_tiles) {
@@ -647,7 +647,7 @@ void NETHER::draw_game(bool shadows)
 					r->pos.x<=(viewp.x+MAXX)) {
 					glPushMatrix();
 					glTranslatef(r->pos.x,r->pos.y,r->pos.z);
-					r->draw(i, shadows, piece_tile, lightposv);
+					r->draw(i, shadows, piece_tiles, lightposv);
 					glPopMatrix();
 				} /* if */ 
 			} /* while */ 
@@ -1031,42 +1031,42 @@ bool NETHER::ShipCollision(C3DObject *obj,float x,float y,float z)
 					m2[12]=b.pos.x+0.5;
 					m2[13]=b.pos.y+0.5;
 					m2[14]=b.pos.z+1;
-					if (obj->cmc.collision_simple(m1,&(piece_tile[0][7]->cmc),m2)) return true;
+					if (obj->cmc.collision_simple(m1,&(piece_tiles[0][7].cmc),m2)) return true;
 					break;
 			case Building::B_FACTORY_NUCLEAR:
 					if (obj->cmc.collision_simple(m1,&(building_tiles[4].cmc),m2)) return true;
 					m2[12]=b.pos.x+0.5;
 					m2[13]=b.pos.y+0.5;
 					m2[14]=b.pos.z+1;
-					if (obj->cmc.collision_simple(m1,&(piece_tile[0][6]->cmc),m2)) return true;
+					if (obj->cmc.collision_simple(m1,&(piece_tiles[0][6].cmc),m2)) return true;
 					break;
 			case Building::B_FACTORY_PHASERS:
 					if (obj->cmc.collision_simple(m1,&(building_tiles[4].cmc),m2)) return true;
 					m2[12]=b.pos.x+0.5;
 					m2[13]=b.pos.y+0.5;
 					m2[14]=b.pos.z+1;
-					if (obj->cmc.collision_simple(m1,&(piece_tile[0][5]->cmc),m2)) return true;
+					if (obj->cmc.collision_simple(m1,&(piece_tiles[0][5].cmc),m2)) return true;
 					break;
 			case Building::B_FACTORY_MISSILES:
 					if (obj->cmc.collision_simple(m1,&(building_tiles[4].cmc),m2)) return true;
 					m2[12]=b.pos.x+0.5;
 					m2[13]=b.pos.y+0.5;
 					m2[14]=b.pos.z+1;
-					if (obj->cmc.collision_simple(m1,&(piece_tile[0][4]->cmc),m2)) return true;
+					if (obj->cmc.collision_simple(m1,&(piece_tiles[0][4].cmc),m2)) return true;
 					break;
 			case Building::B_FACTORY_CANNONS:
 					if (obj->cmc.collision_simple(m1,&(building_tiles[4].cmc),m2)) return true;
 					m2[12]=b.pos.x+0.5;
 					m2[13]=b.pos.y+0.5;
 					m2[14]=b.pos.z+1;
-					if (obj->cmc.collision_simple(m1,&(piece_tile[0][3]->cmc),m2)) return true;
+					if (obj->cmc.collision_simple(m1,&(piece_tiles[0][3].cmc),m2)) return true;
 					break;
 			case Building::B_FACTORY_CHASSIS:
 					if (obj->cmc.collision_simple(m1,&(building_tiles[4].cmc),m2)) return true;
 					m2[12]=b.pos.x+0.5;
 					m2[13]=b.pos.y+0.5;
 					m2[14]=b.pos.z+1;
-					if (obj->cmc.collision_simple(m1,&(piece_tile[0][1]->cmc),m2)) return true;
+					if (obj->cmc.collision_simple(m1,&(piece_tiles[0][1].cmc),m2)) return true;
 					break;
 			} /* switch */ 
 		} /* if */ 

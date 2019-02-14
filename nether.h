@@ -86,7 +86,7 @@ public:
   ~NETHER();
 
   void loadObjects();
-	void deleteObjects();
+  void deleteObjects();
 
 	bool gamecycle(int w,int h);
 	void gameredraw(int w,int h);
@@ -192,8 +192,7 @@ private:
   std::vector<C3DObject> tiles;
   Shadow3DObject *ship;
   std::vector<Shadow3DObject> building_tiles;
-  const int n_pieces;
-  Piece3DObject **piece_tile[2];
+  std::vector<Piece3DObject> piece_tiles[2];
   std::vector<C3DObject> construction_tiles;
   std::vector<C3DObject> message_tiles;
   std::vector<Piece3DObject> bullet_tiles;
