@@ -13,7 +13,6 @@
 
 #include <string>
 
-#include "list.h"
 #include "vector.h"
 
 #include "cmc.h"
@@ -41,7 +40,7 @@ int mainmenu_status=0;
 int mainmenu_substatus=0;
 bool fullscreen=false;
 bool show_radar=true;
-std::string mapname("original.map");
+extern std::vector<std::string>::iterator mapnameIter;
 C3DObject *nethertittle=0;
 
 /* DRAWING REGION AROUND THE SHIP: */ 
@@ -154,7 +153,7 @@ int main(int argc, char** argv)
 {
 #endif
 
-	int time,act_time;
+	int time;
 	SDL_Event event;
     bool quit = false;
 
@@ -214,7 +213,7 @@ int main(int argc, char** argv)
 	    } /* switch */ 
 	} /* while */ 
 
-		act_time=SDL_GetTicks();
+		int act_time = SDL_GetTicks();
 		if (act_time-time>=REDRAWING_PERIOD)
 		{
 			frames_per_sec_tmp+=1;
@@ -238,7 +237,7 @@ int main(int argc, char** argv)
 				} else {
 					int val=mainmenu_cycle(SCREEN_X,SCREEN_Y);
 					if (val==1) {
-						game=new NETHER("maps/" + mapname);
+						game=new NETHER("maps/" + *mapnameIter);
 					} /* if */ 
 					if (val==2) quit=true;
 					if (val==3) {

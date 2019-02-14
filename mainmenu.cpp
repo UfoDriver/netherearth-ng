@@ -6,6 +6,7 @@
 #include <dirent.h>
 #endif
 
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 
@@ -20,7 +21,6 @@
 #include "SDL/SDL.h"
 #include "SDL/SDL_mixer.h"
 
-#include "list.h"
 #include "vector.h"
 #include "cmc.h"
 #include "3dobject.h"
@@ -55,9 +55,9 @@ extern int detaillevel;
 extern bool sound;
 extern int level;
 extern int up_key,down_key,left_key,right_key,fire_key,pause_key;
-extern std::string mapname;
+std::vector<std::string> mapnames;
+std::vector<std::string>::iterator mapnameIter(mapnames.begin());
 extern bool show_radar;
-List<char> mapnames;
 
 extern int mainmenu_status;
 extern int mainmenu_substatus;
@@ -81,7 +81,7 @@ void populateMaps()
       char *name;
       name=new char[strlen(finfo.cFileName)+1];
       strcpy(name,finfo.cFileName);
-      mapnames.Add(name);
+      mapnames.push_back(name);
     }
 
     while(FindNextFile(h,&finfo)==TRUE) {
@@ -91,7 +91,7 @@ void populateMaps()
         char *name;
         name=new char[strlen(finfo.cFileName)+1];
         strcpy(name,finfo.cFileName);
-        mapnames.Add(name);
+        mapnames.push_back(name);
       }
     }
   }
@@ -105,15 +105,13 @@ void populateMaps()
         char *name;
         name=new char[strlen(ep->d_name)+1];
         strcpy(name,ep->d_name);
-        mapnames.Add(name);
+        mapnames.push_back(name);
       }
     }
     (void) closedir (dp);
   }
 #endif
   /* Look for the actualmap: */
-  mapnames.Rewind();
-  while(!mapnames.EndP() && strcmp(mapnames.GetObj(), mapname.c_str())!=0) mapnames.Next();
 }
 
 int mainmenu_cycle(int width,int height)
@@ -150,13 +148,9 @@ int mainmenu_cycle(int width,int height)
 		} /* if */ 
 		if (keyboard[SDLK_4] && !old_keyboard[SDLK_4]) {
 			/* Change the MAP: */ 
-			if (mapnames.EmptyP())
-              populateMaps();
-			if (!mapnames.EmptyP()) {
-				mapnames.Next();
-				if (mapnames.EndP()) mapnames.Rewind();
-                mapname = mapnames.GetObj();
-
+			if (mapnames.size()) {
+              ++mapnameIter;
+              if (mapnameIter == mapnames.end()) mapnameIter = mapnames.begin();
 			} /* if */ 
 
 			saveConfiguration();
@@ -375,7 +369,7 @@ void mainmenu_draw(int width,int height)
 		glTranslatef(0,-1,0);
 		scaledglprintf2(0.005,0.005,"3 - OPTIONS          ");
 		glTranslatef(0,-1,0);
-		scaledglprintf2(0.005,0.005,"4 - MAP: %s",mapname.c_str());
+		scaledglprintf2(0.005,0.005,"4 - MAP: %s", (*mapnameIter).c_str());
 		glTranslatef(0,-1,0);
 		scaledglprintf2(0.005,0.005,"5 - EXIT GAME        ");
 		break;
@@ -487,10 +481,17 @@ void mainmenu_draw(int width,int height)
 
 void loadConfiguration(void)
 {
+    std::string mapname;
     std::ifstream configFile("nether.cfg");
     configFile >> SCREEN_X >> SCREEN_Y >> fullscreen >> shadows >> detaillevel
                >> up_key >> down_key >> left_key >> right_key >> fire_key >> pause_key
                >> sound >> level >> mapname;
+
+    populateMaps();
+    mapnameIter = std::find(mapnames.begin(), mapnames.end(), mapname);
+    if (mapnameIter == mapnames.end()) {
+      mapnameIter = mapnames.begin();
+    }
 }
 
 
@@ -503,5 +504,5 @@ void saveConfiguration(void)
                << fire_key << ' ' << pause_key << std::endl
                << sound << std::endl
                << level << std::endl
-               << mapname << std::endl;
+               << *mapnameIter << std::endl;
 }

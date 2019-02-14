@@ -13,7 +13,6 @@
 #include "SDL/SDL.h"
 #include "SDL/SDL_mixer.h"
 
-#include "list.h"
 #include "vector.h"
 #include "quaternion.h"
 #include "cmc.h"

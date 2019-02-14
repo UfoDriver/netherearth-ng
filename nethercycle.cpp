@@ -18,7 +18,6 @@
 #include "SDL/SDL.h"
 #include "SDL/SDL_mixer.h"
 
-#include "list.h"
 #include "vector.h"
 #include "cmc.h"
 #include "3dobject.h"
@@ -923,15 +922,12 @@ bool NETHER::cycle(unsigned char *keyboard)
 
 		/* Robot cycles: */ 
 		{
-			int i;
-			List<Robot> l;
-			Robot *r;
 			float x[2],y[2],minz;
 			Vector old_pos;
 			int old_chassis_state;
 			int terrain;
 			
-			for(i=0;i<2;i++) {
+			for (int i = 0; i < 2; i++) {
 
 #ifdef _WRITE_REPORT_
 	fprintf(debug_fp,"Player %i robots\n",i);

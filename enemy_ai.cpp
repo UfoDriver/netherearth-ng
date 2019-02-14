@@ -13,7 +13,6 @@
 #include "SDL/SDL.h"
 #include "SDL/SDL_mixer.h"
 
-#include "list.h"
 #include "vector.h"
 #include "cmc.h"
 #include "3dobject.h"
@@ -82,11 +81,6 @@ void NETHER::AI_enemy(void)
 
 
     {
-      List<Building> l;
-      Building *b;
-      List<Robot> rl;
-      Robot *r;
-      int i;
       int forces[2]={0,0};
 
       mean_factory_position=Vector(0,0,0);

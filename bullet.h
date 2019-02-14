@@ -4,7 +4,6 @@
 #include "cmc.h"
 #include "vector.h"
 #include "particle.h"
-#include "list.h"
 
 class Robot;
 class Piece3DObject;
