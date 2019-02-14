@@ -47,6 +47,7 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am_netherearth_OBJECTS = 3dobject-ase.$(OBJEXT) 3dobject.$(OBJEXT) \
+	aioperator.$(OBJEXT) \
 	bitmap.$(OBJEXT) bullet.$(OBJEXT) cmc.$(OBJEXT) \
 	construction.$(OBJEXT) enemy_ai.$(OBJEXT) glprintf.$(OBJEXT) \
 	main.$(OBJEXT) mainmenu.$(OBJEXT) maps.$(OBJEXT) \
