@@ -14,7 +14,6 @@
 #include "SDL/SDL.h"
 #include "SDL/SDL_mixer.h"
 
-#include "list.h"
 #include "vector.h"
 #include "cmc.h"
 #include "3dobject.h"
@@ -834,356 +833,357 @@ int NETHER::AI_RealShotPaths(int x,int y,int player,int persistence)
 } /* NETHER::AI_RealShotPaths */ 
 
 
-int NETHER::AI_program_destroy(int goal,Vector *program_goal,Vector pos,int angle,int traction,bool electronics,int player,bool *pieces)
+int NETHER::AI_program_destroy(int goal, Vector *program_goal, Vector pos, int angle, int traction,
+                               bool electronics, int player, bool *pieces)
 {
-	/* First of all, delete the robot from the discreet map: */ 
-	int op=ROBOTOP_NONE;
-	int type=AI_killrobot(pos);
-    std::vector<AIOperator> lops;
+  /* First of all, delete the robot from the discreet map: */
+  int op = ROBOTOP_NONE;
+  int type = AI_killrobot(pos);
+  std::vector<AIOperator> lops;
 
-	AI_availableoperators(pos,angle,traction,lops);
+  AI_availableoperators(pos, angle, traction, lops);
 
-	if (lops.size()) {
-		/* Choose one operator: */ 
-		if (goal!=Robot::P_PARAM_ROBOTS) {
-			/* Seek a goal: */ 
-			List<Building> l;
-			Building *b;
-			bool anygoal=false;
-			float distance,minimumdistance;
+  if (lops.size()) {
+    /* Choose one operator: */
+    if (goal != Robot::P_PARAM_ROBOTS) {
+      /* Seek a goal: */
+      bool anygoal = false;
+      float distance, minimumdistance;
 
-			*program_goal=Vector(-1,-1,-1);
+      *program_goal = Vector(-1, -1, -1);
 
-			for (const Building& b: buildings) {
-				if (goal==Robot::P_PARAM_WARBASES && 
-					b.type==Building::B_WARBASE && b.owner!=player &&
-					AI_WorseMapTerrain(int((b.pos.x+2.0)/0.5),int(b.pos.y/0.5),2,2)<=T_HOLE) {
-					distance=float(((b.pos+Vector(2.5,0.5,0))-pos).norma());
-					if (!anygoal || distance<minimumdistance) {
-						anygoal=true;
-						minimumdistance=distance;
-						*program_goal=b.pos+Vector(2.5,0.5,0);
-					} /* if */ 
-				} /* if */ 
-				if (goal==Robot::P_PARAM_EFACTORIES && 
-					(b.type==Building::B_FACTORY_ELECTRONICS ||
-					 b.type==Building::B_FACTORY_NUCLEAR ||
-					 b.type==Building::B_FACTORY_PHASERS ||
-					 b.type==Building::B_FACTORY_MISSILES ||
-					 b.type==Building::B_FACTORY_CANNONS ||
-					 b.type==Building::B_FACTORY_CHASSIS) && b.owner!=0 && b.owner!=player &&
-					AI_WorseMapTerrain(int((b.pos.x+1.0)/0.5),int(b.pos.y/0.5),2,2)<=T_HOLE) {
-					distance=float(((b.pos+Vector(1.5,0.5,0))-pos).norma());
-					if (!anygoal || distance<minimumdistance) {
-						anygoal=true;
-						minimumdistance=distance;
-						*program_goal=b.pos+Vector(1.5,0.5,0);
-					} /* if */ 
-				} /* if */ 
-			} /* while */ 
+      for (const Building& b: buildings) {
+        if (goal == Robot::P_PARAM_WARBASES &&
+            b.type == Building::B_WARBASE &&
+            b.owner!=player &&
+            AI_WorseMapTerrain(int((b.pos.x + 2.0) / 0.5), int(b.pos.y / 0.5), 2, 2) <= T_HOLE) {
+          distance = float(((b.pos + Vector(2.5, 0.5, 0)) - pos).norma());
+          if (!anygoal || distance < minimumdistance) {
+            anygoal = true;
+            minimumdistance = distance;
+            *program_goal = b.pos+Vector(2.5,0.5,0);
+          }
+        }
+        if (goal == Robot::P_PARAM_EFACTORIES
+            && (b.type == Building::B_FACTORY_ELECTRONICS ||
+                b.type == Building::B_FACTORY_NUCLEAR ||
+                b.type == Building::B_FACTORY_PHASERS ||
+                b.type == Building::B_FACTORY_MISSILES ||
+                b.type == Building::B_FACTORY_CANNONS ||
+                b.type == Building::B_FACTORY_CHASSIS) && b.owner != 0 && b.owner != player &&
+            AI_WorseMapTerrain(int((b.pos.x + 1.0) / 0.5), int(b.pos.y / 0.5), 2, 2) <= T_HOLE) {
+          distance=float(((b.pos + Vector(1.5, 0.5, 0)) - pos).norma());
+          if (!anygoal || distance < minimumdistance) {
+            anygoal = true;
+            minimumdistance = distance;
+            *program_goal = b.pos + Vector(1.5,0.5,0);
+          }
+        }
+      }
 
-			if (program_goal->x!=-1 &&
-				(*program_goal)!=pos) {
-				if (electronics) {
-					op=AI_searchengine(pos,angle,Robot::PROGRAM_CAPTURE,*program_goal,traction,WE_SEARCH_DEPTH);
-				} else {
-					if ((rand()%4)!=0) {
-						op=AI_searchengine(pos,angle,Robot::PROGRAM_CAPTURE,*program_goal,traction,WOE_SEARCH_DEPTH);
-					} else {
-						AI_rankoperators_capture(lops,*program_goal);
-						op = AI_chooseoperator(lops,8).first_robotop;
-					} /* if */ 
-				} /* if */ 
-			} else {
-				if (program_goal->x!=-1) op=ROBOTOP_NUCLEAR;
-			} /* if */ 
+      if (program_goal->x != -1 &&
+          (*program_goal) != pos) {
+        if (electronics) {
+          op = AI_searchengine(pos, angle, Robot::PROGRAM_CAPTURE, *program_goal, traction, WE_SEARCH_DEPTH);
+        } else {
+          if ((rand() % 4) != 0) {
+            op = AI_searchengine(pos, angle, Robot::PROGRAM_CAPTURE, *program_goal, traction, WOE_SEARCH_DEPTH);
+          } else {
+            AI_rankoperators_capture(lops, *program_goal);
+            op = AI_chooseoperator(lops, 8).first_robotop;
+          }
+        }
+      } else {
+        if (program_goal->x != -1) op = ROBOTOP_NUCLEAR;
+      }
 
-		} else {
-			/* Find the nearest position to destroy an enemy robot: */ 
-			List<Robot> l;
-			int x,y,dx,dy,i,j,k;
-			bool collided;
-			bool first=true;
-			float distance;
-			int persistence=CANNON_PERSISTENCE;
-			if (pieces[1]) persistence=MISSILE_PERSISTENCE;
+    } else {
+      /* Find the nearest position to destroy an enemy robot: */
+      int x, y, dx, dy;
+      bool collided;
+      bool first = true;
+      float distance;
+      int persistence = CANNON_PERSISTENCE;
+      if (pieces[1]) persistence = MISSILE_PERSISTENCE;
 
-			*program_goal=Vector(-1,-1,-1);
-			for(i=0;i<map_w*2*map_h*2;i++) attackmap[i]=0;
+      *program_goal = Vector(-1,-1,-1);
+      std::fill(attackmap.begin(), attackmap.end(), 0);
 
-			/* Find the nearest FIRE position: */ 
-			for (Robot* r: robots[2 - player]) {
-				if (first ||
-					(*program_goal-pos).norma()<distance) {
-					first=false;
-					distance=float((*program_goal-pos).norma());
-					*program_goal=r->pos;
-				} /* if */ 
+      /* Find the nearest FIRE position: */
+      for (Robot* r: robots[2 - player]) {
+        if (first ||
+            (*program_goal-pos).norma() < distance) {
+          first = false;
+          distance = float((*program_goal - pos).norma());
+          *program_goal = r->pos;
+        }
 
-				robot_zone(r->pos,&x,&y,&dx,&dy);
-				for(i=0;i<dx;i++) {
-					for(j=0;j<dy;j++) {
-						collided=false;
-						for(k=1;!collided && k<int((persistence*BULLET_SPEED)/0.5);k++) {
-							if (x+i+k<0 || x+i+k>=map_w*2 ||
-								y+j<0 || y+j>=map_h*2 ||
-								discreetmap[(y+j)*(map_w*2)+(x+i+k)]>3) {
-								collided=true;
-							} else {
-								attackmap[(y+j)*(map_w*2)+(x+i+k)]|=4;
-							} /* if */ 
-						} /* for */ 
+        robot_zone(r->pos, &x, &y, &dx, &dy);
+        for (int i = 0; i < dx; i++) {
+          for (int j = 0; j < dy; j++) {
+            collided = false;
+            for (int k = 1; !collided && k < int((persistence * BULLET_SPEED) / 0.5); k++) {
+              if (x + i + k < 0 || x + i + k >= map_w * 2 ||
+                  y + j < 0 || y + j >= map_h * 2 ||
+                  discreetmap[(y + j) * (map_w * 2) + (x + i + k)] > 3) {
+                collided = true;
+              } else {
+                attackmap[(y + j) * (map_w * 2) + (x + i + k)] |= 4;
+              }
+            }
 
-						collided=false;
-						for(k=1;!collided && k<int((persistence*BULLET_SPEED)/0.5);k++) {
-							if (x+i-k<0 || x+i-k>=map_w*2 ||
-								y+j<0 || y+j>=map_h*2 ||
-								discreetmap[(y+j)*(map_w*2)+(x+i-k)]>3) {
-								collided=true;
-							} else {
-								attackmap[(y+j)*(map_w*2)+(x+i-k)]|=1;
-							} /* if */ 
-						} /* for */ 
+            collided = false;
+            for (int k = 1; !collided && k < int((persistence * BULLET_SPEED) / 0.5); k++) {
+              if (x + i - k < 0 || x + i - k >= map_w * 2 ||
+                  y + j < 0 || y + j >= map_h * 2 ||
+                  discreetmap[(y + j) * (map_w * 2) + (x + i - k)] > 3) {
+                collided = true;
+              } else {
+                attackmap[(y + j) * (map_w * 2) + (x + i - k)] |= 1;
+              }
+            }
 
-						collided=false;
-						for(k=1;!collided && k<int((persistence*BULLET_SPEED)/0.5);k++) {
-							if (x+i<0 || x+i>=map_w*2 ||
-								y+j+k<0 || y+j+k>=map_h*2 ||
-								discreetmap[(y+j+k)*(map_w*2)+(x+i)]>3) {
-								collided=true;
-							} else {
-								attackmap[(y+j+k)*(map_w*2)+(x+i)]|=8;
-							} /* if */ 
-						} /* for */ 
+            collided = false;
+            for (int k = 1; !collided && k < int((persistence * BULLET_SPEED) / 0.5); k++) {
+              if (x + i < 0 || x + i >= map_w * 2 ||
+                  y + j + k < 0 || y + j + k >= map_h * 2 ||
+                  discreetmap[(y + j + k) * (map_w * 2) + (x + i)] > 3) {
+                collided = true;
+              } else {
+                attackmap[(y + j + k) * (map_w * 2) + (x + i)] |= 8;
+              }
+            }
 
-						collided=false;
-						for(k=1;!collided && k<int((persistence*BULLET_SPEED)/0.5);k++) {
-							if (x+i<0 || x+i>=map_w*2 ||
-								y+j-k<0 || y+j-k>=map_h*2 ||
-								discreetmap[(y+j-k)*(map_w*2)+(x+i)]>3) {
-								collided=true;
-							} else {
-								attackmap[(y+j-k)*(map_w*2)+(x+i)]|=2;
-							} /* if */ 
-						} /* for */ 
-					} /* for */ 
-				} /* for */ 
-			} /* while */ 
+            collided = false;
+            for (int k = 1; !collided && k < int((persistence * BULLET_SPEED) / 0.5); k++) {
+              if (x + i < 0 || x + i >= map_w * 2 ||
+                  y + j - k < 0 || y + j - k >= map_h * 2 ||
+                  discreetmap[(y + j - k) * (map_w * 2) + (x + i)] >3) {
+                collided = true;
+              } else {
+                attackmap[(y + j - k) * (map_w * 2) + (x + i)] |= 2;
+              }
+            }
+          }
+        }
+      }
 
-			if (!first) {
-				robot_zone(pos,&x,&y,&dx,&dy);
-				if ((attackmap[y*(map_w*2)+x]!=0 ||
-					attackmap[(y+1)*(map_w*2)+x]!=0 ||
-					attackmap[y*(map_w*2)+x+1]!=0 ||
-					attackmap[(y+1)*(map_w*2)+x+1]!=0)) {
-					int prsp=0,mrsp=0,crsp=0,rsp=0;
-					if (pieces[2]) prsp=AI_RealShotPaths(x,y,player,PHASER_PERSISTENCE);
-					if (pieces[1]) mrsp=AI_RealShotPaths(x,y,player,MISSILE_PERSISTENCE);
-					if (pieces[0]) crsp=AI_RealShotPaths(x,y,player,CANNON_PERSISTENCE);
-					rsp=prsp|mrsp|crsp;
-					
-					if (rsp!=0) {
-						int dirmask=0;
-						if (angle==0) dirmask=1;
-						if (angle==90) dirmask=2;
-						if (angle==180) dirmask=4;
-						if (angle==270) dirmask=8;
-						if ((rsp&dirmask)!=0) {
-							if ((prsp&dirmask)!=0) {
-								op=ROBOTOP_PHASERS;
-							} else {
-								if ((mrsp&dirmask)!=0) {
-									op=ROBOTOP_MISSILES;
-								} else {
-									op=ROBOTOP_CANNONS;
-								} /* if */ 
-							} /* if */ 
-						} else {
-							dirmask*=2;
-							if (dirmask>=16) dirmask=1;
-							if ((rsp&dirmask)!=0) {
-								op=ROBOTOP_RIGHT;
-							} else {
-								op=ROBOTOP_LEFT;
-							} /* if */ 
-						} /* if */ 
-					} else {
-						if (electronics) {
-							op=AI_searchengine(pos,angle,Robot::PROGRAM_DESTROY,*program_goal,traction,WE_SEARCH_DEPTH);
-						} else {
-							if ((rand()%4)!=0) {
-								op=AI_searchengine(pos,angle,Robot::PROGRAM_DESTROY,*program_goal,traction,WOE_SEARCH_DEPTH);
-							} else {
-								AI_rankoperators_capture(lops,*program_goal);
-								op = AI_chooseoperator(lops,8).first_robotop;
-							} /* if */ 
-						} /* if */ 
-					} /* if */ 
-				} else {
-					if (electronics) {
-						op=AI_searchengine(pos,angle,Robot::PROGRAM_DESTROY,*program_goal,traction,WE_SEARCH_DEPTH);
-					} else {
-						if ((rand()%4)!=0) {
-							op=AI_searchengine(pos,angle,Robot::PROGRAM_DESTROY,*program_goal,traction,WOE_SEARCH_DEPTH);
-						} else {
-							AI_rankoperators_capture(lops,*program_goal);
-							op = AI_chooseoperator(lops,8).first_robotop;
-						} /* if */ 
-					} /* if */ 
-				} /* if */ 
-			} else {
-				/* There are no enemy robots: */ 
-				op=ROBOTOP_NONE;
-			} /* if */ 
-		} /* if */ 
-	} /* if */ 
+      if (!first) {
+        robot_zone(pos, &x, &y, &dx, &dy);
+        if ((attackmap[y * (map_w * 2) + x] !=0 ||
+             attackmap[(y + 1) * (map_w * 2) + x] != 0 ||
+             attackmap[y * (map_w * 2) + x + 1] !=0 ||
+             attackmap[(y + 1) * (map_w * 2) + x + 1] != 0)) {
+          int prsp = 0, mrsp = 0,crsp = 0,rsp = 0;
+          if (pieces[2]) prsp = AI_RealShotPaths(x, y, player, PHASER_PERSISTENCE);
+          if (pieces[1]) mrsp = AI_RealShotPaths(x, y, player, MISSILE_PERSISTENCE);
+          if (pieces[0]) crsp = AI_RealShotPaths(x, y, player, CANNON_PERSISTENCE);
+          rsp = prsp | mrsp | crsp;
 
-	/* Reconstruct the decreet map: */ 
-	if (type==T_ROBOT) AI_newrobot(pos,0);
-				  else AI_newrobot(pos,1);
+          if (rsp != 0) {
+            int dirmask = 0;
+            if (angle == 0) dirmask = 1;
+            if (angle == 90) dirmask = 2;
+            if (angle == 180) dirmask = 4;
+            if (angle == 270) dirmask = 8;
+            if ((rsp & dirmask) != 0) {
+              if ((prsp & dirmask) != 0) {
+                op = ROBOTOP_PHASERS;
+              } else {
+                if ((mrsp & dirmask) != 0) {
+                  op = ROBOTOP_MISSILES;
+                } else {
+                  op = ROBOTOP_CANNONS;
+                }
+              }
+            } else {
+              dirmask *= 2;
+              if (dirmask >= 16) dirmask = 1;
+              if ((rsp & dirmask) != 0) {
+                op = ROBOTOP_RIGHT;
+              } else {
+                op = ROBOTOP_LEFT;
+              }
+            }
+          } else {
+            if (electronics) {
+              op = AI_searchengine(pos, angle, Robot::PROGRAM_DESTROY, *program_goal, traction, WE_SEARCH_DEPTH);
+            } else {
+              if ((rand() % 4) != 0) {
+                op = AI_searchengine(pos, angle, Robot::PROGRAM_DESTROY, *program_goal, traction, WOE_SEARCH_DEPTH);
+              } else {
+                AI_rankoperators_capture(lops, *program_goal);
+                op = AI_chooseoperator(lops, 8).first_robotop;
+              }
+            }
+          }
+        } else {
+          if (electronics) {
+            op = AI_searchengine(pos, angle, Robot::PROGRAM_DESTROY, *program_goal, traction, WE_SEARCH_DEPTH);
+          } else {
+            if ((rand() % 4) != 0) {
+              op = AI_searchengine(pos, angle, Robot::PROGRAM_DESTROY, *program_goal, traction, WOE_SEARCH_DEPTH);
+            } else {
+              AI_rankoperators_capture(lops, *program_goal);
+              op = AI_chooseoperator(lops, 8).first_robotop;
+            }
+          }
+        }
+      } else {
+        /* There are no enemy robots: */
+        op = ROBOTOP_NONE;
+      }
+    }
+  }
 
-	return op;
-} /* NETHER::AI_program_destroy */ 
+  /* Reconstruct the decreet map: */
+  if (type == T_ROBOT)
+    AI_newrobot(pos, 0);
+  else
+    AI_newrobot(pos, 1);
+
+  return op;
+}
 
 
-int NETHER::AI_program_stopdefend(Vector *program_goal,Vector pos,int angle,int traction,bool electronics,int player,bool *pieces)
+int NETHER::AI_program_stopdefend(Vector *program_goal, Vector pos, int angle, int traction,
+                                  bool electronics, int player, bool *pieces)
 {
-	/* First of all, delete the robot from the discreet map: */ 
-	int op=ROBOTOP_NONE;
-	int type=AI_killrobot(pos);
-    std::vector<AIOperator> lops;
+  /* First of all, delete the robot from the discreet map: */
+  int op = ROBOTOP_NONE;
+  int type = AI_killrobot(pos);
+  std::vector<AIOperator> lops;
 
-	AI_availableoperators(pos,angle,traction, lops);
+  AI_availableoperators(pos, angle, traction, lops);
 
-	if (lops.size()) {
-		/* Choose one operator: */ 
+  if (lops.size()) {
+    /* Choose one operator: */
 
-		/* Find the nearest position to destroy an enemy robot: */ 
-		List<Robot> l;
-		Robot *r;
-		int x,y,dx,dy,i,j,k;
-		bool collided;
-		int persistence=CANNON_PERSISTENCE;
-		if (pieces[1]) persistence=MISSILE_PERSISTENCE;
+    /* Find the nearest position to destroy an enemy robot: */
+    int x, y, dx, dy;
+    bool collided;
+    int persistence = CANNON_PERSISTENCE;
+    if (pieces[1]) persistence = MISSILE_PERSISTENCE;
 
-		*program_goal=Vector(-1,-1,-1);
-		for(i=0;i<map_w*2*map_h*2;i++) attackmap[i]=0;
+    *program_goal = Vector(-1, -1, -1);
+    std::fill(attackmap.begin(), attackmap.end(), 0);
 
-		/* Find the nearest FIRE position: */ 
-		for (Robot* r: robots[2 - player]) {
-			robot_zone(r->pos,&x,&y,&dx,&dy);
-			for(i=0;i<dx;i++) {
-				for(j=0;j<dy;j++) {
-					collided=false;
-					for(k=1;!collided && k<int((persistence*BULLET_SPEED)/0.5);k++) {
-						if (x+i+k<0 || x+i+k>=map_w*2 ||
-							y+j<0 || y+j>=map_h*2 ||
-							discreetmap[(y+j)*(map_w*2)+(x+i+k)]>3) {
-							collided=true;
-						} else {
-							attackmap[(y+j)*(map_w*2)+(x+i+k)]|=4;
-						} /* if */ 
-					} /* for */ 
+    /* Find the nearest FIRE position: */
+    for (Robot* r: robots[2 - player]) {
+      robot_zone(r->pos, &x, &y, &dx, &dy);
+      for (int i = 0; i < dx; i++) {
+        for (int j = 0; j < dy; j++) {
+          collided = false;
+          for (int k = 1; !collided && k < int((persistence * BULLET_SPEED) / 0.5); k++) {
+            if (x + i + k < 0 || x + i + k >= map_w * 2 ||
+                y + j < 0 || y + j >= map_h * 2 ||
+                discreetmap[(y + j) * (map_w * 2) + (x + i + k)] > 3) {
+              collided = true;
+            } else {
+              attackmap[(y + j) * (map_w * 2) + (x + i + k)] |= 4;
+            }
+          }
 
-					collided=false;
-					for(k=1;!collided && k<int((persistence*BULLET_SPEED)/0.5);k++) {
-						if (x+i-k<0 || x+i-k>=map_w*2 ||
-							y+j<0 || y+j>=map_h*2 ||
-							discreetmap[(y+j)*(map_w*2)+(x+i-k)]>3) {
-							collided=true;
-						} else {
-							attackmap[(y+j)*(map_w*2)+(x+i-k)]|=1;
-						} /* if */ 
-					} /* for */ 
+          collided = false;
+          for (int k = 1; !collided && k < int((persistence * BULLET_SPEED) / 0.5); k++) {
+            if (x + i - k < 0 || x + i - k >= map_w * 2 ||
+                y + j < 0 || y + j >= map_h * 2 ||
+                discreetmap[(y + j) * (map_w * 2) + (x + i - k)] >3) {
+              collided = true;
+            } else {
+              attackmap[(y + j) * (map_w * 2) + (x + i - k)] |= 1;
+            }
+          }
 
-					collided=false;
-					for(k=1;!collided && k<int((persistence*BULLET_SPEED)/0.5);k++) {
-						if (x+i<0 || x+i>=map_w*2 ||
-							y+j+k<0 || y+j+k>=map_h*2 ||
-							discreetmap[(y+j+k)*(map_w*2)+(x+i)]>3) {
-							collided=true;
-						} else {
-							attackmap[(y+j+k)*(map_w*2)+(x+i)]|=8;
-						} /* if */ 
-					} /* for */ 
+          collided = false;
+          for (int k = 1; !collided && k < int((persistence * BULLET_SPEED) / 0.5); k++) {
+            if (x + i < 0 || x + i >= map_w * 2 ||
+                y + j + k < 0 || y + j + k >= map_h * 2 ||
+                discreetmap[(y + j + k) * (map_w * 2) + (x + i)] >3) {
+              collided = true;
+            } else {
+              attackmap[(y + j + k) * (map_w * 2) + (x + i)] |= 8;
+            }
+          }
 
-					collided=false;
-					for(k=1;!collided && k<int((persistence*BULLET_SPEED)/0.5);k++) {
-						if (x+i<0 || x+i>=map_w*2 ||
-							y+j-k<0 || y+j-k>=map_h*2 ||
-							discreetmap[(y+j-k)*(map_w*2)+(x+i)]>3) {
-							collided=true;
-						} else {
-							attackmap[(y+j-k)*(map_w*2)+(x+i)]|=2;
-						} /* if */ 
-					} /* for */ 
-				} /* for */ 
-			} /* for */ 
-		} /* while */ 
+          collided = false;
+          for (int k = 1; !collided && k < int((persistence * BULLET_SPEED) / 0.5); k++) {
+            if (x + i < 0 || x + i >= map_w * 2 ||
+                y + j - k < 0 || y + j - k >= map_h * 2 ||
+                discreetmap[(y + j - k) * (map_w * 2) + (x + i)] > 3) {
+              collided = true;
+            } else {
+              attackmap[(y + j - k) * (map_w * 2) + (x + i)] |= 2;
+            }
+          }
+        }
+      }
+    }
 
 
-		if (robots[2 - player].size()) {
-			robot_zone(pos,&x,&y,&dx,&dy);
-			if ((attackmap[y*(map_w*2)+x]!=0 ||
-				attackmap[(y+1)*(map_w*2)+x]!=0 ||
-				attackmap[y*(map_w*2)+x+1]!=0 ||
-				attackmap[(y+1)*(map_w*2)+x+1]!=0)) {
-				int prsp=0,mrsp=0,crsp=0,rsp=0;
-				if (pieces[2]) prsp=AI_RealShotPaths(x,y,player,PHASER_PERSISTENCE);
-				if (pieces[1]) mrsp=AI_RealShotPaths(x,y,player,MISSILE_PERSISTENCE);
-				if (pieces[0]) crsp=AI_RealShotPaths(x,y,player,CANNON_PERSISTENCE);
-				rsp=prsp|mrsp|crsp;
-				
-				if (rsp!=0) {
-					int dirmask=0;
+    if (robots[2 - player].size()) {
+      robot_zone(pos, &x, &y, &dx, &dy);
+      if ((attackmap[y * (map_w * 2) + x] != 0 ||
+           attackmap[(y + 1) * (map_w * 2) + x] != 0 ||
+           attackmap[y * (map_w * 2) + x + 1] != 0 ||
+           attackmap[(y + 1) * (map_w * 2) + x + 1] != 0)) {
+        int prsp = 0, mrsp = 0, crsp = 0, rsp = 0;
+        if (pieces[2]) prsp = AI_RealShotPaths(x, y, player, PHASER_PERSISTENCE);
+        if (pieces[1]) mrsp = AI_RealShotPaths(x, y, player, MISSILE_PERSISTENCE);
+        if (pieces[0]) crsp = AI_RealShotPaths(x, y, player, CANNON_PERSISTENCE);
+        rsp = prsp | mrsp | crsp;
 
-					/* This is just to make the program not to think that the robot doesn't have any goal: */ 
-					*program_goal=Vector(0,0,0);	
+        if (rsp != 0) {
+          int dirmask = 0;
 
-					if (angle==0) dirmask=1;
-					if (angle==90) dirmask=2;
-					if (angle==180) dirmask=4;
-					if (angle==270) dirmask=8;
-					if ((rsp&dirmask)!=0) {
-						if ((prsp&dirmask)!=0) {
-							op=ROBOTOP_PHASERS;
-						} else {
-							if ((mrsp&dirmask)!=0) {
-								op=ROBOTOP_MISSILES;
-							} else {
-								op=ROBOTOP_CANNONS;
-							} /* if */ 
-						} /* if */ 
-					} else {
-						dirmask*=2;
-						if (dirmask>=16) dirmask=1;
-						if ((rsp&dirmask)!=0) {
-							op=ROBOTOP_RIGHT;
-						} else {
-							op=ROBOTOP_LEFT;
-						} /* if */ 
-					} /* if */ 
-				} else {
-					/* There are no enemy robots at sight: */ 
-					op=ROBOTOP_NONE;
-				} /* if */ 
-			} else {
-				/* There are no enemy robots at sight: */ 
-				op=ROBOTOP_NONE;
-			} /* if */ 
-		} else {
-			/* There are no enemy robots: */ 
-			op=ROBOTOP_NONE;
-		} /* if */ 
+          /* This is just to make the program not to think that the robot doesn't have any goal: */
+          *program_goal = Vector(0, 0, 0);
 
-	} /* if */ 
+          if (angle == 0) dirmask = 1;
+          if (angle == 90) dirmask = 2;
+          if (angle == 180) dirmask = 4;
+          if (angle == 270) dirmask = 8;
+          if ((rsp & dirmask) != 0) {
+            if ((prsp & dirmask) !=0 ) {
+              op = ROBOTOP_PHASERS;
+            } else {
+              if ((mrsp & dirmask) != 0) {
+                op = ROBOTOP_MISSILES;
+              } else {
+                op = ROBOTOP_CANNONS;
+              }
+            }
+          } else {
+            dirmask *= 2;
+            if (dirmask >= 16) dirmask = 1;
+            if ((rsp & dirmask) != 0) {
+              op = ROBOTOP_RIGHT;
+            } else {
+              op = ROBOTOP_LEFT;
+            }
+          }
+        } else {
+          /* There are no enemy robots at sight: */
+          op = ROBOTOP_NONE;
+        }
+      } else {
+        /* There are no enemy robots at sight: */
+        op = ROBOTOP_NONE;
+      }
+    } else {
+      /* There are no enemy robots: */
+      op = ROBOTOP_NONE;
+    }
+  }
 
-	/* Reconstruct the decreet map: */ 
-	if (type==T_ROBOT) AI_newrobot(pos,0);
-				  else AI_newrobot(pos,1);
+  /* Reconstruct the decreet map: */
+  if (type == T_ROBOT)
+    AI_newrobot(pos, 0);
+  else
+    AI_newrobot(pos, 1);
 
-	return op;
-} /* NETHER::AI_program_stopdefend */ 
+  return op;
+}
 
 
 void NETHER::AI_rankoperators_advance(std::vector<AIOperator>& l)

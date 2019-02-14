@@ -4,7 +4,6 @@
 #include <cstring>
 #include <string>
 #include "vector.h"
-#include "list.h"
 #include "cmc.h"
 #include "3dobject.h"
 #include "shadow3dobject.h"
