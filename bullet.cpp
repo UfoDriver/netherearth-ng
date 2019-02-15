@@ -285,3 +285,20 @@ bool NETHER::bulletCollision(const Bullet& bullet, Robot **r)
 
   return false;
 } /* NETHER::BulletCollision */
+
+
+std::ostream& operator<<(std::ostream& out, std::pair<const Bullet&, std::vector<Robot*>*>pair)
+{
+  out << pair.first.type << ' ' << pair.first.step << ' ' << pair.first.angle << '\n';
+  out << pair.first.pos;
+
+  int i = find_index(pair.second[0], pair.first.owner);
+  if (i == -1) {
+    i = find_index(pair.second[1], pair.first.owner);
+    out << 1 << ' ' << i;
+  } else {
+    out << 0 << ' ' << i;
+  }
+
+  return out << pair.first.cmc;
+}

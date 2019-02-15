@@ -31,4 +31,6 @@ public:
   int status;
 };
 
+std::ostream& operator<<(std::ostream& out, const Building& bulding);
+
 #endif // BUILDING_H

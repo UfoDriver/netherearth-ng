@@ -3,6 +3,7 @@
 #endif
 
 #include <algorithm>
+#include <iomanip>
 
 #include "string.h"
 #include "stdio.h"
@@ -34,98 +35,63 @@ extern int up_key,down_key,left_key,right_key,fire_key,pause_key;
 extern int level;
 
 
-bool NETHER::save_game(char *filename)
+bool NETHER::saveGame(const std::string& filename)
 {
-  FILE *fp;
+  std::ofstream oFile(filename);
 
-  fp=fopen(filename,"w");
-  if (fp==0) return false;
-
-  fprintf(fp,"%i %i\n",map_w,map_h);
+  oFile << map_w << ' ' << map_h << '\n';
 
   for (int i = 0; i < map_h; i++) {
     for (int j = 0; j < map_w; j++) {
-      fprintf(fp,"%i ",map[j+i*map_w]);
+      oFile << map[j + i * map_w] << ' ';
     }
-    fprintf(fp,"\n");
+    oFile << '\n';
   }
 
-  fprintf(fp,"%.8f %.8f %.8f %.8f\n",lightpos[0],lightpos[1],lightpos[2],lightpos[3]);
-  lightposv.save(fp);
+  oFile << std::setw(8) << lightpos[0] << ' '
+        << std::setw(8) << lightpos[1] << ' '
+        << std::setw(8) << lightpos[2] << ' '
+        << std::setw(8) << lightpos[3] << '\n';
+  oFile << lightposv
+        << camera
+        << viewp
+        << shipp;
 
-  camera.save(fp);
-  viewp.save(fp);
-  shipp.save(fp);
-  if (shiplanded)
-    fprintf(fp,"1\n");
-  else
-    fprintf(fp,"0\n");
+  oFile << shiplanded << '\n';
 
-  fprintf(fp,"%i\n", buildings.size());
+  oFile << buildings.size() << '\n';
   for (Building& b: buildings) {
-    fprintf(fp,"%i %i %i\n",b.type,b.owner,b.status);
-    b.pos.save(fp);
+    oFile << b;
   }
 
   for (int i = 0; i < 2; i++) {
-    fprintf(fp,"%i\n",robots[i].size());
+    oFile << robots[i].size() << '\n';
     for (Robot* r: robots[i]) {
-      fprintf(fp,"%i\n",r->traction);
-      for (int j = 0; j < 5; j++) {
-        if (r->pieces[j])
-          fprintf(fp,"1\n");
-        else
-          fprintf(fp,"0\n");
-      }
-      fprintf(fp,"%i %i\n",r->program,r->program_parameter);
-      r->program_goal.save(fp);
-      fprintf(fp,"%i\n",r->op);
-      if (r->shipover)
-        fprintf(fp,"1\n");
-      else
-        fprintf(fp,"0\n");
-      fprintf(fp,"%i %i\n",r->firetimer,r->strength);
-      r->pos.save(fp);
-      fprintf(fp,"%i\n",r->angle);
-      r->cmc.save(fp);
-
-      fprintf(fp,"%i %i\n",r->electronics_state,r->chassis_state);
+      oFile << *r;
     }
   }
 
-  fprintf(fp,"%i\n", bullets.size());
-
+  oFile << bullets.size() << '\n';
   for (Bullet& bullet: bullets) {
-    fprintf(fp,"%i %i %i\n", bullet.type, bullet.step, bullet.angle);
-    bullet.pos.save(fp);
-    int i = find_index(robots[0], bullet.owner);
-    if (i==-1) {
-      i = find_index(robots[1], bullet.owner);
-      fprintf(fp,"1 %i\n", bullet.owner->getId());
-    } else {
-      fprintf(fp,"0 %i\n",i);
-    }
-    bullet.cmc.save(fp);
+    oFile << std::make_pair(bullet, robots);
   }
 
-  fprintf(fp,"%i\n", explosions.size());
+  oFile << explosions.size() << '\n';
   for (Explosion& e: explosions) {
-    e.pos.save(fp);
-    fprintf(fp,"%i %i\n",e.step, e.size);
+    oFile << e;
   }
 
-  fprintf(fp,"%i %i %i %i\n",day,hour,minute,second);
+  oFile << day << ' ' << hour << ' ' << minute << ' ' << second << '\n';
   for (int i = 0; i < 2; i++) {
     for (int j = 0; j < 7; j++) {
-      fprintf(fp,"%i ",resources[i][j]);
+      oFile << resources[i][j] << ' ';
     }
-    fprintf(fp,"\n");
-  }
-  fprintf(fp,"%i\n", find_index(robots[0], controlled));
+    oFile << '\n';
+   }
 
-  fprintf(fp,"%i %i\n",menu.act_menu,menu.act_button);
+  oFile << find_index(robots[0], controlled) << '\n';
+  oFile << menu.act_menu << ' ' << menu.act_button << std::endl;
 
-  fclose(fp);
   return true;
 }
 
@@ -149,7 +115,9 @@ bool NETHER::loadGame(const std::string& filename)
   map.reserve(map_w * map_h);
   for (int i = 0; i < map_h; i++) {
     for (int j = 0; j < map_w; j++) {
-      inFile >> map[j + i * map_w];
+      int tile;
+      inFile >> tile;
+      map.push_back(tile);
     }
   }
 
@@ -175,7 +143,6 @@ bool NETHER::loadGame(const std::string& filename)
   }
 
   inFile >> length;
-
   for (int k = 0; k < length; k++) {
     bullets.emplace_back(inFile, robots);
   }

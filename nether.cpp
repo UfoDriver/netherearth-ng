@@ -48,7 +48,7 @@ FILE *debug_fp=0;
 #endif
 
 
-NETHER::NETHER(const std::string& mapname): menu(this), radar(this)
+NETHER::NETHER(const std::string& mapname): menu(this), radar(this), controlled(NULL)
 {
 #ifdef _WRITE_REPORT_
 	debug_fp=fopen("report.txt","w");
@@ -899,7 +899,7 @@ bool NETHER::option_cycle(unsigned char *keyboard)
 				{
 					char filename[80];
 					sprintf(filename,"savedgame%i.txt",option_menu-1);
-					save_game(filename);
+					saveGame(filename);
 					saveDebugReport("debugreport.txt");
 					game_state=STATE_PAUSE;
 					option_menu=2;

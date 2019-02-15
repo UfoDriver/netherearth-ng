@@ -59,7 +59,7 @@ bool NETHER::loadmap(const std::string& filename)
 		if (tile==11) tile=1;
 		if (tile==12) tile=3;
 
-		map[i]=tile;
+		map.push_back(tile);
 	} /* for */ 
 
 	{

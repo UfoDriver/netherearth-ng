@@ -31,4 +31,6 @@ private:
   void drawParticles(std::vector<Particle>& particles) const;
 };
 
+std::ostream& operator<<(std::ostream& out, std::pair<const Bullet&, std::vector<Robot*>*>pair);
+
 #endif // BULLET_H

@@ -92,7 +92,7 @@ public:
   void gameredraw(int w, int h);
   void refreshDisplayLists();
 
-  bool save_game(char* filename);
+  bool saveGame(const std::string& filename);
   bool loadGame(const std::string& filename);
   bool saveDebugReport(const std::string& filename);
 

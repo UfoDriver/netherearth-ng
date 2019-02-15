@@ -452,3 +452,21 @@ void Robot::calculateCMC(std::vector<Piece3DObject>& pieceTiles)
     cmc.expand(&(pieceTiles[7].cmc), m);
   }
 }
+
+
+std::ostream& operator<<(std::ostream& out, const Robot& robot)
+{
+  out << robot.traction << '\n';
+  for (int j = 0; j < 5; j++) {
+    out << robot.pieces[j] << '\n';
+  }
+  out << robot.program << ' ' << robot.program_parameter.as_int << '\n';
+  return out << robot.program_goal
+             << robot.op << '\n'
+             << robot.shipover << '\n'
+             << robot.firetimer << ' ' << robot.strength << '\n'
+             << robot.pos
+             << robot.angle << '\n'
+             << robot.cmc
+             << robot.electronics_state << ' ' << robot.chassis_state << '\n';
+}

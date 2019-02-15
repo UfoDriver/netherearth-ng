@@ -15,4 +15,6 @@ public:
   int size;
 };
 
+std::ostream& operator<<(std::ostream& out, const Explosion& explosion);
+
 #endif // EXPLOSION_H

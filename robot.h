@@ -70,4 +70,6 @@ private:
   static const int RS[4][3];
 };
 
+std::ostream& operator<<(std::ostream& out, const Robot& robot);
+
 #endif // ROBOT_H
