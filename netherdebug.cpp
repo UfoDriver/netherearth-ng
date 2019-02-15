@@ -39,7 +39,6 @@ bool NETHER::saveDebugReport(const std::string& filename)
   std::ofstream log(filename);
   log << "NETHER EARTH NG Debug Report\n\n";
   log << "MAPW: " << map_w << "\nMAPH: " << map_h << '\n';
-
   log << "MAP:\n";
   for(int i = 0; i < map_h; i++) {
     for(int j = 0; j < map_w; j++) {
@@ -65,11 +64,11 @@ bool NETHER::saveDebugReport(const std::string& filename)
   for (const Building& b: buildings) {
     log << "BUILDING:\n TYPE: " << b.type
         << "\n OWNER: " << b.owner
-        << "\n STATUS: " << b.status << "\n\n";
-    log << b.pos;
+        << "\n STATUS: " << b.status << "\n"
+        << b.pos;
   }
 
-  for(int i = 0; i < 2; i++) {
+  for (int i = 0; i < 2; i++) {
     log << "\n# OF ROBOTS PLAYER " << i << ": " << robots[i].size() << '\n';
 
     const char* tractions[3] = {"BIPOD", "TRACKS", "ANTIGRAV"};
@@ -81,10 +80,11 @@ bool NETHER::saveDebugReport(const std::string& filename)
         if (r->pieces[j])
           log << ' ' << pieces[j] << '\n';
       }
-      log << " PROGRAM: " << r->program << "\n PROGRAM PARAMETER: " << r->program_parameter.as_int << '\n';
+      log << " PROGRAM: " << r->program << '\n';
+      log << " PROGRAM PARAMETER: " << r->program_parameter.as_int << '\n';
       log << " PROGRAM GOAL: ";
       log << r->program_goal;
-      log << " ACTUAL OPERATOR: " << r->op << '\n';
+           log << " ACTUAL OPERATOR: " << r->op << '\n';
       if (r->shipover)
         log << " HAS THE SHIP OVER IT\n";
       else
@@ -93,7 +93,7 @@ bool NETHER::saveDebugReport(const std::string& filename)
       log << " POSITION: ";
       log << r->pos;
       log << " ANGLE: " << r->angle << '\n';
-      log << " MINIMUM CONTAINER BOX: \n";
+      log << " MINIMUM CONTAINER BOX:\n";
       log << r->cmc;
       log << " ELECTRONICS STATE: " << r->electronics_state
           <<"\n CHASSIS STATE: " << r->chassis_state;
@@ -111,7 +111,7 @@ bool NETHER::saveDebugReport(const std::string& filename)
 
     if (std::count(robots[0].cbegin(), robots[0].cend(), bullet.owner)) {
       log << " OWNER: PLAYER 0 ROBOT " << bullet.owner->getId() << '\n';
-    } else {
+    } else if (std::count(robots[1].cbegin(), robots[1].cend(), bullet.owner)) {
       log << " OWNER: PLAYER 1 ROBOT " << bullet.owner->getId() << '\n';
     }
 
@@ -120,7 +120,6 @@ bool NETHER::saveDebugReport(const std::string& filename)
   }
 
   log << "# EXPLOSIONS " << explosions.size() << '\n';
-
   for (Explosion& e: explosions) {
     log << "EXPLOSION:\n POSITION:\n";
     log << e.pos;
@@ -131,15 +130,19 @@ bool NETHER::saveDebugReport(const std::string& filename)
   log << "\nRESOURCES:\n";
 
   for(int i = 0; i < 2; i++) {
-    log << "PLAYER " << i << ':';
+    log << "  PLAYER " << i << ": ";
     for(int j = 0; j < 7; j++) {
       log << resources[i][j] << ' ';
     }
     log << '\n';
   }
 
-  log << "\nROBOT UNDER CONTROL: " << controlled->getId() << "\n";
-  log << "\nMENU " << menu.act_menu << "\nACT BUTTON: " << menu.act_button << "\n";
+  log << "\nROBOT UNDER CONTROL: ";
+  if (controlled)
+    log << controlled->getId() << '\n';
+  else
+    log << "None\n";
+  log << "\nMENU " << menu.act_menu << "\nACT BUTTON: " << menu.act_button << '\n';
 
   return true;
 }
