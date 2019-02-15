@@ -3,6 +3,7 @@
 #endif
 
 #include <algorithm>
+#include <iomanip>
 #include <iostream>
 #include <string>
 
@@ -23,8 +24,11 @@
 #include "shadow3dobject.h"
 #include "piece3dobject.h"
 #include "myglutaux.h"
+#include "building.h"
+#include "explosion.h"
 #include "nether.h"
 #include "menu.h"
+#include "utils.h"
 
 #include "glprintf.h"
 
@@ -1070,3 +1074,255 @@ bool NETHER::ShipCollision(C3DObject *obj,float x,float y,float z)
 
 	return false;
 } /* NETHER::ShipCollision */ 
+
+
+bool NETHER::saveGame(const std::string& filename)
+{
+  std::ofstream oFile(filename);
+
+  oFile << map_w << ' ' << map_h << '\n';
+
+  for (int i = 0; i < map_h; i++) {
+    for (int j = 0; j < map_w; j++) {
+      oFile << map[j + i * map_w] << ' ';
+    }
+    oFile << '\n';
+  }
+
+  oFile << std::setw(8) << lightpos[0] << ' '
+        << std::setw(8) << lightpos[1] << ' '
+        << std::setw(8) << lightpos[2] << ' '
+        << std::setw(8) << lightpos[3] << '\n';
+  oFile << lightposv
+        << camera
+        << viewp
+        << shipp;
+
+  oFile << shiplanded << '\n';
+
+  oFile << buildings.size() << '\n';
+  for (Building& b: buildings) {
+    oFile << b;
+  }
+
+  for (int i = 0; i < 2; i++) {
+    oFile << robots[i].size() << '\n';
+    for (Robot* r: robots[i]) {
+      oFile << *r;
+    }
+  }
+
+  oFile << bullets.size() << '\n';
+  for (Bullet& bullet: bullets) {
+    oFile << std::make_pair(bullet, robots);
+  }
+
+  oFile << explosions.size() << '\n';
+  for (Explosion& e: explosions) {
+    oFile << e;
+  }
+
+  oFile << day << ' ' << hour << ' ' << minute << ' ' << second << '\n';
+  for (int i = 0; i < 2; i++) {
+    for (int j = 0; j < 7; j++) {
+      oFile << resources[i][j] << ' ';
+    }
+    oFile << '\n';
+   }
+
+  oFile << find_index(robots[0], controlled) << '\n';
+  oFile << menu.act_menu << ' ' << menu.act_button << std::endl;
+
+  return true;
+}
+
+
+bool NETHER::loadGame(const std::string& filename)
+{
+  std::ifstream inFile(filename);
+
+  AI_deleteprecomputations();
+
+  inFile >> map_w >> map_h;
+
+  explosions.clear();
+  buildings.clear();
+  for (int i = 0; i < 2; i++) {
+    for (Robot* r: robots[i]) delete r;
+    robots[i].clear();
+  }
+  bullets.clear();
+  map.clear();
+  map.reserve(map_w * map_h);
+  for (int i = 0; i < map_h; i++) {
+    for (int j = 0; j < map_w; j++) {
+      int tile;
+      inFile >> tile;
+      map.push_back(tile);
+    }
+  }
+
+  inFile >> lightpos[0] >> lightpos[1] >> lightpos[2] >> lightpos[3];
+  inFile >> lightposv
+         >> camera
+         >> viewp
+         >> shipp;
+
+  inFile >> shiplanded;
+
+  int length;
+  inFile >> length;
+  for (int k = 0; k < length; k++) {
+    buildings.push_back(Building(inFile));
+  }
+
+  for (int i = 0; i < 2; i++) {
+    inFile >> length;
+    for (int k = 0; k < length; k++) {
+      robots[i].push_back(new Robot(inFile));
+    }
+  }
+
+  inFile >> length;
+  for (int k = 0; k < length; k++) {
+    bullets.emplace_back(inFile, robots);
+  }
+
+  inFile >> length;
+  for (int k = 0; k < length; k++) {
+    explosions.emplace_back(inFile);
+  }
+
+  inFile >> day >> hour >> minute >> second;
+  for (int i = 0; i < 2; i++) {
+    for (int j = 0; j < 7; j++) {
+      inFile >> resources[i][j];
+    }
+  }
+
+  int i;
+  inFile >> i;
+  if (i >= 0)
+    controlled = robots[0][i];
+  else
+    controlled = 0;
+
+  inFile >> menu.act_menu >> menu.act_button;
+
+  AI_precomputations();
+  return true;
+}
+
+
+bool NETHER::saveDebugReport(const std::string& filename)
+{
+  std::ofstream log(filename);
+  log << "NETHER EARTH NG Debug Report\n\n";
+  log << "MAPW: " << map_w << "\nMAPH: " << map_h << '\n';
+  log << "MAP:\n";
+  for(int i = 0; i < map_h; i++) {
+    for(int j = 0; j < map_w; j++) {
+      log << map[j+i*map_w] << ' ';
+    }
+    log << '\n';
+  }
+
+  log << "LIGHTPOS: " << lightpos[0] << ' '
+      << lightpos[1] << ' '
+      << lightpos[2] << ' '
+      << lightpos[3] << '\n';
+  log << "LIGHTPOSV: " << lightposv;
+  log << "CAMERA: " << camera;
+  log << "VIEWP: " << viewp;
+  log << "SHIPP: " << shipp;
+  if (shiplanded)
+    log << "SHIP LANDED\n";
+  else
+    log << "SHIP NOT LANDED\n";
+
+  log << "# OF BUILDINGS: " << buildings.size() << '\n';
+  for (const Building& b: buildings) {
+    log << "BUILDING:\n TYPE: " << b.type
+        << "\n OWNER: " << b.owner
+        << "\n STATUS: " << b.status << "\n"
+        << b.pos;
+  }
+
+  for (int i = 0; i < 2; i++) {
+    log << "\n# OF ROBOTS PLAYER " << i << ": " << robots[i].size() << '\n';
+
+    const char* tractions[3] = {"BIPOD", "TRACKS", "ANTIGRAV"};
+    const char* pieces[5] = {"CANNONS", "MISSILES", "PHASERS", "NUCLEAR", "ELECTRONICS"};
+    for (Robot* r: robots[i]) {
+      log << "ROBOT:\n";
+      log << ' ' << tractions[r->traction] << '\n';
+      for (int j = 0; j < 5; j++) {
+        if (r->pieces[j])
+          log << ' ' << pieces[j] << '\n';
+      }
+      log << " PROGRAM: " << r->program << '\n';
+      log << " PROGRAM PARAMETER: " << r->program_parameter.as_int << '\n';
+      log << " PROGRAM GOAL: ";
+      log << r->program_goal;
+           log << " ACTUAL OPERATOR: " << r->op << '\n';
+      if (r->shipover)
+        log << " HAS THE SHIP OVER IT\n";
+      else
+        log << " HAS NO SHIP OVER IT\n";
+      log << " FIRETIMER: " << r->firetimer << "\n STRENGTH: " << r->strength << '\n';
+      log << " POSITION: ";
+      log << r->pos;
+      log << " ANGLE: " << r->angle << '\n';
+      log << " MINIMUM CONTAINER BOX:\n";
+      log << r->cmc;
+      log << " ELECTRONICS STATE: " << r->electronics_state
+          <<"\n CHASSIS STATE: " << r->chassis_state;
+      log << "\n\n";
+    }
+  }
+
+  log << "\n# BULLETS: " << bullets.size() << '\n';
+  for (Bullet& bullet: bullets) {
+    log << " BULLET:\n TYPE: " << bullet.type
+        << "\n STEP: " << bullet.step
+        << "\n ANGLE: " << bullet.angle << '\n';
+    log << " POSITION: ";
+    log << bullet.pos;
+
+    if (std::count(robots[0].cbegin(), robots[0].cend(), bullet.owner)) {
+      log << " OWNER: PLAYER 0 ROBOT " << bullet.owner->getId() << '\n';
+    } else if (std::count(robots[1].cbegin(), robots[1].cend(), bullet.owner)) {
+      log << " OWNER: PLAYER 1 ROBOT " << bullet.owner->getId() << '\n';
+    }
+
+    log << " MINIMUM CONTAINER BOX: \n";
+    log << bullet.cmc << '\n';
+  }
+
+  log << "# EXPLOSIONS " << explosions.size() << '\n';
+  for (Explosion& e: explosions) {
+    log << "EXPLOSION:\n POSITION:\n";
+    log << e.pos;
+    log << " STEP: " << e.step << "\n SIZE: " << e.size << "\n\n";
+  }
+
+  log << "\nTIME: DAY " << day << ' ' << hour << ':' << minute << ':' << second << '\n';
+  log << "\nRESOURCES:\n";
+
+  for(int i = 0; i < 2; i++) {
+    log << "  PLAYER " << i << ": ";
+    for(int j = 0; j < 7; j++) {
+      log << resources[i][j] << ' ';
+    }
+    log << '\n';
+  }
+
+  log << "\nROBOT UNDER CONTROL: ";
+  if (controlled)
+    log << controlled->getId() << '\n';
+  else
+    log << "None\n";
+  log << "\nMENU " << menu.act_menu << "\nACT BUTTON: " << menu.act_button << '\n';
+
+  return true;
+}
