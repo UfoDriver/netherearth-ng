@@ -101,10 +101,10 @@ private:
 	bool construction_cycle(unsigned char *keyboard);
 	bool option_cycle(unsigned char *keyboard);
 
-	void draw(int w,int h);
-	void draw_game(bool shadows);
-	void construction_draw(int w,int h);
-	void options_draw(int w,int h);
+  void draw(int w, int h);
+  void drawGame(bool shadows);
+  void constructionDraw(int w, int h);
+  void optionsDraw(int w, int h);
 
     bool loadmap(const std::string& filename);
 	void drawmap(bool shadows);

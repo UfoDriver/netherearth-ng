@@ -424,170 +424,158 @@ bool NETHER::gamecycle()
 
 void NETHER::gameredraw(int w,int h)
 {
+  switch(game_state) {
+  case STATE_PLAYING:
+    draw(w, h);
+    break;
+  case STATE_CONSTRUCTION:
+    constructionDraw(w, h);
+    break;
+  case STATE_PAUSE:
+  case STATE_SAVINGGAME:
+  case STATE_LOADINGGAME:
+    draw(w, h);
+    optionsDraw(w, h);
+    break;
+  }
 
-#ifdef _WRITE_REPORT_
-	fprintf(debug_fp,"Redraw start.\n");
-	fprintf(debug_fp,"game_state: %i\n",game_state);
-	fflush(debug_fp);
-#endif
-
-	switch(game_state) {
-	case STATE_PLAYING:
-		draw(w,h);
-		break;
-	case STATE_CONSTRUCTION:
-		construction_draw(w,h);
-		break;
-	case STATE_PAUSE:
-	case STATE_SAVINGGAME:
-	case STATE_LOADINGGAME:
-		draw(w,h);
-		options_draw(w,h);
-		break;
-	} /* switch */ 
-
-	SDL_GL_SwapBuffers();
-
-#ifdef _WRITE_REPORT_
-	fprintf(debug_fp,"Redraw end.");
-	fflush(debug_fp);
-#endif
-
-} /* gameredraw */ 
+  SDL_GL_SwapBuffers();
+}
 
 
 void NETHER::draw(int width, int height)
 {
-	float lightpos2[4]={0,0,1000,0};
-	float tmpls[4]={1.0F,1.0F,1.0F,1.0};
-	float tmpld[4]={0.6F,0.6F,0.6F,1.0};
-	float tmpla[4]={0.2F,0.2F,0.2F,1.0};
-    float ratio;
-	int split = int((width*25.0F)/32.0F);
-	int splity = 0;
+  float lightpos2[4] = {0, 0, 1000, 0};
+  float tmpls[4] = {1.0F, 1.0F, 1.0F, 1.0};
+  float tmpld[4] = {0.6F, 0.6F, 0.6F, 1.0};
+  float tmpla[4] = {0.2F, 0.2F, 0.2F, 1.0};
+  float ratio;
+  int split = int((width * 25.0F) / 32.0F);
+  int splity = 0;
 
-	if (show_radar) splity = int((height*2.0F)/15.0F)+1;
-			   else splity = 0;
+  if (show_radar)
+    splity = int((height * 2.0F) / 15.0F) + 1;
+  else
+    splity = 0;
 
-	/* Enable Lights, etc.: */ 
-	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);	// Really Nice Perspective Calculations
-	glEnable(GL_LIGHT0);
-	glLightfv(GL_LIGHT0,GL_AMBIENT,tmpla);
-	glLightfv(GL_LIGHT0,GL_DIFFUSE,tmpld);
-	glLightfv(GL_LIGHT0,GL_SPECULAR,tmpls);
-	glEnable(GL_LIGHTING);
-	glEnable(GL_COLOR_MATERIAL);
-	glShadeModel( GL_SMOOTH );
-	glCullFace( GL_BACK );
-	glFrontFace( GL_CCW );
-    glEnable( GL_CULL_FACE );
-	glEnable( GL_SCISSOR_TEST );  
-	glEnable( GL_DEPTH_TEST );
-	glDepthFunc( GL_LEQUAL );
-	glClearStencil(0);
-	
-	/* Draw the GAME screen: */ 
-	glLightfv(GL_LIGHT0,GL_POSITION,lightpos);
-    glClearColor(0,0,0,0.0);
-    glViewport(0,splity,split,height-splity);
-	ratio=float(split)/float(height-splity);
-    glMatrixMode( GL_PROJECTION );
-    glLoadIdentity( );
-    gluPerspective( 30.0, ratio, 1.0, 1024.0 );
-	glScissor(0,splity,split,height-splity);
-    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
-	draw_game(false);
-	if (shadows) {
-		/* Set STENCIL Buffer: */ 
-		glStencilMask(1);
-		glEnable(GL_STENCIL_TEST);
-		glDepthMask(GL_FALSE);
-		glColorMask(GL_FALSE,GL_FALSE,GL_FALSE,GL_FALSE);
-		glStencilFunc(GL_ALWAYS,1,1);
-		glStencilOp(GL_KEEP,GL_KEEP,GL_REPLACE);
-		draw_game(true);
-		glColorMask(GL_TRUE,GL_TRUE,GL_TRUE,GL_TRUE);
+  /* Enable Lights, etc.: */
+  glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);	// Really Nice Perspective Calculations
+  glEnable(GL_LIGHT0);
+  glLightfv(GL_LIGHT0, GL_AMBIENT, tmpla);
+  glLightfv(GL_LIGHT0, GL_DIFFUSE, tmpld);
+  glLightfv(GL_LIGHT0, GL_SPECULAR, tmpls);
+  glEnable(GL_LIGHTING);
+  glEnable(GL_COLOR_MATERIAL);
+  glShadeModel(GL_SMOOTH);
+  glCullFace(GL_BACK);
+  glFrontFace(GL_CCW);
+  glEnable(GL_CULL_FACE);
+  glEnable(GL_SCISSOR_TEST);
+  glEnable(GL_DEPTH_TEST);
+  glDepthFunc(GL_LEQUAL);
+  glClearStencil(0);
 
-		/* Draw shadow poligon: */ 
-		glDepthFunc(GL_ALWAYS);
-		glDisable(GL_CULL_FACE);
+  /* Draw the GAME screen: */
+  glLightfv(GL_LIGHT0, GL_POSITION, lightpos);
+  glClearColor(0, 0, 0, 0.0);
+  glViewport(0, splity, split, height - splity);
+  ratio = float(split) / float(height - splity);
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  gluPerspective(30.0, ratio, 1.0, 1024.0);
+  glScissor(0, splity, split, height - splity);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+  drawGame(false);
+  if (shadows) {
+    /* Set STENCIL Buffer: */
+    glStencilMask(1);
+    glEnable(GL_STENCIL_TEST);
+    glDepthMask(GL_FALSE);
+    glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+    glStencilFunc(GL_ALWAYS, 1, 1);
+    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+    drawGame(true);
+    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 
-		glColor4f(0.0,0.0,0.0,0.4f);
-		glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-		glEnable(GL_BLEND);
+    /* Draw shadow poligon: */
+    glDepthFunc(GL_ALWAYS);
+    glDisable(GL_CULL_FACE);
 
-		glStencilFunc(GL_NOTEQUAL,0,1);
-		glStencilOp(GL_KEEP,GL_KEEP,GL_KEEP);
-		glMatrixMode(GL_PROJECTION);
-		glPushMatrix();
-		glLoadIdentity();
-		glBegin(GL_TRIANGLE_STRIP);
-		glVertex3f(-1.0, 1.0,0.0);
-		glVertex3f(-1.0,-1.0,0.0);
-		glVertex3f( 1.0, 1.0,0.0);
-		glVertex3f( 1.0,-1.0,0.0);
-		glEnd();
-		glPopMatrix();
+    glColor4f(0.0, 0.0, 0.0, 0.4f);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
 
-		glDisable(GL_BLEND);
+    glStencilFunc(GL_NOTEQUAL, 0, 1);
+    glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    glBegin(GL_TRIANGLE_STRIP);
+    glVertex3f(-1.0, 1.0, 0.0);
+    glVertex3f(-1.0, -1.0, 0.0);
+    glVertex3f(1.0, 1.0, 0.0);
+    glVertex3f(1.0, -1.0, 0.0);
+    glEnd();
+    glPopMatrix();
 
-		glDepthMask(GL_TRUE);
-		glDepthFunc(GL_LEQUAL);
-		glEnable(GL_CULL_FACE);
-		glDisable(GL_STENCIL_TEST);
-	} /* if */ 
+    glDisable(GL_BLEND);
 
-	if (game_started>0) {
-		glMatrixMode( GL_PROJECTION );
-		glLoadIdentity( );
-		gluPerspective( 30.0, ratio, 1.0, 1024.0 );
-		gluLookAt(0,0,30,0,0,0,0,1,0);
-		glClear(GL_DEPTH_BUFFER_BIT);
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
+    glDepthMask(GL_TRUE);
+    glDepthFunc(GL_LEQUAL);
+    glEnable(GL_CULL_FACE);
+    glDisable(GL_STENCIL_TEST);
+  }
 
-		if (game_started>40) glTranslatef(0,0,(game_started-40)*2);
-		if (game_started<20) glTranslatef(0,0,(20-game_started)*2);
-		message_tiles[0].draw(Color(1.0, 1.0, 1.0));
-	} /* if */ 
+  if (game_started > 0) {
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(30.0, ratio, 1.0, 1024.0);
+    gluLookAt(0,0, 30, 0, 0, 0, 0, 1, 0);
+    glClear(GL_DEPTH_BUFFER_BIT);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
 
-	if (game_finished>100) {
-		glMatrixMode( GL_PROJECTION );
-		glLoadIdentity( );
-		gluPerspective( 30.0, ratio, 1.0, 1024.0 );
-		gluLookAt(0,0,30,0,0,0,0,1,0);
-		glClear(GL_DEPTH_BUFFER_BIT);
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
+    if (game_started > 40) glTranslatef(0, 0, (game_started - 40) * 2);
+    if (game_started < 20) glTranslatef(0, 0, (20 - game_started) * 2);
+    message_tiles[0].draw(Color(1.0, 1.0, 1.0));
+  }
 
-		if (game_finished<120) glTranslatef(0,0,(120-game_finished)*2);
-		if (game_finished>240) glTranslatef(0,0,(game_finished-240)*2);
-		if (statistics[0][0]==0) message_tiles[2].draw(Color(1.0, 1.0, 1.0));
-        else message_tiles[1].draw(Color(1.0, 1.0, 1.0));
-	} /* if */ 
+  if (game_finished > 100) {
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(30.0, ratio, 1.0, 1024.0);
+    gluLookAt(0, 0, 30, 0, 0, 0, 0, 1,0);
+    glClear(GL_DEPTH_BUFFER_BIT);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
 
-	/* Draw the RADAR screen: */ 
-	if (show_radar && radar.needsRedraw<=1) {
+    if (game_finished < 120) glTranslatef(0, 0, (120 - game_finished) * 2);
+    if (game_finished > 240) glTranslatef(0, 0, (game_finished - 240) * 2);
+    if (statistics[0][0] == 0) message_tiles[2].draw(Color(1.0, 1.0, 1.0));
+    else message_tiles[1].draw(Color(1.0, 1.0, 1.0));
+  }
 
-		glLightfv(GL_LIGHT0,GL_POSITION,lightpos2);
-		glClearColor(0.0,0.0,0,0);
-		glViewport(0,0,split,splity);
-		glMatrixMode( GL_PROJECTION );
-		glLoadIdentity( );
-		glOrtho(0,float(split),0,float(splity),-100,100);
-		glScissor(0,0,split,splity);
-		glScalef(width/640.0,height/480.0,1);
-		radar.draw();
-	} /* if */
-	radar.needsRedraw--;
-	if (radar.needsRedraw<0) radar.needsRedraw=3;
+  /* Draw the RADAR screen: */
+  if (show_radar && radar.needsRedraw <= 1) {
 
-    menu.draw(width, height);
+    glLightfv(GL_LIGHT0, GL_POSITION, lightpos2);
+    glClearColor(0.0, 0.0, 0,0);
+    glViewport(0, 0, split, splity);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0, float(split), 0, float(splity), -100, 100);
+    glScissor(0, 0, split, splity);
+    glScalef(width / 640.0, height / 480.0, 1);
+    radar.draw();
+  }
+  radar.needsRedraw--;
+  if (radar.needsRedraw < 0) radar.needsRedraw = 3;
+
+  menu.draw(width, height);
 }
 
 
-
-void NETHER::draw_game(bool shadows)
+void NETHER::drawGame(bool shadows)
 {
   MINY =- 8 * zoom;
   MINX =- (10 + viewp.z * 4) * zoom;
@@ -622,241 +610,248 @@ void NETHER::draw_game(bool shadows)
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  /* Draw the map: */ 
+  /* Draw the map: */
   drawmap(shadows);
 
-	/* Draw the robots and bullets: */ 
-	{
-		for(int i = 0; i < 2; i++) {
-          for (Robot* r: robots[i]) {
-				if (r->pos.y>=(viewp.y+MINY) &&
-					r->pos.y<=(viewp.y+MAXY) &&
-					r->pos.x>=(viewp.x+MINX) &&
-					r->pos.x<=(viewp.x+MAXX)) {
-					glPushMatrix();
-					glTranslatef(r->pos.x,r->pos.y,r->pos.z);
-					r->draw(i, shadows, piece_tiles, lightposv);
-					glPopMatrix();
-				} /* if */ 
-			} /* while */ 
-		} /* for */ 
-
-        std::for_each(bullets.cbegin(), bullets.cend(),
-                      [this, shadows](auto& bullet) {
-                        if (bullet.pos.y >= (viewp.y + MINY) &&
-                            bullet.pos.y <= (viewp.y + MAXY) &&
-                            bullet.pos.x >= (viewp.x + MINX) &&
-                            bullet.pos.x <= (viewp.x + MAXX)) {
-                          glPushMatrix();
-                          glTranslatef(bullet.pos.x, bullet.pos.y, bullet.pos.z);
-                          bullet.draw(shadows, bullet_tiles, particles);
-                          glPopMatrix();
-                        }
-                      });
-	}
-
-	/* Draw the ship: */ 
-	glPushMatrix();
-	glTranslatef(shipp.x,shipp.y,shipp.z);
-	if (!shadows) ship->draw(Color(0.7, 0.7, 0.7));
-	glPopMatrix();
-
-	if (shadows) {
-		float sx,sy;
-		float minz;
-		Vector light;
-
-		light=lightposv;
-		light=light/light.z;
-
-		sx=shipp.x-light.x*shipp.z;
-		sy=shipp.y-light.y*shipp.z;
-
-		if (controlled==0) {
-          float x[2],y[2];
-			x[0]=sx+ship->shdw_cmc.x[0];
-			x[1]=sx+ship->shdw_cmc.x[1];
-			y[0]=sy+ship->shdw_cmc.y[0];
-			y[1]=sy+ship->shdw_cmc.y[1];
-			minz=MapMaxZ(x,y);
-		} else {
-			minz=controlled->pos.z;
-		} /* if */ 
-
-		glPushMatrix();
-		glTranslatef(sx,sy,minz+0.05);
-		ship->DrawShadow(Color(0, 0, 0, 0.5));
-		glPopMatrix();
-	} 
-
-	/* Draw the extras: */ 
-
-    /* Draw nuclear explosions: */ 
-    if (!shadows) {
-      std::for_each(explosions.begin(), explosions.end(),
-                    [](const auto& exp) {
-                      float a = (128.0f - exp.step) / 80.0f;
-                      float r = 1.0;
-                      if (exp.size == 0) {
-                        r = (float(exp.step) / 512.0f) + 0.1;
-                      }
-                      if (exp.size == 1) {
-                        r = (float(exp.step) / 96.0f) + 0.5;
-                      }
-                      if (exp.size == 2) {
-                        r = (float(exp.step) / 48.0f) + 1.0;
-                      }
-                      if (a < 0) a = 0;
-                      if (a > 1) a = 1;
-
-                      glPushMatrix();
-                      glTranslatef(exp.pos.x, exp.pos.y, exp.pos.z);
-                      glColor4f(1.0f, 0.5f, 0.0,a);
-                      glDepthMask(GL_FALSE);
-                      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-                      glEnable(GL_BLEND);
-                      // Somehow solid sphere dumps core
-                      // glutSolidSphere(r, 8, 8);
-                      glutWireSphere(r, 8, 8);
-                      glDisable(GL_BLEND);
-                      glDepthMask(GL_TRUE);
-                      glPopMatrix();
-                    });
+  /* Draw the robots and bullets: */
+  {
+    for(int i = 0; i < 2; i++) {
+      for (Robot* r: robots[i]) {
+        if (r->pos.y >= (viewp.y + MINY) &&
+            r->pos.y <= (viewp.y + MAXY) &&
+            r->pos.x >= (viewp.x + MINX) &&
+            r->pos.x <= (viewp.x + MAXX)) {
+          glPushMatrix();
+          glTranslatef(r->pos.x, r->pos.y, r->pos.z);
+          r->draw(i, shadows, piece_tiles, lightposv);
+          glPopMatrix();
+        }
+      }
     }
 
-  if (!shadows) {
-    std::for_each(particles.cbegin(), particles.cend(),
-                  [this](auto& particle) {
-                    if (particle.pos.y >= (viewp.y + MINY) &&
-                        particle.pos.y <= (viewp.y + MAXY) &&
-                        particle.pos.x >= (viewp.x + MINX) &&
-                        particle.pos.x <= (viewp.x + MAXX))
-                      particle.draw();
+    std::for_each(bullets.cbegin(), bullets.cend(),
+                  [this, shadows](auto& bullet) {
+                    if (bullet.pos.y >= (viewp.y + MINY) &&
+                        bullet.pos.y <= (viewp.y + MAXY) &&
+                        bullet.pos.x >= (viewp.x + MINX) &&
+                        bullet.pos.x <= (viewp.x + MAXX)) {
+                      glPushMatrix();
+                      glTranslatef(bullet.pos.x, bullet.pos.y, bullet.pos.z);
+                      bullet.draw(shadows, bullet_tiles, particles);
+                      glPopMatrix();
+                    }
                   });
+  }
+
+  /* Draw the ship: */
+  glPushMatrix();
+  glTranslatef(shipp.x, shipp.y, shipp.z);
+  if (!shadows) ship->draw(Color(0.7, 0.7, 0.7));
+  glPopMatrix();
+
+  if (shadows) {
+    float sx, sy;
+    float minz;
+    Vector light;
+
+    light = lightposv;
+    light = light / light.z;
+
+    sx = shipp.x - light.x * shipp.z;
+    sy = shipp.y - light.y * shipp.z;
+
+    if (controlled == 0) {
+      float x[2], y[2];
+      x[0] = sx + ship->shdw_cmc.x[0];
+      x[1] = sx + ship->shdw_cmc.x[1];
+      y[0] = sy + ship->shdw_cmc.y[0];
+      y[1] = sy + ship->shdw_cmc.y[1];
+      minz = MapMaxZ(x, y);
+    } else {
+      minz = controlled->pos.z;
+    }
+
+    glPushMatrix();
+    glTranslatef(sx, sy, minz+0.05);
+    ship->DrawShadow(Color(0, 0, 0, 0.5));
+    glPopMatrix();
+  }
+
+  /* Draw the extras: */
+
+  /* Draw nuclear explosions: */
+  if (!shadows) {
+    for (const Explosion& exp: explosions) {
+      float a = (128.0f - exp.step) / 80.0f;
+      float r = 1.0;
+      if (exp.size == 0) {
+        r = (float(exp.step) / 512.0f) + 0.1;
+      }
+      if (exp.size == 1) {
+        r = (float(exp.step) / 96.0f) + 0.5;
+      }
+      if (exp.size == 2) {
+        r = (float(exp.step) / 48.0f) + 1.0;
+      }
+      if (a < 0) a = 0;
+      if (a > 1) a = 1;
+
+      glPushMatrix();
+      glTranslatef(exp.pos.x, exp.pos.y, exp.pos.z);
+      glColor4f(1.0f, 0.5f, 0.0,a);
+      glDepthMask(GL_FALSE);
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      glEnable(GL_BLEND);
+      // Somehow solid sphere dumps core
+      // glutSolidSphere(r, 8, 8);
+      glutWireSphere(r, 8, 8);
+      glDisable(GL_BLEND);
+      glDepthMask(GL_TRUE);
+      glPopMatrix();
+    }
+  }
+
+  if (!shadows) {
+    for (const Particle& particle: particles) {
+      if (particle.pos.y >= (viewp.y + MINY) &&
+          particle.pos.y <= (viewp.y + MAXY) &&
+          particle.pos.x >= (viewp.x + MINX) &&
+          particle.pos.x <= (viewp.x + MAXX))
+        particle.draw();
+    }
   }
 }
 
 
-void NETHER::options_draw(int w,int h)
+void NETHER::optionsDraw(int w, int h)
 {
-	float tmpls[4]={1.0F,1.0F,1.0F,1.0};
-	float tmpld[4]={0.6F,0.6F,0.6F,1.0};
-	float tmpla[4]={0.2F,0.2F,0.2F,1.0};
-    float ratio;
-	int splitx[2]={int(w*0.3),int(w*0.7)};
-	int splity[2]={int(h*0.3),int(h*0.7)};
+  float tmpls[4] = {1.0F, 1.0F, 1.0F, 1.0};
+  float tmpld[4] = {0.6F, 0.6F, 0.6F, 1.0};
+  float tmpla[4] = {0.2F, 0.2F, 0.2F, 1.0};
+  int splitx[2] = {int(w * 0.3), int(w * 0.7)};
+  int splity[2] = {int(h * 0.3), int(h * 0.7)};
 
-	/* Enable Lights, etc.: */ 
-	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);	// Really Nice Perspective Calculations
-	glEnable(GL_LIGHT0);
-	glLightfv(GL_LIGHT0,GL_AMBIENT,tmpla);
-	glLightfv(GL_LIGHT0,GL_DIFFUSE,tmpld);
-	glLightfv(GL_LIGHT0,GL_SPECULAR,tmpls);
-	glEnable(GL_LIGHTING);
-	glEnable(GL_COLOR_MATERIAL);
-	glShadeModel( GL_SMOOTH );
-	glCullFace( GL_BACK );
-	glFrontFace( GL_CCW );
-    glEnable( GL_CULL_FACE );
-	glEnable( GL_SCISSOR_TEST );  
-	glEnable( GL_DEPTH_TEST );
-	
-	/* Draw the MENU: */ 
-	glLightfv(GL_LIGHT0,GL_POSITION,lightpos);
-    glClearColor(0,0,0,0.0);
-    glViewport(splitx[0],splity[0],splitx[1]-splitx[0],splity[1]-splity[0]);
-	ratio=float(splitx[1]-splitx[0])/float(splity[1]-splity[0]);
-    glMatrixMode( GL_PROJECTION );
-    glLoadIdentity( );
-    gluPerspective( 30.0, ratio, 1.0, 1024.0 );
-	glScissor(splitx[0],splity[0],splitx[1]-splitx[0],splity[1]-splity[0]);
-	gluLookAt(0,0,30,0,0,0,0,1,0);
+  /* Enable Lights, etc.: */
+  glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);	// Really Nice Perspective Calculations
+  glEnable(GL_LIGHT0);
+  glLightfv(GL_LIGHT0, GL_AMBIENT, tmpla);
+  glLightfv(GL_LIGHT0, GL_DIFFUSE, tmpld);
+  glLightfv(GL_LIGHT0, GL_SPECULAR, tmpls);
+  glEnable(GL_LIGHTING);
+  glEnable(GL_COLOR_MATERIAL);
+  glShadeModel(GL_SMOOTH);
+  glCullFace(GL_BACK);
+  glFrontFace(GL_CCW);
+  glEnable(GL_CULL_FACE);
+  glEnable(GL_SCISSOR_TEST);
+  glEnable(GL_DEPTH_TEST);
 
-    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+  /* Draw the MENU: */
+  glLightfv(GL_LIGHT0, GL_POSITION, lightpos);
+  glClearColor(0, 0, 0, 0.0);
+  glViewport(splitx[0], splity[0], splitx[1] - splitx[0], splity[1] - splity[0]);
+  float ratio = float(splitx[1] - splitx[0]) / float(splity[1] - splity[0]);
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  gluPerspective(30.0, ratio, 1.0, 1024.0);
+  glScissor(splitx[0], splity[0], splitx[1] - splitx[0], splity[1] - splity[0]);
+  gluLookAt(0, 0, 30, 0, 0, 0, 0, 1, 0);
 
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	if (game_state==STATE_PAUSE) {
-		if (option_menu==0) glColor3f(1.0,0.0,0.0);
-					   else glColor3f(0.5,0.5,1.0);
-		glTranslatef(0,5,0);
-		scaledglprintf(0.01,0.01,"RETURN TO GAME");
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
 
-		if (option_menu==1) glColor3f(1.0,0.0,0.0);
-					   else glColor3f(0.5,0.5,1.0);
-		glTranslatef(0,-5,0);
-		scaledglprintf(0.01,0.01,"LOAD GAME");
+  if (game_state == STATE_PAUSE) {
+    if (option_menu == 0)
+      glColor3f(1.0, 0.0, 0.0);
+    else
+      glColor3f(0.5, 0.5, 1.0);
+    glTranslatef(0, 5, 0);
+    scaledglprintf(0.01, 0.01, "RETURN TO GAME");
 
-		if (option_menu==2) glColor3f(1.0,0.0,0.0);
-					   else glColor3f(0.5,0.5,1.0);
-		glTranslatef(0,-3,0);
-		scaledglprintf(0.01,0.01,"SAVE GAME");
+    if (option_menu == 1)
+      glColor3f(1.0, 0.0, 0.0);
+    else
+      glColor3f(0.5, 0.5, 1.0);
+    glTranslatef(0, -5,0);
+    scaledglprintf(0.01, 0.01, "LOAD GAME");
 
-		if (option_menu==3) glColor3f(1.0,0.0,0.0);
-					   else glColor3f(0.5,0.5,1.0);
-		glTranslatef(0,-3,0);
-		scaledglprintf(0.01,0.01,"QUIT GAME");
-	} /* if */ 
+    if (option_menu == 2)
+      glColor3f(1.0, 0.0, 0.0);
+    else
+      glColor3f(0.5, 0.5, 1.0);
+    glTranslatef(0, -3, 0);
+    scaledglprintf(0.01, 0.01, "SAVE GAME");
 
-	if (game_state==STATE_SAVINGGAME) {
-		int i;
-		char filename[80];
+    if (option_menu == 3)
+      glColor3f(1.0, 0.0, 0.0);
+    else
+      glColor3f(0.5, 0.5, 1.0);
+    glTranslatef(0, -3, 0);
+    scaledglprintf(0.01, 0.01, "QUIT GAME");
+  }
 
-		glColor3f(0.5,0.5,1.0);
-		glTranslatef(0,6,0);
-		scaledglprintf(0.01,0.01,"CHOOSE SLOT TO SAVE");
+  if (game_state == STATE_SAVINGGAME) {
+    glColor3f(0.5, 0.5, 1.0);
+    glTranslatef(0, 6, 0);
+    scaledglprintf(0.01, 0.01, "CHOOSE SLOT TO SAVE");
 
-		if (option_menu==0) glColor3f(1.0,0.0,0.0);
-					   else glColor3f(0.5,0.5,1.0);
-		glTranslatef(0,-4,0);
-		scaledglprintf(0.01,0.01,"CANCEL");
+    if (option_menu == 0)
+      glColor3f(1.0, 0.0, 0.0);
+    else
+      glColor3f(0.5, 0.5, 1.0);
+    glTranslatef(0, -4, 0);
+    scaledglprintf(0.01, 0.01, "CANCEL");
 
-		for(i=0;i<4;i++) {
-			if (option_menu==(i+1)) glColor3f(1.0,0.0,0.0);
-						       else glColor3f(0.5,0.5,1.0);
-			glTranslatef(0,-2,0);
-			sprintf(filename,"savedgame%i.txt",i);
-            FILE *fp = fopen(filename,"r");
-			if (fp==0) {
-				scaledglprintf(0.01,0.01,"SLOT%i - EMPTY",i+1);
-			} else {
-				scaledglprintf(0.01,0.01,"SLOT%i - GAME SAVED",i+1);
-				fclose(fp);
-			} /* if */ 
-		} /* for */ 
-	} /* if */ 
+    for (int i = 0;i < 4; i++) {
+      if (option_menu == (i + 1))
+        glColor3f(1.0, 0.0, 0.0);
+      else
+        glColor3f(0.5, 0.5, 1.0);
+      glTranslatef(0, -2,0);
+      char filename[80];
+      sprintf(filename, "savedgame%i.txt", i);
+      FILE *fp = fopen(filename, "r");
+      if (fp == 0) {
+        scaledglprintf(0.01, 0.01, "SLOT%i - EMPTY", i + 1);
+      } else {
+        scaledglprintf(0.01, 0.01, "SLOT%i - GAME SAVED", i + 1);
+        fclose(fp);
+      }
+    }
+  }
 
-	if (game_state==STATE_LOADINGGAME) {
-		int i;
-		char filename[80];
+  if (game_state == STATE_LOADINGGAME) {
+    glColor3f(0.5, 0.5, 1.0);
+    glTranslatef(0, 6, 0);
+    scaledglprintf(0.01, 0.01, "CHOOSE SLOT TO LOAD");
 
-		glColor3f(0.5,0.5,1.0);
-		glTranslatef(0,6,0);
-		scaledglprintf(0.01,0.01,"CHOOSE SLOT TO LOAD");
+    if (option_menu == 0)
+      glColor3f(1.0, 0.0, 0.0);
+    else
+      glColor3f(0.5, 0.5, 1.0);
+    glTranslatef(0, -4,0);
+    scaledglprintf(0.01, 0.01, "CANCEL");
 
-		if (option_menu==0) glColor3f(1.0,0.0,0.0);
-					   else glColor3f(0.5,0.5,1.0);
-		glTranslatef(0,-4,0);
-		scaledglprintf(0.01,0.01,"CANCEL");
-
-		for(i=0;i<4;i++) {
-			if (option_menu==(i+1)) glColor3f(1.0,0.0,0.0);
-						       else glColor3f(0.5,0.5,1.0);
-			glTranslatef(0,-2,0);
-			sprintf(filename,"savedgame%i.txt",i);
-            FILE *fp = fopen(filename,"r");
-			if (fp==0) {
-				scaledglprintf(0.01,0.01,"SLOT%i - EMPTY",i+1);
-			} else {
-				scaledglprintf(0.01,0.01,"SLOT%i - GAME SAVED",i+1);
-				fclose(fp);
-			} /* if */ 
-		} /* for */ 
-	} /* if */ 
-
-
-} /* NETHER::options_draw */ 
+    for (int i = 0; i < 4; i++) {
+      if (option_menu == (i + 1))
+        glColor3f(1.0, 0.0, 0.0);
+      else
+        glColor3f(0.5, 0.5, 1.0);
+      glTranslatef(0, -2,0);
+      char filename[80];
+      sprintf(filename, "savedgame%i.txt", i);
+      FILE *fp = fopen(filename, "r");
+      if (fp == 0) {
+        scaledglprintf(0.01, 0.01, "SLOT%i - EMPTY", i + 1);
+      } else {
+        scaledglprintf(0.01, 0.01, "SLOT%i - GAME SAVED", i + 1);
+        fclose(fp);
+      }
+    }
+  }
+}
 
 
 bool NETHER::option_cycle(unsigned char *keyboard)
