@@ -180,7 +180,7 @@ int main(int argc, char** argv)
 
 						if ((modifiers&KMOD_ALT)!=0) {
 							/* Toogle FULLSCREEN mode: */ 
-							if (game!=0) game->refresh_display_lists();
+							if (game!=0) game->refreshDisplayLists();
 							if (nethertittle!=0) nethertittle->refresh_display_lists();
 							if (game!=0) game->deleteObjects();
 							if (fullscreen) fullscreen=false;
@@ -241,7 +241,7 @@ int main(int argc, char** argv)
 					} /* if */ 
 					if (val==2) quit=true;
 					if (val==3) {
-						if (game!=0) game->refresh_display_lists();
+						if (game!=0) game->refreshDisplayLists();
 						if (nethertittle!=0) nethertittle->refresh_display_lists();
 						if (game!=0) game->deleteObjects();
 						SDL_QuitSubSystem(SDL_INIT_VIDEO);

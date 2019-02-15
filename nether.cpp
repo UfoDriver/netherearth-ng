@@ -371,7 +371,7 @@ void NETHER::deleteObjects()
 }
 
 
-void NETHER::refresh_display_lists(void)
+void NETHER::refreshDisplayLists(void)
 {
   for (C3DObject& tile: tiles) {
     tile.refresh_display_lists();

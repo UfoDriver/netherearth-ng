@@ -89,10 +89,10 @@ public:
   void deleteObjects();
 
   bool gamecycle();
-	void gameredraw(int w,int h);
-	void refresh_display_lists(void);
+  void gameredraw(int w, int h);
+  void refreshDisplayLists();
 
-	bool save_game(char *filename);
+  bool save_game(char* filename);
   bool loadGame(const std::string& filename);
   bool saveDebugReport(const std::string& filename);
 
@@ -162,7 +162,7 @@ private:
   int ship_timemoving;
 
   std::vector<Building> buildings;
-  std::vector<Robot *> robots[2];
+  std::vector<Robot*> robots[2];
   std::vector<Bullet> bullets;
   std::vector<Explosion> explosions;
   std::vector<Particle> particles;
@@ -176,7 +176,7 @@ private:
   bool construction[8];
   GAME_STATE game_state;
   Robot in_construction;
-  Robot *controlled;
+  Robot* controlled;
 
   int game_finished;
   int game_started;
