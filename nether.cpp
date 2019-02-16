@@ -152,7 +152,7 @@ NETHER::NETHER(const std::string& mapname): menu(this), radar(this), controlled(
 	statistics[1][7]=0;
 	recomputestatistics=true;
 
-	game_state=STATE_PLAYING;
+	game_state=NETHER::STATE::PLAYING;
 	animation_timer=0;
 	construction_pointer=0;
 	controlled=0;
@@ -406,15 +406,15 @@ bool NETHER::gamecycle()
   unsigned char* keyboard = SDL_GetKeyState(NULL);
 
   switch(game_state) {
-  case STATE_PLAYING:
+  case NETHER::STATE::PLAYING:
     retval = cycle(keyboard);
     break;
-  case STATE_CONSTRUCTION:
+  case NETHER::STATE::CONSTRUCTION:
     retval = construction_cycle(keyboard);
     break;
-  case STATE_PAUSE:
-  case STATE_SAVINGGAME:
-  case STATE_LOADINGGAME:
+  case NETHER::STATE::PAUSE:
+  case NETHER::STATE::SAVINGGAME:
+  case NETHER::STATE::LOADINGGAME:
     retval = option_cycle(keyboard);
     break;
   }
@@ -429,15 +429,15 @@ bool NETHER::gamecycle()
 void NETHER::gameredraw(int w,int h)
 {
   switch(game_state) {
-  case STATE_PLAYING:
+  case NETHER::STATE::PLAYING:
     draw(w, h);
     break;
-  case STATE_CONSTRUCTION:
+  case NETHER::STATE::CONSTRUCTION:
     constructionDraw(w, h);
     break;
-  case STATE_PAUSE:
-  case STATE_SAVINGGAME:
-  case STATE_LOADINGGAME:
+  case NETHER::STATE::PAUSE:
+  case NETHER::STATE::SAVINGGAME:
+  case NETHER::STATE::LOADINGGAME:
     draw(w, h);
     optionsDraw(w, h);
     break;
@@ -766,7 +766,7 @@ void NETHER::optionsDraw(int w, int h)
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  if (game_state == STATE_PAUSE) {
+  if (game_state == NETHER::STATE::PAUSE) {
     if (option_menu == 0)
       glColor3f(1.0, 0.0, 0.0);
     else
@@ -796,7 +796,7 @@ void NETHER::optionsDraw(int w, int h)
     scaledglprintf(0.01, 0.01, "QUIT GAME");
   }
 
-  if (game_state == STATE_SAVINGGAME) {
+  if (game_state == NETHER::STATE::SAVINGGAME) {
     glColor3f(0.5, 0.5, 1.0);
     glTranslatef(0, 6, 0);
     scaledglprintf(0.01, 0.01, "CHOOSE SLOT TO SAVE");
@@ -826,7 +826,7 @@ void NETHER::optionsDraw(int w, int h)
     }
   }
 
-  if (game_state == STATE_LOADINGGAME) {
+  if (game_state == NETHER::STATE::LOADINGGAME) {
     glColor3f(0.5, 0.5, 1.0);
     glTranslatef(0, 6, 0);
     scaledglprintf(0.01, 0.01, "CHOOSE SLOT TO LOAD");
@@ -861,16 +861,16 @@ void NETHER::optionsDraw(int w, int h)
 bool NETHER::option_cycle(unsigned char *keyboard)
 {
 	switch(game_state) {
-	case STATE_PAUSE:
+	case NETHER::STATE::PAUSE:
 		if (keyboard[fire_key] && !old_keyboard[fire_key]) {
 			switch(option_menu) {
 			case 0:
-					game_state=STATE_PLAYING;
+              game_state=NETHER::STATE::PLAYING;
 					break;
-			case 1: game_state=STATE_LOADINGGAME;
+			case 1: game_state=NETHER::STATE::LOADINGGAME;
 					option_menu=0;
 					break;
-			case 2:	game_state=STATE_SAVINGGAME;
+			case 2:	game_state=NETHER::STATE::SAVINGGAME;
 					option_menu=0;
 					break;
 			case 3:	return false;
@@ -889,11 +889,11 @@ bool NETHER::option_cycle(unsigned char *keyboard)
 		} /* if */ 
 		break;
 
-	case STATE_SAVINGGAME:
+	case NETHER::STATE::SAVINGGAME:
 		if (keyboard[fire_key] && !old_keyboard[fire_key]) {
 			switch(option_menu) {
 			case 0:
-					game_state=STATE_PAUSE;
+              game_state=NETHER::STATE::PAUSE;
 					option_menu=2;
 					break;
 			case 1: 
@@ -905,7 +905,7 @@ bool NETHER::option_cycle(unsigned char *keyboard)
 					sprintf(filename,"savedgame%i.txt",option_menu-1);
 					saveGame(filename);
 					saveDebugReport("debugreport.txt");
-					game_state=STATE_PAUSE;
+					game_state=NETHER::STATE::PAUSE;
 					option_menu=2;
 					menu.needsRedraw=2;
 					radar.needsRedraw=1;
@@ -924,11 +924,11 @@ bool NETHER::option_cycle(unsigned char *keyboard)
 		} /* if */ 
 		break;
 
-	case STATE_LOADINGGAME:
+	case NETHER::STATE::LOADINGGAME:
 		if (keyboard[fire_key] && !old_keyboard[fire_key]) {
 			switch(option_menu) {
 			case 0:
-					game_state=STATE_PAUSE;
+              game_state=NETHER::STATE::PAUSE;
 					option_menu=1;
 					break;
 			case 1: 
@@ -945,7 +945,7 @@ bool NETHER::option_cycle(unsigned char *keyboard)
 					recomputestatistics=true;
 					game_finished=0;
 					game_started=INTRO_TIME;
-					game_state=STATE_PAUSE;
+					game_state=NETHER::STATE::PAUSE;
 					option_menu=2;
 				}
 			} /* switch */ 
@@ -989,66 +989,66 @@ bool NETHER::ShipCollision(C3DObject *obj,float x,float y,float z)
 			m2[14]=b.pos.z;
 
 			switch(b.type) {
-				case Building::B_FENCE:
+				case Building::TYPE::FENCE:
 					if (obj->cmc.collision_simple(m1,&(building_tiles[5].cmc),m2)) return true;
 					break;
-				case Building::B_WALL1:
+				case Building::TYPE::WALL1:
 					if (obj->cmc.collision_simple(m1,&(building_tiles[0].cmc),m2)) return true;
 					break;
-				case Building::B_WALL2:
+				case Building::TYPE::WALL2:
 					if (obj->cmc.collision_simple(m1,&(building_tiles[1].cmc),m2)) return true;
 					break;
-				case Building::B_WALL3:
+				case Building::TYPE::WALL3:
 					if (obj->cmc.collision_simple(m1,&(building_tiles[2].cmc),m2)) return true;
 					break;
-				case Building::B_WALL4:
+				case Building::TYPE::WALL4:
 					if (obj->cmc.collision_simple(m1,&(building_tiles[3].cmc),m2)) return true;
 					break;
-				case Building::B_WALL5:
+				case Building::TYPE::WALL5:
 					if (obj->cmc.collision_simple(m1,&(building_tiles[4].cmc),m2)) return true;
 					break;
-				case Building::B_WALL6:
+				case Building::TYPE::WALL6:
 					if (obj->cmc.collision_simple(m1,&(building_tiles[7].cmc),m2)) return true;
 					break;
-				case Building::B_WARBASE:
+				case Building::TYPE::WARBASE:
 					if (obj->cmc.collision_simple(m1,&(building_tiles[8].cmc),m2)) return true;
 					break;
-			case Building::B_FACTORY_ELECTRONICS:
+			case Building::TYPE::FACTORY_ELECTRONICS:
 					if (obj->cmc.collision_simple(m1,&(building_tiles[4].cmc),m2)) return true;
 					m2[12]=b.pos.x+0.5;
 					m2[13]=b.pos.y+0.5;
 					m2[14]=b.pos.z+1;
 					if (obj->cmc.collision_simple(m1,&(piece_tiles[0][7].cmc),m2)) return true;
 					break;
-			case Building::B_FACTORY_NUCLEAR:
+			case Building::TYPE::FACTORY_NUCLEAR:
 					if (obj->cmc.collision_simple(m1,&(building_tiles[4].cmc),m2)) return true;
 					m2[12]=b.pos.x+0.5;
 					m2[13]=b.pos.y+0.5;
 					m2[14]=b.pos.z+1;
 					if (obj->cmc.collision_simple(m1,&(piece_tiles[0][6].cmc),m2)) return true;
 					break;
-			case Building::B_FACTORY_PHASERS:
+			case Building::TYPE::FACTORY_PHASERS:
 					if (obj->cmc.collision_simple(m1,&(building_tiles[4].cmc),m2)) return true;
 					m2[12]=b.pos.x+0.5;
 					m2[13]=b.pos.y+0.5;
 					m2[14]=b.pos.z+1;
 					if (obj->cmc.collision_simple(m1,&(piece_tiles[0][5].cmc),m2)) return true;
 					break;
-			case Building::B_FACTORY_MISSILES:
+			case Building::TYPE::FACTORY_MISSILES:
 					if (obj->cmc.collision_simple(m1,&(building_tiles[4].cmc),m2)) return true;
 					m2[12]=b.pos.x+0.5;
 					m2[13]=b.pos.y+0.5;
 					m2[14]=b.pos.z+1;
 					if (obj->cmc.collision_simple(m1,&(piece_tiles[0][4].cmc),m2)) return true;
 					break;
-			case Building::B_FACTORY_CANNONS:
+			case Building::TYPE::FACTORY_CANNONS:
 					if (obj->cmc.collision_simple(m1,&(building_tiles[4].cmc),m2)) return true;
 					m2[12]=b.pos.x+0.5;
 					m2[13]=b.pos.y+0.5;
 					m2[14]=b.pos.z+1;
 					if (obj->cmc.collision_simple(m1,&(piece_tiles[0][3].cmc),m2)) return true;
 					break;
-			case Building::B_FACTORY_CHASSIS:
+			case Building::TYPE::FACTORY_CHASSIS:
 					if (obj->cmc.collision_simple(m1,&(building_tiles[4].cmc),m2)) return true;
 					m2[12]=b.pos.x+0.5;
 					m2[13]=b.pos.y+0.5;
@@ -1245,7 +1245,8 @@ bool NETHER::saveDebugReport(const std::string& filename)
 
   log << "# OF BUILDINGS: " << buildings.size() << '\n';
   for (const Building& b: buildings) {
-    log << "BUILDING:\n TYPE: " << b.type
+    log << "BUILDING:\n"
+        << " TYPE: " << int(b.type)
         << "\n OWNER: " << b.owner
         << "\n STATUS: " << b.status << "\n"
         << b.pos;

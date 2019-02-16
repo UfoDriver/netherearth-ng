@@ -85,11 +85,11 @@ void NETHER::AI_enemy()
 
       mean_factory_position=Vector(0,0,0);
       for (const Building& b: buildings) {
-        if (b.type==Building::B_FACTORY_ELECTRONICS ||
-            b.type==Building::B_FACTORY_NUCLEAR ||
-            b.type==Building::B_FACTORY_PHASERS ||
-            b.type==Building::B_FACTORY_MISSILES ||
-            b.type==Building::B_FACTORY_CANNONS) {
+        if (b.type==Building::TYPE::FACTORY_ELECTRONICS ||
+            b.type==Building::TYPE::FACTORY_NUCLEAR ||
+            b.type==Building::TYPE::FACTORY_PHASERS ||
+            b.type==Building::TYPE::FACTORY_MISSILES ||
+            b.type==Building::TYPE::FACTORY_CANNONS) {
           factories[b.owner]++;
           if (b.owner!=2) mean_factory_position=mean_factory_position+b.pos;
         }
@@ -97,7 +97,7 @@ void NETHER::AI_enemy()
       mean_factory_position=mean_factory_position/(factories[0]+factories[1]);
 
       for (Building& b: buildings) {
-        if (b.type==Building::B_WARBASE &&
+        if (b.type==Building::TYPE::WARBASE &&
             b.owner==2) {
           forces[0]=0;
           forces[1]=0;

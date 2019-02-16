@@ -106,7 +106,7 @@ void NETHER::drawmap(bool shadows)
 			glPushMatrix();
 			glTranslatef(float(b.pos.x),float(b.pos.y),float(b.pos.z));
 			switch(b.type) {
-			case Building::B_FENCE:if (!shadows) {
+			case Building::TYPE::FENCE:if (!shadows) {
                 if (detaillevel>=2) building_tiles[5].draw(Color(0.2f, 0.2f, 0.2f));
                 else building_tiles[5].draw_notexture(Color(0.2f, 0.2f, 0.2f));
 						 } else {
@@ -114,7 +114,7 @@ void NETHER::drawmap(bool shadows)
 							 building_tiles[5].DrawShadow(Color(0, 0, 0, 0.5));
 						 } /* if */ 
 						 break;
-			case Building::B_WALL1:if (!shadows) {
+			case Building::TYPE::WALL1:if (!shadows) {
                            if (detaillevel>=2) building_tiles[0].draw(Color(0.5, 0.5, 0.5));
                            else building_tiles[0].draw_notexture(Color(0.5, 0.5, 0.5));
 						 } else {
@@ -122,7 +122,7 @@ void NETHER::drawmap(bool shadows)
 							 building_tiles[0].DrawShadow(Color(0, 0, 0, 0.5));
 						 } /* if */ 
 						 break;
-			case Building::B_WALL2:if (!shadows) {
+			case Building::TYPE::WALL2:if (!shadows) {
                            if (detaillevel>=2) building_tiles[1].draw(Color(0.5, 0.5, 0.5));
                            else building_tiles[1].draw_notexture(Color(0.5, 0.5, 0.5));
 						 } else { 
@@ -130,7 +130,7 @@ void NETHER::drawmap(bool shadows)
 							 building_tiles[1].DrawShadow(Color(0, 0, 0, 0.5));
 						 } /* if */ 
 						 break;
-			case Building::B_WALL3:if (!shadows) {
+			case Building::TYPE::WALL3:if (!shadows) {
                            if (detaillevel>=2) building_tiles[2].draw(Color(0.3f, 0.3f, 0.3f));
                            else building_tiles[2].draw_notexture(Color(0.5, 0.5, 0.5));
 						 } else {
@@ -138,7 +138,7 @@ void NETHER::drawmap(bool shadows)
 							 building_tiles[2].DrawShadow(Color(0, 0, 0, 0.5));
 						 } /* if */ 
 						 break;
-			case Building::B_WALL4:if (!shadows) {
+			case Building::TYPE::WALL4:if (!shadows) {
                            if (detaillevel>=2) building_tiles[3].draw(Color(0.5, 0.5, 0.5));
                            else building_tiles[3].draw_notexture(Color(0.5, 0.5, 0.5));
 						 } else {
@@ -146,7 +146,7 @@ void NETHER::drawmap(bool shadows)
 							 building_tiles[3].DrawShadow(Color(0, 0, 0, 0.5));
 						 } /* if */ 
 						 break;
-			case Building::B_WALL5:if (!shadows) {
+			case Building::TYPE::WALL5:if (!shadows) {
                            if (detaillevel>=2) building_tiles[4].draw(Color(0.5, 0.5, 0.5));
                            else building_tiles[4].draw_notexture(Color(0.5, 0.5, 0.5));
 						 } else {
@@ -154,7 +154,7 @@ void NETHER::drawmap(bool shadows)
 							 building_tiles[4].DrawShadow(Color(0, 0, 0, 0.5));
 						 } /* if */ 
 						 break;
-			case Building::B_WALL6:if (!shadows) {
+			case Building::TYPE::WALL6:if (!shadows) {
                            if (detaillevel>=2) building_tiles[7].draw(Color(0.3f, 0.3f, 0.3f));
                            else building_tiles[7].draw_notexture(Color(0.5, 0.5, 0.5));
 						 } else {
@@ -162,7 +162,7 @@ void NETHER::drawmap(bool shadows)
 							 building_tiles[7].DrawShadow(Color(0, 0, 0, 0.5));
 						 } /* if */ 
 						 break;
-			case Building::B_FACTORY_ELECTRONICS:
+			case Building::TYPE::FACTORY_ELECTRONICS:
 						 if (!shadows) {
                            if (detaillevel>=2) building_tiles[4].draw(Color(0.5, 0.5, 0.5));
                            else building_tiles[4].draw_notexture(Color(0.5, 0.5, 0.5));
@@ -198,7 +198,7 @@ void NETHER::drawmap(bool shadows)
 							} /* if */ 
 						 } /* if */ 
 						 break;
-			case Building::B_FACTORY_NUCLEAR:
+			case Building::TYPE::FACTORY_NUCLEAR:
 						 if (!shadows) {
                            if (detaillevel>=2) building_tiles[4].draw(Color(0.5, 0.5, 0.5));
                            else building_tiles[4].draw_notexture(Color(0.5, 0.5, 0.5));
@@ -234,7 +234,7 @@ void NETHER::drawmap(bool shadows)
 							} /* if */ 
 						 } /* if */ 
 						 break;
-			case Building::B_FACTORY_PHASERS:
+			case Building::TYPE::FACTORY_PHASERS:
 						 if (!shadows) {
                            if (detaillevel>=2) building_tiles[4].draw(Color(0.5, 0.5, 0.5));
                            else building_tiles[4].draw_notexture(Color(0.5, 0.5, 0.5));
@@ -270,7 +270,7 @@ void NETHER::drawmap(bool shadows)
 							} /* if */ 
 						 } /* if */ 
 						 break;
-			case Building::B_FACTORY_MISSILES:
+			case Building::TYPE::FACTORY_MISSILES:
 						 if (!shadows) {
                            if (detaillevel>=2) building_tiles[4].draw(Color(0.5, 0.5, 0.5));
                            else building_tiles[4].draw_notexture(Color(0.5, 0.5, 0.5));
@@ -306,7 +306,7 @@ void NETHER::drawmap(bool shadows)
 							} /* if */ 
 						 } /* if */ 
 						 break;
-			case Building::B_FACTORY_CANNONS:
+			case Building::TYPE::FACTORY_CANNONS:
 						 if (!shadows) {
                            if (detaillevel>=2) building_tiles[4].draw(Color(0.5, 0.5, 0.5));
                            else building_tiles[4].draw_notexture(Color(0.5, 0.5, 0.5));
@@ -342,7 +342,7 @@ void NETHER::drawmap(bool shadows)
 							} /* if */ 
 						 } /* if */ 
 						 break; 
-			case Building::B_FACTORY_CHASSIS:
+			case Building::TYPE::FACTORY_CHASSIS:
 						 if (!shadows) {
                            if (detaillevel>=2) building_tiles[4].draw(Color(0.5, 0.5, 0.5));
                            else building_tiles[4].draw_notexture(Color(0.5, 0.5, 0.5));
@@ -379,7 +379,7 @@ void NETHER::drawmap(bool shadows)
 						 } /* if */ 
 						 break;
 
-			case Building::B_WARBASE:if (!shadows) {
+			case Building::TYPE::WARBASE:if (!shadows) {
                            if (detaillevel>=2) building_tiles[8].draw(Color(0.5, 0.5, 0.5));
                            else building_tiles[8].draw_notexture(Color(0.5, 0.5, 0.5));
 						   } else {

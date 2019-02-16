@@ -194,66 +194,66 @@ bool NETHER::bulletCollision(const Bullet& bullet, Robot **r)
       m2[14] = b.pos.z;
 
       switch(b.type) {
-      case Building::B_FENCE:
+      case Building::TYPE::FENCE:
         if (bullet.cmc.collision_simple(m1,&(building_tiles[5].cmc),m2)) return true;
         break;
-      case Building::B_WALL1:
+      case Building::TYPE::WALL1:
         if (bullet.cmc.collision_simple(m1,&(building_tiles[0].cmc),m2)) return true;
         break;
-      case Building::B_WALL2:
+      case Building::TYPE::WALL2:
         if (bullet.cmc.collision_simple(m1,&(building_tiles[1].cmc),m2)) return true;
         break;
-      case Building::B_WALL3:
+      case Building::TYPE::WALL3:
         if (bullet.cmc.collision_simple(m1,&(building_tiles[2].cmc),m2)) return true;
         break;
-      case Building::B_WALL4:
+      case Building::TYPE::WALL4:
         if (bullet.cmc.collision_simple(m1,&(building_tiles[3].cmc),m2)) return true;
         break;
-      case Building::B_WALL5:
+      case Building::TYPE::WALL5:
         if (bullet.cmc.collision_simple(m1,&(building_tiles[4].cmc),m2)) return true;
         break;
-      case Building::B_WALL6:
+      case Building::TYPE::WALL6:
         if (bullet.cmc.collision_simple(m1,&(building_tiles[7].cmc),m2)) return true;
         break;
-      case Building::B_WARBASE:
+      case Building::TYPE::WARBASE:
         if (bullet.cmc.collision_simple(m1,&(building_tiles[8].cmc),m2)) return true;
         break;
-      case Building::B_FACTORY_ELECTRONICS:
+      case Building::TYPE::FACTORY_ELECTRONICS:
         if (bullet.cmc.collision_simple(m1,&(building_tiles[4].cmc),m2)) return true;
         m2[12]=b.pos.x+0.5;
         m2[13]=b.pos.y+0.5;
         m2[14]=b.pos.z+1;
         if (bullet.cmc.collision_simple(m1,&(piece_tiles[0][7].cmc),m2)) return true;
         break;
-      case Building::B_FACTORY_NUCLEAR:
+      case Building::TYPE::FACTORY_NUCLEAR:
         if (bullet.cmc.collision_simple(m1,&(building_tiles[4].cmc),m2)) return true;
         m2[12]=b.pos.x+0.5;
         m2[13]=b.pos.y+0.5;
         m2[14]=b.pos.z+1;
         if (bullet.cmc.collision_simple(m1,&(piece_tiles[0][6].cmc),m2)) return true;
         break;
-      case Building::B_FACTORY_PHASERS:
+      case Building::TYPE::FACTORY_PHASERS:
         if (bullet.cmc.collision_simple(m1,&(building_tiles[4].cmc),m2)) return true;
         m2[12]=b.pos.x+0.5;
         m2[13]=b.pos.y+0.5;
         m2[14]=b.pos.z+1;
         if (bullet.cmc.collision_simple(m1,&(piece_tiles[0][5].cmc),m2)) return true;
         break;
-      case Building::B_FACTORY_MISSILES:
+      case Building::TYPE::FACTORY_MISSILES:
         if (bullet.cmc.collision_simple(m1,&(building_tiles[4].cmc),m2)) return true;
         m2[12]=b.pos.x+0.5;
         m2[13]=b.pos.y+0.5;
         m2[14]=b.pos.z+1;
         if (bullet.cmc.collision_simple(m1,&(piece_tiles[0][4].cmc),m2)) return true;
         break;
-      case Building::B_FACTORY_CANNONS:
+      case Building::TYPE::FACTORY_CANNONS:
         if (bullet.cmc.collision_simple(m1,&(building_tiles[4].cmc),m2)) return true;
         m2[12]=b.pos.x+0.5;
         m2[13]=b.pos.y+0.5;
         m2[14]=b.pos.z+1;
         if (bullet.cmc.collision_simple(m1,&(piece_tiles[0][3].cmc),m2)) return true;
         break;
-      case Building::B_FACTORY_CHASSIS:
+      case Building::TYPE::FACTORY_CHASSIS:
         if (bullet.cmc.collision_simple(m1,&(building_tiles[4].cmc),m2)) return true;
         m2[12]=b.pos.x+0.5;
         m2[13]=b.pos.y+0.5;

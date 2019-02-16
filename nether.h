@@ -76,11 +76,11 @@ enum AI_STATES {AI_STATE_EXPANDING,
 
 class NETHER {
 public:
-  enum GAME_STATE {STATE_PLAYING,
-                   STATE_CONSTRUCTION,
-                   STATE_PAUSE,
-                   STATE_SAVINGGAME,
-                   STATE_LOADINGGAME};
+  enum class STATE {PLAYING,
+                    CONSTRUCTION,
+                    PAUSE,
+                    SAVINGGAME,
+                    LOADINGGAME};
 
   explicit NETHER(const std::string& mapname);
   ~NETHER();
@@ -174,7 +174,7 @@ private:
   float animation_timer;
   int construction_pointer;
   bool construction[8];
-  GAME_STATE game_state;
+  STATE game_state;
   Robot in_construction;
   Robot* controlled;
 

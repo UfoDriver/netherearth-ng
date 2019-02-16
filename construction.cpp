@@ -305,7 +305,7 @@ bool NETHER::construction_cycle(unsigned char *keyboard)
   }
 
   if (construction_pointer==0 && keyboard[fire_key] && !old_keyboard[fire_key]) {
-    game_state = STATE_PLAYING;
+    game_state = NETHER::STATE::PLAYING;
     shipp.z = 2.0;
   }
 
@@ -328,8 +328,8 @@ bool NETHER::construction_cycle(unsigned char *keyboard)
 
         in_construction.cost(0, cost, resources);
         for (int i = 0; i < 7; i++) resources[0][i] -= cost[i];
-        game_state=STATE_PLAYING;
-        shipp.z=2.0;
+        game_state = NETHER::STATE::PLAYING;
+        shipp.z = 2.0;
         sManager.playConstruction();
       } else {
         delete r;
