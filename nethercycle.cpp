@@ -1245,7 +1245,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 
                               if (bullet.type == Bullet::TYPE::MISSILES) persistence = MISSILE_PERSISTENCE;
                               if (bullet.type == Bullet::TYPE::PHASERS) persistence = PHASER_PERSISTENCE;
-                              if (bullet.step >= persistence || bulletCollision(bullet, &r)) {
+                              if (bullet.step >= persistence || bullet.checkCollision(buildings, robots, &r)) {
                                 ret = true;
                                 if (bullet.step < persistence) {
                                   explosions.emplace_back(bullet.pos, 0);

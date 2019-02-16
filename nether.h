@@ -108,7 +108,6 @@ private:
 	int WorseMapTerrain(float x[2], float y[2]);
 
 	bool robotCollision(Robot *r,bool complete);
-	bool bulletCollision(const Bullet& b, Robot **r);
 
 	void AI_enemy();
 	Robot* AI_enemy_newrobot(int state,Vector pos);

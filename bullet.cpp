@@ -174,92 +174,90 @@ void Bullet::drawParticles(std::vector<Particle>& particles) const
 }
 
 
-bool NETHER::bulletCollision(const Bullet& bullet, Robot **r)
+bool Bullet::checkCollision(const std::vector<Building>& buildings,
+                            const std::vector<Robot*> robots[2], Robot** r)
 {
   float m1[16]={1, 0, 0, 0,
                 0, 1, 0, 0,
                 0, 0, 1, 0,
-                bullet.pos.x, bullet.pos.y, 0.3, 1};
+                pos.x, pos.y, 0.3, 1};
   float m2[16]={1, 0, 0, 0,
                 0, 1, 0, 0,
                 0, 0, 1, 0,
                 0, 0, 0, 1};
 
   for (const Building& b: buildings) {
-    // @TODO: vector methods?
-    if (((b.pos.x - bullet.pos.x) * (b.pos.x - bullet.pos.x) +
-         (b.pos.y - bullet.pos.y) * (b.pos.y - bullet.pos.y) +
-         (b.pos.z - bullet.pos.z) * (b.pos.z - bullet.pos.z)) < COLISION_TEST_THRESHOLD) {
+    if (b.pos.aboutToCollide3D(pos, COLISION_TEST_THRESHOLD)) {
       m2[12] = b.pos.x;
       m2[13] = b.pos.y;
       m2[14] = b.pos.z;
 
       switch(b.type) {
       case Building::TYPE::FENCE:
-        if (bullet.cmc.collision_simple(m1,&(Resources::buildingTiles[5].cmc),m2)) return true;
+        if (cmc.collision_simple(m1,&(Resources::buildingTiles[5].cmc),m2)) return true;
         break;
       case Building::TYPE::WALL1:
-        if (bullet.cmc.collision_simple(m1,&(Resources::buildingTiles[0].cmc),m2)) return true;
+        if (cmc.collision_simple(m1,&(Resources::buildingTiles[0].cmc),m2)) return true;
         break;
       case Building::TYPE::WALL2:
-        if (bullet.cmc.collision_simple(m1,&(Resources::buildingTiles[1].cmc),m2)) return true;
+        if (cmc.collision_simple(m1,&(Resources::buildingTiles[1].cmc),m2)) return true;
         break;
       case Building::TYPE::WALL3:
-        if (bullet.cmc.collision_simple(m1,&(Resources::buildingTiles[2].cmc),m2)) return true;
+        if (cmc.collision_simple(m1,&(Resources::buildingTiles[2].cmc),m2)) return true;
         break;
       case Building::TYPE::WALL4:
-        if (bullet.cmc.collision_simple(m1,&(Resources::buildingTiles[3].cmc),m2)) return true;
+        if (cmc.collision_simple(m1,&(Resources::buildingTiles[3].cmc),m2)) return true;
         break;
       case Building::TYPE::WALL5:
-        if (bullet.cmc.collision_simple(m1,&(Resources::buildingTiles[4].cmc),m2)) return true;
+        if (cmc.collision_simple(m1,&(Resources::buildingTiles[4].cmc),m2)) return true;
         break;
       case Building::TYPE::WALL6:
-        if (bullet.cmc.collision_simple(m1,&(Resources::buildingTiles[7].cmc),m2)) return true;
+        if (cmc.collision_simple(m1,&(Resources::buildingTiles[7].cmc),m2)) return true;
         break;
       case Building::TYPE::WARBASE:
-        if (bullet.cmc.collision_simple(m1,&(Resources::buildingTiles[8].cmc),m2)) return true;
+        if (cmc.collision_simple(m1,&(Resources::buildingTiles[8].cmc),m2)) return true;
         break;
       case Building::TYPE::FACTORY_ELECTRONICS:
-        if (bullet.cmc.collision_simple(m1,&(Resources::buildingTiles[4].cmc),m2)) return true;
+        if (cmc.collision_simple(m1,&(Resources::buildingTiles[4].cmc),m2)) return true;
         m2[12]=b.pos.x+0.5;
         m2[13]=b.pos.y+0.5;
         m2[14]=b.pos.z+1;
-        if (bullet.cmc.collision_simple(m1,&(Resources::pieceTiles[0][7].cmc),m2)) return true;
+        if (cmc.collision_simple(m1,&(Resources::pieceTiles[0][7].cmc),m2)) return true;
         break;
       case Building::TYPE::FACTORY_NUCLEAR:
-        if (bullet.cmc.collision_simple(m1,&(Resources::buildingTiles[4].cmc),m2)) return true;
+        if (cmc.collision_simple(m1,&(Resources::buildingTiles[4].cmc),m2)) return true;
         m2[12]=b.pos.x+0.5;
         m2[13]=b.pos.y+0.5;
         m2[14]=b.pos.z+1;
-        if (bullet.cmc.collision_simple(m1,&(Resources::pieceTiles[0][6].cmc),m2)) return true;
+        if (cmc.collision_simple(m1,&(Resources::pieceTiles[0][6].cmc),m2)) return true;
         break;
       case Building::TYPE::FACTORY_PHASERS:
-        if (bullet.cmc.collision_simple(m1,&(Resources::buildingTiles[4].cmc),m2)) return true;
+        if (cmc.collision_simple(m1,&(Resources::buildingTiles[4].cmc),m2)) return true;
         m2[12]=b.pos.x+0.5;
         m2[13]=b.pos.y+0.5;
         m2[14]=b.pos.z+1;
-        if (bullet.cmc.collision_simple(m1,&(Resources::pieceTiles[0][5].cmc),m2)) return true;
+        if (cmc.collision_simple(m1,&(Resources::pieceTiles[0][5].cmc),m2)) return true;
         break;
       case Building::TYPE::FACTORY_MISSILES:
-        if (bullet.cmc.collision_simple(m1,&(Resources::buildingTiles[4].cmc),m2)) return true;
+        if (cmc.collision_simple(m1,&(Resources::buildingTiles[4].cmc),m2)) return true;
         m2[12]=b.pos.x+0.5;
         m2[13]=b.pos.y+0.5;
         m2[14]=b.pos.z+1;
-        if (bullet.cmc.collision_simple(m1,&(Resources::pieceTiles[0][4].cmc),m2)) return true;
+        if (cmc.collision_simple(m1,&(Resources::pieceTiles[0][4].cmc),m2)) return true;
         break;
       case Building::TYPE::FACTORY_CANNONS:
-        if (bullet.cmc.collision_simple(m1,&(Resources::buildingTiles[4].cmc),m2)) return true;
+        if (cmc.collision_simple(m1,&(Resources::buildingTiles[4].cmc),m2)) return true;
         m2[12]=b.pos.x+0.5;
         m2[13]=b.pos.y+0.5;
         m2[14]=b.pos.z+1;
-        if (bullet.cmc.collision_simple(m1,&(Resources::pieceTiles[0][3].cmc),m2)) return true;
+        if (cmc.collision_simple(m1,&(Resources::pieceTiles[0][3].cmc),m2)) return true;
         break;
       case Building::TYPE::FACTORY_CHASSIS:
-        if (bullet.cmc.collision_simple(m1,&(Resources::buildingTiles[4].cmc),m2)) return true;
+        if (cmc.collision_simple(m1,&(Resources::buildingTiles[4].cmc),m2)) return true;
         m2[12]=b.pos.x+0.5;
         m2[13]=b.pos.y+0.5;
         m2[14]=b.pos.z+1;
-        if (bullet.cmc.collision_simple(m1,&(Resources::pieceTiles[0][1].cmc),m2)) return true;
+        if (cmc.collision_simple(m1,&(Resources::pieceTiles[0][1].cmc),m2)) return true;
         break;
       }
     }
@@ -268,15 +266,12 @@ bool NETHER::bulletCollision(const Bullet& bullet, Robot **r)
   /* Collision with the robots: */
   for (int i = 0; i < 2; i++) {
     for (Robot* rt: robots[i]) {
-      // @TODO: evaluate vector's method or create new one
-      if (((rt->pos.x - bullet.pos.x) * (rt->pos.x - bullet.pos.x) +
-           (rt->pos.y - bullet.pos.y) * (rt->pos.y - bullet.pos.y) +
-           (rt->pos.z - bullet.pos.z) * (rt->pos.z-bullet.pos.z)) < COLISION_TEST_THRESHOLD) {
-        if (rt != bullet.owner) {
+      if (rt->pos.aboutToCollide3D(pos, COLISION_TEST_THRESHOLD)) {
+        if (rt != owner) {
           m2[12] = rt->pos.x;
           m2[13] = rt->pos.y;
           m2[14] = rt->pos.z;
-          if (bullet.cmc.collision_simple(m1,&(rt->cmc),m2)) {
+          if (cmc.collision_simple(m1,&(rt->cmc),m2)) {
             *r=rt;
             return true;
           } /* if */
@@ -286,7 +281,7 @@ bool NETHER::bulletCollision(const Bullet& bullet, Robot **r)
   } /* while */
 
   return false;
-} /* NETHER::BulletCollision */
+}
 
 
 std::ostream& operator<<(std::ostream& out, std::pair<const Bullet&, std::vector<Robot*>*>pair)
