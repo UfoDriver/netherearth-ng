@@ -106,7 +106,7 @@ private:
   void constructionDraw(int w, int h);
   void optionsDraw(int w, int h);
 
-    bool loadmap(const std::string& filename);
+  bool loadMap(const std::string& filename);
 	void drawmap(bool shadows);
 
 	float MapMaxZ(float x[2],float y[2]);

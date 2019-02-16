@@ -90,7 +90,7 @@ NETHER::NETHER(const std::string& mapname): menu(this), radar(this), controlled(
 #endif
 
 	/* Load map: */ 
-	if (!loadmap(mapname)) {
+	if (!loadMap(mapname)) {
 		map_w=map_h=0;
 		map.clear();
 	} /* if */ 
@@ -1207,7 +1207,10 @@ bool NETHER::loadGame(const std::string& filename)
   else
     controlled = 0;
 
-  inFile >> menu.act_menu >> menu.act_button;
+  int actMenu_, actButton_;
+  inFile >> actMenu_ >> actButton_;
+  menu.act_menu = Menu::MENU_TYPES(actMenu_);
+  menu.act_button = StatusButton::BUTTON_NAMES(actButton_);
 
   AI_precomputations();
   return true;
@@ -1283,7 +1286,7 @@ bool NETHER::saveDebugReport(const std::string& filename)
 
   log << "\n# BULLETS: " << bullets.size() << '\n';
   for (Bullet& bullet: bullets) {
-    log << " BULLET:\n TYPE: " << bullet.type
+    log << " BULLET:\n TYPE: " << int(bullet.type)
         << "\n STEP: " << bullet.step
         << "\n ANGLE: " << bullet.angle << '\n';
     log << " POSITION: ";

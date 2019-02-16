@@ -29,12 +29,12 @@
 
 extern int detaillevel;
 
-Bullet::Bullet(): type(BULLET_CANNONS), step(0), angle(0), owner(0)
+Bullet::Bullet(): type(TYPE::CANNONS), step(0), angle(0), owner(0)
 {
 }
 
 
-Bullet::Bullet(BULLET_TYPE type, Vector position, int angle, Robot *robot):
+Bullet::Bullet(TYPE type, Vector position, int angle, Robot *robot):
   type(type), step(0), pos(position), angle(angle), owner(robot)
 {
 }
@@ -43,7 +43,9 @@ Bullet::Bullet(BULLET_TYPE type, Vector position, int angle, Robot *robot):
 Bullet::Bullet(std::istream& in, std::vector<Robot*> robots[2])
 {
   int i, j;
-  in >> type >> step >> angle;
+  int type_;
+  in >> type_ >> step >> angle;
+  type = TYPE(type_);
   in >> pos;
   in >> j >> i;
   if (i >= 0)
@@ -62,15 +64,14 @@ void Bullet::computeCMC(std::vector<Piece3DObject>& bulletTiles)
                  0, 0, 0, 1};
   Quaternion q;
 
-  // compute CMC:
   switch(type) {
-  case 0: // CANNON:
+  case TYPE::CANNONS:
     m[13] = 0.2;
     cmc.expand(&(bulletTiles[0].cmc), m);
     m[13] = -0.2;
     cmc.expand(&(bulletTiles[0].cmc), m);
     break;
-  case 1: // MISSILES:
+  case TYPE::MISSILES:
     q.from_axis_angle(Vector(0,0,1), 3.141592f);
     q.to_matrix(m);
     m[13] += 0.33;
@@ -78,7 +79,7 @@ void Bullet::computeCMC(std::vector<Piece3DObject>& bulletTiles)
     m[13] -= 0.66;
     cmc.expand(&(bulletTiles[1].cmc), m);
     break;
-  case 2: // PHASERS:
+  case TYPE::PHASERS:
     q.from_axis_angle(Vector(0, 0, 1), 3.141592f/2);
     q.to_matrix(m);
     cmc.expand(&(bulletTiles[2].cmc), m);
@@ -91,7 +92,7 @@ void Bullet::draw(bool shadows, std::vector<Piece3DObject>& bullet_tiles,
                   std::vector<Particle>& particles) const
 {
   switch(type) {
-  case BULLET_CANNONS:
+  case TYPE::CANNONS:
     if (!shadows) {
       glPushMatrix();
       glRotatef(angle, 0, 0, 1);
@@ -102,7 +103,7 @@ void Bullet::draw(bool shadows, std::vector<Piece3DObject>& bullet_tiles,
       glPopMatrix();
     }
     break;
-  case BULLET_MISSILES:
+  case TYPE::MISSILES:
     if (!shadows) {
       glPushMatrix();
       glRotatef(angle, 0, 0, 1);
@@ -117,7 +118,7 @@ void Bullet::draw(bool shadows, std::vector<Piece3DObject>& bullet_tiles,
       }
     }
     break;
-  case BULLET_PHASERS:
+  case TYPE::PHASERS:
     if (!shadows) {
       glPushMatrix();
       glRotatef(angle,0,0,1);
@@ -289,7 +290,7 @@ bool NETHER::bulletCollision(const Bullet& bullet, Robot **r)
 
 std::ostream& operator<<(std::ostream& out, std::pair<const Bullet&, std::vector<Robot*>*>pair)
 {
-  out << pair.first.type << ' ' << pair.first.step << ' ' << pair.first.angle << '\n';
+  out << (int)pair.first.type << ' ' << pair.first.step << ' ' << pair.first.angle << '\n';
   out << pair.first.pos;
 
   int i = find_index(pair.second[0], pair.first.owner);

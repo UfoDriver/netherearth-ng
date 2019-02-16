@@ -1,6 +1,8 @@
 #ifndef BUILDING_H
 #define BUILDING_H
 
+#include <iostream>
+#include <vector>
 #include "vector.h"
 
 
@@ -24,6 +26,8 @@ public:
     pos(position), type(type), owner(owner), status(status)
   {}
   explicit Building(std::istream& in);
+
+  static const std::vector<Building> readMapFile(std::istream& inFile);
 
   Vector pos;
   BUILDINGS_AND_WALLS type;

@@ -20,10 +20,11 @@ int find_index(const T& container, const V& value)
   }
 }
 
-template <class T>
-inline std::istream& operator>>(std::istream &str, T &v) {
-  unsigned int type = 0;
-  if (str >> type)
-    v = static_cast<T>(type);
-  return str;
-}
+
+// template <class T>
+// std::istream& operator>>(std::istream &str, T &v) {
+//   unsigned int type = 0;
+//   if (str >> type)
+//     v = static_cast<T>(type);
+//   return str;
+// }

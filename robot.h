@@ -24,7 +24,7 @@ public:
   explicit Robot(std::istream& in);
   bool valid();
   float piecez(int piece);
-  bool bulletHit(Bullet::BULLET_TYPE type);
+  bool bulletHit(Bullet::TYPE type);
   void draw(int owner, bool shadows, std::vector<Piece3DObject> piece_tiles[2], Vector lightposv);
   int cost();
   void cost(int player, int* res, int resources[2][7]);

@@ -1056,7 +1056,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 					if (r->op==ROBOTOP_CANNONS && r->firetimer==0) {
 						Vector pos(r->pos);
 						pos.z = r->piecez(0) + 0.3f;
-						Bullet bullet(Bullet::BULLET_CANNONS, pos, r->angle, r);
+						Bullet bullet(Bullet::TYPE::CANNONS, pos, r->angle, r);
 						bullet.computeCMC(bullet_tiles);
 						bullets.push_back(bullet);
                         sManager.playShot(shipp, r->pos);
@@ -1065,7 +1065,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 					if (r->op==ROBOTOP_MISSILES && r->firetimer==0) {
 						Vector pos (r->pos);
 						pos.z = r->piecez(1) + 0.2f;
-                        Bullet bullet(Bullet::BULLET_MISSILES, pos, r->angle, r);
+                        Bullet bullet(Bullet::TYPE::MISSILES, pos, r->angle, r);
 						bullet.computeCMC(bullet_tiles);
 						bullets.push_back(bullet);
                         sManager.playShot(shipp, r->pos);
@@ -1074,7 +1074,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 					if (r->op==ROBOTOP_PHASERS && r->firetimer==0) {
 						Vector pos(r->pos);
 						pos.z = r->piecez(2) + 0.3f;
-						Bullet bullet(Bullet::BULLET_PHASERS, pos, r->angle, r);
+						Bullet bullet(Bullet::TYPE::PHASERS, pos, r->angle, r);
 						bullet.computeCMC(bullet_tiles);
 						bullets.push_back(bullet);
                         sManager.playShot(shipp, r->pos);
@@ -1336,8 +1336,8 @@ bool NETHER::cycle(unsigned char *keyboard)
                               if (bullet.angle == 270) bullet.pos.y -= BULLET_SPEED;
                               bullet.step++;
 
-                              if (bullet.type==1) persistence = MISSILE_PERSISTENCE;
-                              if (bullet.type==2) persistence = PHASER_PERSISTENCE;
+                              if (bullet.type == Bullet::TYPE::MISSILES) persistence = MISSILE_PERSISTENCE;
+                              if (bullet.type == Bullet::TYPE::PHASERS) persistence = PHASER_PERSISTENCE;
                               if (bullet.step >= persistence || bulletCollision(bullet, &r)) {
                                 ret = true;
                                 if (bullet.step < persistence) {

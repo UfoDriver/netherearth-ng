@@ -18,6 +18,7 @@
 #include "shadow3dobject.h"
 #include "piece3dobject.h"
 #include "nether.h"
+#include "utils.h"
 
 #include "glprintf.h"
 
@@ -25,161 +26,33 @@ extern int detaillevel;
 extern float MINY,MAXY,MINX,MAXX;
 
 
-bool NETHER::loadmap(const std::string& filename)
+bool NETHER::loadMap(const std::string& filename)
 {
-	FILE *fp = fopen(filename.c_str(),"r");
-	if (fp==0) return false;
+  std::ifstream iFile(filename);
+  iFile >> map_w >> map_h;
+  map.clear();
+  map.reserve(map_w * map_h);
 
-	if (2!=fscanf(fp,"%i %i",&map_w,&map_h)) {
-		fclose(fp);
-		return false;
-	} /* if */ 
-	map.reserve(map_w * map_h);
+  const std::vector<std::string> tiles = {"G", "S", "S2", "M", "H1",
+                                          "H2", "H3", "H4", "H5", "H6",
+                                          "GG", "SS", "MM", "?"};
+  std::string tilestr;
+  for (int i = 0; i < map_w * map_h; i++) {
+    iFile >> tilestr;
+    int tile = find_index(tiles, tilestr);
+    if (tile == 10) tile = 0;
+    if (tile == 11) tile = 1;
+    if (tile == 12) tile = 3;
 
-	for (int i = 0; i < map_w * map_h; i++) {
-		int tile;
-		char tilestr[16];
-		const char *tiles[]={"G","S","S2","M","H1",
-			           "H2","H3","H4","H5","H6",
-					   "GG","SS","MM","?"};
-		bool found;
+    map.push_back(tile);
+  }
 
-		if (1!=fscanf(fp,"%s",tilestr)) {
-			fclose(fp);
-			return false;
-		} /* if */ 
-
-		tile=0;
-		found=false;
-		while(!found && tiles[tile][0]!='?') {
-			if (strcmp(tiles[tile],tilestr)==0) found=true;
-			if (!found) tile++;
-		} /* while */ 
-		if (tile==10) tile=0;
-		if (tile==11) tile=1;
-		if (tile==12) tile=3;
-
-		map.push_back(tile);
-	} /* for */ 
-
-	{
-		char tmp[80];
-
-		while(1==fscanf(fp,"%s",tmp)) {
-			float x,y;
-
-			if (strcmp(tmp,"fence")==0) {
-				if (2!=fscanf(fp,"%f %f",&x,&y)) {
-					fclose(fp);
-					return false;
-				} /* if */ 
-				buildings.emplace_back(Vector(x, y, 0), Building::B_FENCE);
-			} /* if */  
-			if (strcmp(tmp,"wall1")==0) {
-				if (2!=fscanf(fp,"%f %f",&x,&y)) {
-					fclose(fp);
-					return false;
-				} /* if */ 
-				buildings.emplace_back(Vector(x, y, 0), Building::B_WALL1);
-			} /* if */  
-			if (strcmp(tmp,"wall2")==0) {
-				if (2!=fscanf(fp,"%f %f",&x,&y)) {
-					fclose(fp);
-					return false;
-				} /* if */ 
-				buildings.emplace_back(Vector(x, y, 0), Building::B_WALL2);
-			} /* if */  
-			if (strcmp(tmp,"wall3")==0) {
-				if (2!=fscanf(fp,"%f %f",&x,&y)) {
-					fclose(fp);
-					return false;
-				} /* if */ 
-				buildings.emplace_back(Vector(x, y, 0), Building::B_WALL3);
-			} /* if */  
-			if (strcmp(tmp,"wall4")==0) {
-				if (2!=fscanf(fp,"%f %f",&x,&y)) {
-					fclose(fp);
-					return false;
-				} /* if */ 
-				buildings.emplace_back(Vector(x, y, 0), Building::B_WALL4);
-			} /* if */  
-			if (strcmp(tmp,"wall6")==0) {
-				if (2!=fscanf(fp,"%f %f",&x,&y)) {
-					fclose(fp);
-					return false;
-				} /* if */ 
-				buildings.emplace_back(Vector(x, y, 0), Building::B_WALL6);
-			} /* if */  
-			if (strcmp(tmp,"factory")==0) {
-				char tmp2[80];
-				Building::BUILDINGS_AND_WALLS obj[4]={Building::B_WALL4,
-                                                      Building::B_WALL4,
-                                                      Building::B_WALL2,
-                                                      Building::B_WALL2};
-				float xo[4]={0,0,1,1};
-				float yo[4]={0,2,0,2};
-
-				if (3!=fscanf(fp,"%f %f %s",&x,&y,tmp2)) {
-					fclose(fp);
-					return false;
-				} /* if */ 
-
-				for(int i=0;i<4;i++) {
-                  buildings.emplace_back(Vector(x + xo[i], y + yo[i], 0), obj[i], 0, 0);
-				} /* for */ 
-
-				Building b(Vector(x, y + 1, 0), Building::B_FACTORY_ELECTRONICS);
-				if (strcmp(tmp2,"electronics")==0) b.type=Building::B_FACTORY_ELECTRONICS;
-				if (strcmp(tmp2,"nuclear")==0) b.type=Building::B_FACTORY_NUCLEAR;
-				if (strcmp(tmp2,"phasers")==0) b.type=Building::B_FACTORY_PHASERS;
-				if (strcmp(tmp2,"missiles")==0) b.type=Building::B_FACTORY_MISSILES;
-				if (strcmp(tmp2,"cannons")==0) b.type=Building::B_FACTORY_CANNONS;
-				if (strcmp(tmp2,"chassis")==0) b.type=Building::B_FACTORY_CHASSIS;
-				buildings.push_back(b);
-			} /* if */  
-			if (strcmp(tmp,"warbase")==0) {
-				Building::BUILDINGS_AND_WALLS obj[15]={Building::B_WALL4,
-                                                       Building::B_WALL5,
-                                                       Building::B_WALL4,
-                                                       Building::B_WALL1,
-                                                       Building::B_WALL1,
-                                                       Building::B_WALL2,
-                                                       Building::B_WALL4,
-                                                       Building::B_WARBASE,
-                                                       Building::B_WALL2,
-                                                       Building::B_WALL4,
-                                                       Building::B_WALL1,
-                                                       Building::B_WALL1,
-                                                       Building::B_WALL2,
-                                                       Building::B_WALL4,
-                                                       Building::B_WALL5};
-				float xo[15]={0.5,1.5,
-						 	  0,1,2,3,
-							  0.5,1.5,2.5,
-							  0,1,2,3,
-							  0.5,1.5};
-				float yo[15]={0,0,
-							  1,1,1,1,
-							  2,2,2,
-							  3,3,3,3,
-							  4,4};
-				int o=0;
-				
-				if (3!=fscanf(fp,"%f %f %i",&x,&y,&o)) {
-					fclose(fp);
-					return false;
-				} /* if */ 
-
-				for(int i=0;i<15;i++) {
-                                   buildings.emplace_back(Vector(x + xo[i], y + yo[i], 0), obj[i], o, 0);
-				} /* for */ 
-			} /* if */  
-		} /* while */ 
-	}
-
-	fclose(fp);
-	return true;
-} /* NETHER::loadmap */ 
+  while (!iFile.eof()) {
+    const std::vector<Building>& newBuildings {Building::readMapFile(iFile)};
+    std::copy(newBuildings.cbegin(), newBuildings.cend(), std::back_inserter(buildings));
+  }
+  return true;
+}
 
 
 void NETHER::drawmap(bool shadows)
