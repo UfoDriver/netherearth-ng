@@ -100,6 +100,22 @@ bool Vector::zero()
 }
 
 
+bool Vector::aboutToCollide2D(const Vector& vector, float threshold) const
+{
+  return ((x - vector.x) * (x - vector.x) +
+          (y - vector.y) * (y - vector.y) +
+          (z - vector.z) * (z - vector.z)) < threshold;
+
+}
+
+
+bool Vector::aboutToCollide3D(const Vector& vector, float threshold) const
+{
+  return ((x - vector.x) * (x - vector.x) +
+          (y - vector.y) * (y - vector.y)) < threshold;
+}
+
+
 bool Vector::load(FILE *fp)
 {
   float t1, t2, t3;

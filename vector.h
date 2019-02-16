@@ -32,6 +32,9 @@ public:
   double normalize();
   Vector normal(const Vector& v) const;
 
+  bool aboutToCollide2D(const Vector& vector, float threshold) const;
+  bool aboutToCollide3D(const Vector& vector, float threshold) const;
+
   bool load(FILE *fp);
   bool save(FILE *fp);
 

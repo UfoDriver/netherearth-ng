@@ -32,10 +32,7 @@ bool Ship::checkCollision(const std::vector<Building>& buildings,
 
   /* Collision with buildings: */
   for (const Building& b: buildings) {
-    if (((b.pos.x - pos.x) * (b.pos.x - pos.x) +
-         (b.pos.y - pos.y) * (b.pos.y - pos.y) +
-         (b.pos.z - pos.z) * (b.pos.z - pos.z)) < COLISION_TEST_THRESHOLD) {
-
+    if (b.pos.aboutToCollide3D(pos, COLISION_TEST_THRESHOLD)) {
       m2[12] = b.pos.x;
       m2[13] = b.pos.y;
       m2[14] = b.pos.z;
@@ -114,8 +111,7 @@ bool Ship::checkCollision(const std::vector<Building>& buildings,
   /* Collision with the robots: */
   for(int i = 0; i < 2; i++) {
     for (Robot* r: robots[i]) {
-      if (((r->pos.x - pos.x) * (r->pos.x - pos.x) +
-           (r->pos.y - pos.y) * (r->pos.y - pos.y)) < COLISION_TEST_THRESHOLD) {
+      if (r->pos.aboutToCollide2D(pos, COLISION_TEST_THRESHOLD)) {
           m2[12] = r->pos.x;
           m2[13] = r->pos.y;
           m2[14] = r->pos.z;
