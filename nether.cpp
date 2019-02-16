@@ -113,12 +113,6 @@ NETHER::NETHER(const std::string& mapname): menu(this), radar(this), controlled(
 	hour=0;
 	minute=0;
 	second=0;
-	shipp.x=4.0;
-	shipp.y=2.0;
-	shipp.z=3.0;
-	ship_op=OP_NONE;
-	ship_op2=OP_NONE;
-	ship_timemoving=0;
 
 	resources[0][0]=20;
 	resources[0][1]=0;
@@ -327,7 +321,7 @@ void NETHER::loadObjects()
   piece_tiles[1][9].moveobject(Vector(-0.4, -0.5, 0.0));
   piece_tiles[1][10].moveobject(Vector(-0.4, 0.2, 0.0));
 
-  ship = new Shadow3DObject("models/ship.asc", "textures/");
+  ship = new Ship("models/ship.asc", "textures/");
   ship->normalize(0.5f);
   ship->makepositive();
 
@@ -649,7 +643,7 @@ void NETHER::drawGame(bool shadows)
 
   /* Draw the ship: */
   glPushMatrix();
-  glTranslatef(shipp.x, shipp.y, shipp.z);
+  glTranslatef(ship->pos.x, ship->pos.y, ship->pos.z);
   if (!shadows) ship->draw(Color(0.7, 0.7, 0.7));
   glPopMatrix();
 
@@ -661,8 +655,8 @@ void NETHER::drawGame(bool shadows)
     light = lightposv;
     light = light / light.z;
 
-    sx = shipp.x - light.x * shipp.z;
-    sy = shipp.y - light.y * shipp.z;
+    sx = ship->pos.x - light.x * ship->pos.z;
+    sy = ship->pos.y - light.y * ship->pos.z;
 
     if (controlled == 0) {
       float x[2], y[2];
@@ -1096,9 +1090,9 @@ bool NETHER::saveGame(const std::string& filename)
   oFile << lightposv
         << camera
         << viewp
-        << shipp;
+        << ship->pos;
 
-  oFile << shiplanded << '\n';
+  oFile << ship->landed << '\n';
 
   oFile << buildings.size() << '\n';
   for (Building& b: buildings) {
@@ -1166,9 +1160,9 @@ bool NETHER::loadGame(const std::string& filename)
   inFile >> lightposv
          >> camera
          >> viewp
-         >> shipp;
+         >> ship->pos;
 
-  inFile >> shiplanded;
+  inFile >> ship->landed;
 
   int length;
   inFile >> length;
@@ -1237,8 +1231,8 @@ bool NETHER::saveDebugReport(const std::string& filename)
   log << "LIGHTPOSV: " << lightposv;
   log << "CAMERA: " << camera;
   log << "VIEWP: " << viewp;
-  log << "SHIPP: " << shipp;
-  if (shiplanded)
+  log << "SHIPP: " << ship->pos;
+  if (ship->landed)
     log << "SHIP LANDED\n";
   else
     log << "SHIP NOT LANDED\n";

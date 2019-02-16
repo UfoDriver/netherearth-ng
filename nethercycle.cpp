@@ -147,7 +147,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 
 	/* GAME Cycle: */ 
 	{
-		shiplanded=false;
+		ship->landed=false;
 		
 #ifdef _WRITE_REPORT_
 	fprintf(debug_fp,"Menu\n");
@@ -161,93 +161,93 @@ bool NETHER::cycle(unsigned char *keyboard)
 				float minz;
 				Vector old_shipp;
 
-				shipp.x=(int(shipp.x*8.0))/8.0;
-				shipp.y=(int(shipp.y*8.0))/8.0;
-				old_shipp=shipp;
-				x[0]=shipp.x;
-				x[1]=shipp.x+1.0;
-				y[0]=shipp.y;
-				y[1]=shipp.y+1.0;
+				ship->pos.x=(int(ship->pos.x*8.0))/8.0;
+				ship->pos.y=(int(ship->pos.y*8.0))/8.0;
+				old_shipp=ship->pos;
+				x[0]=ship->pos.x;
+				x[1]=ship->pos.x+1.0;
+				y[0]=ship->pos.y;
+				y[1]=ship->pos.y+1.0;
 				minz=MapMaxZ(x,y);
 
-				if (ship_op==OP_RIGHT) if (shipp.x<map_w-1) {
-					shipp.x+=0.125;
-					if (ship_timemoving>=50 && (int(shipp.x*8)%2)==1) shipp.x+=0.125;
+				if (ship->op == Ship::OPS::RIGHT) if (ship->pos.x<map_w-1) {
+					ship->pos.x += 0.125;
+					if (ship->timemoving>=50 && (int(ship->pos.x*8)%2)==1) ship->pos.x+=0.125;
 //					if (ship_timemoving>=100 && (int(shipp.x*4)%2)==1) shipp.x+=0.25;
 				} /* if */ 
-				if (ship_op==OP_LEFT) if (shipp.x>0) {
-					shipp.x-=0.125;
-					if (ship_timemoving>=50 && (int(shipp.x*8)%2)==1) shipp.x-=0.125;
+				if (ship->op==Ship::OPS::LEFT) if (ship->pos.x>0) {
+					ship->pos.x-=0.125;
+					if (ship->timemoving>=50 && (int(ship->pos.x*8)%2)==1) ship->pos.x-=0.125;
 //					if (ship_timemoving>=100 && (int(shipp.x*4)%2)==1) shipp.x-=0.25;
 				} /* if */ 
-				if (ship_op2==OP_FORWARD) if (shipp.y<map_h-1) {
-					shipp.y+=0.125;
-					if (ship_timemoving>=50 && (int(shipp.y*8)%2)==1) shipp.y+=0.125;
+				if (ship->op2==Ship::OPS::FORWARD) if (ship->pos.y<map_h-1) {
+					ship->pos.y+=0.125;
+					if (ship->timemoving>=50 && (int(ship->pos.y*8)%2)==1) ship->pos.y+=0.125;
 //					if (ship_timemoving>=100 && (int(shipp.y*4)%2)==1) shipp.y+=0.25;
 				} /* if */ 
-				if (ship_op2==OP_BACKWARD) if (shipp.y>0) {
-					shipp.y-=0.125;
-					if (ship_timemoving>=50 && (int(shipp.y*8)%2)==1) shipp.y-=0.125;
+				if (ship->op2==Ship::OPS::BACKWARD) if (ship->pos.y>0) {
+					ship->pos.y-=0.125;
+					if (ship->timemoving>=50 && (int(ship->pos.y*8)%2)==1) ship->pos.y-=0.125;
 //					if (ship_timemoving>=100 && (int(shipp.y*4)%2)==1) shipp.y-=0.25;
 				} /* if */ 
-				if (ship_op3==OP_UP) if (shipp.z<5.0) shipp.z+=0.05;
-				if (ship_op3!=OP_UP && shipp.z>minz) shipp.z-=0.025;
-				if (shipp.z<minz) shipp.z=minz;
+				if (ship->op3==Ship::OPS::UP) if (ship->pos.z<5.0) ship->pos.z+=0.05;
+				if (ship->op3!=Ship::OPS::UP && ship->pos.z>minz) ship->pos.z-=0.025;
+				if (ship->pos.z<minz) ship->pos.z=minz;
 
-				if (ship_op==OP_NONE && ship_op2==OP_NONE) {
-					ship_timemoving=0;
+				if (ship->op==Ship::OPS::NONE && ship->op2==Ship::OPS::NONE) {
+					ship->timemoving=0;
 				} else {
-					ship_timemoving++;
+					ship->timemoving++;
 				} /* if */ 
 
-				if (shipp!=old_shipp
+				if (ship->pos!=old_shipp
 //					&&
 //					shipp==old_shipp
 					) {
-					if (ShipCollision(ship,shipp.x,shipp.y,shipp.z)) {
-						ship_timemoving=0;
-						Vector p=shipp;
-						shipp.x=old_shipp.x;
-						shipp.y=old_shipp.y;
-						if (p.z!=old_shipp.z && ShipCollision(ship,shipp.x,shipp.y,shipp.z)) {
-							shipp.z=old_shipp.z;
-							shiplanded=true;
+					if (ShipCollision(ship,ship->pos.x,ship->pos.y,ship->pos.z)) {
+						ship->timemoving=0;
+						Vector p=ship->pos;
+						ship->pos.x=old_shipp.x;
+						ship->pos.y=old_shipp.y;
+						if (p.z!=old_shipp.z && ShipCollision(ship,ship->pos.x,ship->pos.y,ship->pos.z)) {
+							ship->pos.z=old_shipp.z;
+							ship->landed=true;
 						} else {
-							shipp.z=p.z;
+							ship->pos.z=p.z;
 						} /* if */ 
-						shipp.x=p.x;
-						if (p.x!=old_shipp.x && ShipCollision(ship,shipp.x,shipp.y,shipp.z)) {
-							shipp.x=old_shipp.x;
+						ship->pos.x=p.x;
+						if (p.x!=old_shipp.x && ShipCollision(ship,ship->pos.x,ship->pos.y,ship->pos.z)) {
+							ship->pos.x=old_shipp.x;
 						} else {
-							shipp.x=p.x;
+							ship->pos.x=p.x;
 						} /* if */ 
-						shipp.y=p.y;
-						if (p.y!=old_shipp.y && ShipCollision(ship,shipp.x,shipp.y,shipp.z)) {
-							shipp.y=old_shipp.y;
+						ship->pos.y=p.y;
+						if (p.y!=old_shipp.y && ShipCollision(ship,ship->pos.x,ship->pos.y,ship->pos.z)) {
+							ship->pos.y=old_shipp.y;
 						} else {
-							shipp.y=p.y;
+							ship->pos.y=p.y;
 						} /* if */ 
 					} /* if */ 
 				} /* if */ 
 
-				if ((int(shipp.x*8)%4)==0) ship_op=OP_NONE;
-				if ((int(shipp.y*8)%4)==0) ship_op2=OP_NONE;
-				if ((int(shipp.z*8)%4)==0) ship_op3=OP_NONE;
+				if ((int(ship->pos.x*8)%4)==0) ship->op=Ship::OPS::NONE;
+				if ((int(ship->pos.y*8)%4)==0) ship->op2=Ship::OPS::NONE;
+				if ((int(ship->pos.z*8)%4)==0) ship->op3=Ship::OPS::NONE;
 
 				if (keyboard[left_key]) {
-					ship_op=OP_LEFT;
+                  ship->op=Ship::OPS::LEFT;
 				} /* if */ 
 				if (keyboard[right_key]) {
-					ship_op=OP_RIGHT;
+                  ship->op=Ship::OPS::RIGHT;
 				} /* if */ 
 				if (keyboard[up_key]) {
-					ship_op2=OP_FORWARD;
+                  ship->op2=Ship::OPS::FORWARD;
 				} /* if */ 
 				if (keyboard[down_key]) {
-					ship_op2=OP_BACKWARD;
+                  ship->op2=Ship::OPS::BACKWARD;
 				} /* if */ 
 				if (keyboard[fire_key]) {
-					ship_op3=OP_UP;
+                  ship->op3=Ship::OPS::UP;
 				} /* if */ 
 			}
 			break;
@@ -339,7 +339,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 						controlled=0;
 						menu.killmenu(Menu::ROBOT_MENU);
 						menu.newmenu(Menu::GENERAL_MENU);
-						ship_op3=OP_UP;
+						ship->op3=Ship::OPS::UP;
                         sManager.playSelect();
 						break;
 					} /* switch */ 
@@ -780,9 +780,9 @@ bool NETHER::cycle(unsigned char *keyboard)
 	fflush(debug_fp);
 #endif
 
-		viewp.x=shipp.x+0.5;
-		viewp.y=shipp.y+0.5;
-		viewp.z=shipp.z-3*zoom;
+		viewp.x=ship->pos.x+0.5;
+		viewp.y=ship->pos.y+0.5;
+		viewp.z=ship->pos.z-3*zoom;
 		if (viewp.z<0) viewp.z=0;
 		if (viewp.x<3*zoom) {
 			viewp.x=3*zoom;
@@ -874,7 +874,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 		{
           for (const Building& b: buildings) {
 				if (b.type==Building::TYPE::WARBASE && b.owner==1 && 
-					shipp.x==b.pos.x && shipp.y==b.pos.y && shiplanded) {
+					ship->pos.x==b.pos.x && ship->pos.y==b.pos.y && ship->landed) {
                   game_state=NETHER::STATE::CONSTRUCTION;
 					construction_pointer=0;
 					construction[0]=false;
@@ -900,10 +900,10 @@ bool NETHER::cycle(unsigned char *keyboard)
 
 		/* Test if the ship has landed over a robot: */ 
 		if (menu.act_menu==Menu::GENERAL_MENU &&
-			(int(shipp.x*8)%4)==0 &&
-			(int(shipp.y*8)%4)==0) {
+			(int(ship->pos.x*8)%4)==0 &&
+			(int(ship->pos.y*8)%4)==0) {
             for (Robot* r: robots[0]) {
-				if (shipp.x==(r->pos.x-0.5) && shipp.y==(r->pos.y-0.5) && shiplanded) {
+				if (ship->pos.x==(r->pos.x-0.5) && ship->pos.y==(r->pos.y-0.5) && ship->landed) {
 					/* The ship has landed over a robot: */ 
 					r->shipover=true;
 					controlled=r;
@@ -1059,7 +1059,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 						Bullet bullet(Bullet::TYPE::CANNONS, pos, r->angle, r);
 						bullet.computeCMC(bullet_tiles);
 						bullets.push_back(bullet);
-                        sManager.playShot(shipp, r->pos);
+                        sManager.playShot(ship->pos, r->pos);
 					} /* if */ 
 
 					if (r->op==ROBOTOP_MISSILES && r->firetimer==0) {
@@ -1068,7 +1068,7 @@ bool NETHER::cycle(unsigned char *keyboard)
                         Bullet bullet(Bullet::TYPE::MISSILES, pos, r->angle, r);
 						bullet.computeCMC(bullet_tiles);
 						bullets.push_back(bullet);
-                        sManager.playShot(shipp, r->pos);
+                        sManager.playShot(ship->pos, r->pos);
 					} /* if */ 
 
 					if (r->op==ROBOTOP_PHASERS && r->firetimer==0) {
@@ -1077,7 +1077,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 						Bullet bullet(Bullet::TYPE::PHASERS, pos, r->angle, r);
 						bullet.computeCMC(bullet_tiles);
 						bullets.push_back(bullet);
-                        sManager.playShot(shipp, r->pos);
+                        sManager.playShot(ship->pos, r->pos);
 					} /* if */ 
 
 					if (r->op==ROBOTOP_CANNONS ||
@@ -1124,7 +1124,7 @@ bool NETHER::cycle(unsigned char *keyboard)
                                                          }
                                                        }),
                                         buildings.end());
-                        sManager.playExplosion(shipp, r->pos);
+                        sManager.playExplosion(ship->pos, r->pos);
                         recomputestatistics=true;
 					} /* if */ 
 
@@ -1139,9 +1139,9 @@ bool NETHER::cycle(unsigned char *keyboard)
 						r->pos.z=minz;
 
 						if (r->shipover) {
-							shipp.x=r->pos.x-0.5;
-							shipp.y=r->pos.y-0.5;
-							shipp.z=r->pos.z+r->cmc.z[1];
+							ship->pos.x=r->pos.x-0.5;
+							ship->pos.y=r->pos.y-0.5;
+							ship->pos.z=r->pos.z+r->cmc.z[1];
 						} /* if */ 
 
 						/* Collision: */ 
@@ -1149,9 +1149,9 @@ bool NETHER::cycle(unsigned char *keyboard)
 							r->pos=old_pos;
 							if (r->traction==0) r->chassis_state=old_chassis_state;
 							if (r->shipover) {
-								shipp.x=r->pos.x-0.5;
-								shipp.y=r->pos.y-0.5;
-								shipp.z=r->pos.z+r->cmc.z[1];
+								ship->pos.x=r->pos.x-0.5;
+								ship->pos.y=r->pos.y-0.5;
+								ship->pos.z=r->pos.z+r->cmc.z[1];
 							} /* if */ 
 						} else {
 							AI_moverobot(old_pos,r->pos,i);
@@ -1349,7 +1349,7 @@ bool NETHER::cycle(unsigned char *keyboard)
                                 if (!r->bulletHit(bullet.type)) {
                                   /* Robot destroyed: */
                                   explosions.emplace_back(r->pos,1);
-                                  sManager.playExplosion(shipp, r->pos);
+                                  sManager.playExplosion(ship->pos, r->pos);
                                   if (r == controlled) {
                                     controlled->shipover = false;
                                     controlled = 0;

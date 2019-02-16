@@ -1,6 +1,7 @@
 #ifndef __BRAIN_SHADOW3DOBJECT
 #define __BRAIN_SHADOW3DOBJECT
 
+#include <string>
 #include <vector>
 
 #include "3dobject.h"
@@ -9,7 +10,7 @@
 class Shadow3DObject : public C3DObject {
 public:
   Shadow3DObject();
-  Shadow3DObject(const char* file, const char* texturedir);
+  Shadow3DObject(const std::string& file, const std::string& texturedir);
   ~Shadow3DObject();
 
   void DrawShadow(const Color& color);

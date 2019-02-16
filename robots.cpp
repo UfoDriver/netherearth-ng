@@ -41,7 +41,7 @@ bool NETHER::robotCollision(Robot *r, bool complete)
     float m2[16]={1, 0, 0, 0,
                   0, 1, 0, 0,
                   0, 0, 1, 0,
-                  shipp.x, shipp.y, shipp.z, 1};
+                  ship->pos.x, ship->pos.y, ship->pos.z, 1};
     if (r->cmc.collision_simple(m1, &(ship->cmc), m2)) return true;
   }
 

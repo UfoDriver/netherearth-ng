@@ -14,6 +14,7 @@
 #include "bullet.h"
 #include "explosion.h"
 #include "particle.h"
+#include "ship.h"
 #include "ai_operator.h"
 #include "menu.h"
 #include "radar.h"
@@ -32,13 +33,6 @@ const int MISSILE_PERSISTENCE = 60;
 const int PHASER_PERSISTENCE = 40;
 
 /* GAME STATES: */
-
-enum SHIP_OPERATORS {OP_NONE = -1,
-                     OP_LEFT,
-                     OP_RIGHT,
-                     OP_FORWARD,
-                     OP_BACKWARD,
-                     OP_UP};
 
 enum TERRAINS {T_GRASS,
                T_SAND,
@@ -156,16 +150,13 @@ private:
 
   float zoom;
   Vector camera, viewp;
-  Vector shipp;
-  bool shiplanded;
-  int ship_op, ship_op2, ship_op3;
-  int ship_timemoving;
 
   std::vector<Building> buildings;
   std::vector<Robot*> robots[2];
   std::vector<Bullet> bullets;
   std::vector<Explosion> explosions;
   std::vector<Particle> particles;
+  Ship *ship;
 
   int day, hour, minute, second;
   int resources[2][7];
@@ -183,7 +174,6 @@ private:
 
   /* Graphics: */
   std::vector<C3DObject> tiles;
-  Shadow3DObject *ship;
   std::vector<Shadow3DObject> building_tiles;
   std::vector<Piece3DObject> piece_tiles[2];
   std::vector<C3DObject> construction_tiles;

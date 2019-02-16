@@ -17,7 +17,7 @@ Shadow3DObject::Shadow3DObject() : C3DObject(), shdw_nfaces(0), shdw_faces(0)
 {}
 
 
-Shadow3DObject::Shadow3DObject(const char* file, const char* texturedir) :
+Shadow3DObject::Shadow3DObject(const std::string& file, const std::string& texturedir) :
   C3DObject(file,texturedir), shdw_nfaces(0), shdw_faces(0)
 {}
 
