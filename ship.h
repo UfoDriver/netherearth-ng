@@ -2,8 +2,13 @@
 #define SHIP_H
 
 #include <string>
+#include <vector>
 
-#include "shadow3dobject.h"
+#include "resources.h"
+
+
+class Building;
+class Robot;
 
 
 class Ship: public Shadow3DObject
@@ -15,15 +20,8 @@ public:
             FORWARD,
             BACKWARD,
             UP};
-  Ship(const std::string& model, const std::string& texDir) :
-    Shadow3DObject(model, texDir),
-    pos(4.0, 2.0, 3.0),
-    landed(false),
-    op(OPS::NONE),
-    op2(OPS::NONE),
-    op3(OPS::NONE),
-    timemoving(0)
-  {};
+  Ship(const std::string& model, const std::string& texturesDir);
+  bool checkCollision(const std::vector<Building>& buildings, const std::vector<Robot*> robots[2]);
 
   Vector pos;
   bool landed;

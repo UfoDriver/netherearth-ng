@@ -57,70 +57,70 @@ bool NETHER::robotCollision(Robot *r, bool complete)
 
       switch(b.type) {
       case Building::TYPE::FENCE:
-        if (r->cmc.collision_simple(m1,&(building_tiles[5].cmc),m2)) return true;
+        if (r->cmc.collision_simple(m1,&(Resources::buildingTiles[5].cmc),m2)) return true;
         break;
       case Building::TYPE::WALL1:
-        if (r->cmc.collision_simple(m1,&(building_tiles[0].cmc),m2)) return true;
+        if (r->cmc.collision_simple(m1,&(Resources::buildingTiles[0].cmc),m2)) return true;
         break;
       case Building::TYPE::WALL2:
-        if (r->cmc.collision_simple(m1,&(building_tiles[1].cmc),m2)) return true;
+        if (r->cmc.collision_simple(m1,&(Resources::buildingTiles[1].cmc),m2)) return true;
         break;
       case Building::TYPE::WALL3:
-        if (r->cmc.collision_simple(m1,&(building_tiles[2].cmc),m2)) return true;
+        if (r->cmc.collision_simple(m1,&(Resources::buildingTiles[2].cmc),m2)) return true;
         break;
       case Building::TYPE::WALL4:
-        if (r->cmc.collision_simple(m1,&(building_tiles[3].cmc),m2)) return true;
+        if (r->cmc.collision_simple(m1,&(Resources::buildingTiles[3].cmc),m2)) return true;
         break;
       case Building::TYPE::WALL5:
-        if (r->cmc.collision_simple(m1,&(building_tiles[4].cmc),m2)) return true;
+        if (r->cmc.collision_simple(m1,&(Resources::buildingTiles[4].cmc),m2)) return true;
         break;
       case Building::TYPE::WALL6:
-        if (r->cmc.collision_simple(m1,&(building_tiles[7].cmc),m2)) return true;
+        if (r->cmc.collision_simple(m1,&(Resources::buildingTiles[7].cmc),m2)) return true;
         break;
       case Building::TYPE::WARBASE:
-        if (r->cmc.collision_simple(m1,&(building_tiles[8].cmc),m2)) return true;
+        if (r->cmc.collision_simple(m1,&(Resources::buildingTiles[8].cmc),m2)) return true;
         break;
       case Building::TYPE::FACTORY_ELECTRONICS:
-        if (r->cmc.collision_simple(m1,&(building_tiles[4].cmc),m2)) return true;
+        if (r->cmc.collision_simple(m1,&(Resources::buildingTiles[4].cmc),m2)) return true;
         m2[12]=b.pos.x+0.5;
         m2[13]=b.pos.y+0.5;
         m2[14]=b.pos.z+1;
-        if (r->cmc.collision_simple(m1,&(piece_tiles[0][7].cmc),m2)) return true;
+        if (r->cmc.collision_simple(m1,&(Resources::pieceTiles[0][7].cmc),m2)) return true;
         break;
       case Building::TYPE::FACTORY_NUCLEAR:
-        if (r->cmc.collision_simple(m1,&(building_tiles[4].cmc),m2)) return true;
+        if (r->cmc.collision_simple(m1,&(Resources::buildingTiles[4].cmc),m2)) return true;
         m2[12]=b.pos.x+0.5;
         m2[13]=b.pos.y+0.5;
         m2[14]=b.pos.z+1;
-        if (r->cmc.collision_simple(m1,&(piece_tiles[0][6].cmc),m2)) return true;
+        if (r->cmc.collision_simple(m1,&(Resources::pieceTiles[0][6].cmc),m2)) return true;
         break;
       case Building::TYPE::FACTORY_PHASERS:
-        if (r->cmc.collision_simple(m1,&(building_tiles[4].cmc),m2)) return true;
+        if (r->cmc.collision_simple(m1,&(Resources::buildingTiles[4].cmc),m2)) return true;
         m2[12]=b.pos.x+0.5;
         m2[13]=b.pos.y+0.5;
         m2[14]=b.pos.z+1;
-        if (r->cmc.collision_simple(m1,&(piece_tiles[0][5].cmc),m2)) return true;
+        if (r->cmc.collision_simple(m1,&(Resources::pieceTiles[0][5].cmc),m2)) return true;
         break;
       case Building::TYPE::FACTORY_MISSILES:
-        if (r->cmc.collision_simple(m1,&(building_tiles[4].cmc),m2)) return true;
+        if (r->cmc.collision_simple(m1,&(Resources::buildingTiles[4].cmc),m2)) return true;
         m2[12]=b.pos.x+0.5;
         m2[13]=b.pos.y+0.5;
         m2[14]=b.pos.z+1;
-        if (r->cmc.collision_simple(m1,&(piece_tiles[0][4].cmc),m2)) return true;
+        if (r->cmc.collision_simple(m1,&(Resources::pieceTiles[0][4].cmc),m2)) return true;
         break;
       case Building::TYPE::FACTORY_CANNONS:
-        if (r->cmc.collision_simple(m1,&(building_tiles[4].cmc),m2)) return true;
+        if (r->cmc.collision_simple(m1,&(Resources::buildingTiles[4].cmc),m2)) return true;
         m2[12]=b.pos.x+0.5;
         m2[13]=b.pos.y+0.5;
         m2[14]=b.pos.z+1;
-        if (r->cmc.collision_simple(m1,&(piece_tiles[0][3].cmc),m2)) return true;
+        if (r->cmc.collision_simple(m1,&(Resources::pieceTiles[0][3].cmc),m2)) return true;
         break;
       case Building::TYPE::FACTORY_CHASSIS:
-        if (r->cmc.collision_simple(m1,&(building_tiles[4].cmc),m2)) return true;
+        if (r->cmc.collision_simple(m1,&(Resources::buildingTiles[4].cmc),m2)) return true;
         m2[12]=b.pos.x+0.5;
         m2[13]=b.pos.y+0.5;
         m2[14]=b.pos.z+1;
-        if (r->cmc.collision_simple(m1,&(piece_tiles[0][1].cmc),m2)) return true;
+        if (r->cmc.collision_simple(m1,&(Resources::pieceTiles[0][1].cmc),m2)) return true;
         break;
       }
     }

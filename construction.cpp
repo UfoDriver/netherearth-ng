@@ -18,6 +18,7 @@
 #include "shadow3dobject.h"
 #include "piece3dobject.h"
 #include "myglutaux.h"
+#include "resources.h"
 #include "nether.h"
 
 #include "glprintf.h"
@@ -129,7 +130,7 @@ void NETHER::constructionDraw(int width, int height)
   glPushMatrix();
   glColor3f(1.0f, 0.0f, 0.0f);
   glTranslatef(12, 15, 0);
-  in_construction.calculateCMC(piece_tiles[0]);
+  in_construction.calculateCMC(Resources::pieceTiles[0]);
   if (robotCollision(&in_construction, true)) {
     if ((int(animation_timer * 4) % 2) == 0) scaledglprintf(0.01f, 0.01f, "ENTRANCE BLOCKED!");
   }
@@ -182,9 +183,9 @@ void NETHER::constructionDraw(int width, int height)
       glRotatef(animation_timer * 32, 0, 1, 0);
       glRotatef(-90, 1, 0, 0);
       if (construction[i])
-        piece_tiles[0][i].draw_notexture(Color(1.0, 1.0, 1.0));
+        Resources::pieceTiles[0][i].draw_notexture(Color(1.0, 1.0, 1.0));
       else
-        piece_tiles[0][i].draw_notexture(Color(0.5, 0.5, 0.5));
+        Resources::pieceTiles[0][i].draw_notexture(Color(0.5, 0.5, 0.5));
       glPopMatrix();
     }
 
@@ -194,7 +195,7 @@ void NETHER::constructionDraw(int width, int height)
     glRotatef(30, 1, 0, 0);
     glRotatef(animation_timer * 32, 0, 1, 0);
     glRotatef(-90, 1, 0, 0);
-    in_construction.draw(0, false, piece_tiles, lightposv);
+    in_construction.draw(0, false, Resources::pieceTiles, lightposv);
     glPopMatrix();
   }
 
@@ -311,21 +312,20 @@ bool NETHER::construction_cycle(unsigned char *keyboard)
 
   if (construction_pointer==10 && keyboard[fire_key] && !old_keyboard[fire_key]) {
     if (in_construction.valid()) {
-      int cost[7];
-
       /* Valid robot, build it: */
       Robot *r = new Robot();
       *r=in_construction;
       r->angle=0;
       r->program=Robot::PROGRAM_FORWARD;
       r->op=ROBOTOP_NONE;
-      r->calculateCMC(piece_tiles[0]);
+      r->calculateCMC(Resources::pieceTiles[0]);
       r->shipover=false;
 
       if (!robotCollision(r,true)) {
         robots[0].push_back(r);
         AI_newrobot(r->pos,0);
 
+        int cost[7];
         in_construction.cost(0, cost, stats.resources);
         for (int i = 0; i < 7; i++) stats.resources[0][i] -= cost[i];
         game_state = NETHER::STATE::PLAYING;

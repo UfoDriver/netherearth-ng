@@ -155,25 +155,25 @@ bool NETHER::cycle(unsigned char *keyboard)
 //					&&
 //					shipp==old_shipp
 					) {
-					if (ShipCollision(ship,ship->pos.x,ship->pos.y,ship->pos.z)) {
+                  if (ship->checkCollision(buildings, robots)) {
 						ship->timemoving=0;
 						Vector p=ship->pos;
 						ship->pos.x=old_shipp.x;
 						ship->pos.y=old_shipp.y;
-						if (p.z!=old_shipp.z && ShipCollision(ship,ship->pos.x,ship->pos.y,ship->pos.z)) {
+						if (p.z!=old_shipp.z && ship->checkCollision(buildings, robots)) {
 							ship->pos.z=old_shipp.z;
 							ship->landed=true;
 						} else {
 							ship->pos.z=p.z;
 						} /* if */ 
 						ship->pos.x=p.x;
-						if (p.x!=old_shipp.x && ShipCollision(ship,ship->pos.x,ship->pos.y,ship->pos.z)) {
+						if (p.x!=old_shipp.x && ship->checkCollision(buildings, robots)) {
 							ship->pos.x=old_shipp.x;
 						} else {
 							ship->pos.x=p.x;
 						} /* if */ 
 						ship->pos.y=p.y;
-						if (p.y!=old_shipp.y && ShipCollision(ship,ship->pos.x,ship->pos.y,ship->pos.z)) {
+						if (p.y!=old_shipp.y && ship->checkCollision(buildings, robots)) {
 							ship->pos.y=old_shipp.y;
 						} else {
 							ship->pos.y=p.y;

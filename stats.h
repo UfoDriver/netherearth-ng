@@ -4,13 +4,9 @@
 #include <iostream>
 #include <vector>
 
+#include "constants.h"
 
 class Building;
-
-const int BONUSES[][5] = {{0, 5, 6, 6, 8},
-                          {0, 5, 8, 9, 12},
-                          {0, 5, 10, 12, 16},
-                          {0, 5, 10, 15, 20}};
 
 
 class Stats

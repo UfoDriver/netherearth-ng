@@ -23,7 +23,6 @@
 #include "SDL/SDL.h"
 
 
-const float COLISION_TEST_THRESHOLD = 9.0;
 const int INTRO_TIME = 60;
 const int END_TIME = 260;
 
@@ -108,7 +107,6 @@ private:
 	int MapTerrain(float x, float y);
 	int WorseMapTerrain(float x[2], float y[2]);
 
-	bool ShipCollision(C3DObject *ship,float x,float y,float z);
 	bool robotCollision(Robot *r,bool complete);
 	bool bulletCollision(const Bullet& b, Robot **r);
 
@@ -173,8 +171,6 @@ private:
 
   /* Graphics: */
   std::vector<C3DObject> tiles;
-  std::vector<Shadow3DObject> building_tiles;
-  std::vector<Piece3DObject> piece_tiles[2];
   std::vector<C3DObject> construction_tiles;
   std::vector<C3DObject> message_tiles;
   std::vector<Piece3DObject> bullet_tiles;
