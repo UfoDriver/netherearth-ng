@@ -169,12 +169,6 @@ private:
   int game_finished;
   int game_started;
 
-  /* Graphics: */
-  std::vector<C3DObject> tiles;
-  std::vector<C3DObject> construction_tiles;
-  std::vector<C3DObject> message_tiles;
-  std::vector<Piece3DObject> bullet_tiles;
-
   /* Option/Pause menu variables: */
   int option_menu;
 

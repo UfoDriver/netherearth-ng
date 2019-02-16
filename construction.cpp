@@ -120,11 +120,11 @@ void NETHER::constructionDraw(int width, int height)
     glRotatef(angle, 0, 1, 0);
     animation_timer += 0.02;
   }
-  construction_tiles[0].draw(Color(0.5f, 0.5f, 0.5f));
+  Resources::constructionTiles[0].draw(Color(0.5f, 0.5f, 0.5f));
   glTranslatef(0.0, -1.1, 1);
-  construction_tiles[1].draw(Color(0.8f, 0.8f, 0.8f));
+  Resources::constructionTiles[1].draw(Color(0.8f, 0.8f, 0.8f));
   glTranslatef(0.0, 2.2, 0);
-  construction_tiles[2].draw(Color(0.8f, 0.8f, 0.8f));
+  Resources::constructionTiles[2].draw(Color(0.8f, 0.8f, 0.8f));
   glPopMatrix();
 
   glPushMatrix();

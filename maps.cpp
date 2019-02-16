@@ -85,8 +85,8 @@ void NETHER::drawmap(bool shadows)
 							if (((i*3+j*7)%m[(i+j+1)%8])==0) o=11;
 						} else {
 						} /* if */ 
-						if (detaillevel>=1) tiles[o].draw(tiles[0].color);
-                        else tiles[o].draw_notexture(tiles[0].color);
+						if (detaillevel>=1) Resources::tiles[o].draw(Resources::tiles[0].color);
+                        else Resources::tiles[o].draw_notexture(Resources::tiles[0].color);
 					} /* if */ 
 					glTranslatef(1.0,0.0,0.0);
 				} /* for */ 
@@ -425,8 +425,8 @@ float NETHER::MapMaxZ(float x[2],float y[2])
 			if (i>=0 && i<map_w &&
 				j>=0 && j<map_h) {
 				o=map[i+j*map_w];
-				if (tiles[o].cmc.z[0]>z) z=tiles[o].cmc.z[0];
-				if (tiles[o].cmc.z[1]>z) z=tiles[o].cmc.z[1];
+				if (Resources::tiles[o].cmc.z[0]>z) z=Resources::tiles[o].cmc.z[0];
+				if (Resources::tiles[o].cmc.z[1]>z) z=Resources::tiles[o].cmc.z[1];
 			} /* if */ 
 		} /* for */ 
 	} /* for */ 

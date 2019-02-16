@@ -223,20 +223,20 @@ void NETHER::loadObjects()
                       {0.0f, 0.733f, 0.0f},
                       {0.0f, 0.733f, 0.0f}};
 
-  tiles.reserve(N_OBJECTS);
+  Resources::tiles.reserve(N_OBJECTS);
   for (int i = 0; i < N_OBJECTS; i++) {
     C3DObject tile(tnames[i], "textures/", colors[i]);
     tile.normalize(0.50f);
     tile.makepositive();
-    tiles.push_back(tile);
+    Resources::tiles.push_back(tile);
   }
 
-  tiles[4].moveobject(Vector(0, 0, -0.05));
-  tiles[5].moveobject(Vector(0, 0, -0.05));
-  tiles[6].moveobject(Vector(0, 0, -0.05));
-  tiles[7].moveobject(Vector(0, 0, -0.05));
-  tiles[8].moveobject(Vector(0, 0, -0.05));
-  tiles[9].moveobject(Vector(0, 0, -0.05));
+  Resources::tiles[4].moveobject(Vector(0, 0, -0.05));
+  Resources::tiles[5].moveobject(Vector(0, 0, -0.05));
+  Resources::tiles[6].moveobject(Vector(0, 0, -0.05));
+  Resources::tiles[7].moveobject(Vector(0, 0, -0.05));
+  Resources::tiles[8].moveobject(Vector(0, 0, -0.05));
+  Resources::tiles[9].moveobject(Vector(0, 0, -0.05));
 
   Resources::buildingTiles.reserve(N_BUILDINGS);
   for (int i = 0; i < N_BUILDINGS; i++) {
@@ -285,11 +285,11 @@ void NETHER::loadObjects()
 
   ship = new Ship("models/ship.asc", "textures/");
 
-  bullet_tiles.reserve(N_BULLETS);
+  Resources::bulletTiles.reserve(N_BULLETS);
   for (int i = 0; i < N_BULLETS; i++) {
     Piece3DObject tile(bullnames[i],"textures/");
     tile.normalize(bullscale[i]);
-    bullet_tiles.push_back(tile);
+    Resources::bulletTiles.push_back(tile);
   }
 
   ship->ComputeShadow(lightposv);
@@ -298,40 +298,40 @@ void NETHER::loadObjects()
     Resources::pieceTiles[0][i].ComputeFixedShadows(lightposv);
     Resources::pieceTiles[1][i].ComputeFixedShadows(lightposv);
   }
-  for (Piece3DObject& tile: bullet_tiles) tile.ComputeFixedShadows(lightposv);
+  for (Piece3DObject& tile: Resources::bulletTiles) tile.ComputeFixedShadows(lightposv);
 
-  construction_tiles.emplace_back("models/construction1.asc","textures/");
-  construction_tiles.emplace_back("models/construction2.asc","textures/");
-  construction_tiles.emplace_back("models/construction3.asc","textures/");
-  construction_tiles[0].normalize(10.0);
-  construction_tiles[1].normalize(9.0);
-  construction_tiles[2].normalize(7.0);
+  Resources::constructionTiles.emplace_back("models/construction1.asc","textures/");
+  Resources::constructionTiles.emplace_back("models/construction2.asc","textures/");
+  Resources::constructionTiles.emplace_back("models/construction3.asc","textures/");
+  Resources::constructionTiles[0].normalize(10.0);
+  Resources::constructionTiles[1].normalize(9.0);
+  Resources::constructionTiles[2].normalize(7.0);
 
-  message_tiles.reserve(3);
-  message_tiles.emplace_back("models/go.ase","textures/");
-  message_tiles.emplace_back("models/youwin.ase","textures/");
-  message_tiles.emplace_back("models/gameover.ase","textures/");
-  for (auto& tile: message_tiles) tile.normalize(4.0);
+  Resources::messageTiles.reserve(3);
+  Resources::messageTiles.emplace_back("models/go.ase","textures/");
+  Resources::messageTiles.emplace_back("models/youwin.ase","textures/");
+  Resources::messageTiles.emplace_back("models/gameover.ase","textures/");
+  for (auto& tile: Resources::messageTiles) tile.normalize(4.0);
 }
 
 
 void NETHER::deleteObjects()
 {
-  tiles.clear();
+  Resources::tiles.clear();
   delete ship;
   ship = 0;
   Resources::buildingTiles.clear();
   Resources::pieceTiles[0].clear();
   Resources::pieceTiles[1].clear();
-  construction_tiles.clear();
-  message_tiles.clear();
-  bullet_tiles.clear();
+  Resources::constructionTiles.clear();
+  Resources::messageTiles.clear();
+  Resources::bulletTiles.clear();
 }
 
 
 void NETHER::refreshDisplayLists(void)
 {
-  for (C3DObject& tile: tiles) {
+  for (C3DObject& tile: Resources::tiles) {
     tile.refresh_display_lists();
   }
 
@@ -346,7 +346,7 @@ void NETHER::refreshDisplayLists(void)
     Resources::pieceTiles[1][i].refresh_display_lists();
   }
 
-  for (C3DObject& tile: construction_tiles) {
+  for (C3DObject& tile: Resources::constructionTiles) {
     tile.refresh_display_lists();
   }
 }
@@ -495,7 +495,7 @@ void NETHER::draw(int width, int height)
 
     if (game_started > 40) glTranslatef(0, 0, (game_started - 40) * 2);
     if (game_started < 20) glTranslatef(0, 0, (20 - game_started) * 2);
-    message_tiles[0].draw(Color(1.0, 1.0, 1.0));
+    Resources::messageTiles[0].draw(Color(1.0, 1.0, 1.0));
   }
 
   if (game_finished > 100) {
@@ -509,8 +509,8 @@ void NETHER::draw(int width, int height)
 
     if (game_finished < 120) glTranslatef(0, 0, (120 - game_finished) * 2);
     if (game_finished > 240) glTranslatef(0, 0, (game_finished - 240) * 2);
-    if (stats.stats[0][0] == 0) message_tiles[2].draw(Color(1.0, 1.0, 1.0));
-    else message_tiles[1].draw(Color(1.0, 1.0, 1.0));
+    if (stats.stats[0][0] == 0) Resources::messageTiles[2].draw(Color(1.0, 1.0, 1.0));
+    else Resources::messageTiles[1].draw(Color(1.0, 1.0, 1.0));
   }
 
   /* Draw the RADAR screen: */
@@ -587,18 +587,17 @@ void NETHER::drawGame(bool shadows)
       }
     }
 
-    std::for_each(bullets.cbegin(), bullets.cend(),
-                  [this, shadows](auto& bullet) {
-                    if (bullet.pos.y >= (viewp.y + MINY) &&
-                        bullet.pos.y <= (viewp.y + MAXY) &&
-                        bullet.pos.x >= (viewp.x + MINX) &&
-                        bullet.pos.x <= (viewp.x + MAXX)) {
-                      glPushMatrix();
-                      glTranslatef(bullet.pos.x, bullet.pos.y, bullet.pos.z);
-                      bullet.draw(shadows, bullet_tiles, particles);
-                      glPopMatrix();
-                    }
-                  });
+    for (const Bullet& bullet: bullets) {
+      if (bullet.pos.y >= (viewp.y + MINY) &&
+          bullet.pos.y <= (viewp.y + MAXY) &&
+          bullet.pos.x >= (viewp.x + MINX) &&
+          bullet.pos.x <= (viewp.x + MAXX)) {
+        glPushMatrix();
+        glTranslatef(bullet.pos.x, bullet.pos.y, bullet.pos.z);
+        bullet.draw(shadows, Resources::bulletTiles, particles);
+        glPopMatrix();
+      }
+    }
   }
 
   /* Draw the ship: */
