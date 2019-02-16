@@ -9,5 +9,12 @@ const int BONUSES[][5] = {{0, 5, 6, 6, 8},
 
 const float COLISION_TEST_THRESHOLD = 9.0;
 
+const int INTRO_TIME = 60;
+const int END_TIME = 260;
+
+const float BULLET_SPEED = 0.1f;
+const int CANNON_PERSISTENCE = 40;
+const int MISSILE_PERSISTENCE = 60;
+const int PHASER_PERSISTENCE = 40;
 
 #endif // CONSTANTS_H

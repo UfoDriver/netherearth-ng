@@ -1052,7 +1052,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 						} /* if */ 
 
 						/* Collision: */ 
-						if (robotCollision(r,false) || !r->walkable(terrain)) {
+						if (r->checkCollision(buildings, robots, false, ship) || !r->walkable(terrain)) {
 							r->pos=old_pos;
 							if (r->traction==0) r->chassis_state=old_chassis_state;
 							if (r->shipover) {
@@ -1233,10 +1233,9 @@ bool NETHER::cycle(unsigned char *keyboard)
 
     bullets.erase(remove_if(bullets.begin(), bullets.end(),
                             [this](auto& bullet) {
-                              int persistence = CANNON_PERSISTENCE;
                               bool ret = false;
-                              Robot* r = 0;
 
+                              int persistence = CANNON_PERSISTENCE;
                               if (bullet.angle == 0) bullet.pos.x += BULLET_SPEED;
                               if (bullet.angle == 90) bullet.pos.y += BULLET_SPEED;
                               if (bullet.angle == 180) bullet.pos.x -= BULLET_SPEED;
@@ -1245,6 +1244,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 
                               if (bullet.type == Bullet::TYPE::MISSILES) persistence = MISSILE_PERSISTENCE;
                               if (bullet.type == Bullet::TYPE::PHASERS) persistence = PHASER_PERSISTENCE;
+                              Robot* r = 0;
                               if (bullet.step >= persistence || bullet.checkCollision(buildings, robots, &r)) {
                                 ret = true;
                                 if (bullet.step < persistence) {

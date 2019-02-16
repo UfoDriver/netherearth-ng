@@ -5,6 +5,8 @@
 #include "cmc.h"
 #include "vector.h"
 
+class Ship;
+
 
 class Robot {
 public:
@@ -33,6 +35,8 @@ public:
   bool hasMissiles() { return pieces[1]; }
   bool hasPhasers() { return pieces[2]; }
   bool hasElectronics() { return pieces[4]; }
+  bool checkCollision(const std::vector<Building>& buildings,
+                      const std::vector<Robot*> robots[2], bool complete, Ship* ship);
 
   int getId() const { return id; }
 

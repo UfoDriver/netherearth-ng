@@ -103,7 +103,7 @@ void NETHER::AI_enemy()
           forces[1]=0;
 
           tmpr->pos=b.pos+Vector(2.5,0.5,0);
-          if (!robotCollision(tmpr,true)) {
+          if (!tmpr->checkCollision(buildings, robots, true, ship)) {
             /* Find the closest WARBASE to the available FACTORIES: */ 
             if (closest_to_factories_warbase==0 ||
                 (closest_to_factories_warbase->pos-b.pos).norma()<distance_to_factories) {
@@ -152,7 +152,7 @@ void NETHER::AI_enemy()
 	/* If the warbase in danger id blocked, build robots from another warbase: */ 
 	if (in_danger_warbase!=0) {
 		tmpr->pos=in_danger_warbase->pos+Vector(2.0,0.5,0);
-		if (robotCollision(tmpr,true)) in_danger_warbase=closest_to_enemy_warbase;
+		if (tmpr->checkCollision(buildings, robots, true, ship)) in_danger_warbase=closest_to_enemy_warbase;
 	} /* if */ 
 
 	delete tmpr;
@@ -469,7 +469,7 @@ Robot *NETHER::AI_enemy_newrobot(int state,Vector pos)
 		r->calculateCMC(Resources::pieceTiles[1]);
 		r->shipover=false;
 
-		if (!robotCollision(r,true)) {
+		if (!r->checkCollision(buildings, robots, true, ship)) {
 			robots[1].push_back(r);
 			AI_newrobot(r->pos,0);
 

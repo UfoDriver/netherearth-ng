@@ -23,15 +23,6 @@
 #include "SDL/SDL.h"
 
 
-const int INTRO_TIME = 60;
-const int END_TIME = 260;
-
-/* BULLET SPEED: */
-const float BULLET_SPEED = 0.1f;
-const int CANNON_PERSISTENCE = 40;
-const int MISSILE_PERSISTENCE = 60;
-const int PHASER_PERSISTENCE = 40;
-
 /* GAME STATES: */
 
 enum TERRAINS {T_GRASS,
@@ -106,8 +97,6 @@ private:
 	float MapMaxZ(float x[2],float y[2]);
 	int MapTerrain(float x, float y);
 	int WorseMapTerrain(float x[2], float y[2]);
-
-	bool robotCollision(Robot *r,bool complete);
 
 	void AI_enemy();
 	Robot* AI_enemy_newrobot(int state,Vector pos);
