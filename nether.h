@@ -70,16 +70,14 @@ public:
   explicit NETHER(const std::string& mapname);
   ~NETHER();
 
-  void loadObjects();
-  void deleteObjects();
-
   bool gamecycle();
   void gameredraw(int w, int h);
-  void refreshDisplayLists();
 
   bool saveGame(const std::string& filename);
   bool loadGame(const std::string& filename);
   bool saveDebugReport(const std::string& filename);
+
+  Ship *ship;
 
 private:
 	bool cycle(unsigned char *keyboard);
@@ -143,7 +141,6 @@ private:
   std::vector<Bullet> bullets;
   std::vector<Explosion> explosions;
   std::vector<Particle> particles;
-  Ship *ship;
 
   Stats stats;
 

@@ -10,8 +10,10 @@
 
 class Resources {
 public:
-  // refresh display lists
-  // load/delete objects
+  static Resources* instance();
+  void refreshDisplayLists();
+  void loadObjects();
+  void deleteObjects();
 
   static std::vector<Shadow3DObject> buildingTiles;
   static std::vector<Piece3DObject> pieceTiles[2];
@@ -19,6 +21,10 @@ public:
   static std::vector<C3DObject> constructionTiles;
   static std::vector<C3DObject> messageTiles;
   static std::vector<Piece3DObject> bulletTiles;
+
+private:
+  Resources() {};
+  static Resources* singleton;
 };
 
 

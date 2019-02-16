@@ -41,11 +41,6 @@ extern int level;
 extern float MINY,MAXY,MINX,MAXX;
 extern bool show_radar;
 
-const int N_BUILDINGS = 9;
-const int N_BULLETS = 3;
-const int N_OBJECTS = 12;
-const int N_PIECES = 11;
-
 
 #ifdef _WRITE_REPORT_
 FILE *debug_fp=0;
@@ -82,7 +77,11 @@ NETHER::NETHER(const std::string& mapname): menu(this), radar(this), controlled(
 	fflush(debug_fp);
 #endif
 
-	loadObjects();
+    Resources::instance()->loadObjects();
+
+    ship = new Ship("models/ship.asc", "textures/");
+    ship->ComputeShadow(lightposv);
+
 		
 #ifdef _WRITE_REPORT_
 	fprintf(debug_fp,"loading map...\n");
@@ -161,7 +160,9 @@ NETHER::~NETHER()
 	fflush(debug_fp);
 #endif
 
-	deleteObjects();
+    delete ship;
+    ship = 0;
+    Resources::instance()->deleteObjects();
 
 #ifdef _WRITE_REPORT_
 	fprintf(debug_fp,"Deleting AI...\n");
@@ -185,171 +186,6 @@ NETHER::~NETHER()
 #endif
 
 } /* NETHER::~NETHER */ 
-
-
-void NETHER::loadObjects()
-{
-  const char *tnames[12]={"models/grass1.ase","models/rough.ase","models/rocks.ase","models/heavyrocks.ase",
-                    "models/hole1.asc","models/hole2.asc","models/hole3.asc",
-                    "models/hole4.asc","models/hole5.asc","models/hole6.asc",
-                    "models/grass2.ase","models/grass3.ase"};
-  const char *bnames[9]={"models/lowwall1.ase","models/lowwall2.ase","models/lowwall3.ase",
-                   "models/highwall1.ase","models/factory.ase","models/fence.asc",
-                   "models/flag.asc","models/highwall2.ase","models/warbase.ase"};
-  const char *pnames[11]={"models/h-bipod.ase","models/h-tracks.ase","models/h-antigrav.ase",
-                    "models/h-cannon.ase","models/h-missiles.ase","models/h-phasers.ase",
-                    "models/h-nuclear.ase","models/h-electronics.ase",
-                    "models/h-bipod-base.ase","models/h-bipod-rleg.ase","models/h-bipod-lleg.ase"};
-  const char *pnames2[11]={"models/e-bipod.ase","models/e-tracks.ase","models/e-antigrav.ase",
-                     "models/e-cannon.ase","models/e-missiles.ase","models/e-phasers.ase",
-                     "models/nuclear.asc","models/e-electronics.ase",
-                     "models/e-bipod-base.ase","models/e-bipod-rleg.ase","models/e-bipod-lleg.ase"};
-  const char *bullnames[3]={"models/bullet1.asc","models/bullet2.asc","models/bullet3.asc"};
-  float pscale[11]={0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.45,0.375,0.375};
-  float bscale[9]={0.5,0.5,0.5,
-                   0.5,0.5,1.0,
-                   0.25,0.5,0.5}; 
-  float bullscale[3]={0.05,0.3,0.4};
-  Color colors[12] = {{0.0f, 0.733f, 0.0f},
-                      {0.7f, 0.5f, 0.0f},
-                      {0.6f, 0.45f, 0.0f},
-                      {0.5f, 0.4f, 0.0f},
-                      {0.0f, 0.733f, 0.0f},
-                      {0.0f, 0.733f, 0.0f},
-                      {0.0f, 0.733f, 0.0f},
-                      {0.0f, 0.733f, 0.0f},
-                      {0.0f, 0.733f, 0.0f},
-                      {0.0f, 0.733f, 0.0f},
-                      {0.0f, 0.733f, 0.0f},
-                      {0.0f, 0.733f, 0.0f}};
-
-  Resources::tiles.reserve(N_OBJECTS);
-  for (int i = 0; i < N_OBJECTS; i++) {
-    C3DObject tile(tnames[i], "textures/", colors[i]);
-    tile.normalize(0.50f);
-    tile.makepositive();
-    Resources::tiles.push_back(tile);
-  }
-
-  Resources::tiles[4].moveobject(Vector(0, 0, -0.05));
-  Resources::tiles[5].moveobject(Vector(0, 0, -0.05));
-  Resources::tiles[6].moveobject(Vector(0, 0, -0.05));
-  Resources::tiles[7].moveobject(Vector(0, 0, -0.05));
-  Resources::tiles[8].moveobject(Vector(0, 0, -0.05));
-  Resources::tiles[9].moveobject(Vector(0, 0, -0.05));
-
-  Resources::buildingTiles.reserve(N_BUILDINGS);
-  for (int i = 0; i < N_BUILDINGS; i++) {
-    Shadow3DObject tile(bnames[i], "textures/");
-    tile.normalize(bscale[i]);
-    tile.makepositive();
-    Resources::buildingTiles.push_back(tile);
-  }
-  Resources::buildingTiles[5].moveobject(Vector(0, 0, 0.01));
-  Resources::buildingTiles[6].moveobject(Vector(0.4, 0.4, 0.0));
-
-  for (int i = 0; i < N_PIECES; i++) {
-    Piece3DObject tile(pnames[i], "textures/");
-    tile.normalize(pscale[i]);
-    tile.makepositive();
-    Resources::pieceTiles[0].push_back(tile);
-
-    Piece3DObject tile2(pnames2[i], "textures/");
-    tile2.normalize(pscale[i]);
-    tile2.makepositive();
-    Resources::pieceTiles[1].push_back(tile2);
-  } /* for */ 
-  Resources::pieceTiles[0][0].moveobject(Vector(-0.5, -0.5, 0.0));
-  Resources::pieceTiles[0][1].moveobject(Vector(-0.5, -0.5, 0.0));
-  Resources::pieceTiles[0][2].moveobject(Vector(-0.5, -0.5, 0.2));
-  Resources::pieceTiles[0][3].moveobject(Vector(-0.5, -0.5, 0.0));
-  Resources::pieceTiles[0][4].moveobject(Vector(-0.5, -0.45, 0.0));
-  Resources::pieceTiles[0][5].moveobject(Vector(-0.5, -0.5, 0.0));
-  Resources::pieceTiles[0][6].moveobject(Vector(-0.5, -0.5, 0.0));
-  Resources::pieceTiles[0][7].moveobject(Vector(-0.32, -0.3, 0.0));
-  Resources::pieceTiles[0][8].moveobject(Vector(-0.45, -0.45, 0.6));
-  Resources::pieceTiles[0][9].moveobject(Vector(-0.4, -0.5, 0.0));
-  Resources::pieceTiles[0][10].moveobject(Vector(-0.4, 0.2, 0.0));
-
-  Resources::pieceTiles[1][0].moveobject(Vector(-0.5, -0.5, 0.0));
-  Resources::pieceTiles[1][1].moveobject(Vector(-0.5, -0.5, 0.0));
-  Resources::pieceTiles[1][2].moveobject(Vector(-0.5, -0.5, 0.2));
-  Resources::pieceTiles[1][3].moveobject(Vector(-0.5, -0.5, 0.0));
-  Resources::pieceTiles[1][4].moveobject(Vector(-0.5, -0.45, 0.0));
-  Resources::pieceTiles[1][5].moveobject(Vector(-0.5, -0.5, 0.0));
-  Resources::pieceTiles[1][6].moveobject(Vector(-0.5, -0.5, 0.0));
-  Resources::pieceTiles[1][7].moveobject(Vector(-0.32, -0.3, 0.0));
-  Resources::pieceTiles[1][8].moveobject(Vector(-0.45, -0.45, 0.6));
-  Resources::pieceTiles[1][9].moveobject(Vector(-0.4, -0.5, 0.0));
-  Resources::pieceTiles[1][10].moveobject(Vector(-0.4, 0.2, 0.0));
-
-  ship = new Ship("models/ship.asc", "textures/");
-
-  Resources::bulletTiles.reserve(N_BULLETS);
-  for (int i = 0; i < N_BULLETS; i++) {
-    Piece3DObject tile(bullnames[i],"textures/");
-    tile.normalize(bullscale[i]);
-    Resources::bulletTiles.push_back(tile);
-  }
-
-  ship->ComputeShadow(lightposv);
-  for (Shadow3DObject& tile: Resources::buildingTiles) tile.ComputeShadow(lightposv);
-  for(int i = 0; i < N_PIECES; i++) {
-    Resources::pieceTiles[0][i].ComputeFixedShadows(lightposv);
-    Resources::pieceTiles[1][i].ComputeFixedShadows(lightposv);
-  }
-  for (Piece3DObject& tile: Resources::bulletTiles) tile.ComputeFixedShadows(lightposv);
-
-  Resources::constructionTiles.emplace_back("models/construction1.asc","textures/");
-  Resources::constructionTiles.emplace_back("models/construction2.asc","textures/");
-  Resources::constructionTiles.emplace_back("models/construction3.asc","textures/");
-  Resources::constructionTiles[0].normalize(10.0);
-  Resources::constructionTiles[1].normalize(9.0);
-  Resources::constructionTiles[2].normalize(7.0);
-
-  Resources::messageTiles.reserve(3);
-  Resources::messageTiles.emplace_back("models/go.ase","textures/");
-  Resources::messageTiles.emplace_back("models/youwin.ase","textures/");
-  Resources::messageTiles.emplace_back("models/gameover.ase","textures/");
-  for (auto& tile: Resources::messageTiles) tile.normalize(4.0);
-}
-
-
-void NETHER::deleteObjects()
-{
-  Resources::tiles.clear();
-  delete ship;
-  ship = 0;
-  Resources::buildingTiles.clear();
-  Resources::pieceTiles[0].clear();
-  Resources::pieceTiles[1].clear();
-  Resources::constructionTiles.clear();
-  Resources::messageTiles.clear();
-  Resources::bulletTiles.clear();
-}
-
-
-void NETHER::refreshDisplayLists(void)
-{
-  for (C3DObject& tile: Resources::tiles) {
-    tile.refresh_display_lists();
-  }
-
-  ship->refresh_display_lists();
-
-  for (Shadow3DObject& tile: Resources::buildingTiles) {
-      tile.refresh_display_lists();
-  }
-
-  for (int i = 0; i < N_PIECES; i++) {
-    Resources::pieceTiles[0][i].refresh_display_lists();
-    Resources::pieceTiles[1][i].refresh_display_lists();
-  }
-
-  for (C3DObject& tile: Resources::constructionTiles) {
-    tile.refresh_display_lists();
-  }
-}
 
 
 bool NETHER::gamecycle()

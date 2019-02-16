@@ -17,4 +17,9 @@ const int CANNON_PERSISTENCE = 40;
 const int MISSILE_PERSISTENCE = 60;
 const int PHASER_PERSISTENCE = 40;
 
+const int N_BUILDINGS = 9;
+const int N_BULLETS = 3;
+const int N_OBJECTS = 12;
+const int N_PIECES = 11;
+
 #endif // CONSTANTS_H

@@ -180,9 +180,12 @@ int main(int argc, char** argv)
 
 						if ((modifiers&KMOD_ALT)!=0) {
 							/* Toogle FULLSCREEN mode: */ 
-							if (game!=0) game->refreshDisplayLists();
+                          if (game!=0) {
+                            Resources::instance()->refreshDisplayLists();
+                            game->ship->refresh_display_lists();
+                          }
 							if (nethertittle!=0) nethertittle->refresh_display_lists();
-							if (game!=0) game->deleteObjects();
+							if (game!=0) Resources::instance()->deleteObjects();
 							if (fullscreen) fullscreen=false;
 									   else fullscreen=true;
 							SDL_QuitSubSystem(SDL_INIT_VIDEO);
@@ -196,7 +199,7 @@ int main(int argc, char** argv)
 								SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE,1);
 
 								screen_sfc = SDL_SetVideoMode(SCREEN_X, SCREEN_Y, COLOUR_DEPTH, SDL_OPENGL|(fullscreen ? SDL_FULLSCREEN : 0));
-								if (game!=0) game->loadObjects();
+								if (game!=0) Resources::instance()->loadObjects();
 								SDL_WM_SetCaption("Nether Earth REMAKE v0.5", 0);
 								SDL_ShowCursor(SDL_DISABLE);
 							} else {
@@ -241,9 +244,12 @@ int main(int argc, char** argv)
 					} /* if */ 
 					if (val==2) quit=true;
 					if (val==3) {
-						if (game!=0) game->refreshDisplayLists();
+                      if (game!=0) {
+                        Resources::instance()->refreshDisplayLists();
+                        game->ship->refresh_display_lists();
+                      }
 						if (nethertittle!=0) nethertittle->refresh_display_lists();
-						if (game!=0) game->deleteObjects();
+						if (game!=0) Resources::instance()->deleteObjects();
 						SDL_QuitSubSystem(SDL_INIT_VIDEO);
 						SDL_InitSubSystem(SDL_INIT_VIDEO);
 						if (SDL_WasInit(SDL_INIT_VIDEO)) {
@@ -256,7 +262,7 @@ int main(int argc, char** argv)
 							SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE,1);
 
 							screen_sfc = SDL_SetVideoMode(SCREEN_X, SCREEN_Y, COLOUR_DEPTH, SDL_OPENGL|(fullscreen ? SDL_FULLSCREEN : 0));
-							if (game!=0) game->loadObjects();
+							if (game!=0) Resources::instance()->loadObjects();
 							SDL_WM_SetCaption("Nether Earth REMAKE v0.5", 0);
 							SDL_ShowCursor(SDL_DISABLE);
 						} else {
