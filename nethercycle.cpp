@@ -77,56 +77,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 		if (zoom<0.5) zoom=0.5;
 	} /* if */ 
 
-	if (recomputestatistics) {
-		statistics[0][0]=0;
-		statistics[0][1]=0;
-		statistics[0][2]=0;
-		statistics[0][3]=0;
-		statistics[0][4]=0;
-		statistics[0][5]=0;
-		statistics[0][6]=0;
-		statistics[0][7]=0;
-		statistics[1][0]=0;
-		statistics[1][1]=0;
-		statistics[1][2]=0;
-		statistics[1][3]=0;
-		statistics[1][4]=0;
-		statistics[1][5]=0;
-		statistics[1][6]=0;
-		statistics[1][7]=0;
-
-		for (const Building& b: buildings) {
-			if (b.type==Building::TYPE::WARBASE) {
-				if (b.owner==1) statistics[0][0]++;
-				if (b.owner==2) statistics[1][0]++;
-			} /* if */ 
-			if (b.type==Building::TYPE::FACTORY_ELECTRONICS) {
-				if (b.owner==1) statistics[0][1]++;
-				if (b.owner==2) statistics[1][1]++;
-			} /* if */ 
-			if (b.type==Building::TYPE::FACTORY_NUCLEAR) {
-				if (b.owner==1) statistics[0][2]++;
-				if (b.owner==2) statistics[1][2]++;
-			} /* if */ 
-			if (b.type==Building::TYPE::FACTORY_PHASERS) {
-				if (b.owner==1) statistics[0][3]++;
-				if (b.owner==2) statistics[1][3]++;
-			} /* if */ 
-			if (b.type==Building::TYPE::FACTORY_MISSILES) {
-				if (b.owner==1) statistics[0][4]++;
-				if (b.owner==2) statistics[1][4]++;
-			} /* if */ 
-			if (b.type==Building::TYPE::FACTORY_CANNONS) {
-				if (b.owner==1) statistics[0][5]++;
-				if (b.owner==2) statistics[1][5]++;
-			} /* if */ 
-			if (b.type==Building::TYPE::FACTORY_CHASSIS) {
-				if (b.owner==1) statistics[0][6]++;
-				if (b.owner==2) statistics[1][6]++;
-			} /* if */ 
-		} /* while */ 
-		recomputestatistics=false;
-	} /* if */ 
+    stats.recompute(buildings);
 
 #ifdef _WRITE_REPORT_
 	fprintf(debug_fp,"Starting enemy AI\n");
@@ -134,10 +85,10 @@ bool NETHER::cycle(unsigned char *keyboard)
 #endif
 
 	/* ENEMY Artificial Intelligence: */ 
-	if (second==0) {
-		if (level==0 && (hour&0x01)==0 && minute==0) AI_enemy();
-		if (level==1 && minute==0) AI_enemy();
-		if (level>=2 && (minute==0 || minute==30)) AI_enemy();
+	if (stats.second==0) {
+		if (level==0 && (stats.hour&0x01)==0 && stats.minute==0) AI_enemy();
+		if (level==1 && stats.minute==0) AI_enemy();
+		if (level>=2 && (stats.minute==0 || stats.minute==30)) AI_enemy();
 	} /* if */ 
 
 #ifdef _WRITE_REPORT_
@@ -808,62 +759,18 @@ bool NETHER::cycle(unsigned char *keyboard)
 	fflush(debug_fp);
 #endif
 
-		{
-			StatusButton *timeb;
-
-			second+=5;
-			if (second>=60) {
-				second=0;
-				menu.needsRedraw=2;
-				minute+=5;
-				if (minute>=60) {
-					minute=0;
-					hour++;
-					if (hour>=24) {
-						int i;
-
-						hour=0;
-						day++;
-						/* Resource actualization: */ 
-						resources[0][0]+=statistics[0][0]*5;
-						if (level==0) {
-							int bonus[5]={0,5,6,6,8};
-							if (statistics[1][0]<4) resources[1][0]+=bonus[statistics[1][0]];
-											   else resources[1][0]+=statistics[1][0]*2;
-						} /* if */ 
-						if (level==1) {
-							int bonus[5]={0,5,8,9,12};
-							if (statistics[1][0]<4) resources[1][0]+=bonus[statistics[1][0]];
-											   else resources[1][0]+=statistics[1][0]*3;
-						} /* if */ 
-						if (level==2) {
-							int bonus[5]={0,5,10,12,16};
-							if (statistics[1][0]<4) resources[1][0]+=bonus[statistics[1][0]];
-											   else resources[1][0]+=statistics[1][0]*4;
-						} /* if */ 
-						if (level==3) {
-							int bonus[5]={0,5,10,15,20};
-							if (statistics[1][0]<4) resources[1][0]+=bonus[statistics[1][0]];
-											   else resources[1][0]+=statistics[1][0]*5;
-						} /* if */ 
-						for(i=1;i<7;i++) {
-							resources[0][i]+=statistics[0][i]*2;
-							resources[1][i]+=statistics[1][i]*2;
-						} /* for */ 
-
-					} /* if */ 
-				} /* if */ 
-				timeb=menu.getbutton(StatusButton::TIME_BUTTON);
-				if (timeb!=0) {
-                  std::ostringstream t1Formatter;
-                  t1Formatter << "Day: " << day;
-                  timeb->text1 = t1Formatter.str();
-                  std::ostringstream t2Formatter;
-                  t2Formatter << "Hour: " << std::setw(2) << hour << ':' << std::setw(2) << minute;
-                  timeb->text2 = t2Formatter.str();
-				} /* if */ 
-			} /* if */ 
-		}
+    if (stats.tick(level)) {
+      menu.needsRedraw = 2;
+      StatusButton* timeb = menu.getbutton(StatusButton::TIME_BUTTON);
+      if (timeb != 0) {
+        std::ostringstream t1Formatter;
+        t1Formatter << "Day: " << stats.day;
+        timeb->text1 = t1Formatter.str();
+        std::ostringstream t2Formatter;
+        t2Formatter << "Hour: " << std::setw(2) << stats.hour << ':' << std::setw(2) << stats.minute;
+        timeb->text2 = t2Formatter.str();
+      }
+    }
 
 #ifdef _WRITE_REPORT_
 	fprintf(debug_fp,"Ship landing\n");
@@ -1125,7 +1032,7 @@ bool NETHER::cycle(unsigned char *keyboard)
                                                        }),
                                         buildings.end());
                         sManager.playExplosion(ship->pos, r->pos);
-                        recomputestatistics=true;
+                        stats.requestRecomputing();
 					} /* if */ 
 
                     //!					if (r!=0) {
@@ -1284,12 +1191,12 @@ bool NETHER::cycle(unsigned char *keyboard)
           if (b.status>=12*12*12) {
             b.owner=1;
             b.status=0;
-            recomputestatistics=true;
+            stats.requestRecomputing();
           } /* if */ 
           if (b.status<=-12*12*12) {
             b.owner=2;
             b.status=0;
-            recomputestatistics=true;
+            stats.requestRecomputing();
           } /* if */ 
         } /* if */ 
       } /* if */ 
@@ -1304,13 +1211,13 @@ bool NETHER::cycle(unsigned char *keyboard)
           if (b.status>=12*12*12) {
             b.owner=1;
             b.status=0;
-            recomputestatistics=true;
+            stats.requestRecomputing();
           } /* if */ 
 
           if (b.status<=-12*12*12) {
             b.owner=2;
             b.status=0;
-            recomputestatistics=true;
+            stats.requestRecomputing();
           } /* if */ 
         } /* if */ 
       } /* if */ 
@@ -1402,7 +1309,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 		option_menu=0;
 	} /* if */ 
 
-	if ((statistics[0][0]==0 || statistics[1][0]==0) && game_finished==0) {
+	if ((stats.stats[0][0]==0 || stats.stats[1][0]==0) && game_finished==0) {
 		game_finished++;
 		game_started=0;
 	} /* if */ 

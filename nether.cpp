@@ -108,44 +108,6 @@ NETHER::NETHER(const std::string& mapname): menu(this), radar(this), controlled(
 	camera.z=11;
 	zoom=1;
 
-	/* Init game: */ 
-	day=0;
-	hour=0;
-	minute=0;
-	second=0;
-
-	resources[0][0]=20;
-	resources[0][1]=0;
-	resources[0][2]=0;
-	resources[0][3]=0;
-	resources[0][4]=0;
-	resources[0][5]=0;
-	resources[0][6]=0;
-	resources[1][0]=20;
-	resources[1][1]=0;
-	resources[1][2]=0;
-	resources[1][3]=0;
-	resources[1][4]=0;
-	resources[1][5]=0;
-	resources[1][6]=0;
-	statistics[0][0]=0;
-	statistics[0][1]=0;
-	statistics[0][2]=0;
-	statistics[0][3]=0;
-	statistics[0][4]=0;
-	statistics[0][5]=0;
-	statistics[0][6]=0;
-	statistics[0][7]=0;
-	statistics[1][0]=0;
-	statistics[1][1]=0;
-	statistics[1][2]=0;
-	statistics[1][3]=0;
-	statistics[1][4]=0;
-	statistics[1][5]=0;
-	statistics[1][6]=0;
-	statistics[1][7]=0;
-	recomputestatistics=true;
-
 	game_state=NETHER::STATE::PLAYING;
 	animation_timer=0;
 	construction_pointer=0;
@@ -549,7 +511,7 @@ void NETHER::draw(int width, int height)
 
     if (game_finished < 120) glTranslatef(0, 0, (120 - game_finished) * 2);
     if (game_finished > 240) glTranslatef(0, 0, (game_finished - 240) * 2);
-    if (statistics[0][0] == 0) message_tiles[2].draw(Color(1.0, 1.0, 1.0));
+    if (stats.stats[0][0] == 0) message_tiles[2].draw(Color(1.0, 1.0, 1.0));
     else message_tiles[1].draw(Color(1.0, 1.0, 1.0));
   }
 
@@ -936,7 +898,7 @@ bool NETHER::option_cycle(unsigned char *keyboard)
 					loadGame(filename);
 					menu.newmenu(menu.act_menu);
 					menu.needsRedraw=2;
-					recomputestatistics=true;
+					stats.requestRecomputing();
 					game_finished=0;
 					game_started=INTRO_TIME;
 					game_state=NETHER::STATE::PAUSE;
@@ -1116,13 +1078,7 @@ bool NETHER::saveGame(const std::string& filename)
     oFile << e;
   }
 
-  oFile << day << ' ' << hour << ' ' << minute << ' ' << second << '\n';
-  for (int i = 0; i < 2; i++) {
-    for (int j = 0; j < 7; j++) {
-      oFile << resources[i][j] << ' ';
-    }
-    oFile << '\n';
-   }
+  oFile << stats;
 
   oFile << find_index(robots[0], controlled) << '\n';
   oFile << menu.act_menu << ' ' << menu.act_button << std::endl;
@@ -1187,12 +1143,7 @@ bool NETHER::loadGame(const std::string& filename)
     explosions.emplace_back(inFile);
   }
 
-  inFile >> day >> hour >> minute >> second;
-  for (int i = 0; i < 2; i++) {
-    for (int j = 0; j < 7; j++) {
-      inFile >> resources[i][j];
-    }
-  }
+  inFile >> stats;
 
   int i;
   inFile >> i;
@@ -1304,13 +1255,13 @@ bool NETHER::saveDebugReport(const std::string& filename)
     log << " STEP: " << e.step << "\n SIZE: " << e.size << "\n\n";
   }
 
-  log << "\nTIME: DAY " << day << ' ' << hour << ':' << minute << ':' << second << '\n';
+  log << "\nTIME: DAY " << stats.day << ' ' << stats.hour << ':' << stats.minute << ':' << stats.second << '\n';
   log << "\nRESOURCES:\n";
 
   for(int i = 0; i < 2; i++) {
     log << "  PLAYER " << i << ": ";
     for(int j = 0; j < 7; j++) {
-      log << resources[i][j] << ' ';
+      log << stats.resources[i][j] << ' ';
     }
     log << '\n';
   }

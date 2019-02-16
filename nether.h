@@ -18,6 +18,7 @@
 #include "ai_operator.h"
 #include "menu.h"
 #include "radar.h"
+#include "stats.h"
 #include "soundmanager.h"
 #include "SDL/SDL.h"
 
@@ -158,9 +159,7 @@ private:
   std::vector<Particle> particles;
   Ship *ship;
 
-  int day, hour, minute, second;
-  int resources[2][7];
-  int statistics[2][8];
+  Stats stats;
 
   float animation_timer;
   int construction_pointer;
@@ -179,9 +178,6 @@ private:
   std::vector<C3DObject> construction_tiles;
   std::vector<C3DObject> message_tiles;
   std::vector<Piece3DObject> bullet_tiles;
-
-  /* Status variables: */
-  bool recomputestatistics;
 
   /* Option/Pause menu variables: */
   int option_menu;

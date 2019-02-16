@@ -77,8 +77,8 @@ void NETHER::constructionDraw(int width, int height)
   {
     int res[7];
 
-    in_construction.cost(0, res, resources);
-    for (int i = 0; i < 7; i++) res[i] = resources[0][i] - res[i];
+    in_construction.cost(0, res, stats.resources);
+    for (int i = 0; i < 7; i++) res[i] = stats.resources[0][i] - res[i];
 
     glColor3f(0.5f, 1.0f, 0.5f);
     glTranslatef(0, -2.4, 0);
@@ -284,10 +284,10 @@ bool NETHER::construction_cycle(unsigned char *keyboard)
       construction[construction_pointer-20]=true;
     }
 
-    in_construction.cost(0, cost, resources);
+    in_construction.cost(0, cost, stats.resources);
     enoughresources=true;
     for (int i = 0; i < 7; i++) {
-      if (resources[0][i]<cost[i]) {
+      if (stats.resources[0][i]<cost[i]) {
         /* Not enough resources! */
         for (int j = 0; j < 8; j++) {
           in_construction = r_tmp;
@@ -326,8 +326,8 @@ bool NETHER::construction_cycle(unsigned char *keyboard)
         robots[0].push_back(r);
         AI_newrobot(r->pos,0);
 
-        in_construction.cost(0, cost, resources);
-        for (int i = 0; i < 7; i++) resources[0][i] -= cost[i];
+        in_construction.cost(0, cost, stats.resources);
+        for (int i = 0; i < 7; i++) stats.resources[0][i] -= cost[i];
         game_state = NETHER::STATE::PLAYING;
         ship->pos.z = 2.0;
         sManager.playConstruction();

@@ -228,19 +228,19 @@ void NETHER::AI_enemy()
 			/* Try to make better robots as time passes: */ 
 			switch(level) {
 			case 0:
-				if (nrobots[0]>=1 && resources[1][0]+resources[1][6]<20) return;
-				if (nrobots[0]>=1 && resources[1][0]+resources[1][6]<25) return;
-				if (nrobots[0]>=2 && resources[1][0]+resources[1][6]<30) return;
+				if (nrobots[0]>=1 && stats.resources[1][0]+stats.resources[1][6]<20) return;
+				if (nrobots[0]>=1 && stats.resources[1][0]+stats.resources[1][6]<25) return;
+				if (nrobots[0]>=2 && stats.resources[1][0]+stats.resources[1][6]<30) return;
 				break;
 			case 1:
-				if (nrobots[0]>=1 && resources[1][0]+resources[1][6]<20) return;
-				if (nrobots[0]>=2 && resources[1][0]+resources[1][6]<25) return;
-				if (nrobots[0]>=3 && resources[1][0]+resources[1][6]<30) return;
+				if (nrobots[0]>=1 && stats.resources[1][0]+stats.resources[1][6]<20) return;
+				if (nrobots[0]>=2 && stats.resources[1][0]+stats.resources[1][6]<25) return;
+				if (nrobots[0]>=3 && stats.resources[1][0]+stats.resources[1][6]<30) return;
 				break;
 			default:
-				if (nrobots[0]>=2 && resources[1][0]+resources[1][6]<20) return;
-				if (nrobots[0]>=3 && resources[1][0]+resources[1][6]<25) return;
-				if (nrobots[0]>=4 && resources[1][0]+resources[1][6]<30) return;
+				if (nrobots[0]>=2 && stats.resources[1][0]+stats.resources[1][6]<20) return;
+				if (nrobots[0]>=3 && stats.resources[1][0]+stats.resources[1][6]<25) return;
+				if (nrobots[0]>=4 && stats.resources[1][0]+stats.resources[1][6]<30) return;
 				break;
 			} /* switch */  
 
@@ -267,7 +267,7 @@ void NETHER::AI_enemy()
 				/* I've enough attacking robots, let's build a conquering one: */ 
 //				fprintf(fp,"Trying to BUILD a robot to CONQUER WARBASES \n");
 				
-				if (resources[1][0]+resources[1][6]<40) return;
+				if (stats.resources[1][0]+stats.resources[1][6]<40) return;
 				Robot *r=AI_enemy_newrobot(AI_STATE_CONQUERING,closest_to_enemy_warbase->pos+Vector(2.5,0.5,0));
 				if (r!=0) {
 
@@ -282,19 +282,19 @@ void NETHER::AI_enemy()
 				/* Try to make better robots as time passes: */ 
 				switch(level) {
 				case 0:
-					if (nrobots[1]>=1 && resources[1][0]+resources[1][6]<20) return;
-					if (nrobots[1]>=1 && resources[1][0]+resources[1][6]<25) return;
-					if (nrobots[1]>=2 && resources[1][0]+resources[1][6]<30) return;
+					if (nrobots[1]>=1 && stats.resources[1][0]+stats.resources[1][6]<20) return;
+					if (nrobots[1]>=1 && stats.resources[1][0]+stats.resources[1][6]<25) return;
+					if (nrobots[1]>=2 && stats.resources[1][0]+stats.resources[1][6]<30) return;
 					break;
 				case 1:
-					if (nrobots[1]>=1 && resources[1][0]+resources[1][6]<20) return;
-					if (nrobots[1]>=2 && resources[1][0]+resources[1][6]<25) return;
-					if (nrobots[1]>=3 && resources[1][0]+resources[1][6]<30) return;
+					if (nrobots[1]>=1 && stats.resources[1][0]+stats.resources[1][6]<20) return;
+					if (nrobots[1]>=2 && stats.resources[1][0]+stats.resources[1][6]<25) return;
+					if (nrobots[1]>=3 && stats.resources[1][0]+stats.resources[1][6]<30) return;
 					break;
 				default:
-					if (nrobots[1]>=2 && resources[1][0]+resources[1][6]<20) return;
-					if (nrobots[1]>=3 && resources[1][0]+resources[1][6]<25) return;
-					if (nrobots[1]>=4 && resources[1][0]+resources[1][6]<30) return;
+					if (nrobots[1]>=2 && stats.resources[1][0]+stats.resources[1][6]<20) return;
+					if (nrobots[1]>=3 && stats.resources[1][0]+stats.resources[1][6]<25) return;
+					if (nrobots[1]>=4 && stats.resources[1][0]+stats.resources[1][6]<30) return;
 					break;
 				} /* switch */ 
 
@@ -320,16 +320,16 @@ Robot *NETHER::AI_enemy_newrobot(int state,Vector pos)
 {
 	int traction=0;
 	bool pieces[5]={false,false,false,false,false};
-	int rg=resources[1][R_GENERAL];
+	int rg=stats.resources[1][R_GENERAL];
 
-	if (rg+resources[1][R_CHASSIS]>30 &&
+	if (rg+stats.resources[1][R_CHASSIS]>30 &&
 			(level>=2 ||
 			(level==1 && (rand()%2)==0) ||
 			(level==0 && (rand()%4)==0))) {
 		traction=2;
 		rg-=10;
 	} else {
-		if (rg+resources[1][R_CHASSIS]>20 &&
+		if (rg+stats.resources[1][R_CHASSIS]>20 &&
 			(level>=2 ||
 			(level==1 && (rand()%2)==0) ||
 			(level==0 && (rand()%4)==0))) {
@@ -343,13 +343,13 @@ Robot *NETHER::AI_enemy_newrobot(int state,Vector pos)
 
 	switch(state) {
 	case AI_STATE_EXPANDING:
-		if (rg+resources[1][R_CANNONS]+resources[1][R_MISSILES]+resources[1][R_PHASERS]>40 &&
+		if (rg+stats.resources[1][R_CANNONS]+stats.resources[1][R_MISSILES]+stats.resources[1][R_PHASERS]>40 &&
 			(level>=2 ||
 			(level==1 && (rand()%2)==0) ||
 			(level==0 && (rand()%4)==0))) {
 			pieces[2]=true;
 		} else {
-			if (rg+resources[1][R_CANNONS]+resources[1][R_MISSILES]+resources[1][R_PHASERS]>20 &&
+			if (rg+stats.resources[1][R_CANNONS]+stats.resources[1][R_MISSILES]+stats.resources[1][R_PHASERS]>20 &&
 				(level>=2 ||
 				(level==1 && (rand()%2)==0) ||
 				(level==0 && (rand()%4)==0))) {
@@ -359,50 +359,50 @@ Robot *NETHER::AI_enemy_newrobot(int state,Vector pos)
 			} /* if */ 
 		} /* if */ 
 
-		if (rg+resources[1][R_ELECTRONICS]>10) pieces[4]=true;
+		if (rg+stats.resources[1][R_ELECTRONICS]>10) pieces[4]=true;
 		break;
 	case AI_STATE_DEFENDING:
-		if (rg+resources[1][R_PHASERS]>20 &&
+		if (rg+stats.resources[1][R_PHASERS]>20 &&
 			(level>=2 ||
 			(level==1 && (rand()%2)==0) ||
 			(level==0 && (rand()%4)==0))) pieces[2]=true;
-		if (rg+resources[1][R_MISSILES]>20 &&
+		if (rg+stats.resources[1][R_MISSILES]>20 &&
 			(level>=2 ||
 			(level==1 && (rand()%2)==0) ||
 			(level==0 && (rand()%4)==0))) pieces[1]=true;
-		if (rg+resources[1][R_CANNONS]>20 &&
+		if (rg+stats.resources[1][R_CANNONS]>20 &&
 			(level>=2 ||
 			(level==1 && (rand()%2)==0) ||
 			(level==0 && (rand()%4)==0))) pieces[0]=true;
 		if (!pieces[0] && !pieces[1] && !pieces[2]) pieces[0]=true;
 
-		if (rg+resources[1][R_ELECTRONICS]>30) pieces[4]=true;
+		if (rg+stats.resources[1][R_ELECTRONICS]>30) pieces[4]=true;
 		break;
 	case AI_STATE_FIGHTING:
-		if (rg+resources[1][R_PHASERS]>20 &&
+		if (rg+stats.resources[1][R_PHASERS]>20 &&
 			(level>=2 ||
 			(level==1 && (rand()%2)==0) ||
 			(level==0 && (rand()%4)==0))) pieces[2]=true;
-		if (rg+resources[1][R_MISSILES]>20 &&
+		if (rg+stats.resources[1][R_MISSILES]>20 &&
 			(level>=2 ||
 			(level==1 && (rand()%2)==0) ||
 			(level==0 && (rand()%4)==0))) pieces[1]=true;
-		if (rg+resources[1][R_CANNONS]>20 &&
+		if (rg+stats.resources[1][R_CANNONS]>20 &&
 			(level>=2 ||
 			(level==1 && (rand()%2)==0) ||
 			(level==0 && (rand()%4)==0))) pieces[0]=true;
 		if (!pieces[0] && !pieces[1] && !pieces[2]) pieces[0]=true;
 
-		if (rg+resources[1][R_ELECTRONICS]>20) pieces[4]=true;
+		if (rg+stats.resources[1][R_ELECTRONICS]>20) pieces[4]=true;
 		break;
 	case AI_STATE_CONQUERING:
-		if (rg+resources[1][R_CANNONS]+resources[1][R_MISSILES]+resources[1][R_PHASERS]>40 &&
+		if (rg+stats.resources[1][R_CANNONS]+stats.resources[1][R_MISSILES]+stats.resources[1][R_PHASERS]>40 &&
 			(level>=2 ||
 			(level==1 && (rand()%2)==0) ||
 			(level==0 && (rand()%4)==0))) {
 			pieces[2]=true;
 		} else {
-			if (rg+resources[1][R_CANNONS]+resources[1][R_MISSILES]+resources[1][R_PHASERS]>20 &&
+			if (rg+stats.resources[1][R_CANNONS]+stats.resources[1][R_MISSILES]+stats.resources[1][R_PHASERS]>20 &&
 				(level>=2 ||
 				(level==1 && (rand()%2)==0) ||
 				(level==0 && (rand()%4)==0))) {
@@ -412,17 +412,17 @@ Robot *NETHER::AI_enemy_newrobot(int state,Vector pos)
 			} /* if */ 
 		} /* if */ 
 
-		if (rg+resources[1][R_ELECTRONICS]>10) pieces[4]=true;
+		if (rg+stats.resources[1][R_ELECTRONICS]>10) pieces[4]=true;
 		break;
 	case AI_STATE_DESTROYING:
-		if (rg+resources[1][R_NUCLEAR]>40) pieces[3]=true;
-		if (rg+resources[1][R_CANNONS]+resources[1][R_MISSILES]+resources[1][R_PHASERS]>40 &&
+		if (rg+stats.resources[1][R_NUCLEAR]>40) pieces[3]=true;
+		if (rg+stats.resources[1][R_CANNONS]+stats.resources[1][R_MISSILES]+stats.resources[1][R_PHASERS]>40 &&
 			(level>=2 ||
 			(level==1 && (rand()%2)==0) ||
 			(level==0 && (rand()%4)==0))) {
 			pieces[2]=true;
 		} else {
-			if (rg+resources[1][R_CANNONS]+resources[1][R_MISSILES]+resources[1][R_PHASERS]>20 &&
+			if (rg+stats.resources[1][R_CANNONS]+stats.resources[1][R_MISSILES]+stats.resources[1][R_PHASERS]>20 &&
 				(level>=2 ||
 				(level==1 && (rand()%2)==0) ||
 				(level==0 && (rand()%4)==0))) {
@@ -432,7 +432,7 @@ Robot *NETHER::AI_enemy_newrobot(int state,Vector pos)
 			} /* if */ 
 		} /* if */ 
 
-		if (rg+resources[1][R_ELECTRONICS]>10 &&
+		if (rg+stats.resources[1][R_ELECTRONICS]>10 &&
 			(level>=2 ||
 			(level==1 && (rand()%2)==0) ||
 			(level==0 && (rand()%4)==0))) pieces[4]=true;
@@ -451,10 +451,10 @@ Robot *NETHER::AI_enemy_newrobot(int state,Vector pos)
 		r->pieces[2]=pieces[2];
 		r->pieces[3]=pieces[3];
 		r->pieces[4]=pieces[4];
-		r->cost(1, cost, resources);
+		r->cost(1, cost, stats.resources);
 
 		for(int i=0;i<7;i++) {
-			if (resources[1][i]<cost[i]) {
+			if (stats.resources[1][i]<cost[i]) {
 				/* Not enough resources! */ 
 				return 0;
 			} /* if */ 
@@ -473,7 +473,7 @@ Robot *NETHER::AI_enemy_newrobot(int state,Vector pos)
 			robots[1].push_back(r);
 			AI_newrobot(r->pos,0);
 
-			for(i=0;i<7;i++) resources[1][i]-=cost[i];
+			for(i=0;i<7;i++) stats.resources[1][i]-=cost[i];
 
 			return r;
 		} else {
