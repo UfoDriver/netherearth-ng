@@ -120,7 +120,7 @@ NETHER::NETHER(const std::string& mapname): menu(this), radar(this), controlled(
 #endif
 
 	/* Init status: */ 
-	menu.newmenu(Menu::GENERAL_MENU);
+	menu.newmenu(Menu::TYPE::GENERAL);
 	menu.needsRedraw=2;
 	radar.needsRedraw=1;
 
@@ -805,7 +805,7 @@ bool NETHER::saveGame(const std::string& filename)
   oFile << stats;
 
   oFile << find_index(robots[0], controlled) << '\n';
-  oFile << menu.act_menu << ' ' << menu.act_button << std::endl;
+  oFile << int(menu.act_menu) << ' ' << int(menu.act_button) << std::endl;
 
   return true;
 }
@@ -878,8 +878,8 @@ bool NETHER::loadGame(const std::string& filename)
 
   int actMenu_, actButton_;
   inFile >> actMenu_ >> actButton_;
-  menu.act_menu = Menu::MENU_TYPES(actMenu_);
-  menu.act_button = StatusButton::BUTTON_NAMES(actButton_);
+  menu.act_menu = Menu::TYPE(actMenu_);
+  menu.act_button = StatusButton::NAME(actButton_);
 
   AI_precomputations();
   return true;
@@ -995,7 +995,7 @@ bool NETHER::saveDebugReport(const std::string& filename)
     log << controlled->getId() << '\n';
   else
     log << "None\n";
-  log << "\nMENU " << menu.act_menu << "\nACT BUTTON: " << menu.act_button << '\n';
+  log << "\nMENU " << int(menu.act_menu) << "\nACT BUTTON: " << int(menu.act_button) << '\n';
 
   return true;
 }

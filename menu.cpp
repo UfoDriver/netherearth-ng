@@ -54,9 +54,9 @@ void Menu::drawStatus()
 {
   glPushMatrix();
   switch (act_menu) {
-  case Menu::GENERAL_MENU:
+  case Menu::TYPE::GENERAL:
     {
-      StatusButton* b = getbutton(StatusButton::STATUS_BUTTON);
+      StatusButton* b = getbutton(StatusButton::NAME::STATUS);
       if (b != 0 && b->status == 0) {
         int robots0 =  nether->robots[0].size();
         int robots1 = nether->robots[1].size();
@@ -96,10 +96,10 @@ void Menu::drawStatus()
       }
     }
     break;
-  case Menu::ROBOT_MENU:
-  case Menu::DIRECTCONTROL_MENU:
+  case Menu::TYPE::ROBOT:
+  case Menu::TYPE::DIRECTCONTROL:
     {
-      StatusButton* b = getbutton(StatusButton::ROBOT1_BUTTON);
+      StatusButton* b = getbutton(StatusButton::NAME::ROBOT1);
       if (b!=0 && b->status==0) {
         glTranslatef(70,140,0);
         glColor3f(1.0f,1.0f,0.0);
@@ -202,8 +202,8 @@ void Menu::drawStatus()
     }
     break;
 
-  case Menu::COMBATMODE_MENU:
-  case Menu::DIRECTCONTROL2_MENU:
+  case Menu::TYPE::COMBATMODE:
+  case Menu::TYPE::DIRECTCONTROL2:
     glTranslatef(70,40,0);
     glColor3f(1.0f,1.0f,0.0);
     scaledglprintf(0.1f,0.1f,"STRENGTH");
@@ -212,9 +212,9 @@ void Menu::drawStatus()
     scaledglprintf(0.1f,0.1f,"%.3i%c",nether->controlled->strength,'%');
     break;
 
-  case Menu::ORDERS_MENU:
+  case Menu::TYPE::ORDERS:
       {
-        StatusButton* b =getbutton(StatusButton::ORDERS1_BUTTON);
+        StatusButton* b =getbutton(StatusButton::NAME::ORDERS1);
         if (b!=0 && b->status==0) {
           glTranslatef(70,400,0);
           glColor3f(1.0f,1.0f,1.0f);
@@ -232,9 +232,9 @@ void Menu::drawStatus()
       }
       break;
 
-  case Menu::SELECTDISTANCE_MENU:
+  case Menu::TYPE::SELECTDISTANCE:
     {
-      StatusButton* b = getbutton(StatusButton::ORDERS_BUTTON);
+      StatusButton* b = getbutton(StatusButton::NAME::ORDERS);
       if (b!=0 && b->status==0) {
         glTranslatef(70,300,0);
         glColor3f(0.5f,0.5f,1.0f);
@@ -256,10 +256,10 @@ void Menu::drawStatus()
     }
     break;
 
-  case Menu::TARGETD_MENU:
-  case Menu::TARGETC_MENU:
+  case Menu::TYPE::TARGET_DESTROY:
+  case Menu::TYPE::TARGET_CAPTURE:
     {
-      StatusButton* b = getbutton(StatusButton::ORDERS_BUTTON);
+      StatusButton* b = getbutton(StatusButton::NAME::ORDERS);
       if (b!=0 && b->status==0) {
         glTranslatef(70,350,0);
         glColor3f(0.5f,0.5f,1.0f);
@@ -339,147 +339,147 @@ void Menu::cycle()
 }
 
 
-void Menu::newmenu(MENU_TYPES menu)
+void Menu::newmenu(TYPE menu)
 {
   switch(menu) {
-  case GENERAL_MENU:
-    if (getbutton(StatusButton::TIME_BUTTON)==0) {
-      newbutton(StatusButton::TIME_BUTTON,70,455,130,40,"Day: 0","Time: 00:00",0.8f,0,0);
+  case TYPE::GENERAL:
+    if (getbutton(StatusButton::NAME::TIME)==0) {
+      newbutton(StatusButton::NAME::TIME,70,455,130,40,"Day: 0","Time: 00:00",0.8f,0,0);
     }
-    newbuttondelayed(StatusButton::STATUS_BUTTON,70,400,130,50,"STATUS","INSG  HUMN",0.0,0,0);
-    newbuttondelayed(StatusButton::RESOURCE_BUTTON,70,200,130,30,"RESOURCES", "",0.0,0,0);
-    act_menu=GENERAL_MENU;
+    newbuttondelayed(StatusButton::NAME::STATUS,70,400,130,50,"STATUS","INSG  HUMN",0.0,0,0);
+    newbuttondelayed(StatusButton::NAME::RESOURCE,70,200,130,30,"RESOURCES", "",0.0,0,0);
+    act_menu=TYPE::GENERAL;
     break;
 
-  case ROBOT_MENU:
-    newbuttondelayed(StatusButton::ROBOT1_BUTTON,70,350,130,40,"DIRECT   ","  CONTROL",0,0,0.8f);
-    newbuttondelayed(StatusButton::ROBOT2_BUTTON,70,300,130,40,"GIVE     ","   ORDERS",0,0,0.8f);
-    newbuttondelayed(StatusButton::ROBOT3_BUTTON,70,250,130,40,"COMBAT   ","     MODE",0,0,0.8f);
-    newbuttondelayed(StatusButton::ROBOT4_BUTTON,70,200,130,40,"LEAVE    ","    ROBOT",0,0,0.8f);
-    act_menu=ROBOT_MENU;
+  case TYPE::ROBOT:
+    newbuttondelayed(StatusButton::NAME::ROBOT1,70,350,130,40,"DIRECT   ","  CONTROL",0,0,0.8f);
+    newbuttondelayed(StatusButton::NAME::ROBOT2,70,300,130,40,"GIVE     ","   ORDERS",0,0,0.8f);
+    newbuttondelayed(StatusButton::NAME::ROBOT3,70,250,130,40,"COMBAT   ","     MODE",0,0,0.8f);
+    newbuttondelayed(StatusButton::NAME::ROBOT4,70,200,130,40,"LEAVE    ","    ROBOT",0,0,0.8f);
+    act_menu=TYPE::ROBOT;
     break;
 
-  case COMBATMODE_MENU:
-    newbuttondelayed(StatusButton::COMBAT1_BUTTON,70,350,130,40,"NUCLEAR  ","     BOMB",0,0,0.8f);
-    newbuttondelayed(StatusButton::COMBAT2_BUTTON,70,300,130,40,"FIRE     ","  PHASERS",0,0,0.8f);
-    newbuttondelayed(StatusButton::COMBAT3_BUTTON,70,250,130,40,"FIRE     "," MISSILES",0,0,0.8f);
-    newbuttondelayed(StatusButton::COMBAT4_BUTTON,70,200,130,40,"FIRE     ","   CANNON",0,0,0.8f);
-    newbuttondelayed(StatusButton::COMBAT5_BUTTON,70,150,130,40,"MOVE     ","    ROBOT",0,0,0.8f);
-    newbuttondelayed(StatusButton::COMBAT6_BUTTON,70,100,130,40,"STOP     ","   COMBAT",0,0,0.8f);
-    act_menu=COMBATMODE_MENU;
+  case TYPE::COMBATMODE:
+    newbuttondelayed(StatusButton::NAME::COMBAT1,70,350,130,40,"NUCLEAR  ","     BOMB",0,0,0.8f);
+    newbuttondelayed(StatusButton::NAME::COMBAT2,70,300,130,40,"FIRE     ","  PHASERS",0,0,0.8f);
+    newbuttondelayed(StatusButton::NAME::COMBAT3,70,250,130,40,"FIRE     "," MISSILES",0,0,0.8f);
+    newbuttondelayed(StatusButton::NAME::COMBAT4,70,200,130,40,"FIRE     ","   CANNON",0,0,0.8f);
+    newbuttondelayed(StatusButton::NAME::COMBAT5,70,150,130,40,"MOVE     ","    ROBOT",0,0,0.8f);
+    newbuttondelayed(StatusButton::NAME::COMBAT6,70,100,130,40,"STOP     ","   COMBAT",0,0,0.8f);
+    act_menu=TYPE::COMBATMODE;
     break;
 
-  case ORDERS_MENU:
-    newbuttondelayed(StatusButton::ORDERS1_BUTTON,70,350,130,40,"STOP AND ","   DEFEND",0,0,0.8f);
-    newbuttondelayed(StatusButton::ORDERS2_BUTTON,70,300,130,40,"ADVANCE  "," ?? MILES",0,0,0.8f);
-    newbuttondelayed(StatusButton::ORDERS3_BUTTON,70,250,130,40,"RETREAT  "," ?? MILES",0,0,0.8f);
-    newbuttondelayed(StatusButton::ORDERS4_BUTTON,70,200,130,40,"SEARCH & ","  DESTROY",0,0,0.8f);
-    newbuttondelayed(StatusButton::ORDERS5_BUTTON,70,150,130,40,"SEARCH & ","  CAPTURE",0,0,0.8f);
-    act_menu=ORDERS_MENU;
+  case TYPE::ORDERS:
+    newbuttondelayed(StatusButton::NAME::ORDERS1,70,350,130,40,"STOP AND ","   DEFEND",0,0,0.8f);
+    newbuttondelayed(StatusButton::NAME::ORDERS2,70,300,130,40,"ADVANCE  "," ?? MILES",0,0,0.8f);
+    newbuttondelayed(StatusButton::NAME::ORDERS3,70,250,130,40,"RETREAT  "," ?? MILES",0,0,0.8f);
+    newbuttondelayed(StatusButton::NAME::ORDERS4,70,200,130,40,"SEARCH & ","  DESTROY",0,0,0.8f);
+    newbuttondelayed(StatusButton::NAME::ORDERS5,70,150,130,40,"SEARCH & ","  CAPTURE",0,0,0.8f);
+    act_menu=TYPE::ORDERS;
     break;
 
-  case SELECTDISTANCE_MENU:
+  case TYPE::SELECTDISTANCE:
     if (nether->controlled->program==Robot::PROGRAM_ADVANCE)
-      newbuttondelayed(StatusButton::ORDERS_BUTTON,70,400,130,40,"ADVANCE  "," ?? MILES",0,0,0.8f);
+      newbuttondelayed(StatusButton::NAME::ORDERS,70,400,130,40,"ADVANCE  "," ?? MILES",0,0,0.8f);
     if (nether->controlled->program==Robot::PROGRAM_RETREAT)
-      newbuttondelayed(StatusButton::ORDERS_BUTTON,70,400,130,40,"RETREAT  "," ?? MILES",0,0,0.8f);
-    act_menu=SELECTDISTANCE_MENU;
+      newbuttondelayed(StatusButton::NAME::ORDERS,70,400,130,40,"RETREAT  "," ?? MILES",0,0,0.8f);
+    act_menu=TYPE::SELECTDISTANCE;
     break;
 
-  case TARGETD_MENU:
-    newbuttondelayed(StatusButton::ORDERS_BUTTON,70,400,130,40,"SEARCH & ","  DESTROY",0,0,0.8f);
-    newbuttondelayed(StatusButton::TARGET1_BUTTON,70,300,130,40,"ENEMY    ","   ROBOTS",0,0,0.8f);
-    newbuttondelayed(StatusButton::TARGET2_BUTTON,70,250,130,40,"ENEMY    ","FACTORIES",0,0,0.8f);
-    newbuttondelayed(StatusButton::TARGET3_BUTTON,70,200,130,40,"ENEMY    "," WARBASES",0,0,0.8f);
-    act_menu=TARGETD_MENU;
+  case TYPE::TARGET_DESTROY:
+    newbuttondelayed(StatusButton::NAME::ORDERS,70,400,130,40,"SEARCH & ","  DESTROY",0,0,0.8f);
+    newbuttondelayed(StatusButton::NAME::TARGET1,70,300,130,40,"ENEMY    ","   ROBOTS",0,0,0.8f);
+    newbuttondelayed(StatusButton::NAME::TARGET2,70,250,130,40,"ENEMY    ","FACTORIES",0,0,0.8f);
+    newbuttondelayed(StatusButton::NAME::TARGET3,70,200,130,40,"ENEMY    "," WARBASES",0,0,0.8f);
+    act_menu=TYPE::TARGET_DESTROY;
     break;
 
-  case TARGETC_MENU:
-    newbuttondelayed(StatusButton::ORDERS_BUTTON,70,400,130,40,"SEARCH & ","  CAPTURE",0,0,0.8f);
-    newbuttondelayed(StatusButton::TARGET1_BUTTON,70,300,130,40,"NEUTRAL  ","FACTORIES",0,0,0.8f);
-    newbuttondelayed(StatusButton::TARGET2_BUTTON,70,250,130,40,"ENEMY    ","FACTORIES",0,0,0.8f);
-    newbuttondelayed(StatusButton::TARGET3_BUTTON,70,200,130,40,"ENEMY    "," WARBASES",0,0,0.8f);
-    act_menu=TARGETC_MENU;
+  case TYPE::TARGET_CAPTURE:
+    newbuttondelayed(StatusButton::NAME::ORDERS,70,400,130,40,"SEARCH & ","  CAPTURE",0,0,0.8f);
+    newbuttondelayed(StatusButton::NAME::TARGET1,70,300,130,40,"NEUTRAL  ","FACTORIES",0,0,0.8f);
+    newbuttondelayed(StatusButton::NAME::TARGET2,70,250,130,40,"ENEMY    ","FACTORIES",0,0,0.8f);
+    newbuttondelayed(StatusButton::NAME::TARGET3,70,200,130,40,"ENEMY    "," WARBASES",0,0,0.8f);
+    act_menu=TYPE::TARGET_CAPTURE;
     break;
   }
   needsRedraw = true;
 }
 
 
-void Menu::killmenu(MENU_TYPES menu)
+void Menu::killmenu(TYPE menu)
 {
   switch(menu) {
-  case GENERAL_MENU:
-    killbutton(StatusButton::STATUS_BUTTON);
-    killbutton(StatusButton::RESOURCE_BUTTON);
+  case TYPE::GENERAL:
+    killbutton(StatusButton::NAME::STATUS);
+    killbutton(StatusButton::NAME::RESOURCE);
     break;
 
-  case ROBOT_MENU:
-    killbutton(StatusButton::ROBOT1_BUTTON);
-    killbutton(StatusButton::ROBOT2_BUTTON);
-    killbutton(StatusButton::ROBOT3_BUTTON);
-    killbutton(StatusButton::ROBOT4_BUTTON);
+  case TYPE::ROBOT:
+    killbutton(StatusButton::NAME::ROBOT1);
+    killbutton(StatusButton::NAME::ROBOT2);
+    killbutton(StatusButton::NAME::ROBOT3);
+    killbutton(StatusButton::NAME::ROBOT4);
     break;
 
-  case COMBATMODE_MENU:
-    killbutton(StatusButton::COMBAT1_BUTTON);
-    killbutton(StatusButton::COMBAT2_BUTTON);
-    killbutton(StatusButton::COMBAT3_BUTTON);
-    killbutton(StatusButton::COMBAT4_BUTTON);
-    killbutton(StatusButton::COMBAT5_BUTTON);
-    killbutton(StatusButton::COMBAT6_BUTTON);
+  case TYPE::COMBATMODE:
+    killbutton(StatusButton::NAME::COMBAT1);
+    killbutton(StatusButton::NAME::COMBAT2);
+    killbutton(StatusButton::NAME::COMBAT3);
+    killbutton(StatusButton::NAME::COMBAT4);
+    killbutton(StatusButton::NAME::COMBAT5);
+    killbutton(StatusButton::NAME::COMBAT6);
     break;
 
-  case ORDERS_MENU:
-    killbutton(StatusButton::ORDERS1_BUTTON);
-    killbutton(StatusButton::ORDERS2_BUTTON);
-    killbutton(StatusButton::ORDERS3_BUTTON);
-    killbutton(StatusButton::ORDERS4_BUTTON);
-    killbutton(StatusButton::ORDERS5_BUTTON);
+  case TYPE::ORDERS:
+    killbutton(StatusButton::NAME::ORDERS1);
+    killbutton(StatusButton::NAME::ORDERS2);
+    killbutton(StatusButton::NAME::ORDERS3);
+    killbutton(StatusButton::NAME::ORDERS4);
+    killbutton(StatusButton::NAME::ORDERS5);
     break;
 
-  case SELECTDISTANCE_MENU:
-    killbutton(StatusButton::ORDERS_BUTTON);
+  case TYPE::SELECTDISTANCE:
+    killbutton(StatusButton::NAME::ORDERS);
     break;
 
-  case TARGETD_MENU:
-  case TARGETC_MENU:
-    killbutton(StatusButton::ORDERS_BUTTON);
-    killbutton(StatusButton::TARGET1_BUTTON);
-    killbutton(StatusButton::TARGET2_BUTTON);
-    killbutton(StatusButton::TARGET3_BUTTON);
+  case TYPE::TARGET_DESTROY:
+  case TYPE::TARGET_CAPTURE:
+    killbutton(StatusButton::NAME::ORDERS);
+    killbutton(StatusButton::NAME::TARGET1);
+    killbutton(StatusButton::NAME::TARGET2);
+    killbutton(StatusButton::NAME::TARGET3);
     break;
 
-  case ALL_MENUS:
-    killbutton(StatusButton::STATUS_BUTTON);
-    killbutton(StatusButton::RESOURCE_BUTTON);
-    killbutton(StatusButton::ROBOT1_BUTTON);
-    killbutton(StatusButton::ROBOT2_BUTTON);
-    killbutton(StatusButton::ROBOT3_BUTTON);
-    killbutton(StatusButton::ROBOT4_BUTTON);
-    killbutton(StatusButton::COMBAT1_BUTTON);
-    killbutton(StatusButton::COMBAT2_BUTTON);
-    killbutton(StatusButton::COMBAT3_BUTTON);
-    killbutton(StatusButton::COMBAT4_BUTTON);
-    killbutton(StatusButton::COMBAT5_BUTTON);
-    killbutton(StatusButton::COMBAT6_BUTTON);
-    killbutton(StatusButton::ORDERS1_BUTTON);
-    killbutton(StatusButton::ORDERS2_BUTTON);
-    killbutton(StatusButton::ORDERS3_BUTTON);
-    killbutton(StatusButton::ORDERS4_BUTTON);
-    killbutton(StatusButton::ORDERS5_BUTTON);
-    killbutton(StatusButton::ORDERS_BUTTON);
-    killbutton(StatusButton::ORDERS_BUTTON);
-    killbutton(StatusButton::TARGET1_BUTTON);
-    killbutton(StatusButton::TARGET2_BUTTON);
-    killbutton(StatusButton::TARGET3_BUTTON);
+  case TYPE::ALL:
+    killbutton(StatusButton::NAME::STATUS);
+    killbutton(StatusButton::NAME::RESOURCE);
+    killbutton(StatusButton::NAME::ROBOT1);
+    killbutton(StatusButton::NAME::ROBOT2);
+    killbutton(StatusButton::NAME::ROBOT3);
+    killbutton(StatusButton::NAME::ROBOT4);
+    killbutton(StatusButton::NAME::COMBAT1);
+    killbutton(StatusButton::NAME::COMBAT2);
+    killbutton(StatusButton::NAME::COMBAT3);
+    killbutton(StatusButton::NAME::COMBAT4);
+    killbutton(StatusButton::NAME::COMBAT5);
+    killbutton(StatusButton::NAME::COMBAT6);
+    killbutton(StatusButton::NAME::ORDERS1);
+    killbutton(StatusButton::NAME::ORDERS2);
+    killbutton(StatusButton::NAME::ORDERS3);
+    killbutton(StatusButton::NAME::ORDERS4);
+    killbutton(StatusButton::NAME::ORDERS5);
+    killbutton(StatusButton::NAME::ORDERS);
+    killbutton(StatusButton::NAME::ORDERS);
+    killbutton(StatusButton::NAME::TARGET1);
+    killbutton(StatusButton::NAME::TARGET2);
+    killbutton(StatusButton::NAME::TARGET3);
     break;
   }
   needsRedraw = true;
 }
 
 
-void Menu::newbutton(StatusButton::BUTTON_NAMES ID, int x, int y, int sx, int sy,
+void Menu::newbutton(StatusButton::NAME ID, int x, int y, int sx, int sy,
                      const std::string& t1, const std::string& t2, float r, float g, float b)
 {
   buttons.push_back(new StatusButton(ID, x, y, sx, sy, t1, t2, r, g, b, -16));
@@ -487,7 +487,7 @@ void Menu::newbutton(StatusButton::BUTTON_NAMES ID, int x, int y, int sx, int sy
 }
 
 
-void Menu::newbuttondelayed(StatusButton::BUTTON_NAMES ID, int x, int y, int sx, int sy,
+void Menu::newbuttondelayed(StatusButton::NAME ID, int x, int y, int sx, int sy,
                             const std::string& t1, const std::string& t2, float r, float g, float b)
 {
   buttons.push_back(new StatusButton(ID, x, y, sx, sy, t1, t2, r, g, b, -32));
@@ -495,7 +495,7 @@ void Menu::newbuttondelayed(StatusButton::BUTTON_NAMES ID, int x, int y, int sx,
 }
 
 
-void Menu::killbutton(StatusButton::BUTTON_NAMES ID)
+void Menu::killbutton(StatusButton::NAME ID)
 {
   std::for_each(std::cbegin(buttons), std::cend(buttons),
                 [ID](StatusButton* b) {if (b->ID == ID) b->status = 1; });
@@ -503,7 +503,7 @@ void Menu::killbutton(StatusButton::BUTTON_NAMES ID)
 }
 
 
-StatusButton* Menu::getbutton(StatusButton::BUTTON_NAMES ID)
+StatusButton* Menu::getbutton(StatusButton::NAME ID)
 {
   auto result = find_if(std::cbegin(buttons), std::cend(buttons),
                         [ID](StatusButton* b) {return b->ID == ID;});
@@ -515,8 +515,8 @@ StatusButton* Menu::getbutton(StatusButton::BUTTON_NAMES ID)
 }
 
 
-void Menu::replaceMenu(MENU_TYPES oldMenu, MENU_TYPES newMenu,
-                       StatusButton::BUTTON_NAMES activeButton)
+void Menu::replaceMenu(TYPE oldMenu, TYPE newMenu,
+                       StatusButton::NAME activeButton)
 {
   killmenu(oldMenu);
   newmenu(newMenu);

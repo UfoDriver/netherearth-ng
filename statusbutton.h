@@ -6,36 +6,36 @@
 
 class StatusButton {
 public:
-  enum BUTTON_NAMES {NONE_BUTTON,
-                     TIME_BUTTON,
-                     STATUS_BUTTON,
-                     RESOURCE_BUTTON,
-                     ROBOT1_BUTTON,
-                     ROBOT2_BUTTON,
-                     ROBOT3_BUTTON,
-                     ROBOT4_BUTTON,
-                     COMBAT1_BUTTON,
-                     COMBAT2_BUTTON,
-                     COMBAT3_BUTTON,
-                     COMBAT4_BUTTON,
-                     COMBAT5_BUTTON,
-                     COMBAT6_BUTTON,
-                     ORDERS1_BUTTON,
-                     ORDERS2_BUTTON,
-                     ORDERS3_BUTTON,
-                     ORDERS4_BUTTON,
-                     ORDERS5_BUTTON,
-                     ORDERS_BUTTON,
-                     TARGET1_BUTTON,
-                     TARGET2_BUTTON,
-                     TARGET3_BUTTON};
+  enum class NAME {NONE,
+                   TIME,
+                   STATUS,
+                   RESOURCE,
+                   ROBOT1,
+                   ROBOT2,
+                   ROBOT3,
+                   ROBOT4,
+                   COMBAT1,
+                   COMBAT2,
+                   COMBAT3,
+                   COMBAT4,
+                   COMBAT5,
+                   COMBAT6,
+                   ORDERS1,
+                   ORDERS2,
+                   ORDERS3,
+                   ORDERS4,
+                   ORDERS5,
+                   ORDERS,
+                   TARGET1,
+                   TARGET2,
+                   TARGET3};
 
-  StatusButton(BUTTON_NAMES ID, int x, int y, int sx, int sy, const std::string& text1,
+  StatusButton(NAME ID, int x, int y, int sx, int sy, const std::string& text1,
                const std::string& text2, float r, float g, float b, int status):
     ID(ID), x(x), y(y), sx(sx), sy(sy), text1(text1), text2(text2), r(r), g(g), b(b), status(status)
   {}
 
-  BUTTON_NAMES ID;
+  NAME ID;
   int x, y;
   int sx, sy;
   std::string text1;

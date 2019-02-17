@@ -12,35 +12,35 @@ class NETHER;
 class Menu
 {
 public:
-  enum MENU_TYPES {GENERAL_MENU,
-                   ROBOT_MENU,
-                   DIRECTCONTROL_MENU,
-                   COMBATMODE_MENU,
-                   DIRECTCONTROL2_MENU,
-                   ORDERS_MENU,
-                   SELECTDISTANCE_MENU,
-                   TARGETD_MENU,
-                   TARGETC_MENU,
-                   ALL_MENUS};
-  explicit Menu(const NETHER* nether): needsRedraw(0), act_menu(GENERAL_MENU),
-                                       act_button(StatusButton::COMBAT1_BUTTON),
+  enum class TYPE {GENERAL,
+                   ROBOT,
+                   DIRECTCONTROL,
+                   COMBATMODE,
+                   DIRECTCONTROL2,
+                   ORDERS,
+                   SELECTDISTANCE,
+                   TARGET_DESTROY,
+                   TARGET_CAPTURE,
+                   ALL};
+  explicit Menu(const NETHER* nether): needsRedraw(0), act_menu(TYPE::GENERAL),
+                                       act_button(StatusButton::NAME::COMBAT1),
                                        nether(nether) {};
   void draw(int width, int height);
   void cycle();
-  void replaceMenu(MENU_TYPES oldMenu, MENU_TYPES newMenu, StatusButton::BUTTON_NAMES activeButton);
-  void newmenu(MENU_TYPES menu);
-  void killmenu(MENU_TYPES menu);
+  void replaceMenu(TYPE oldMenu, TYPE newMenu, StatusButton::NAME activeButton);
+  void newmenu(TYPE menu);
+  void killmenu(TYPE menu);
 
-  void newbutton(StatusButton::BUTTON_NAMES ID, int x, int y, int sx, int sy,
+  void newbutton(StatusButton::NAME ID, int x, int y, int sx, int sy,
                  const std::string& t1, const std::string& t2, float r, float g, float b);
-  void newbuttondelayed(StatusButton::BUTTON_NAMES ID, int x, int y, int sx, int sy,
+  void newbuttondelayed(StatusButton::NAME ID, int x, int y, int sx, int sy,
                         const std::string& t1, const std::string& t2, float r, float g, float b);
-  void killbutton(StatusButton::BUTTON_NAMES ID);
-  StatusButton *getbutton(StatusButton::BUTTON_NAMES ID);
+  void killbutton(StatusButton::NAME ID);
+  StatusButton *getbutton(StatusButton::NAME ID);
 
   int needsRedraw;
-  MENU_TYPES act_menu;
-  StatusButton::BUTTON_NAMES act_button;
+  TYPE act_menu;
+  StatusButton::NAME act_button;
 
 private:
   void drawButtons();

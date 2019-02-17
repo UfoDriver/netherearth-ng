@@ -79,6 +79,7 @@ public:
 
   Ship *ship;
 
+
 private:
 	bool cycle(unsigned char *keyboard);
 	bool construction_cycle(unsigned char *keyboard);
