@@ -17,7 +17,7 @@ public:
   std::vector<int> map;
 
   void resize(int width, int height);
-  void draw(const Vector& viewp, bool shadows);
+  void draw(const Vector& viewp, bool shadows, std::vector<Building>& buildings, const Vector& light);
 
   int width() const { return Width; }
   int height() const { return Height; }

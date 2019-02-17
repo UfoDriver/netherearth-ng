@@ -401,7 +401,12 @@ void NETHER::drawGame(bool shadows)
   glLoadIdentity();
 
   /* Draw the map: */
-  drawmap(shadows);
+  {
+    Vector light(lightpos[0], lightpos[1], lightpos[2]);
+    light=light / light.z;
+
+    map.draw(viewp, shadows, buildings, light);
+  }
 
   /* Draw the robots and bullets: */
   {

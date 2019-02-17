@@ -41,7 +41,7 @@ automake
 1
 %file fsource mainmenu.cpp
 1
-%file fsource maps.cpp
+%file fsource map.cpp
 1
 %file fsource menu.cpp
 1
@@ -66,8 +66,6 @@ automake
 %file fsource robot.cpp
 1
 %file fsource robot_ai.cpp
-1
-%file fsource robots.cpp
 1
 %file fsource shadow3dobject.cpp
 1

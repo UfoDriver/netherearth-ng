@@ -91,8 +91,6 @@ private:
   void constructionDraw(int w, int h);
   void optionsDraw(int w, int h);
 
-	void drawmap(bool shadows);
-
 	void AI_enemy();
 	Robot* AI_enemy_newrobot(int state,Vector pos);
 	void AI_precomputations();
