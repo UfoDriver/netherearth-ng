@@ -89,10 +89,7 @@ NETHER::NETHER(const std::string& mapname): menu(this), radar(this), controlled(
 #endif
 
 	/* Load map: */ 
-	if (!loadMap(mapname)) {
-		map_w=map_h=0;
-		map.clear();
-	} /* if */ 
+	map.loadMap(mapname, buildings);
 
 #ifdef _WRITE_REPORT_
 	fprintf(debug_fp,"Initializing game variables...\n");
@@ -100,7 +97,7 @@ NETHER::NETHER(const std::string& mapname): menu(this), radar(this), controlled(
 #endif
 
 	/* Set camera: */ 
-	viewp.x=map_w/2;
+	viewp.x = map.width() / 2;
 	viewp.y=0;
 	camera.x=6;
 	camera.y=-6;
@@ -177,8 +174,7 @@ NETHER::~NETHER()
 #endif
 
 	/* Delete map: */ 
-	map.clear();
-	map_w=map_h=0;
+	map.resize(0, 0);
 
 #ifdef _WRITE_REPORT_
 	fprintf(debug_fp,"Game destroyed.\n");
@@ -459,7 +455,7 @@ void NETHER::drawGame(bool shadows)
       x[1] = sx + ship->shdw_cmc.x[1];
       y[0] = sy + ship->shdw_cmc.y[0];
       y[1] = sy + ship->shdw_cmc.y[1];
-      minz = MapMaxZ(x, y);
+      minz = map.maxZ(x, y);
     } else {
       minz = controlled->pos.z;
     }
@@ -760,11 +756,11 @@ bool NETHER::saveGame(const std::string& filename)
 {
   std::ofstream oFile(filename);
 
-  oFile << map_w << ' ' << map_h << '\n';
+  oFile << map.width() << ' ' << map.height() << '\n';
 
-  for (int i = 0; i < map_h; i++) {
-    for (int j = 0; j < map_w; j++) {
-      oFile << map[j + i * map_w] << ' ';
+  for (int i = 0; i < map.height(); i++) {
+    for (int j = 0; j < map.width(); j++) {
+      oFile << map.map[j + i * map.width()] << ' ';
     }
     oFile << '\n';
   }
@@ -813,11 +809,12 @@ bool NETHER::saveGame(const std::string& filename)
 
 bool NETHER::loadGame(const std::string& filename)
 {
+  int mapWidth, mapHeight;
   std::ifstream inFile(filename);
 
   AI_deleteprecomputations();
 
-  inFile >> map_w >> map_h;
+  inFile >> mapWidth >> mapHeight;
 
   explosions.clear();
   buildings.clear();
@@ -826,13 +823,12 @@ bool NETHER::loadGame(const std::string& filename)
     robots[i].clear();
   }
   bullets.clear();
-  map.clear();
-  map.reserve(map_w * map_h);
-  for (int i = 0; i < map_h; i++) {
-    for (int j = 0; j < map_w; j++) {
+  map.resize(mapWidth, mapHeight);
+  for (int i = 0; i < mapHeight; i++) {
+    for (int j = 0; j < mapWidth; j++) {
       int tile;
       inFile >> tile;
-      map.push_back(tile);
+      map.map.push_back(tile);
     }
   }
 
@@ -890,11 +886,11 @@ bool NETHER::saveDebugReport(const std::string& filename)
 {
   std::ofstream log(filename);
   log << "NETHER EARTH NG Debug Report\n\n";
-  log << "MAPW: " << map_w << "\nMAPH: " << map_h << '\n';
+  log << "MAPW: " << map.width() << "\nMAPH: " << map.height() << '\n';
   log << "MAP:\n";
-  for(int i = 0; i < map_h; i++) {
-    for(int j = 0; j < map_w; j++) {
-      log << map[j+i*map_w] << ' ';
+  for (int i = 0; i < map.height(); i++) {
+    for (int j = 0; j < map.width(); j++) {
+      log << map.map[j + i * map.width()] << ' ';
     }
     log << '\n';
   }

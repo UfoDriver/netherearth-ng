@@ -26,76 +26,14 @@ extern int detaillevel;
 extern float MINY,MAXY,MINX,MAXX;
 
 
-bool NETHER::loadMap(const std::string& filename)
-{
-  std::ifstream iFile(filename);
-  iFile >> map_w >> map_h;
-  map.clear();
-  map.reserve(map_w * map_h);
-
-  const std::vector<std::string> tiles = {"G", "S", "S2", "M", "H1",
-                                          "H2", "H3", "H4", "H5", "H6",
-                                          "GG", "SS", "MM", "?"};
-  std::string tilestr;
-  for (int i = 0; i < map_w * map_h; i++) {
-    iFile >> tilestr;
-    int tile = find_index(tiles, tilestr);
-    if (tile == 10) tile = 0;
-    if (tile == 11) tile = 1;
-    if (tile == 12) tile = 3;
-
-    map.push_back(tile);
-  }
-
-  while (!iFile.eof()) {
-    const std::vector<Building>& newBuildings {Building::readMapFile(iFile)};
-    std::copy(newBuildings.cbegin(), newBuildings.cend(), std::back_inserter(buildings));
-  }
-  return true;
-}
-
-
 void NETHER::drawmap(bool shadows)
 {
-	int i,j;
-	int o,m[8]={13,15,17,19,7,23,21,25};
-	Vector light;
-
-	light.x=lightpos[0];
-	light.y=lightpos[1];
-	light.z=lightpos[2];
-	light=light/light.z;
+  Vector light(lightpos[0], lightpos[1], lightpos[2]);
+  light=light / light.z;
 
 	glMatrixMode(GL_MODELVIEW);
-	
-	if (!shadows) {
-		glPushMatrix();
-		for(j=0;j<map_h;j++) {
-			if (j>=(viewp.y+MINY) &&
-				j<=(viewp.y+MAXY)) {
-				glPushMatrix();
-				for(i=0;i<map_w;i++) {
-					if (i>=(viewp.x+MINX) &&
-						i<=(viewp.x+MAXX)) {
-						o=map[i+j*map_w];
 
-						if (o==0) {
-							/* GRASS: */ 
-							if (((i*3+j*7)%m[(i+j)%8])==0) o=10;
-							if (((i*3+j*7)%m[(i+j+1)%8])==0) o=11;
-						} else {
-						} /* if */ 
-						if (detaillevel>=1) Resources::tiles[o].draw(Resources::tiles[0].color);
-                        else Resources::tiles[o].draw_notexture(Resources::tiles[0].color);
-					} /* if */ 
-					glTranslatef(1.0,0.0,0.0);
-				} /* for */ 
-				glPopMatrix();
-			} /* if */ 
-			glTranslatef(0.0,1.0,0.0);
-		} /* for */ 
-		glPopMatrix();
-	} /* if */ 
+    map.draw(viewp, shadows);
 
 	for (const Building& b: buildings) {
 
@@ -412,66 +350,3 @@ void NETHER::drawmap(bool shadows)
 	} /* while */ 
 
 } /* drawmap */ 
-
-
-float NETHER::MapMaxZ(float x[2],float y[2])
-{
-	int i,j;
-	float z=0;
-	int o;
-
-	for(i=int(x[0]);float(i)<x[1];i++) {
-		for(j=int(y[0]);float(j)<y[1];j++) {
-			if (i>=0 && i<map_w &&
-				j>=0 && j<map_h) {
-				o=map[i+j*map_w];
-				if (Resources::tiles[o].cmc.z[0]>z) z=Resources::tiles[o].cmc.z[0];
-				if (Resources::tiles[o].cmc.z[1]>z) z=Resources::tiles[o].cmc.z[1];
-			} /* if */ 
-		} /* for */ 
-	} /* for */ 
-
-	return z;
-} /* MapMaxZ */ 
-
-
-int NETHER::MapTerrain(float x, float y)
-{
-	switch(map[int(x)+int(y)*map_w]) {
-	case 0:
-		return T_GRASS;
-		break;
-	case 1:
-	case 2:
-		return T_SAND;
-		break;
-	case 3:
-		return T_MOUNTAINS;
-		break;
-	default:
-		return T_HOLE;
-		break;
-	} /* switch */ 
-} /* NETHER::MapTerrain */ 
-
-
-int NETHER::WorseMapTerrain(float x[2], float y[2])
-{
-	int t,t2;
-
-	t=MapTerrain(x[0]+0.001f,y[0]+0.001f);
-	t2=MapTerrain(x[1]-0.001f,y[0]+0.001f);
-	if (t2==T_HOLE || t==T_HOLE) return T_HOLE;
-	if ((t2==T_MOUNTAINS && (t==T_SAND || t==T_GRASS)) ||
-		(t2==T_SAND && t==T_GRASS)) t=t2;
-	t2=MapTerrain(x[0]+0.001f,y[1]-0.001f);
-	if (t2==T_HOLE) return T_HOLE;
-	if ((t2==T_MOUNTAINS && (t==T_SAND || t==T_GRASS)) ||
-		(t2==T_SAND && t==T_GRASS)) t=t2;
-	t2=MapTerrain(x[1]-0.001f,y[1]-0.001f);
-	if (t2==T_HOLE) return T_HOLE;
-	if ((t2==T_MOUNTAINS && (t==T_SAND || t==T_GRASS)) ||
-		(t2==T_SAND && t==T_GRASS)) t=t2;
-	return t;
-} /* NETHER::WorseMapTerrain */ 
-

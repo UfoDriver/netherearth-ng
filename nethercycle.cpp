@@ -119,9 +119,9 @@ bool NETHER::cycle(unsigned char *keyboard)
 				x[1]=ship->pos.x+1.0;
 				y[0]=ship->pos.y;
 				y[1]=ship->pos.y+1.0;
-				minz=MapMaxZ(x,y);
+				minz=map.maxZ(x, y);
 
-				if (ship->op == Ship::OPS::RIGHT) if (ship->pos.x<map_w-1) {
+				if (ship->op == Ship::OPS::RIGHT) if (ship->pos.x < map.width() - 1) {
 					ship->pos.x += 0.125;
 					if (ship->timemoving>=50 && (int(ship->pos.x*8)%2)==1) ship->pos.x+=0.125;
 //					if (ship_timemoving>=100 && (int(shipp.x*4)%2)==1) shipp.x+=0.25;
@@ -131,7 +131,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 					if (ship->timemoving>=50 && (int(ship->pos.x*8)%2)==1) ship->pos.x-=0.125;
 //					if (ship_timemoving>=100 && (int(shipp.x*4)%2)==1) shipp.x-=0.25;
 				} /* if */ 
-				if (ship->op2==Ship::OPS::FORWARD) if (ship->pos.y<map_h-1) {
+				if (ship->op2==Ship::OPS::FORWARD) if (ship->pos.y < map.height()-1) {
 					ship->pos.y+=0.125;
 					if (ship->timemoving>=50 && (int(ship->pos.y*8)%2)==1) ship->pos.y+=0.125;
 //					if (ship_timemoving>=100 && (int(shipp.y*4)%2)==1) shipp.y+=0.25;
@@ -737,20 +737,20 @@ bool NETHER::cycle(unsigned char *keyboard)
 		if (viewp.z<0) viewp.z=0;
 		if (viewp.x<3*zoom) {
 			viewp.x=3*zoom;
-			if (viewp.x>map_w-3*zoom) viewp.x=map_w/2;
+			if (viewp.x>map.width()-3*zoom) viewp.x=map.width()/2;
 		} else {
-			if (viewp.x>map_w-3*zoom) {
-				viewp.x=map_w-3*zoom;
-				if (viewp.x<3*zoom) viewp.x=map_w/2;
+			if (viewp.x>map.width()-3*zoom) {
+				viewp.x=map.width()-3*zoom;
+				if (viewp.x<3*zoom) viewp.x=map.width()/2;
 			} /* if */ 
 		} /* if */ 
 		if (viewp.y<3*zoom) {
 			viewp.y=3*zoom;
-			if (viewp.y>map_h-3*zoom) viewp.y=map_h/2; 
+			if (viewp.y>map.height()-3*zoom) viewp.y=map.height()/2; 
 		} else {
-			if (viewp.y>map_h-3*zoom) {
-				viewp.y=map_h-3*zoom;
-				if (viewp.y<3*zoom) viewp.y=map_h/2; 
+			if (viewp.y>map.height()-3*zoom) {
+				viewp.y=map.height()-3*zoom;
+				if (viewp.y<3*zoom) viewp.y=map.height()/2; 
 			} /* if */ 
 		} /* if */ 
 
@@ -865,8 +865,8 @@ bool NETHER::cycle(unsigned char *keyboard)
 					x[1]=r->pos.x+0.5;
 					y[0]=r->pos.y-0.5;
 					y[1]=r->pos.y+0.5;
-					minz=MapMaxZ(x,y);
-					terrain=WorseMapTerrain(x,y);
+					minz=map.maxZ(x,y);
+					terrain=map.worseTerrain(x,y);
 
 #ifdef _WRITE_REPORT_
 	fprintf(debug_fp,"Avoid robot deadlock\n");
@@ -942,13 +942,13 @@ bool NETHER::cycle(unsigned char *keyboard)
 						} /* if */ 
 
 						switch(r->angle) {
-						case 0:if (r->pos.x<map_w-0.5) r->pos.x+=speed;
+						case 0:if (r->pos.x<map.width()-0.5) r->pos.x+=speed;
 							break;
 						case 90:if (r->pos.y>0.5) r->pos.y+=speed;
 							break;
 						case 180:if (r->pos.x>0.5) r->pos.x-=speed;
 							break;
-						case 270:if (r->pos.y<map_h-0.5) r->pos.y-=speed;
+						case 270:if (r->pos.y<map.height()-0.5) r->pos.y-=speed;
 							break;
 						} /* switch */ 
 					} else {
@@ -1041,8 +1041,8 @@ bool NETHER::cycle(unsigned char *keyboard)
 						x[1]=r->pos.x+0.5;
 						y[0]=r->pos.y-0.5;
 						y[1]=r->pos.y+0.5;
-						minz=MapMaxZ(x,y);
-						terrain=WorseMapTerrain(x,y);
+						minz=map.maxZ(x, y);
+						terrain=map.worseTerrain(x, y);
 						r->pos.z=minz;
 
 						if (r->shipover) {

@@ -15,6 +15,7 @@
 #include "explosion.h"
 #include "particle.h"
 #include "ship.h"
+#include "map.h"
 #include "ai_operator.h"
 #include "menu.h"
 #include "radar.h"
@@ -90,12 +91,7 @@ private:
   void constructionDraw(int w, int h);
   void optionsDraw(int w, int h);
 
-  bool loadMap(const std::string& filename);
 	void drawmap(bool shadows);
-
-	float MapMaxZ(float x[2],float y[2]);
-	int MapTerrain(float x, float y);
-	int WorseMapTerrain(float x[2], float y[2]);
 
 	void AI_enemy();
 	Robot* AI_enemy_newrobot(int state,Vector pos);
@@ -127,9 +123,8 @@ private:
   Menu menu;
   Radar radar;
   SoundManager sManager;
+  Map map;
 
-  int map_w, map_h;
-  std::vector<int> map;
   float lightpos[4];
   Vector lightposv;
   unsigned char old_keyboard[SDLK_LAST];
@@ -164,6 +159,7 @@ private:
   std::vector<AIOperator> searchmap;
   std::vector<int> attackmap;
 
+  friend class Map;
   friend class Menu;
   friend class Radar;
 };

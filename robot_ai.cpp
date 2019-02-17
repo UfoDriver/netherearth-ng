@@ -77,12 +77,12 @@ void fill_zone(std::vector<int>& map, int w, int val, int x, int y, int dx, int 
 void NETHER::AI_precomputations(void)
 {
   discreetmap.clear();
-  discreetmap.resize(map_w * 2 * map_h * 2, 0);
+  discreetmap.resize(map.width() * 2 * map.height() * 2, 0);
   bk_discreetmap.clear();
-  bk_discreetmap.resize(map_w * 2 * map_h * 2);
-  searchmap.resize(map_w * 2 * map_h * 2);
-  attackmap.resize(map_w * 2 * map_h * 2);
-  for (int i = 0; i < map_w * 2 * map_h * 2; i++) {
+  bk_discreetmap.resize(map.width() * 2 * map.height() * 2);
+  searchmap.resize(map.width() * 2 * map.height() * 2);
+  attackmap.resize(map.width() * 2 * map.height() * 2);
+  for (int i = 0; i < map.width() * 2 * map.height() * 2; i++) {
     AIOperator op;
     op.used = false;
     searchmap[i] = op;
@@ -90,15 +90,15 @@ void NETHER::AI_precomputations(void)
   }
 
   /* Setup the terrains for the new map: */
-  for (int y = 0; y < map_h; y++) {
-    for(int x = 0; x < map_w; x++) {
-      fill_zone(discreetmap, map_w * 2, MapTerrain(float(x), float(y)), x * 2, y * 2, 2, 2);
-      fill_zone(bk_discreetmap, map_w * 2, MapTerrain(float(x), float(y)), x * 2, y * 2, 2, 2);
+  for (int y = 0; y < map.height(); y++) {
+    for(int x = 0; x < map.width(); x++) {
+      fill_zone(discreetmap, map.width() * 2, map.terrain(float(x), float(y)), x * 2, y * 2, 2, 2);
+      fill_zone(bk_discreetmap, map.width() * 2, map.terrain(float(x), float(y)), x * 2, y * 2, 2, 2);
     }
   }
 
   for (const Building& b: buildings) {
-    fill_zone(discreetmap, map_w * 2, T_BUILDING, int(b.pos.x / 0.5), int(b.pos.y / 0.5), 2, 2);
+    fill_zone(discreetmap, map.width() * 2, T_BUILDING, int(b.pos.x / 0.5), int(b.pos.y / 0.5), 2, 2);
   }
 }
 
@@ -113,18 +113,15 @@ void NETHER::AI_deleteprecomputations(void)
 
 void NETHER::AI_removebuilding(Vector pos)
 {
-	int i,j;
-	int x,y;
-	
-	x=int(pos.x/0.5);
-	y=int(pos.y/0.5);
+  int x = int(pos.x / 0.5);
+  int y = int(pos.y / 0.5);
 
-	for(i=0;i<2;i++) {
-		for(j=0;j<2;j++) {
-			discreetmap[(y+j)*(map_w*2)+(x+i)]=bk_discreetmap[(y+j)*(map_w*2)+(x+i)];
-		} /* for */ 
-	} /* for */ 
-} /* NETHER::AI_removebuilding */ 
+  for (int i = 0; i < 2; i++) {
+    for (int j = 0; j  <2; j++) {
+      discreetmap[(y + j) * (map.width() * 2) + (x + i)] = bk_discreetmap[(y + j) * (map.width() * 2) + (x + i)];
+    }
+  }
+}
 
 
 void NETHER::AI_release(void)
@@ -135,37 +132,34 @@ void NETHER::AI_release(void)
 
 void NETHER::AI_newrobot(Vector pos,int owner)
 {
-	int x,y,dx,dy;
-
-	robot_zone(pos,&x,&y,&dx,&dy);
-	if (owner==0) fill_zone(discreetmap,map_w*2,T_ROBOT,x,y,dx,dy);
-			 else fill_zone(discreetmap,map_w*2,T_EROBOT,x,y,dx,dy);
-} /* NETHER::AI_newrobot */ 
+  int x,y,dx,dy;
+  robot_zone(pos,&x,&y,&dx,&dy);
+  if (owner == 0)
+    fill_zone(discreetmap, map.width() * 2, T_ROBOT, x, y, dx, dy);
+  else
+    fill_zone(discreetmap, map.width() * 2, T_EROBOT, x, y, dx, dy);
+}
 
 
 int NETHER::AI_killrobot(Vector pos)
 {
-	int i,j;
-	int x,y,dx,dy;
-	int owner;
-	
-	robot_zone(pos,&x,&y,&dx,&dy);
-	owner=discreetmap[y*(map_w*2)+x];
-	for(i=0;i<dx;i++) {
-		for(j=0;j<dy;j++) {
-			discreetmap[(y+j)*(map_w*2)+(x+i)]=bk_discreetmap[(y+j)*(map_w*2)+(x+i)];
-		} /* for */ 
-	} /* for */ 
-
-	return owner;
-} /* NETHER::AI_killrobot */ 
+  int x, y, dx, dy;
+  robot_zone(pos, &x, &y, &dx, &dy);
+  int owner = discreetmap[y * (map.width() * 2) + x];
+  for (int i = 0; i < dx; i++) {
+    for(int j = 0; j < dy; j++) {
+      discreetmap[(y + j) * (map.width() * 2) + (x + i)] = bk_discreetmap[(y + j) * (map.width() * 2) + (x + i)];
+    }
+  }
+  return owner;
+}
 
 
-void NETHER::AI_moverobot(Vector oldpos,Vector newpos,int owner)
+void NETHER::AI_moverobot(Vector oldpos, Vector newpos, int owner)
 {
-	AI_killrobot(oldpos);
-	AI_newrobot(newpos,owner);
-} /* NETHER::AI_moverobot */ 
+  AI_killrobot(oldpos);
+  AI_newrobot(newpos, owner);
+}
 
 
 void NETHER::AI_availableoperators(const Robot& robot, std::vector<AIOperator>& l)
@@ -216,7 +210,7 @@ bool NETHER::AI_expandoperators(int x, int y, int angle, const Robot& robot, int
 	bool deadend=true;
 
 	for (int i = 0; i < 4; i++) {
-		int newpos = previous+xd[i]+yd[i]*(map_w*2);
+		int newpos = previous+xd[i]+yd[i]*(map.width()*2);
 		if (newpos!=searchmap[previous].previous) {
 			terrain=AI_WorseMapTerrain(x+xd2[i],y+yd2[i],2+xd3[i],2+yd3[i]);
 			if (terrain<=T_HOLE &&
@@ -278,14 +272,14 @@ int NETHER::AI_searchengine(const Robot& robot, int goaltype, Vector goalpos, in
   robot_zone(robot.pos, &x, &y, &dx, &dy);
 
   /* Build a new AI_operator: */
-  int offs = y * (map_w * 2) + x;
+  int offs = y * (map.width() * 2) + x;
   searchmap[offs].used = true;
   searchmap[offs].cost = 0;
   searchmap[offs].previous = -1;
   searchmap[offs].first_robotop = ROBOTOP_NONE;
   searchmap[offs].newpos = robot.pos;
   searchmap[offs].deadend = false;
-  AI_expandoperators(x, y, robot.angle, robot, y * (map_w * 2) + x, 0, depth);
+  AI_expandoperators(x, y, robot.angle, robot, y * (map.width() * 2) + x, 0, depth);
 
   /* ADVANCE PROGRAM: */
   if (goaltype==Robot::PROGRAM_ADVANCE) {
@@ -297,10 +291,10 @@ int NETHER::AI_searchengine(const Robot& robot, int goaltype, Vector goalpos, in
 
     for(int i = -depth; i < depth; i++) {
       for(int j = -depth; j < depth; j++) {
-        if ((x + i) >= 0 && (x + i) < (map_w * 2) &&
-            (y + j) >= 0 && (y + j) < (map_h * 2) &&
+        if ((x + i) >= 0 && (x + i) < (map.width() * 2) &&
+            (y + j) >= 0 && (y + j) < (map.height() * 2) &&
             (i != 0 || j != 0)) {
-          op = &searchmap[(y + j) * (map_w * 2) + (x + i)];
+          op = &searchmap[(y + j) * (map.width() * 2) + (x + i)];
           if (op->used) {
             if (first ||
                 (op->deadend == bestop->deadend &&
@@ -351,10 +345,10 @@ int NETHER::AI_searchengine(const Robot& robot, int goaltype, Vector goalpos, in
 
     for (int i = -depth; i < depth; i++) {
       for(int j = -depth; j < depth; j++) {
-        if ((x + i) >= 0 && (x + i) < (map_w * 2) &&
-            (y+j)>=0 && (y+j)<(map_h*2) &&
+        if ((x + i) >= 0 && (x + i) < (map.width() * 2) &&
+            (y+j)>=0 && (y+j)<(map.height()*2) &&
 					(i!=0 || j!=0)) {
-					op=&searchmap[(y+j)*(map_w*2)+(x+i)];
+					op=&searchmap[(y+j)*(map.width()*2)+(x+i)];
 					if (op->used) {
 						if (first ||
 							(op->deadend==bestop->deadend &&
@@ -409,10 +403,10 @@ int NETHER::AI_searchengine(const Robot& robot, int goaltype, Vector goalpos, in
 
 		for(int i=-depth;i<depth;i++) {
 			for(int j=-depth;j<depth;j++) {
-				if ((x+i)>=0 && (x+i)<(map_w*2) &&
-					(y+j)>=0 && (y+j)<(map_h*2) &&
+				if ((x+i)>=0 && (x+i)<(map.width()*2) &&
+					(y+j)>=0 && (y+j)<(map.height()*2) &&
 					(i!=0 || j!=0)) {
-					op=&searchmap[(y+j)*(map_w*2)+(x+i)];
+					op=&searchmap[(y+j)*(map.width()*2)+(x+i)];
 					if (op->used) {
 						if (first ||
 							((op->deadend==bestop->deadend || (op->newpos+Vector(0.5,0.5,0)-goalpos).norma()==0) &&
@@ -470,10 +464,10 @@ int NETHER::AI_searchengine(const Robot& robot, int goaltype, Vector goalpos, in
 
 		for(i=-depth;i<depth;i++) {
 			for(j=-depth;j<depth;j++) {
-				if ((x+i)>=0 && (x+i)<(map_w*2) &&
-					(y+j)>=0 && (y+j)<(map_h*2) &&
+				if ((x+i)>=0 && (x+i)<(map.width()*2) &&
+					(y+j)>=0 && (y+j)<(map.height()*2) &&
 					(i!=0 || j!=0)) {
-					op=&searchmap[(y+j)*(map_w*2)+(x+i)];
+					op=&searchmap[(y+j)*(map.width()*2)+(x+i)];
 					if (op->used) {
 						if (first ||
 							((op->deadend==bestop->deadend || (op->newpos+Vector(0.5,0.5,0)-goalpos).norma()==0) &&
@@ -485,10 +479,10 @@ int NETHER::AI_searchengine(const Robot& robot, int goaltype, Vector goalpos, in
 							mincost=op->cost;
 							first=false;
 						} /*if */ 
-						if (attackmap[(y+j)*(map_w*2)+(x+i)]!=0 ||
-							attackmap[(y+j+1)*(map_w*2)+(x+i)]!=0 ||
-							attackmap[(y+j)*(map_w*2)+(x+i+1)]!=0 ||
-							attackmap[(y+j+1)*(map_w*2)+(x+i+1)]!=0) {
+						if (attackmap[(y+j)*(map.width()*2)+(x+i)]!=0 ||
+							attackmap[(y+j+1)*(map.width()*2)+(x+i)]!=0 ||
+							attackmap[(y+j)*(map.width()*2)+(x+i+1)]!=0 ||
+							attackmap[(y+j+1)*(map.width()*2)+(x+i+1)]!=0) {
 							if (first2 ||
 								op->cost<mincost2) {
 								bestop2=op;
@@ -539,9 +533,9 @@ void NETHER::AI_resetsearch(Vector pos, int depth)
 
   for (int i = -depth; i < depth; i++) {
     for(int j = -depth; j < depth; j++) {
-      if ((x + i) >= 0 && (x + i) < (map_w * 2) &&
-          (y + j) >= 0 && (y + j) < (map_h * 2)) {
-        searchmap[(y + j) * (map_w * 2) + (x + i)].used = false;
+      if ((x + i) >= 0 && (x + i) < (map.width() * 2) &&
+          (y + j) >= 0 && (y + j) < (map.height() * 2)) {
+        searchmap[(y + j) * (map.width() * 2) + (x + i)].used = false;
       }
     }
   }
@@ -555,9 +549,9 @@ int NETHER::AI_WorseMapTerrain(int x,int y,int dx,int dy)
 
 	for(i=0;i<dx;i++) {
 		for(j=0;j<dy;j++) {
-			if (x+i<0 || x+i>=map_w*2 ||
-				y+j<0 || y+j>=map_h*2) return T_OUT;
-			t2=discreetmap[(y+j)*(map_w*2)+x+i];
+			if (x+i<0 || x+i>=map.width()*2 ||
+				y+j<0 || y+j>=map.height()*2) return T_OUT;
+			t2=discreetmap[(y+j)*(map.width()*2)+x+i];
 			if (t2>t) t=t2;
 		} /* if */ 
 	} /* for */ 
@@ -735,22 +729,22 @@ int NETHER::AI_RealShotPaths(int x,int y,int player,int persistence)
 	int rsp=0;
 //	int persistence=CANNON_PERSISTENCE;
 
-	for (int i = 2;i < int((persistence*BULLET_SPEED)/0.5)+2 && (x+i<map_w*2); i++) {
-		if (discreetmap[x+i+y*(map_w*2)]==T_BUILDING ||
-			discreetmap[x+i+(y+1)*(map_w*2)]==T_BUILDING) break;
+	for (int i = 2;i < int((persistence*BULLET_SPEED)/0.5)+2 && (x+i<map.width()*2); i++) {
+		if (discreetmap[x+i+y*(map.width()*2)]==T_BUILDING ||
+			discreetmap[x+i+(y+1)*(map.width()*2)]==T_BUILDING) break;
 		if (player==1) {
-			if (discreetmap[x+i+y*(map_w*2)]==T_ROBOT ||
-				discreetmap[x+i+(y+1)*(map_w*2)]==T_ROBOT) break;
-			if (discreetmap[x+i+y*(map_w*2)]==T_EROBOT ||
-				discreetmap[x+i+(y+1)*(map_w*2)]==T_EROBOT) {
+			if (discreetmap[x+i+y*(map.width()*2)]==T_ROBOT ||
+				discreetmap[x+i+(y+1)*(map.width()*2)]==T_ROBOT) break;
+			if (discreetmap[x+i+y*(map.width()*2)]==T_EROBOT ||
+				discreetmap[x+i+(y+1)*(map.width()*2)]==T_EROBOT) {
 				rsp|=1;
 				break;
 			} /* if */ 
 		} else {
-			if (discreetmap[x+i+y*(map_w*2)]==T_EROBOT ||
-				discreetmap[x+i+(y+1)*(map_w*2)]==T_EROBOT) break;
-			if (discreetmap[x+i+y*(map_w*2)]==T_ROBOT ||
-				discreetmap[x+i+(y+1)*(map_w*2)]==T_ROBOT) {
+			if (discreetmap[x+i+y*(map.width()*2)]==T_EROBOT ||
+				discreetmap[x+i+(y+1)*(map.width()*2)]==T_EROBOT) break;
+			if (discreetmap[x+i+y*(map.width()*2)]==T_ROBOT ||
+				discreetmap[x+i+(y+1)*(map.width()*2)]==T_ROBOT) {
 				rsp|=1;
 				break;
 			} /* if */ 
@@ -758,43 +752,43 @@ int NETHER::AI_RealShotPaths(int x,int y,int player,int persistence)
 	} /* for */ 
 
 	for (int i = 1;i < int((persistence*BULLET_SPEED)/0.5)+1 && (x-i>=0); i++) {
-		if (discreetmap[x-i+y*(map_w*2)]==T_BUILDING ||
-			discreetmap[x-i+(y+1)*(map_w*2)]==T_BUILDING) break;
+		if (discreetmap[x-i+y*(map.width()*2)]==T_BUILDING ||
+			discreetmap[x-i+(y+1)*(map.width()*2)]==T_BUILDING) break;
 		if (player==1) {
-			if (discreetmap[x-i+y*(map_w*2)]==T_ROBOT ||
-				discreetmap[x-i+(y+1)*(map_w*2)]==T_ROBOT) break;
-			if (discreetmap[x-i+y*(map_w*2)]==T_EROBOT ||
-				discreetmap[x-i+(y+1)*(map_w*2)]==T_EROBOT) {
+			if (discreetmap[x-i+y*(map.width()*2)]==T_ROBOT ||
+				discreetmap[x-i+(y+1)*(map.width()*2)]==T_ROBOT) break;
+			if (discreetmap[x-i+y*(map.width()*2)]==T_EROBOT ||
+				discreetmap[x-i+(y+1)*(map.width()*2)]==T_EROBOT) {
 				rsp|=4;
 				break;
 			} /* if */ 
 		} else {
-			if (discreetmap[x-i+y*(map_w*2)]==T_EROBOT ||
-				discreetmap[x-i+(y+1)*(map_w*2)]==T_EROBOT) break;
-			if (discreetmap[x-i+y*(map_w*2)]==T_ROBOT ||
-				discreetmap[x-i+(y+1)*(map_w*2)]==T_ROBOT) {
+			if (discreetmap[x-i+y*(map.width()*2)]==T_EROBOT ||
+				discreetmap[x-i+(y+1)*(map.width()*2)]==T_EROBOT) break;
+			if (discreetmap[x-i+y*(map.width()*2)]==T_ROBOT ||
+				discreetmap[x-i+(y+1)*(map.width()*2)]==T_ROBOT) {
 				rsp|=4;
 				break;
 			} /* if */ 
 		} /* if */ 
 	} /* for */ 
 
-	for (int i = 2; i < int((persistence*BULLET_SPEED)/0.5)+2 && (y+i<map_h*2); i++) {
-		if (discreetmap[x+(y+i)*(map_w*2)]==T_BUILDING ||
-			discreetmap[(x+1)+(y+i)*(map_w*2)]==T_BUILDING) break;
+	for (int i = 2; i < int((persistence*BULLET_SPEED)/0.5)+2 && (y+i<map.height()*2); i++) {
+		if (discreetmap[x+(y+i)*(map.width()*2)]==T_BUILDING ||
+			discreetmap[(x+1)+(y+i)*(map.width()*2)]==T_BUILDING) break;
 		if (player==1) {
-			if (discreetmap[x+(y+i)*(map_w*2)]==T_ROBOT ||
-				discreetmap[(x+1)+(y+i)*(map_w*2)]==T_ROBOT) break;
-			if (discreetmap[x+(y+i)*(map_w*2)]==T_EROBOT ||
-				discreetmap[(x+1)+(y+i)*(map_w*2)]==T_EROBOT) {
+			if (discreetmap[x+(y+i)*(map.width()*2)]==T_ROBOT ||
+				discreetmap[(x+1)+(y+i)*(map.width()*2)]==T_ROBOT) break;
+			if (discreetmap[x+(y+i)*(map.width()*2)]==T_EROBOT ||
+				discreetmap[(x+1)+(y+i)*(map.width()*2)]==T_EROBOT) {
 				rsp|=2;
 				break;
 			} /* if */ 
 		} else {
-			if (discreetmap[x+(y+i)*(map_w*2)]==T_EROBOT ||
-				discreetmap[(x+1)+(y+i)*(map_w*2)]==T_EROBOT) break;
-			if (discreetmap[x+(y+i)*(map_w*2)]==T_ROBOT ||
-				discreetmap[(x+1)+(y+i)*(map_w*2)]==T_ROBOT) {
+			if (discreetmap[x+(y+i)*(map.width()*2)]==T_EROBOT ||
+				discreetmap[(x+1)+(y+i)*(map.width()*2)]==T_EROBOT) break;
+			if (discreetmap[x+(y+i)*(map.width()*2)]==T_ROBOT ||
+				discreetmap[(x+1)+(y+i)*(map.width()*2)]==T_ROBOT) {
 				rsp|=2;
 				break;
 			} /* if */ 
@@ -802,21 +796,21 @@ int NETHER::AI_RealShotPaths(int x,int y,int player,int persistence)
 	} /* for */ 
 
 	for (int i = 1; i < int((persistence*BULLET_SPEED)/0.5)+1 && (y-i>=0); i++) {
-		if (discreetmap[x+(y-i)*(map_w*2)]==T_BUILDING ||
-			discreetmap[(x+1)+(y-i)*(map_w*2)]==T_BUILDING) break;
+		if (discreetmap[x+(y-i)*(map.width()*2)]==T_BUILDING ||
+			discreetmap[(x+1)+(y-i)*(map.width()*2)]==T_BUILDING) break;
 		if (player==1) {
-			if (discreetmap[x+(y-i)*(map_w*2)]==T_ROBOT ||
-				discreetmap[(x+1)+(y-i)*(map_w*2)]==T_ROBOT) break;
-			if (discreetmap[x+(y-i)*(map_w*2)]==T_EROBOT ||
-				discreetmap[(x+1)+(y-i)*(map_w*2)]==T_EROBOT) {
+			if (discreetmap[x+(y-i)*(map.width()*2)]==T_ROBOT ||
+				discreetmap[(x+1)+(y-i)*(map.width()*2)]==T_ROBOT) break;
+			if (discreetmap[x+(y-i)*(map.width()*2)]==T_EROBOT ||
+				discreetmap[(x+1)+(y-i)*(map.width()*2)]==T_EROBOT) {
 				rsp|=8;
 				break;
 			} /* if */ 
 		} else {
-			if (discreetmap[x+(y-i)*(map_w*2)]==T_EROBOT ||
-				discreetmap[(x+1)+(y-i)*(map_w*2)]==T_EROBOT) break;
-			if (discreetmap[x+(y-i)*(map_w*2)]==T_ROBOT ||
-				discreetmap[(x+1)+(y-i)*(map_w*2)]==T_ROBOT) {
+			if (discreetmap[x+(y-i)*(map.width()*2)]==T_EROBOT ||
+				discreetmap[(x+1)+(y-i)*(map.width()*2)]==T_EROBOT) break;
+			if (discreetmap[x+(y-i)*(map.width()*2)]==T_ROBOT ||
+				discreetmap[(x+1)+(y-i)*(map.width()*2)]==T_ROBOT) {
 				rsp|=8;
 				break;
 			} /* if */ 
@@ -916,45 +910,45 @@ int NETHER::AI_program_destroy(Robot& robot, Vector *program_goal, int player)
           for (int j = 0; j < dy; j++) {
             collided = false;
             for (int k = 1; !collided && k < int((persistence * BULLET_SPEED) / 0.5); k++) {
-              if (x + i + k < 0 || x + i + k >= map_w * 2 ||
-                  y + j < 0 || y + j >= map_h * 2 ||
-                  discreetmap[(y + j) * (map_w * 2) + (x + i + k)] > 3) {
+              if (x + i + k < 0 || x + i + k >= map.width() * 2 ||
+                  y + j < 0 || y + j >= map.height() * 2 ||
+                  discreetmap[(y + j) * (map.width() * 2) + (x + i + k)] > 3) {
                 collided = true;
               } else {
-                attackmap[(y + j) * (map_w * 2) + (x + i + k)] |= 4;
+                attackmap[(y + j) * (map.width() * 2) + (x + i + k)] |= 4;
               }
             }
 
             collided = false;
             for (int k = 1; !collided && k < int((persistence * BULLET_SPEED) / 0.5); k++) {
-              if (x + i - k < 0 || x + i - k >= map_w * 2 ||
-                  y + j < 0 || y + j >= map_h * 2 ||
-                  discreetmap[(y + j) * (map_w * 2) + (x + i - k)] > 3) {
+              if (x + i - k < 0 || x + i - k >= map.width() * 2 ||
+                  y + j < 0 || y + j >= map.height() * 2 ||
+                  discreetmap[(y + j) * (map.width() * 2) + (x + i - k)] > 3) {
                 collided = true;
               } else {
-                attackmap[(y + j) * (map_w * 2) + (x + i - k)] |= 1;
+                attackmap[(y + j) * (map.width() * 2) + (x + i - k)] |= 1;
               }
             }
 
             collided = false;
             for (int k = 1; !collided && k < int((persistence * BULLET_SPEED) / 0.5); k++) {
-              if (x + i < 0 || x + i >= map_w * 2 ||
-                  y + j + k < 0 || y + j + k >= map_h * 2 ||
-                  discreetmap[(y + j + k) * (map_w * 2) + (x + i)] > 3) {
+              if (x + i < 0 || x + i >= map.width() * 2 ||
+                  y + j + k < 0 || y + j + k >= map.height() * 2 ||
+                  discreetmap[(y + j + k) * (map.width() * 2) + (x + i)] > 3) {
                 collided = true;
               } else {
-                attackmap[(y + j + k) * (map_w * 2) + (x + i)] |= 8;
+                attackmap[(y + j + k) * (map.width() * 2) + (x + i)] |= 8;
               }
             }
 
             collided = false;
             for (int k = 1; !collided && k < int((persistence * BULLET_SPEED) / 0.5); k++) {
-              if (x + i < 0 || x + i >= map_w * 2 ||
-                  y + j - k < 0 || y + j - k >= map_h * 2 ||
-                  discreetmap[(y + j - k) * (map_w * 2) + (x + i)] >3) {
+              if (x + i < 0 || x + i >= map.width() * 2 ||
+                  y + j - k < 0 || y + j - k >= map.height() * 2 ||
+                  discreetmap[(y + j - k) * (map.width() * 2) + (x + i)] >3) {
                 collided = true;
               } else {
-                attackmap[(y + j - k) * (map_w * 2) + (x + i)] |= 2;
+                attackmap[(y + j - k) * (map.width() * 2) + (x + i)] |= 2;
               }
             }
           }
@@ -963,10 +957,10 @@ int NETHER::AI_program_destroy(Robot& robot, Vector *program_goal, int player)
 
       if (!first) {
         robot_zone(robot.pos, &x, &y, &dx, &dy);
-        if ((attackmap[y * (map_w * 2) + x] !=0 ||
-             attackmap[(y + 1) * (map_w * 2) + x] != 0 ||
-             attackmap[y * (map_w * 2) + x + 1] !=0 ||
-             attackmap[(y + 1) * (map_w * 2) + x + 1] != 0)) {
+        if ((attackmap[y * (map.width() * 2) + x] !=0 ||
+             attackmap[(y + 1) * (map.width() * 2) + x] != 0 ||
+             attackmap[y * (map.width() * 2) + x + 1] !=0 ||
+             attackmap[(y + 1) * (map.width() * 2) + x + 1] != 0)) {
           int prsp = 0, mrsp = 0,crsp = 0,rsp = 0;
           if (robot.hasPhasers()) prsp = AI_RealShotPaths(x, y, player, PHASER_PERSISTENCE);
           if (robot.hasMissiles()) mrsp = AI_RealShotPaths(x, y, player, MISSILE_PERSISTENCE);
@@ -1067,45 +1061,45 @@ int NETHER::AI_program_stopdefend(Robot& robot, Vector *program_goal, int player
         for (int j = 0; j < dy; j++) {
           collided = false;
           for (int k = 1; !collided && k < int((persistence * BULLET_SPEED) / 0.5); k++) {
-            if (x + i + k < 0 || x + i + k >= map_w * 2 ||
-                y + j < 0 || y + j >= map_h * 2 ||
-                discreetmap[(y + j) * (map_w * 2) + (x + i + k)] > 3) {
+            if (x + i + k < 0 || x + i + k >= map.width() * 2 ||
+                y + j < 0 || y + j >= map.height() * 2 ||
+                discreetmap[(y + j) * (map.width() * 2) + (x + i + k)] > 3) {
               collided = true;
             } else {
-              attackmap[(y + j) * (map_w * 2) + (x + i + k)] |= 4;
+              attackmap[(y + j) * (map.width() * 2) + (x + i + k)] |= 4;
             }
           }
 
           collided = false;
           for (int k = 1; !collided && k < int((persistence * BULLET_SPEED) / 0.5); k++) {
-            if (x + i - k < 0 || x + i - k >= map_w * 2 ||
-                y + j < 0 || y + j >= map_h * 2 ||
-                discreetmap[(y + j) * (map_w * 2) + (x + i - k)] >3) {
+            if (x + i - k < 0 || x + i - k >= map.width() * 2 ||
+                y + j < 0 || y + j >= map.height() * 2 ||
+                discreetmap[(y + j) * (map.width() * 2) + (x + i - k)] >3) {
               collided = true;
             } else {
-              attackmap[(y + j) * (map_w * 2) + (x + i - k)] |= 1;
+              attackmap[(y + j) * (map.width() * 2) + (x + i - k)] |= 1;
             }
           }
 
           collided = false;
           for (int k = 1; !collided && k < int((persistence * BULLET_SPEED) / 0.5); k++) {
-            if (x + i < 0 || x + i >= map_w * 2 ||
-                y + j + k < 0 || y + j + k >= map_h * 2 ||
-                discreetmap[(y + j + k) * (map_w * 2) + (x + i)] >3) {
+            if (x + i < 0 || x + i >= map.width() * 2 ||
+                y + j + k < 0 || y + j + k >= map.height() * 2 ||
+                discreetmap[(y + j + k) * (map.width() * 2) + (x + i)] >3) {
               collided = true;
             } else {
-              attackmap[(y + j + k) * (map_w * 2) + (x + i)] |= 8;
+              attackmap[(y + j + k) * (map.width() * 2) + (x + i)] |= 8;
             }
           }
 
           collided = false;
           for (int k = 1; !collided && k < int((persistence * BULLET_SPEED) / 0.5); k++) {
-            if (x + i < 0 || x + i >= map_w * 2 ||
-                y + j - k < 0 || y + j - k >= map_h * 2 ||
-                discreetmap[(y + j - k) * (map_w * 2) + (x + i)] > 3) {
+            if (x + i < 0 || x + i >= map.width() * 2 ||
+                y + j - k < 0 || y + j - k >= map.height() * 2 ||
+                discreetmap[(y + j - k) * (map.width() * 2) + (x + i)] > 3) {
               collided = true;
             } else {
-              attackmap[(y + j - k) * (map_w * 2) + (x + i)] |= 2;
+              attackmap[(y + j - k) * (map.width() * 2) + (x + i)] |= 2;
             }
           }
         }
@@ -1115,10 +1109,10 @@ int NETHER::AI_program_stopdefend(Robot& robot, Vector *program_goal, int player
 
     if (robots[2 - player].size()) {
       robot_zone(robot.pos, &x, &y, &dx, &dy);
-      if ((attackmap[y * (map_w * 2) + x] != 0 ||
-           attackmap[(y + 1) * (map_w * 2) + x] != 0 ||
-           attackmap[y * (map_w * 2) + x + 1] != 0 ||
-           attackmap[(y + 1) * (map_w * 2) + x + 1] != 0)) {
+      if ((attackmap[y * (map.width() * 2) + x] != 0 ||
+           attackmap[(y + 1) * (map.width() * 2) + x] != 0 ||
+           attackmap[y * (map.width() * 2) + x + 1] != 0 ||
+           attackmap[(y + 1) * (map.width() * 2) + x + 1] != 0)) {
         int prsp = 0, mrsp = 0, crsp = 0, rsp = 0;
         if (robot.pieces[2]) prsp = AI_RealShotPaths(x, y, player, PHASER_PERSISTENCE);
         if (robot.pieces[1]) mrsp = AI_RealShotPaths(x, y, player, MISSILE_PERSISTENCE);
@@ -1224,12 +1218,6 @@ void NETHER::AI_rankoperators_capture(std::vector<AIOperator>& l,Vector goal)
 
 const AIOperator NETHER::AI_chooseoperator(std::vector<AIOperator>& l, int factor)
 {
-  // std::cerr << "Choose operator from len " << l.size() << std::endl;
-  // for (AIOperator& op: l) {
-  //   std::cerr << op << std::endl;
-  // }
-  // std::cerr << "-------------------------" << std::endl;
-
   if (factor == 0) {
     return *l.begin();
   } else {
@@ -1249,7 +1237,7 @@ int NETHER::AI_robothere(Vector pos)
 {
   int x = int(pos.x/0.5);
   int y = int(pos.y/0.5);
-  int robot = discreetmap[y * (map_w * 2) + x];
+  int robot = discreetmap[y * (map.width() * 2) + x];
 
   if (robot != T_ROBOT && robot != T_EROBOT) robot = 0;
   return robot;
