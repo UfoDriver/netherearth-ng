@@ -62,7 +62,7 @@ void AI::deletePrecomputations()
 }
 
 
-int AI::roboThere(const Vector& pos)
+int AI::robotHere(const Vector& pos)
 {
   int x = int(pos.x/0.5);
   int y = int(pos.y/0.5);

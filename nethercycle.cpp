@@ -1163,7 +1163,7 @@ bool NETHER::cycle(unsigned char *keyboard)
           b.type==Building::TYPE::FACTORY_MISSILES ||
           b.type==Building::TYPE::FACTORY_CANNONS	||
           b.type==Building::TYPE::FACTORY_CHASSIS) {
-        int robot=ai.roboThere(b.pos+Vector(1,0,0));
+        int robot=ai.robotHere(b.pos+Vector(1,0,0));
         if (robot==0) {
           b.status=0;
         } else {
@@ -1184,7 +1184,7 @@ bool NETHER::cycle(unsigned char *keyboard)
       } /* if */ 
 
       if (b.type==Building::TYPE::WARBASE) {
-        int robot=ai.roboThere(b.pos+Vector(2,0,0));
+        int robot=ai.robotHere(b.pos+Vector(2,0,0));
         if (robot==0) {
           b.status=0;
         } else {
