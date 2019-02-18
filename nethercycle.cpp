@@ -782,25 +782,7 @@ bool NETHER::cycle(unsigned char *keyboard)
           for (const Building& b: map.buildings) {
 				if (b.type==Building::TYPE::WARBASE && b.owner==1 && 
 					ship->pos.x==b.pos.x && ship->pos.y==b.pos.y && ship->landed) {
-                  game_state=NETHER::STATE::CONSTRUCTION;
-					construction_pointer=0;
-					construction[0]=false;
-					construction[1]=false;
-					construction[2]=false;
-					construction[3]=false;
-					construction[4]=false;
-					construction[5]=false;
-					construction[6]=false;
-					construction[7]=false;
-					in_construction.traction=-1;
-					in_construction.pieces[0]=false;
-					in_construction.pieces[1]=false;
-					in_construction.pieces[2]=false;
-					in_construction.pieces[3]=false;
-					in_construction.pieces[4]=false;
-					in_construction.pos.x=b.pos.x+2.5;
-					in_construction.pos.y=b.pos.y+0.5;
-					in_construction.pos.z=b.pos.z;
+                  constructionScreen.open(b);
 				} /* if */ 
 			} /* while */ 
 		}

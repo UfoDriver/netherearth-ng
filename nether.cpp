@@ -48,7 +48,8 @@ FILE *debug_fp=0;
 
 
 NETHER::NETHER(const std::string& mapname): menu(this), radar(this), optionsScreen(this),
-                                            camera(0, 0, 0, 0), controlled(NULL)
+                                            constructionScreen(this), camera(0, 0, 0, 0),
+                                            controlled(NULL)
 {
   if (shadows == 1) {
     lightpos[0] = -1000;
@@ -84,7 +85,6 @@ NETHER::NETHER(const std::string& mapname): menu(this), radar(this), optionsScre
 
   game_state = NETHER::STATE::PLAYING;
   animation_timer = 0;
-  construction_pointer = 0;
   controlled = 0;
   game_finished = 0;
   game_started = INTRO_TIME;
@@ -121,7 +121,7 @@ bool NETHER::gamecycle()
     retval = cycle(keyboard);
     break;
   case NETHER::STATE::CONSTRUCTION:
-    retval = construction_cycle(keyboard);
+    retval = constructionScreen.cycle(keyboard);
     break;
   case NETHER::STATE::PAUSE:
   case NETHER::STATE::SAVINGGAME:
@@ -144,7 +144,7 @@ void NETHER::gameredraw(int w,int h)
     draw(w, h);
     break;
   case NETHER::STATE::CONSTRUCTION:
-    constructionDraw(w, h);
+    constructionScreen.draw(w, h, lightposv);
     break;
   case NETHER::STATE::PAUSE:
   case NETHER::STATE::SAVINGGAME:

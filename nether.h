@@ -22,6 +22,7 @@
 #include "radar.h"
 #include "stats.h"
 #include "optionsscreen.h"
+#include "constructionscreen.h"
 #include "soundmanager.h"
 #include "SDL/SDL.h"
 
@@ -83,12 +84,9 @@ public:
   Ship *ship;
 
 private:
-	bool cycle(unsigned char *keyboard);
-	bool construction_cycle(unsigned char *keyboard);
-
+  bool cycle(unsigned char *keyboard);
   void draw(int w, int h);
   void drawGame(bool shadows);
-  void constructionDraw(int w, int h);
 
 	void AI_enemy();
 	Robot* AI_enemy_newrobot(int state,Vector pos);
@@ -122,6 +120,7 @@ private:
   SoundManager sManager;
   Map map;
   OptionsScreen optionsScreen;
+  ConstructionScreen constructionScreen;
 
   float lightpos[4];
   Vector lightposv;
@@ -133,10 +132,8 @@ private:
   Stats stats;
 
   float animation_timer;
-  int construction_pointer;
-  bool construction[8];
+
   STATE game_state;
-  Robot in_construction;
   Robot* controlled;
 
   int game_finished;
@@ -151,6 +148,7 @@ private:
   friend class Menu;
   friend class Radar;
   friend class OptionsScreen;
+  friend class ConstructionScreen;
 };
 
 #endif

@@ -5,7 +5,7 @@
 #include "nether.h"
 #include "optionsscreen.h"
 
-extern int up_key,down_key,left_key,right_key,fire_key,pause_key;
+extern int up_key, down_key, left_key, right_key, fire_key, pause_key;
 
 
 void OptionsScreen::draw(int w, int h, const float lightpos[4])

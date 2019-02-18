@@ -7,7 +7,7 @@ class NETHER;
 class OptionsScreen
 {
 public:
-  explicit OptionsScreen(NETHER* nether): nether(nether) {}
+  explicit OptionsScreen(NETHER* nether): selectedOption(0), nether(nether) {}
 
   void draw(int w, int h, const float lightpos[4]);
   bool cycle(unsigned char *keyboard);
