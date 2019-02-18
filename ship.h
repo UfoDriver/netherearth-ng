@@ -8,6 +8,7 @@
 
 
 class Building;
+class Map;
 class Robot;
 
 
@@ -22,6 +23,7 @@ public:
             UP};
   Ship(const std::string& model, const std::string& texturesDir);
   bool checkCollision(const std::vector<Building>& buildings, const std::vector<Robot*> robots[2]);
+  void draw(const bool shadows, const Vector& light, const Map& map, const Robot* controlled);
 
   Vector pos;
   bool landed;

@@ -278,40 +278,10 @@ void NETHER::drawGame(bool shadows)
   MAXY = (9 + viewp.z * 4) * camera.zoom;
   MAXX = 8 * camera.zoom;
 
-  /* Draw the map: */
   Vector light(lightpos[0], lightpos[1], lightpos[2]);
   light = light / light.z;
   map.draw(viewp, shadows, light, camera);
-
-  /* Draw the ship: */
-  glPushMatrix();
-  glTranslatef(ship->pos.x, ship->pos.y, ship->pos.z);
-  if (!shadows) ship->draw(Color(0.7, 0.7, 0.7));
-  glPopMatrix();
-
-  if (shadows) {
-    float sx, sy;
-    float minz;
-
-    sx = ship->pos.x - light.x * ship->pos.z;
-    sy = ship->pos.y - light.y * ship->pos.z;
-
-    if (controlled == 0) {
-      float x[2], y[2];
-      x[0] = sx + ship->shdw_cmc.x[0];
-      x[1] = sx + ship->shdw_cmc.x[1];
-      y[0] = sy + ship->shdw_cmc.y[0];
-      y[1] = sy + ship->shdw_cmc.y[1];
-      minz = map.maxZ(x, y);
-    } else {
-      minz = controlled->pos.z;
-    }
-
-    glPushMatrix();
-    glTranslatef(sx, sy, minz+0.05);
-    ship->DrawShadow(Color(0, 0, 0, 0.5));
-    glPopMatrix();
-  }
+  ship->draw(shadows, light, map, controlled);
 }
 
 

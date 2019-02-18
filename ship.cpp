@@ -1,5 +1,7 @@
+#include <GL/gl.h>
 #include "building.h"
 #include "constants.h"
+#include "map.h"
 #include "robot.h"
 #include "ship.h"
 
@@ -121,4 +123,38 @@ bool Ship::checkCollision(const std::vector<Building>& buildings,
   }
 
   return false;
+}
+
+
+void Ship::draw(const bool shadows, const Vector& light, const Map& map, const Robot* controlled)
+{
+  glPushMatrix();
+  glTranslatef(pos.x, pos.y, pos.z);
+  if (!shadows)
+    Shadow3DObject::draw(Color(0.7, 0.7, 0.7));
+  glPopMatrix();
+
+  if (shadows) {
+    float sx, sy;
+    float minz;
+
+    sx = pos.x - light.x * pos.z;
+    sy = pos.y - light.y * pos.z;
+
+    if (controlled == 0) {
+      float x[2], y[2];
+      x[0] = sx + shdw_cmc.x[0];
+      x[1] = sx + shdw_cmc.x[1];
+      y[0] = sy + shdw_cmc.y[0];
+      y[1] = sy + shdw_cmc.y[1];
+      minz = map.maxZ(x, y);
+    } else {
+      minz = controlled->pos.z;
+    }
+
+    glPushMatrix();
+    glTranslatef(sx, sy, minz+0.05);
+    DrawShadow(Color(0, 0, 0, 0.5));
+    glPopMatrix();
+  }
 }

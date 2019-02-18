@@ -168,7 +168,7 @@ void Map::draw(const Vector& viewp, const bool shadows, const Vector& light, con
 }
 
 
-float Map::maxZ(float x[2], float y[2])
+float Map::maxZ(float x[2], float y[2]) const
 {
   float z = 0;
   int o;
