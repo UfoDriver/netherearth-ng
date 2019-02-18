@@ -50,139 +50,63 @@ FILE *debug_fp=0;
 NETHER::NETHER(const std::string& mapname): menu(this), radar(this), camera(0, 0, 0, 0),
                                             controlled(NULL)
 {
-#ifdef _WRITE_REPORT_
-	debug_fp=fopen("report.txt","w");
-	fprintf(debug_fp,"Creating game...\n");
-	fflush(debug_fp);
-#endif
-	if (shadows==1) {
-		lightpos[0]=-1000;
-		lightpos[1]=-3000;
-		lightpos[2]=5000;
-		lightpos[3]=1;
-		lightposv.x=lightpos[0];
-		lightposv.y=lightpos[1];
-		lightposv.z=lightpos[2];
-	} else {
-		lightpos[0]=0;
-		lightpos[1]=0;
-		lightpos[2]=5000;
-		lightpos[3]=1;
-		lightposv.x=lightpos[0];
-		lightposv.y=lightpos[1];
-		lightposv.z=lightpos[2];
-	} /* if */ 
+  if (shadows == 1) {
+    lightpos[0] = -1000;
+    lightpos[1] = -3000;
+    lightpos[2] = 5000;
+    lightpos[3] = 1;
+    lightposv.x = lightpos[0];
+    lightposv.y = lightpos[1];
+    lightposv.z = lightpos[2];
+  } else {
+    lightpos[0] = 0;
+    lightpos[1] = 0;
+    lightpos[2] = 5000;
+    lightpos[3] = 1;
+    lightposv.x = lightpos[0];
+    lightposv.y = lightpos[1];
+    lightposv.z = lightpos[2];
+  }
 
-#ifdef _WRITE_REPORT_
-	fprintf(debug_fp,"loading objects...\n");
-	fflush(debug_fp);
-#endif
+  Resources::instance()->loadObjects();
 
-    Resources::instance()->loadObjects();
+  ship = new Ship("models/ship.asc", "textures/");
+  ship->ComputeShadow(lightposv);
 
-    ship = new Ship("models/ship.asc", "textures/");
-    ship->ComputeShadow(lightposv);
+  map.loadMap(mapname);
 
-		
-#ifdef _WRITE_REPORT_
-	fprintf(debug_fp,"loading map...\n");
-	fflush(debug_fp);
-#endif
+  viewp.x = map.width() / 2;
+  viewp.y = 0;
+  camera.x = 6;
+  camera.y = -6;
+  camera.z = 11;
+  camera.zoom = 1;
 
-	/* Load map: */ 
-	map.loadMap(mapname);
+  game_state = NETHER::STATE::PLAYING;
+  animation_timer = 0;
+  construction_pointer = 0;
+  controlled = 0;
+  game_finished = 0;
+  game_started = INTRO_TIME;
 
-#ifdef _WRITE_REPORT_
-	fprintf(debug_fp,"Initializing game variables...\n");
-	fflush(debug_fp);
-#endif
+  menu.newmenu(Menu::TYPE::GENERAL);
+  menu.needsRedraw = 2;
+  radar.needsRedraw = 1;
 
-	/* Set camera: */ 
-	viewp.x = map.width() / 2;
-	viewp.y=0;
-	camera.x=6;
-	camera.y=-6;
-	camera.z=11;
-	camera.zoom=1;
-
-	game_state=NETHER::STATE::PLAYING;
-	animation_timer=0;
-	construction_pointer=0;
-	controlled=0;
-	game_finished=0;
-	game_started=INTRO_TIME;
-
-#ifdef _WRITE_REPORT_
-	fprintf(debug_fp,"Creating menus...\n");
-	fflush(debug_fp);
-#endif
-
-	/* Init status: */ 
-	menu.newmenu(Menu::TYPE::GENERAL);
-	menu.needsRedraw=2;
-	radar.needsRedraw=1;
-
-#ifdef _WRITE_REPORT_
-	fprintf(debug_fp,"Initializing AI...\n");
-	fflush(debug_fp);
-#endif
-
-	/* Init AI: */ 
-	AI_precomputations();
-
-#ifdef _WRITE_REPORT_
-	fprintf(debug_fp,"Game created.\n");
-	fflush(debug_fp);
-#endif
-
-} /* NETHER::NETHER */ 
+  AI_precomputations();
+}
 
 
 NETHER::~NETHER()
 {
+  map.resize(0, 0);
   for (Robot* r: map.robots[0]) delete r;
   for (Robot* r: map.robots[1]) delete r;
-
-#ifdef _WRITE_REPORT_
-	fprintf(debug_fp,"Destroying Game...\n");
-	fflush(debug_fp);
-#endif
-
-#ifdef _WRITE_REPORT_
-	fprintf(debug_fp,"Deleting sounds...\n");
-	fflush(debug_fp);
-#endif
-
-#ifdef _WRITE_REPORT_
-	fprintf(debug_fp,"Deleting objects...\n");
-	fflush(debug_fp);
-#endif
-
-    delete ship;
-    ship = 0;
-    Resources::instance()->deleteObjects();
-
-#ifdef _WRITE_REPORT_
-	fprintf(debug_fp,"Deleting AI...\n");
-	fflush(debug_fp);
-#endif
-
-	AI_deleteprecomputations();
-
-#ifdef _WRITE_REPORT_
-	fprintf(debug_fp,"Deleting map...\n");
-	fflush(debug_fp);
-#endif
-
-	/* Delete map: */ 
-	map.resize(0, 0);
-
-#ifdef _WRITE_REPORT_
-	fprintf(debug_fp,"Game destroyed.\n");
-	fclose(debug_fp);
-#endif
-
-} /* NETHER::~NETHER */ 
+  Resources::instance()->deleteObjects();
+  AI_deleteprecomputations();
+  delete ship;
+  ship = 0;
+}
 
 
 bool NETHER::gamecycle()
@@ -236,11 +160,9 @@ void NETHER::gameredraw(int w,int h)
 
 void NETHER::draw(int width, int height)
 {
-  float lightpos2[4] = {0, 0, 1000, 0};
   float tmpls[4] = {1.0F, 1.0F, 1.0F, 1.0};
   float tmpld[4] = {0.6F, 0.6F, 0.6F, 1.0};
   float tmpla[4] = {0.2F, 0.2F, 0.2F, 1.0};
-  float ratio;
   int split = int((width * 25.0F) / 32.0F);
   int splity = 0;
 
@@ -270,7 +192,7 @@ void NETHER::draw(int width, int height)
   glLightfv(GL_LIGHT0, GL_POSITION, lightpos);
   glClearColor(0, 0, 0, 0.0);
   glViewport(0, splity, split, height - splity);
-  ratio = float(split) / float(height - splity);
+  float ratio = float(split) / float(height - splity);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   gluPerspective(30.0, ratio, 1.0, 1024.0);
@@ -348,7 +270,7 @@ void NETHER::draw(int width, int height)
 
   /* Draw the RADAR screen: */
   if (show_radar && radar.needsRedraw <= 1) {
-
+    float lightpos2[4] = {0, 0, 1000, 0};
     glLightfv(GL_LIGHT0, GL_POSITION, lightpos2);
     glClearColor(0.0, 0.0, 0,0);
     glViewport(0, 0, split, splity);
@@ -374,29 +296,9 @@ void NETHER::drawGame(bool shadows)
   MAXX = 8 * camera.zoom;
 
   /* Draw the map: */
-  {
-    Vector light(lightpos[0], lightpos[1], lightpos[2]);
-    light=light / light.z;
-
-    map.draw(viewp, shadows, light, camera);
-  }
-
-  /* Draw the robots and bullets: */
-  {
-    for(int i = 0; i < 2; i++) {
-      for (Robot* r: map.robots[i]) {
-        if (r->pos.y >= (viewp.y + MINY) &&
-            r->pos.y <= (viewp.y + MAXY) &&
-            r->pos.x >= (viewp.x + MINX) &&
-            r->pos.x <= (viewp.x + MAXX)) {
-          glPushMatrix();
-          glTranslatef(r->pos.x, r->pos.y, r->pos.z);
-          r->draw(i, shadows, Resources::pieceTiles, lightposv);
-          glPopMatrix();
-        }
-      }
-    }
-  }
+  Vector light(lightpos[0], lightpos[1], lightpos[2]);
+  light = light / light.z;
+  map.draw(viewp, shadows, light, camera);
 
   /* Draw the ship: */
   glPushMatrix();
@@ -407,10 +309,6 @@ void NETHER::drawGame(bool shadows)
   if (shadows) {
     float sx, sy;
     float minz;
-    Vector light;
-
-    light = lightposv;
-    light = light / light.z;
 
     sx = ship->pos.x - light.x * ship->pos.z;
     sy = ship->pos.y - light.y * ship->pos.z;
@@ -431,8 +329,6 @@ void NETHER::drawGame(bool shadows)
     ship->DrawShadow(Color(0, 0, 0, 0.5));
     glPopMatrix();
   }
-
-  /* Draw the extras: */
 }
 
 

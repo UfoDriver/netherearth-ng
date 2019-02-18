@@ -93,7 +93,19 @@ void Map::draw(const Vector& viewp, const bool shadows, const Vector& light, con
     }
   }
 
-  // robots drawing will be here
+  for(int i = 0; i < 2; i++) {
+    for (Robot* r: robots[i]) {
+      if (r->pos.y >= (viewp.y + MINY) &&
+          r->pos.y <= (viewp.y + MAXY) &&
+          r->pos.x >= (viewp.x + MINX) &&
+          r->pos.x <= (viewp.x + MAXX)) {
+        glPushMatrix();
+        glTranslatef(r->pos.x, r->pos.y, r->pos.z);
+        r->draw(i, shadows, Resources::pieceTiles, light);
+        glPopMatrix();
+      }
+    }
+  }
 
   for (const Bullet& bullet: bullets) {
     if (bullet.pos.y >= (viewp.y + MINY) &&
