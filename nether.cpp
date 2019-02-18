@@ -43,8 +43,8 @@ extern bool show_radar;
 
 
 NETHER::NETHER(const std::string& mapname): menu(this), radar(this), optionsScreen(this),
-                                            constructionScreen(this), ai(this), camera(0, 0, 0, 0),
-                                            controlled(NULL)
+                                            constructionScreen(this), ai(this, &map),
+                                            camera(0, 0, 0, 0), controlled(NULL)
 {
   if (shadows == 1) {
     lightpos[0] = -1000;

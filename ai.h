@@ -5,6 +5,7 @@
 #include "vector.h"
 
 class AIOperator;
+class Map;
 class NETHER;
 class Robot;
 
@@ -12,7 +13,7 @@ class Robot;
 class AI
 {
 public:
-  explicit AI(NETHER* nether): nether(nether) {}
+  AI(NETHER* nether, Map* map): nether(nether), map(map) {}
   void makePrecomputations();
   void deletePrecomputations();
   void enemy();
@@ -51,6 +52,7 @@ private:
   void robotZone(const Vector& pos,int *x,int *y,int *dx,int *dy);
 
   NETHER* nether;
+  Map* map;
 };
 
 

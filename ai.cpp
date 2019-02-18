@@ -28,12 +28,12 @@ void AI::fillZone(std::vector<int>& map, int w, int val, int x, int y, int dx, i
 void AI::makePrecomputations()
 {
   discreetmap.clear();
-  discreetmap.resize(nether->map.width() * 2 * nether->map.height() * 2, 0);
+  discreetmap.resize(map->width() * 2 * map->height() * 2, 0);
   bk_discreetmap.clear();
-  bk_discreetmap.resize(nether->map.width() * 2 * nether->map.height() * 2);
-  searchmap.resize(nether->map.width() * 2 * nether->map.height() * 2);
-  attackmap.resize(nether->map.width() * 2 * nether->map.height() * 2);
-  for (int i = 0; i < nether->map.width() * 2 * nether->map.height() * 2; i++) {
+  bk_discreetmap.resize(map->width() * 2 * map->height() * 2);
+  searchmap.resize(map->width() * 2 * map->height() * 2);
+  attackmap.resize(map->width() * 2 * map->height() * 2);
+  for (int i = 0; i < map->width() * 2 * map->height() * 2; i++) {
     AIOperator op;
     op.used = false;
     searchmap[i] = op;
@@ -41,15 +41,15 @@ void AI::makePrecomputations()
   }
 
   /* Setup the terrains for the new map: */
-  for (int y = 0; y < nether->map.height(); y++) {
-    for(int x = 0; x < nether->map.width(); x++) {
-      fillZone(discreetmap, nether->map.width() * 2, nether->map.terrain(float(x), float(y)), x * 2, y * 2, 2, 2);
-      fillZone(bk_discreetmap, nether->map.width() * 2, nether->map.terrain(float(x), float(y)), x * 2, y * 2, 2, 2);
+  for (int y = 0; y < map->height(); y++) {
+    for(int x = 0; x < map->width(); x++) {
+      fillZone(discreetmap, map->width() * 2, map->terrain(float(x), float(y)), x * 2, y * 2, 2, 2);
+      fillZone(bk_discreetmap, map->width() * 2, map->terrain(float(x), float(y)), x * 2, y * 2, 2, 2);
     }
   }
 
-  for (const Building& b: nether->map.buildings) {
-    fillZone(discreetmap, nether->map.width() * 2, T_BUILDING, int(b.pos.x / 0.5), int(b.pos.y / 0.5), 2, 2);
+  for (const Building& b: map->buildings) {
+    fillZone(discreetmap, map->width() * 2, T_BUILDING, int(b.pos.x / 0.5), int(b.pos.y / 0.5), 2, 2);
   }
 }
 
@@ -66,7 +66,7 @@ int AI::robotHere(const Vector& pos)
 {
   int x = int(pos.x/0.5);
   int y = int(pos.y/0.5);
-  int robot = discreetmap[y * (nether->map.width() * 2) + x];
+  int robot = discreetmap[y * (map->width() * 2) + x];
 
   if (robot != T_ROBOT && robot != T_EROBOT) robot = 0;
   return robot;
@@ -77,10 +77,10 @@ int AI::killRobot(const Vector& pos)
 {
   int x, y, dx, dy;
   robotZone(pos, &x, &y, &dx, &dy);
-  int owner = discreetmap[y * (nether->map.width() * 2) + x];
+  int owner = discreetmap[y * (map->width() * 2) + x];
   for (int i = 0; i < dx; i++) {
     for(int j = 0; j < dy; j++) {
-      discreetmap[(y + j) * (nether->map.width() * 2) + (x + i)] = bk_discreetmap[(y + j) * (nether->map.width() * 2) + (x + i)];
+      discreetmap[(y + j) * (map->width() * 2) + (x + i)] = bk_discreetmap[(y + j) * (map->width() * 2) + (x + i)];
     }
   }
   return owner;
@@ -114,9 +114,9 @@ void AI::newRobot(const Vector& pos, const int owner)
   int x, y, dx, dy;
   robotZone(pos,&x,&y,&dx,&dy);
   if (owner == 0)
-    fillZone(discreetmap, nether->map.width() * 2, T_ROBOT, x, y, dx, dy);
+    fillZone(discreetmap, map->width() * 2, T_ROBOT, x, y, dx, dy);
   else
-    fillZone(discreetmap, nether->map.width() * 2, T_EROBOT, x, y, dx, dy);
+    fillZone(discreetmap, map->width() * 2, T_EROBOT, x, y, dx, dy);
 }
 
 
@@ -132,10 +132,10 @@ int AI::worseMapTerrain(const int x, const int y, const int dx, const int dy)
   int t = T_GRASS, t2;
   for (int i = 0; i < dx; i++) {
     for (int j = 0; j < dy; j++) {
-      if (x + i < 0 || x + i >= nether->map.width() * 2 ||
-          y + j < 0 || y + j >= nether->map.height() * 2)
+      if (x + i < 0 || x + i >= map->width() * 2 ||
+          y + j < 0 || y + j >= map->height() * 2)
         return T_OUT;
-      t2 = discreetmap[(y + j) * (nether->map.width() * 2) + x + i];
+      t2 = discreetmap[(y + j) * (map->width() * 2) + x + i];
       if (t2 > t) t = t2;
     }
   }
@@ -150,7 +150,7 @@ void AI::removeBuilding(const Vector& pos)
 
   for (int i = 0; i < 2; i++) {
     for (int j = 0; j  <2; j++) {
-      discreetmap[(y + j) * (nether->map.width() * 2) + (x + i)] = bk_discreetmap[(y + j) * (nether->map.width() * 2) + (x + i)];
+      discreetmap[(y + j) * (map->width() * 2) + (x + i)] = bk_discreetmap[(y + j) * (map->width() * 2) + (x + i)];
     }
   }
 }
@@ -214,7 +214,7 @@ void AI::enemy()
       int forces[2]={0,0};
 
       mean_factory_position=Vector(0,0,0);
-      for (const Building& b: nether->map.buildings) {
+      for (const Building& b: map->buildings) {
         if (b.type==Building::TYPE::FACTORY_ELECTRONICS ||
             b.type==Building::TYPE::FACTORY_NUCLEAR ||
             b.type==Building::TYPE::FACTORY_PHASERS ||
@@ -226,14 +226,14 @@ void AI::enemy()
       }
       mean_factory_position=mean_factory_position/(factories[0]+factories[1]);
 
-      for (Building& b: nether->map.buildings) {
+      for (Building& b: map->buildings) {
         if (b.type==Building::TYPE::WARBASE &&
             b.owner==2) {
           forces[0]=0;
           forces[1]=0;
 
           tmpr->pos=b.pos+Vector(2.5,0.5,0);
-          if (!tmpr->checkCollision(nether->map.buildings, nether->map.robots, true, nether->ship)) {
+          if (!tmpr->checkCollision(map->buildings, map->robots, true, nether->ship)) {
             /* Find the closest WARBASE to the available FACTORIES: */ 
             if (closest_to_factories_warbase==0 ||
                 (closest_to_factories_warbase->pos-b.pos).norma()<distance_to_factories) {
@@ -251,7 +251,7 @@ void AI::enemy()
 
           /* Test for WARBASEs in danger: */ 
           for(int i = 0; i < 2; i++) {
-            for (Robot* r: nether->map.robots[i]) {
+            for (Robot* r: map->robots[i]) {
               if ((r->pos-b.pos).norma() < 10.0) {
                 /* Robot near: */ 
                 forces[i]+= r->cost();
@@ -282,7 +282,7 @@ void AI::enemy()
 	/* If the warbase in danger id blocked, build robots from another warbase: */ 
 	if (in_danger_warbase!=0) {
 		tmpr->pos=in_danger_warbase->pos+Vector(2.0,0.5,0);
-		if (tmpr->checkCollision(nether->map.buildings, nether->map.robots, true, nether->ship)) in_danger_warbase=closest_to_enemy_warbase;
+		if (tmpr->checkCollision(map->buildings, map->robots, true, nether->ship)) in_danger_warbase=closest_to_enemy_warbase;
 	} /* if */ 
 
 	delete tmpr;
@@ -293,7 +293,7 @@ void AI::enemy()
 
 
 	/* Count the number of robots: */ 
-    for (Robot* r: nether->map.robots[1]) {
+    for (Robot* r: map->robots[1]) {
       if (r->program==Robot::PROGRAM_CAPTURE) nrobots[0]++;
       if (r->program==Robot::PROGRAM_DESTROY) nrobots[1]++;
       if (r->program==Robot::PROGRAM_STOPDEFEND) nrobots[2]++;
@@ -322,10 +322,10 @@ void AI::enemy()
 			(level==1 && (rand()%2)==0) ||
 			(level==0 && (rand()%4)==0))) {
 			/* There are too many robots in STOP & DEFEND: */ 
-          for (Robot* r: nether->map.robots[1]) {
+          for (Robot* r: map->robots[1]) {
             if (r->program==Robot::PROGRAM_STOPDEFEND) {
               if (nrobots[0]<6 && factories[2]<(factories[1]+factories[0]) && 
-                  (nether->map.robots[0].size()*2)<=nrobots[1]) {
+                  (map->robots[0].size()*2)<=nrobots[1]) {
                 /* Convert the robot to a conquering one: */ 
                 if (factories[1]>factories[0]) {
                   r->program=Robot::PROGRAM_CAPTURE;
@@ -337,7 +337,7 @@ void AI::enemy()
                   return;
                 } /* if */ 
               } else {
-                if ((nether->map.robots[0].size()*2)>nrobots[1]) {
+                if ((map->robots[0].size()*2)>nrobots[1]) {
                   r->program=Robot::PROGRAM_DESTROY;
                   r->program_parameter.param =Robot::P_PARAM_ROBOTS;
                   return;
@@ -352,7 +352,7 @@ void AI::enemy()
 		} /* if */ 
 		/* Test for near FACTORIES and CAPTURING ROBOTS: */ 
 		if (nrobots[0]<6 && factories[2]<(factories[1]+factories[0]) &&
-			(nether->map.robots[0].size()*2)<=nrobots[1]) {
+			(map->robots[0].size()*2)<=nrobots[1]) {
 			/* I need more conquering robots: */ 
 
 			/* Try to make better robots as time passes: */ 
@@ -599,8 +599,8 @@ Robot* AI::enemyNewRobot(const int state, const Vector& pos)
 		r->calculateCMC(Resources::pieceTiles[1]);
 		r->shipover=false;
 
-		if (!r->checkCollision(nether->map.buildings, nether->map.robots, true, nether->ship)) {
-			nether->map.robots[1].push_back(r);
+		if (!r->checkCollision(map->buildings, map->robots, true, nether->ship)) {
+			map->robots[1].push_back(r);
 			newRobot(r->pos,0);
 
 			for(i=0;i<7;i++) nether->stats.resources[1][i]-=cost[i];
@@ -664,7 +664,7 @@ bool AI::expandOperators(const int x, const int y, const int angle, const Robot&
 	bool deadend=true;
 
 	for (int i = 0; i < 4; i++) {
-		int newpos = previous+xd[i]+yd[i]*(nether->map.width()*2);
+		int newpos = previous+xd[i]+yd[i]*(map->width()*2);
 		if (newpos!=searchmap[previous].previous) {
 			terrain=worseMapTerrain(x+xd2[i],y+yd2[i],2+xd3[i],2+yd3[i]);
 			if (terrain<=T_HOLE &&
@@ -725,14 +725,14 @@ int AI::searchEngine(const Robot& robot, const int goaltype, const Vector& goalp
   robotZone(robot.pos, &x, &y, &dx, &dy);
 
   /* Build a new AI_operator: */
-  int offs = y * (nether->map.width() * 2) + x;
+  int offs = y * (map->width() * 2) + x;
   searchmap[offs].used = true;
   searchmap[offs].cost = 0;
   searchmap[offs].previous = -1;
   searchmap[offs].first_robotop = ROBOTOP_NONE;
   searchmap[offs].newpos = robot.pos;
   searchmap[offs].deadend = false;
-  expandOperators(x, y, robot.angle, robot, y * (nether->map.width() * 2) + x, 0, depth);
+  expandOperators(x, y, robot.angle, robot, y * (map->width() * 2) + x, 0, depth);
 
   /* ADVANCE PROGRAM: */
   if (goaltype==Robot::PROGRAM_ADVANCE) {
@@ -744,10 +744,10 @@ int AI::searchEngine(const Robot& robot, const int goaltype, const Vector& goalp
 
     for(int i = -depth; i < depth; i++) {
       for(int j = -depth; j < depth; j++) {
-        if ((x + i) >= 0 && (x + i) < (nether->map.width() * 2) &&
-            (y + j) >= 0 && (y + j) < (nether->map.height() * 2) &&
+        if ((x + i) >= 0 && (x + i) < (map->width() * 2) &&
+            (y + j) >= 0 && (y + j) < (map->height() * 2) &&
             (i != 0 || j != 0)) {
-          op = &searchmap[(y + j) * (nether->map.width() * 2) + (x + i)];
+          op = &searchmap[(y + j) * (map->width() * 2) + (x + i)];
           if (op->used) {
             if (first ||
                 (op->deadend == bestop->deadend &&
@@ -798,10 +798,10 @@ int AI::searchEngine(const Robot& robot, const int goaltype, const Vector& goalp
 
     for (int i = -depth; i < depth; i++) {
       for(int j = -depth; j < depth; j++) {
-        if ((x + i) >= 0 && (x + i) < (nether->map.width() * 2) &&
-            (y+j)>=0 && (y+j)<(nether->map.height()*2) &&
+        if ((x + i) >= 0 && (x + i) < (map->width() * 2) &&
+            (y+j)>=0 && (y+j)<(map->height()*2) &&
 					(i!=0 || j!=0)) {
-					op=&searchmap[(y+j)*(nether->map.width()*2)+(x+i)];
+					op=&searchmap[(y+j)*(map->width()*2)+(x+i)];
 					if (op->used) {
 						if (first ||
 							(op->deadend==bestop->deadend &&
@@ -856,10 +856,10 @@ int AI::searchEngine(const Robot& robot, const int goaltype, const Vector& goalp
 
 		for(int i=-depth;i<depth;i++) {
 			for(int j=-depth;j<depth;j++) {
-				if ((x+i)>=0 && (x+i)<(nether->map.width()*2) &&
-					(y+j)>=0 && (y+j)<(nether->map.height()*2) &&
+				if ((x+i)>=0 && (x+i)<(map->width()*2) &&
+					(y+j)>=0 && (y+j)<(map->height()*2) &&
 					(i!=0 || j!=0)) {
-					op=&searchmap[(y+j)*(nether->map.width()*2)+(x+i)];
+					op=&searchmap[(y+j)*(map->width()*2)+(x+i)];
 					if (op->used) {
 						if (first ||
 							((op->deadend==bestop->deadend || (op->newpos+Vector(0.5,0.5,0)-goalpos).norma()==0) &&
@@ -917,10 +917,10 @@ int AI::searchEngine(const Robot& robot, const int goaltype, const Vector& goalp
 
 		for(i=-depth;i<depth;i++) {
 			for(j=-depth;j<depth;j++) {
-				if ((x+i)>=0 && (x+i)<(nether->map.width()*2) &&
-					(y+j)>=0 && (y+j)<(nether->map.height()*2) &&
+				if ((x+i)>=0 && (x+i)<(map->width()*2) &&
+					(y+j)>=0 && (y+j)<(map->height()*2) &&
 					(i!=0 || j!=0)) {
-					op=&searchmap[(y+j)*(nether->map.width()*2)+(x+i)];
+					op=&searchmap[(y+j)*(map->width()*2)+(x+i)];
 					if (op->used) {
 						if (first ||
 							((op->deadend==bestop->deadend || (op->newpos+Vector(0.5,0.5,0)-goalpos).norma()==0) &&
@@ -932,10 +932,10 @@ int AI::searchEngine(const Robot& robot, const int goaltype, const Vector& goalp
 							mincost=op->cost;
 							first=false;
 						} /*if */ 
-						if (attackmap[(y+j)*(nether->map.width()*2)+(x+i)]!=0 ||
-							attackmap[(y+j+1)*(nether->map.width()*2)+(x+i)]!=0 ||
-							attackmap[(y+j)*(nether->map.width()*2)+(x+i+1)]!=0 ||
-							attackmap[(y+j+1)*(nether->map.width()*2)+(x+i+1)]!=0) {
+						if (attackmap[(y+j)*(map->width()*2)+(x+i)]!=0 ||
+							attackmap[(y+j+1)*(map->width()*2)+(x+i)]!=0 ||
+							attackmap[(y+j)*(map->width()*2)+(x+i+1)]!=0 ||
+							attackmap[(y+j+1)*(map->width()*2)+(x+i+1)]!=0) {
 							if (first2 ||
 								op->cost<mincost2) {
 								bestop2=op;
@@ -986,9 +986,9 @@ void AI::resetSearch(const Vector& pos, const int depth)
 
   for (int i = -depth; i < depth; i++) {
     for(int j = -depth; j < depth; j++) {
-      if ((x + i) >= 0 && (x + i) < (nether->map.width() * 2) &&
-          (y + j) >= 0 && (y + j) < (nether->map.height() * 2)) {
-        searchmap[(y + j) * (nether->map.width() * 2) + (x + i)].used = false;
+      if ((x + i) >= 0 && (x + i) < (map->width() * 2) &&
+          (y + j) >= 0 && (y + j) < (map->height() * 2)) {
+        searchmap[(y + j) * (map->width() * 2) + (x + i)].used = false;
       }
     }
   }
@@ -1089,51 +1089,51 @@ int AI::programStopDefend(const Robot& robot, Vector *program_goal, const int pl
     std::fill(attackmap.begin(), attackmap.end(), 0);
 
     /* Find the nearest FIRE position: */
-    for (Robot* r: nether->map.robots[2 - player]) {
+    for (Robot* r: map->robots[2 - player]) {
       robotZone(r->pos, &x, &y, &dx, &dy);
       for (int i = 0; i < dx; i++) {
         for (int j = 0; j < dy; j++) {
           collided = false;
           for (int k = 1; !collided && k < int((persistence * BULLET_SPEED) / 0.5); k++) {
-            if (x + i + k < 0 || x + i + k >= nether->map.width() * 2 ||
-                y + j < 0 || y + j >= nether->map.height() * 2 ||
-                discreetmap[(y + j) * (nether->map.width() * 2) + (x + i + k)] > 3) {
+            if (x + i + k < 0 || x + i + k >= map->width() * 2 ||
+                y + j < 0 || y + j >= map->height() * 2 ||
+                discreetmap[(y + j) * (map->width() * 2) + (x + i + k)] > 3) {
               collided = true;
             } else {
-              attackmap[(y + j) * (nether->map.width() * 2) + (x + i + k)] |= 4;
+              attackmap[(y + j) * (map->width() * 2) + (x + i + k)] |= 4;
             }
           }
 
           collided = false;
           for (int k = 1; !collided && k < int((persistence * BULLET_SPEED) / 0.5); k++) {
-            if (x + i - k < 0 || x + i - k >= nether->map.width() * 2 ||
-                y + j < 0 || y + j >= nether->map.height() * 2 ||
-                discreetmap[(y + j) * (nether->map.width() * 2) + (x + i - k)] >3) {
+            if (x + i - k < 0 || x + i - k >= map->width() * 2 ||
+                y + j < 0 || y + j >= map->height() * 2 ||
+                discreetmap[(y + j) * (map->width() * 2) + (x + i - k)] >3) {
               collided = true;
             } else {
-              attackmap[(y + j) * (nether->map.width() * 2) + (x + i - k)] |= 1;
+              attackmap[(y + j) * (map->width() * 2) + (x + i - k)] |= 1;
             }
           }
 
           collided = false;
           for (int k = 1; !collided && k < int((persistence * BULLET_SPEED) / 0.5); k++) {
-            if (x + i < 0 || x + i >= nether->map.width() * 2 ||
-                y + j + k < 0 || y + j + k >= nether->map.height() * 2 ||
-                discreetmap[(y + j + k) * (nether->map.width() * 2) + (x + i)] >3) {
+            if (x + i < 0 || x + i >= map->width() * 2 ||
+                y + j + k < 0 || y + j + k >= map->height() * 2 ||
+                discreetmap[(y + j + k) * (map->width() * 2) + (x + i)] >3) {
               collided = true;
             } else {
-              attackmap[(y + j + k) * (nether->map.width() * 2) + (x + i)] |= 8;
+              attackmap[(y + j + k) * (map->width() * 2) + (x + i)] |= 8;
             }
           }
 
           collided = false;
           for (int k = 1; !collided && k < int((persistence * BULLET_SPEED) / 0.5); k++) {
-            if (x + i < 0 || x + i >= nether->map.width() * 2 ||
-                y + j - k < 0 || y + j - k >= nether->map.height() * 2 ||
-                discreetmap[(y + j - k) * (nether->map.width() * 2) + (x + i)] > 3) {
+            if (x + i < 0 || x + i >= map->width() * 2 ||
+                y + j - k < 0 || y + j - k >= map->height() * 2 ||
+                discreetmap[(y + j - k) * (map->width() * 2) + (x + i)] > 3) {
               collided = true;
             } else {
-              attackmap[(y + j - k) * (nether->map.width() * 2) + (x + i)] |= 2;
+              attackmap[(y + j - k) * (map->width() * 2) + (x + i)] |= 2;
             }
           }
         }
@@ -1141,12 +1141,12 @@ int AI::programStopDefend(const Robot& robot, Vector *program_goal, const int pl
     }
 
 
-    if (nether->map.robots[2 - player].size()) {
+    if (map->robots[2 - player].size()) {
       robotZone(robot.pos, &x, &y, &dx, &dy);
-      if ((attackmap[y * (nether->map.width() * 2) + x] != 0 ||
-           attackmap[(y + 1) * (nether->map.width() * 2) + x] != 0 ||
-           attackmap[y * (nether->map.width() * 2) + x + 1] != 0 ||
-           attackmap[(y + 1) * (nether->map.width() * 2) + x + 1] != 0)) {
+      if ((attackmap[y * (map->width() * 2) + x] != 0 ||
+           attackmap[(y + 1) * (map->width() * 2) + x] != 0 ||
+           attackmap[y * (map->width() * 2) + x + 1] != 0 ||
+           attackmap[(y + 1) * (map->width() * 2) + x + 1] != 0)) {
         int prsp = 0, mrsp = 0, crsp = 0, rsp = 0;
         if (robot.pieces[2]) prsp = realShotPaths(x, y, player, PHASER_PERSISTENCE);
         if (robot.pieces[1]) mrsp = realShotPaths(x, y, player, MISSILE_PERSISTENCE);
@@ -1226,7 +1226,7 @@ int AI::programCapture(const Robot& robot, Vector *program_goal, const int playe
 
       *program_goal = Vector(-1, -1, -1);
 
-      for (const Building& b: nether->map.buildings) {
+      for (const Building& b: map->buildings) {
         if (robot.program_parameter.as_int == Robot::P_PARAM_WARBASES &&
             b.type == Building::TYPE::WARBASE &&
             b.owner != player &&
@@ -1317,7 +1317,7 @@ int AI::programDestroy(const Robot& robot, Vector *program_goal, const int playe
 
       *program_goal = Vector(-1, -1, -1);
 
-      for (const Building& b: nether->map.buildings) {
+      for (const Building& b: map->buildings) {
         if (robot.program_parameter.as_int == Robot::P_PARAM_WARBASES &&
             b.type == Building::TYPE::WARBASE &&
             b.owner!=player &&
@@ -1375,7 +1375,7 @@ int AI::programDestroy(const Robot& robot, Vector *program_goal, const int playe
       std::fill(attackmap.begin(), attackmap.end(), 0);
 
       /* Find the nearest FIRE position: */
-      for (Robot* r: nether->map.robots[2 - player]) {
+      for (Robot* r: map->robots[2 - player]) {
         if (first ||
             (*program_goal - robot.pos).norma() < distance) {
           first = false;
@@ -1388,45 +1388,45 @@ int AI::programDestroy(const Robot& robot, Vector *program_goal, const int playe
           for (int j = 0; j < dy; j++) {
             collided = false;
             for (int k = 1; !collided && k < int((persistence * BULLET_SPEED) / 0.5); k++) {
-              if (x + i + k < 0 || x + i + k >= nether->map.width() * 2 ||
-                  y + j < 0 || y + j >= nether->map.height() * 2 ||
-                  discreetmap[(y + j) * (nether->map.width() * 2) + (x + i + k)] > 3) {
+              if (x + i + k < 0 || x + i + k >= map->width() * 2 ||
+                  y + j < 0 || y + j >= map->height() * 2 ||
+                  discreetmap[(y + j) * (map->width() * 2) + (x + i + k)] > 3) {
                 collided = true;
               } else {
-                attackmap[(y + j) * (nether->map.width() * 2) + (x + i + k)] |= 4;
+                attackmap[(y + j) * (map->width() * 2) + (x + i + k)] |= 4;
               }
             }
 
             collided = false;
             for (int k = 1; !collided && k < int((persistence * BULLET_SPEED) / 0.5); k++) {
-              if (x + i - k < 0 || x + i - k >= nether->map.width() * 2 ||
-                  y + j < 0 || y + j >= nether->map.height() * 2 ||
-                  discreetmap[(y + j) * (nether->map.width() * 2) + (x + i - k)] > 3) {
+              if (x + i - k < 0 || x + i - k >= map->width() * 2 ||
+                  y + j < 0 || y + j >= map->height() * 2 ||
+                  discreetmap[(y + j) * (map->width() * 2) + (x + i - k)] > 3) {
                 collided = true;
               } else {
-                attackmap[(y + j) * (nether->map.width() * 2) + (x + i - k)] |= 1;
+                attackmap[(y + j) * (map->width() * 2) + (x + i - k)] |= 1;
               }
             }
 
             collided = false;
             for (int k = 1; !collided && k < int((persistence * BULLET_SPEED) / 0.5); k++) {
-              if (x + i < 0 || x + i >= nether->map.width() * 2 ||
-                  y + j + k < 0 || y + j + k >= nether->map.height() * 2 ||
-                  discreetmap[(y + j + k) * (nether->map.width() * 2) + (x + i)] > 3) {
+              if (x + i < 0 || x + i >= map->width() * 2 ||
+                  y + j + k < 0 || y + j + k >= map->height() * 2 ||
+                  discreetmap[(y + j + k) * (map->width() * 2) + (x + i)] > 3) {
                 collided = true;
               } else {
-                attackmap[(y + j + k) * (nether->map.width() * 2) + (x + i)] |= 8;
+                attackmap[(y + j + k) * (map->width() * 2) + (x + i)] |= 8;
               }
             }
 
             collided = false;
             for (int k = 1; !collided && k < int((persistence * BULLET_SPEED) / 0.5); k++) {
-              if (x + i < 0 || x + i >= nether->map.width() * 2 ||
-                  y + j - k < 0 || y + j - k >= nether->map.height() * 2 ||
-                  discreetmap[(y + j - k) * (nether->map.width() * 2) + (x + i)] >3) {
+              if (x + i < 0 || x + i >= map->width() * 2 ||
+                  y + j - k < 0 || y + j - k >= map->height() * 2 ||
+                  discreetmap[(y + j - k) * (map->width() * 2) + (x + i)] >3) {
                 collided = true;
               } else {
-                attackmap[(y + j - k) * (nether->map.width() * 2) + (x + i)] |= 2;
+                attackmap[(y + j - k) * (map->width() * 2) + (x + i)] |= 2;
               }
             }
           }
@@ -1435,10 +1435,10 @@ int AI::programDestroy(const Robot& robot, Vector *program_goal, const int playe
 
       if (!first) {
         robotZone(robot.pos, &x, &y, &dx, &dy);
-        if ((attackmap[y * (nether->map.width() * 2) + x] !=0 ||
-             attackmap[(y + 1) * (nether->map.width() * 2) + x] != 0 ||
-             attackmap[y * (nether->map.width() * 2) + x + 1] !=0 ||
-             attackmap[(y + 1) * (nether->map.width() * 2) + x + 1] != 0)) {
+        if ((attackmap[y * (map->width() * 2) + x] !=0 ||
+             attackmap[(y + 1) * (map->width() * 2) + x] != 0 ||
+             attackmap[y * (map->width() * 2) + x + 1] !=0 ||
+             attackmap[(y + 1) * (map->width() * 2) + x + 1] != 0)) {
           int prsp = 0, mrsp = 0,crsp = 0,rsp = 0;
           if (robot.hasPhasers()) prsp = realShotPaths(x, y, player, PHASER_PERSISTENCE);
           if (robot.hasMissiles()) mrsp = realShotPaths(x, y, player, MISSILE_PERSISTENCE);
@@ -1576,22 +1576,22 @@ int AI::realShotPaths(const int x, const int y, const int player, const int pers
 {
 	int rsp=0;
 
-	for (int i = 2;i < int((persistence*BULLET_SPEED)/0.5)+2 && (x+i<nether->map.width()*2); i++) {
-		if (discreetmap[x+i+y*(nether->map.width()*2)]==T_BUILDING ||
-			discreetmap[x+i+(y+1)*(nether->map.width()*2)]==T_BUILDING) break;
+	for (int i = 2;i < int((persistence*BULLET_SPEED)/0.5)+2 && (x+i<map->width()*2); i++) {
+		if (discreetmap[x+i+y*(map->width()*2)]==T_BUILDING ||
+			discreetmap[x+i+(y+1)*(map->width()*2)]==T_BUILDING) break;
 		if (player==1) {
-			if (discreetmap[x+i+y*(nether->map.width()*2)]==T_ROBOT ||
-				discreetmap[x+i+(y+1)*(nether->map.width()*2)]==T_ROBOT) break;
-			if (discreetmap[x+i+y*(nether->map.width()*2)]==T_EROBOT ||
-				discreetmap[x+i+(y+1)*(nether->map.width()*2)]==T_EROBOT) {
+			if (discreetmap[x+i+y*(map->width()*2)]==T_ROBOT ||
+				discreetmap[x+i+(y+1)*(map->width()*2)]==T_ROBOT) break;
+			if (discreetmap[x+i+y*(map->width()*2)]==T_EROBOT ||
+				discreetmap[x+i+(y+1)*(map->width()*2)]==T_EROBOT) {
 				rsp|=1;
 				break;
 			} /* if */ 
 		} else {
-			if (discreetmap[x+i+y*(nether->map.width()*2)]==T_EROBOT ||
-				discreetmap[x+i+(y+1)*(nether->map.width()*2)]==T_EROBOT) break;
-			if (discreetmap[x+i+y*(nether->map.width()*2)]==T_ROBOT ||
-				discreetmap[x+i+(y+1)*(nether->map.width()*2)]==T_ROBOT) {
+			if (discreetmap[x+i+y*(map->width()*2)]==T_EROBOT ||
+				discreetmap[x+i+(y+1)*(map->width()*2)]==T_EROBOT) break;
+			if (discreetmap[x+i+y*(map->width()*2)]==T_ROBOT ||
+				discreetmap[x+i+(y+1)*(map->width()*2)]==T_ROBOT) {
 				rsp|=1;
 				break;
 			} /* if */ 
@@ -1599,43 +1599,43 @@ int AI::realShotPaths(const int x, const int y, const int player, const int pers
 	} /* for */ 
 
 	for (int i = 1;i < int((persistence*BULLET_SPEED)/0.5)+1 && (x-i>=0); i++) {
-		if (discreetmap[x-i+y*(nether->map.width()*2)]==T_BUILDING ||
-			discreetmap[x-i+(y+1)*(nether->map.width()*2)]==T_BUILDING) break;
+		if (discreetmap[x-i+y*(map->width()*2)]==T_BUILDING ||
+			discreetmap[x-i+(y+1)*(map->width()*2)]==T_BUILDING) break;
 		if (player==1) {
-			if (discreetmap[x-i+y*(nether->map.width()*2)]==T_ROBOT ||
-				discreetmap[x-i+(y+1)*(nether->map.width()*2)]==T_ROBOT) break;
-			if (discreetmap[x-i+y*(nether->map.width()*2)]==T_EROBOT ||
-				discreetmap[x-i+(y+1)*(nether->map.width()*2)]==T_EROBOT) {
+			if (discreetmap[x-i+y*(map->width()*2)]==T_ROBOT ||
+				discreetmap[x-i+(y+1)*(map->width()*2)]==T_ROBOT) break;
+			if (discreetmap[x-i+y*(map->width()*2)]==T_EROBOT ||
+				discreetmap[x-i+(y+1)*(map->width()*2)]==T_EROBOT) {
 				rsp|=4;
 				break;
 			} /* if */ 
 		} else {
-			if (discreetmap[x-i+y*(nether->map.width()*2)]==T_EROBOT ||
-				discreetmap[x-i+(y+1)*(nether->map.width()*2)]==T_EROBOT) break;
-			if (discreetmap[x-i+y*(nether->map.width()*2)]==T_ROBOT ||
-				discreetmap[x-i+(y+1)*(nether->map.width()*2)]==T_ROBOT) {
+			if (discreetmap[x-i+y*(map->width()*2)]==T_EROBOT ||
+				discreetmap[x-i+(y+1)*(map->width()*2)]==T_EROBOT) break;
+			if (discreetmap[x-i+y*(map->width()*2)]==T_ROBOT ||
+				discreetmap[x-i+(y+1)*(map->width()*2)]==T_ROBOT) {
 				rsp|=4;
 				break;
 			} /* if */ 
 		} /* if */ 
 	} /* for */ 
 
-	for (int i = 2; i < int((persistence*BULLET_SPEED)/0.5)+2 && (y+i<nether->map.height()*2); i++) {
-		if (discreetmap[x+(y+i)*(nether->map.width()*2)]==T_BUILDING ||
-			discreetmap[(x+1)+(y+i)*(nether->map.width()*2)]==T_BUILDING) break;
+	for (int i = 2; i < int((persistence*BULLET_SPEED)/0.5)+2 && (y+i<map->height()*2); i++) {
+		if (discreetmap[x+(y+i)*(map->width()*2)]==T_BUILDING ||
+			discreetmap[(x+1)+(y+i)*(map->width()*2)]==T_BUILDING) break;
 		if (player==1) {
-			if (discreetmap[x+(y+i)*(nether->map.width()*2)]==T_ROBOT ||
-				discreetmap[(x+1)+(y+i)*(nether->map.width()*2)]==T_ROBOT) break;
-			if (discreetmap[x+(y+i)*(nether->map.width()*2)]==T_EROBOT ||
-				discreetmap[(x+1)+(y+i)*(nether->map.width()*2)]==T_EROBOT) {
+			if (discreetmap[x+(y+i)*(map->width()*2)]==T_ROBOT ||
+				discreetmap[(x+1)+(y+i)*(map->width()*2)]==T_ROBOT) break;
+			if (discreetmap[x+(y+i)*(map->width()*2)]==T_EROBOT ||
+				discreetmap[(x+1)+(y+i)*(map->width()*2)]==T_EROBOT) {
 				rsp|=2;
 				break;
 			} /* if */ 
 		} else {
-			if (discreetmap[x+(y+i)*(nether->map.width()*2)]==T_EROBOT ||
-				discreetmap[(x+1)+(y+i)*(nether->map.width()*2)]==T_EROBOT) break;
-			if (discreetmap[x+(y+i)*(nether->map.width()*2)]==T_ROBOT ||
-				discreetmap[(x+1)+(y+i)*(nether->map.width()*2)]==T_ROBOT) {
+			if (discreetmap[x+(y+i)*(map->width()*2)]==T_EROBOT ||
+				discreetmap[(x+1)+(y+i)*(map->width()*2)]==T_EROBOT) break;
+			if (discreetmap[x+(y+i)*(map->width()*2)]==T_ROBOT ||
+				discreetmap[(x+1)+(y+i)*(map->width()*2)]==T_ROBOT) {
 				rsp|=2;
 				break;
 			} /* if */ 
@@ -1643,21 +1643,21 @@ int AI::realShotPaths(const int x, const int y, const int player, const int pers
 	} /* for */ 
 
 	for (int i = 1; i < int((persistence*BULLET_SPEED)/0.5)+1 && (y-i>=0); i++) {
-		if (discreetmap[x+(y-i)*(nether->map.width()*2)]==T_BUILDING ||
-			discreetmap[(x+1)+(y-i)*(nether->map.width()*2)]==T_BUILDING) break;
+		if (discreetmap[x+(y-i)*(map->width()*2)]==T_BUILDING ||
+			discreetmap[(x+1)+(y-i)*(map->width()*2)]==T_BUILDING) break;
 		if (player==1) {
-			if (discreetmap[x+(y-i)*(nether->map.width()*2)]==T_ROBOT ||
-				discreetmap[(x+1)+(y-i)*(nether->map.width()*2)]==T_ROBOT) break;
-			if (discreetmap[x+(y-i)*(nether->map.width()*2)]==T_EROBOT ||
-				discreetmap[(x+1)+(y-i)*(nether->map.width()*2)]==T_EROBOT) {
+			if (discreetmap[x+(y-i)*(map->width()*2)]==T_ROBOT ||
+				discreetmap[(x+1)+(y-i)*(map->width()*2)]==T_ROBOT) break;
+			if (discreetmap[x+(y-i)*(map->width()*2)]==T_EROBOT ||
+				discreetmap[(x+1)+(y-i)*(map->width()*2)]==T_EROBOT) {
 				rsp|=8;
 				break;
 			} /* if */ 
 		} else {
-			if (discreetmap[x+(y-i)*(nether->map.width()*2)]==T_EROBOT ||
-				discreetmap[(x+1)+(y-i)*(nether->map.width()*2)]==T_EROBOT) break;
-			if (discreetmap[x+(y-i)*(nether->map.width()*2)]==T_ROBOT ||
-				discreetmap[(x+1)+(y-i)*(nether->map.width()*2)]==T_ROBOT) {
+			if (discreetmap[x+(y-i)*(map->width()*2)]==T_EROBOT ||
+				discreetmap[(x+1)+(y-i)*(map->width()*2)]==T_EROBOT) break;
+			if (discreetmap[x+(y-i)*(map->width()*2)]==T_ROBOT ||
+				discreetmap[(x+1)+(y-i)*(map->width()*2)]==T_ROBOT) {
 				rsp|=8;
 				break;
 			} /* if */ 
