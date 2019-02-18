@@ -140,8 +140,8 @@ NETHER::NETHER(const std::string& mapname): menu(this), radar(this), camera(0, 0
 
 NETHER::~NETHER()
 {
-  for (Robot* r: robots[0]) delete r;
-  for (Robot* r: robots[1]) delete r;
+  for (Robot* r: map.robots[0]) delete r;
+  for (Robot* r: map.robots[1]) delete r;
 
 #ifdef _WRITE_REPORT_
 	fprintf(debug_fp,"Destroying Game...\n");
@@ -384,7 +384,7 @@ void NETHER::drawGame(bool shadows)
   /* Draw the robots and bullets: */
   {
     for(int i = 0; i < 2; i++) {
-      for (Robot* r: robots[i]) {
+      for (Robot* r: map.robots[i]) {
         if (r->pos.y >= (viewp.y + MINY) &&
             r->pos.y <= (viewp.y + MAXY) &&
             r->pos.x >= (viewp.x + MINX) &&
@@ -706,15 +706,15 @@ bool NETHER::saveGame(const std::string& filename)
   }
 
   for (int i = 0; i < 2; i++) {
-    oFile << robots[i].size() << '\n';
-    for (Robot* r: robots[i]) {
+    oFile << map.robots[i].size() << '\n';
+    for (Robot* r: map.robots[i]) {
       oFile << *r;
     }
   }
 
   oFile << map.bullets.size() << '\n';
   for (Bullet& bullet: map.bullets) {
-    oFile << std::make_pair(bullet, robots);
+    oFile << std::make_pair(bullet, map.robots);
   }
 
   oFile << map.explosions.size() << '\n';
@@ -724,7 +724,7 @@ bool NETHER::saveGame(const std::string& filename)
 
   oFile << stats;
 
-  oFile << find_index(robots[0], controlled) << '\n';
+  oFile << find_index(map.robots[0], controlled) << '\n';
   oFile << int(menu.act_menu) << ' ' << int(menu.act_button) << std::endl;
 
   return true;
@@ -743,8 +743,8 @@ bool NETHER::loadGame(const std::string& filename)
   map.explosions.clear();
   map.buildings.clear();
   for (int i = 0; i < 2; i++) {
-    for (Robot* r: robots[i]) delete r;
-    robots[i].clear();
+    for (Robot* r: map.robots[i]) delete r;
+    map.robots[i].clear();
   }
   map.bullets.clear();
   map.resize(mapWidth, mapHeight);
@@ -773,13 +773,13 @@ bool NETHER::loadGame(const std::string& filename)
   for (int i = 0; i < 2; i++) {
     inFile >> length;
     for (int k = 0; k < length; k++) {
-      robots[i].push_back(new Robot(inFile));
+      map.robots[i].push_back(new Robot(inFile));
     }
   }
 
   inFile >> length;
   for (int k = 0; k < length; k++) {
-    map.bullets.emplace_back(inFile, robots);
+    map.bullets.emplace_back(inFile, map.robots);
   }
 
   inFile >> length;
@@ -792,7 +792,7 @@ bool NETHER::loadGame(const std::string& filename)
   int i;
   inFile >> i;
   if (i >= 0)
-    controlled = robots[0][i];
+    controlled = map.robots[0][i];
   else
     controlled = 0;
 
@@ -842,11 +842,11 @@ bool NETHER::saveDebugReport(const std::string& filename)
   }
 
   for (int i = 0; i < 2; i++) {
-    log << "\n# OF ROBOTS PLAYER " << i << ": " << robots[i].size() << '\n';
+    log << "\n# OF ROBOTS PLAYER " << i << ": " << map.robots[i].size() << '\n';
 
     const char* tractions[3] = {"BIPOD", "TRACKS", "ANTIGRAV"};
     const char* pieces[5] = {"CANNONS", "MISSILES", "PHASERS", "NUCLEAR", "ELECTRONICS"};
-    for (Robot* r: robots[i]) {
+    for (Robot* r: map.robots[i]) {
       log << "ROBOT:\n";
       log << ' ' << tractions[r->traction] << '\n';
       for (int j = 0; j < 5; j++) {
@@ -882,9 +882,9 @@ bool NETHER::saveDebugReport(const std::string& filename)
     log << " POSITION: ";
     log << bullet.pos;
 
-    if (std::count(robots[0].cbegin(), robots[0].cend(), bullet.owner)) {
+    if (std::count(map.robots[0].cbegin(), map.robots[0].cend(), bullet.owner)) {
       log << " OWNER: PLAYER 0 ROBOT " << bullet.owner->getId() << '\n';
-    } else if (std::count(robots[1].cbegin(), robots[1].cend(), bullet.owner)) {
+    } else if (std::count(map.robots[1].cbegin(), map.robots[1].cend(), bullet.owner)) {
       log << " OWNER: PLAYER 1 ROBOT " << bullet.owner->getId() << '\n';
     }
 

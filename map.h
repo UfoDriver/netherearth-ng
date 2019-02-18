@@ -8,6 +8,7 @@
 #include "camera.h"
 #include "explosion.h"
 #include "particle.h"
+#include "robot.h"
 #include "vector.h"
 
 
@@ -32,6 +33,7 @@ public:
   std::vector<Bullet> bullets;
   std::vector<Explosion> explosions;
   std::vector<Particle> particles;
+  std::vector<Robot*> robots[2];
 private:
   int Width;
   int Height;

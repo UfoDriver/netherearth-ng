@@ -897,7 +897,7 @@ int NETHER::AI_program_destroy(Robot& robot, Vector *program_goal, int player)
       std::fill(attackmap.begin(), attackmap.end(), 0);
 
       /* Find the nearest FIRE position: */
-      for (Robot* r: robots[2 - player]) {
+      for (Robot* r: map.robots[2 - player]) {
         if (first ||
             (*program_goal - robot.pos).norma() < distance) {
           first = false;
@@ -1055,7 +1055,7 @@ int NETHER::AI_program_stopdefend(Robot& robot, Vector *program_goal, int player
     std::fill(attackmap.begin(), attackmap.end(), 0);
 
     /* Find the nearest FIRE position: */
-    for (Robot* r: robots[2 - player]) {
+    for (Robot* r: map.robots[2 - player]) {
       robot_zone(r->pos, &x, &y, &dx, &dy);
       for (int i = 0; i < dx; i++) {
         for (int j = 0; j < dy; j++) {
@@ -1107,7 +1107,7 @@ int NETHER::AI_program_stopdefend(Robot& robot, Vector *program_goal, int player
     }
 
 
-    if (robots[2 - player].size()) {
+    if (map.robots[2 - player].size()) {
       robot_zone(robot.pos, &x, &y, &dx, &dy);
       if ((attackmap[y * (map.width() * 2) + x] != 0 ||
            attackmap[(y + 1) * (map.width() * 2) + x] != 0 ||

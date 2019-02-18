@@ -130,8 +130,6 @@ private:
   Camera camera;
   Vector viewp;
 
-  std::vector<Robot*> robots[2];
-
   Stats stats;
 
   float animation_timer;

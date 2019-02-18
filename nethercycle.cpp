@@ -155,25 +155,25 @@ bool NETHER::cycle(unsigned char *keyboard)
 //					&&
 //					shipp==old_shipp
 					) {
-                  if (ship->checkCollision(map.buildings, robots)) {
+                  if (ship->checkCollision(map.buildings, map.robots)) {
 						ship->timemoving=0;
 						Vector p=ship->pos;
 						ship->pos.x=old_shipp.x;
 						ship->pos.y=old_shipp.y;
-						if (p.z!=old_shipp.z && ship->checkCollision(map.buildings, robots)) {
+						if (p.z!=old_shipp.z && ship->checkCollision(map.buildings, map.robots)) {
 							ship->pos.z=old_shipp.z;
 							ship->landed=true;
 						} else {
 							ship->pos.z=p.z;
 						} /* if */ 
 						ship->pos.x=p.x;
-						if (p.x!=old_shipp.x && ship->checkCollision(map.buildings, robots)) {
+						if (p.x!=old_shipp.x && ship->checkCollision(map.buildings, map.robots)) {
 							ship->pos.x=old_shipp.x;
 						} else {
 							ship->pos.x=p.x;
 						} /* if */ 
 						ship->pos.y=p.y;
-						if (p.y!=old_shipp.y && ship->checkCollision(map.buildings, robots)) {
+						if (p.y!=old_shipp.y && ship->checkCollision(map.buildings, map.robots)) {
 							ship->pos.y=old_shipp.y;
 						} else {
 							ship->pos.y=p.y;
@@ -809,7 +809,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 		if (menu.act_menu==Menu::TYPE::GENERAL &&
 			(int(ship->pos.x*8)%4)==0 &&
 			(int(ship->pos.y*8)%4)==0) {
-            for (Robot* r: robots[0]) {
+            for (Robot* r: map.robots[0]) {
 				if (ship->pos.x==(r->pos.x-0.5) && ship->pos.y==(r->pos.y-0.5) && ship->landed) {
 					/* The ship has landed over a robot: */ 
 					r->shipover=true;
@@ -841,7 +841,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 	fflush(debug_fp);
 #endif
 
-                for (Robot* r: robots[i]) {
+                for (Robot* r: map.robots[i]) {
 					/* Robot cycle: */ 
 
 #ifdef _WRITE_REPORT_
@@ -1006,7 +1006,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 
 						/* Find Robots to destroy: */ 
                         for(int i = 0; i < 2; i++) {
-                          robots[i].erase(std::remove_if(robots[i].begin(), robots[i].end(),
+                          map.robots[i].erase(std::remove_if(map.robots[i].begin(), map.robots[i].end(),
                                                          [exp, this] (auto& r) {
                                                            float distance=(r->pos - exp.pos).norma();
                                                            if (distance <= NUCLEAR_RADIUS) {
@@ -1016,7 +1016,7 @@ bool NETHER::cycle(unsigned char *keyboard)
                                                              return false;
                                                            }
                                                          }),
-                                          robots[i].end());
+                                          map.robots[i].end());
                         }
 
 						/* Find buildings to destroy: */ 
@@ -1052,7 +1052,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 						} /* if */ 
 
 						/* Collision: */ 
-						if (r->checkCollision(map.buildings, robots, false, ship) || !r->walkable(terrain)) {
+						if (r->checkCollision(map.buildings, map.robots, false, ship) || !r->walkable(terrain)) {
 							r->pos=old_pos;
 							if (r->traction==0) r->chassis_state=old_chassis_state;
 							if (r->shipover) {
@@ -1245,7 +1245,7 @@ bool NETHER::cycle(unsigned char *keyboard)
                               if (bullet.type == Bullet::TYPE::MISSILES) persistence = MISSILE_PERSISTENCE;
                               if (bullet.type == Bullet::TYPE::PHASERS) persistence = PHASER_PERSISTENCE;
                               Robot* r = 0;
-                              if (bullet.step >= persistence || bullet.checkCollision(map.buildings, robots, &r)) {
+                              if (bullet.step >= persistence || bullet.checkCollision(map.buildings, map.robots, &r)) {
                                 ret = true;
                                 if (bullet.step < persistence) {
                                   map.explosions.emplace_back(bullet.pos, 0);
@@ -1265,7 +1265,7 @@ bool NETHER::cycle(unsigned char *keyboard)
                                   }
                                   AI_killrobot(r->pos);
 
-                                  find_and_destroy_robot(robots, r);
+                                  find_and_destroy_robot(map.robots, r);
                                 }
                               }
                               return ret;

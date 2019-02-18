@@ -103,7 +103,7 @@ void NETHER::AI_enemy()
           forces[1]=0;
 
           tmpr->pos=b.pos+Vector(2.5,0.5,0);
-          if (!tmpr->checkCollision(map.buildings, robots, true, ship)) {
+          if (!tmpr->checkCollision(map.buildings, map.robots, true, ship)) {
             /* Find the closest WARBASE to the available FACTORIES: */ 
             if (closest_to_factories_warbase==0 ||
                 (closest_to_factories_warbase->pos-b.pos).norma()<distance_to_factories) {
@@ -121,7 +121,7 @@ void NETHER::AI_enemy()
 
           /* Test for WARBASEs in danger: */ 
           for(int i = 0; i < 2; i++) {
-            for (Robot* r: robots[i]) {
+            for (Robot* r: map.robots[i]) {
               if ((r->pos-b.pos).norma() < 10.0) {
                 /* Robot near: */ 
                 forces[i]+= r->cost();
@@ -152,7 +152,7 @@ void NETHER::AI_enemy()
 	/* If the warbase in danger id blocked, build robots from another warbase: */ 
 	if (in_danger_warbase!=0) {
 		tmpr->pos=in_danger_warbase->pos+Vector(2.0,0.5,0);
-		if (tmpr->checkCollision(map.buildings, robots, true, ship)) in_danger_warbase=closest_to_enemy_warbase;
+		if (tmpr->checkCollision(map.buildings, map.robots, true, ship)) in_danger_warbase=closest_to_enemy_warbase;
 	} /* if */ 
 
 	delete tmpr;
@@ -163,7 +163,7 @@ void NETHER::AI_enemy()
 
 
 	/* Count the number of robots: */ 
-    for (Robot* r: robots[1]) {
+    for (Robot* r: map.robots[1]) {
       if (r->program==Robot::PROGRAM_CAPTURE) nrobots[0]++;
       if (r->program==Robot::PROGRAM_DESTROY) nrobots[1]++;
       if (r->program==Robot::PROGRAM_STOPDEFEND) nrobots[2]++;
@@ -192,10 +192,10 @@ void NETHER::AI_enemy()
 			(level==1 && (rand()%2)==0) ||
 			(level==0 && (rand()%4)==0))) {
 			/* There are too many robots in STOP & DEFEND: */ 
-          for (Robot* r: robots[1]) {
+          for (Robot* r: map.robots[1]) {
             if (r->program==Robot::PROGRAM_STOPDEFEND) {
               if (nrobots[0]<6 && factories[2]<(factories[1]+factories[0]) && 
-                  (robots[0].size()*2)<=nrobots[1]) {
+                  (map.robots[0].size()*2)<=nrobots[1]) {
                 /* Convert the robot to a conquering one: */ 
                 if (factories[1]>factories[0]) {
                   r->program=Robot::PROGRAM_CAPTURE;
@@ -207,7 +207,7 @@ void NETHER::AI_enemy()
                   return;
                 } /* if */ 
               } else {
-                if ((robots[0].size()*2)>nrobots[1]) {
+                if ((map.robots[0].size()*2)>nrobots[1]) {
                   r->program=Robot::PROGRAM_DESTROY;
                   r->program_parameter.param =Robot::P_PARAM_ROBOTS;
                   return;
@@ -222,7 +222,7 @@ void NETHER::AI_enemy()
 		} /* if */ 
 		/* Test for near FACTORIES and CAPTURING ROBOTS: */ 
 		if (nrobots[0]<6 && factories[2]<(factories[1]+factories[0]) &&
-			(robots[0].size()*2)<=nrobots[1]) {
+			(map.robots[0].size()*2)<=nrobots[1]) {
 			/* I need more conquering robots: */ 
 
 			/* Try to make better robots as time passes: */ 
@@ -469,8 +469,8 @@ Robot *NETHER::AI_enemy_newrobot(int state,Vector pos)
 		r->calculateCMC(Resources::pieceTiles[1]);
 		r->shipover=false;
 
-		if (!r->checkCollision(map.buildings, robots, true, ship)) {
-			robots[1].push_back(r);
+		if (!r->checkCollision(map.buildings, map.robots, true, ship)) {
+			map.robots[1].push_back(r);
 			AI_newrobot(r->pos,0);
 
 			for(i=0;i<7;i++) stats.resources[1][i]-=cost[i];
