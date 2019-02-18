@@ -77,7 +77,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 		if (zoom<0.5) zoom=0.5;
 	} /* if */ 
 
-    stats.recompute(buildings);
+    stats.recompute(map.buildings);
 
 #ifdef _WRITE_REPORT_
 	fprintf(debug_fp,"Starting enemy AI\n");
@@ -155,25 +155,25 @@ bool NETHER::cycle(unsigned char *keyboard)
 //					&&
 //					shipp==old_shipp
 					) {
-                  if (ship->checkCollision(buildings, robots)) {
+                  if (ship->checkCollision(map.buildings, robots)) {
 						ship->timemoving=0;
 						Vector p=ship->pos;
 						ship->pos.x=old_shipp.x;
 						ship->pos.y=old_shipp.y;
-						if (p.z!=old_shipp.z && ship->checkCollision(buildings, robots)) {
+						if (p.z!=old_shipp.z && ship->checkCollision(map.buildings, robots)) {
 							ship->pos.z=old_shipp.z;
 							ship->landed=true;
 						} else {
 							ship->pos.z=p.z;
 						} /* if */ 
 						ship->pos.x=p.x;
-						if (p.x!=old_shipp.x && ship->checkCollision(buildings, robots)) {
+						if (p.x!=old_shipp.x && ship->checkCollision(map.buildings, robots)) {
 							ship->pos.x=old_shipp.x;
 						} else {
 							ship->pos.x=p.x;
 						} /* if */ 
 						ship->pos.y=p.y;
-						if (p.y!=old_shipp.y && ship->checkCollision(buildings, robots)) {
+						if (p.y!=old_shipp.y && ship->checkCollision(map.buildings, robots)) {
 							ship->pos.y=old_shipp.y;
 						} else {
 							ship->pos.y=p.y;
@@ -779,7 +779,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 
 		/* Test if the ship has landed over a Factory: */ 
 		{
-          for (const Building& b: buildings) {
+          for (const Building& b: map.buildings) {
 				if (b.type==Building::TYPE::WARBASE && b.owner==1 && 
 					ship->pos.x==b.pos.x && ship->pos.y==b.pos.y && ship->landed) {
                   game_state=NETHER::STATE::CONSTRUCTION;
@@ -1020,7 +1020,7 @@ bool NETHER::cycle(unsigned char *keyboard)
                         }
 
 						/* Find buildings to destroy: */ 
-                        buildings.erase(std::remove_if(buildings.begin(), buildings.end(),
+                        map.buildings.erase(std::remove_if(map.buildings.begin(), map.buildings.end(),
                                                        [exp, this](auto& b) {
                                                          float distance = (b.pos - (exp.pos - Vector(0.5, 0.5, 0.5))).norma();
                                                          if (distance <= NUCLEAR_RADIUS) {
@@ -1030,7 +1030,7 @@ bool NETHER::cycle(unsigned char *keyboard)
                                                            return false;
                                                          }
                                                        }),
-                                        buildings.end());
+                                        map.buildings.end());
                         sManager.playExplosion(ship->pos, r->pos);
                         stats.requestRecomputing();
 					} /* if */ 
@@ -1052,7 +1052,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 						} /* if */ 
 
 						/* Collision: */ 
-						if (r->checkCollision(buildings, robots, false, ship) || !r->walkable(terrain)) {
+						if (r->checkCollision(map.buildings, robots, false, ship) || !r->walkable(terrain)) {
 							r->pos=old_pos;
 							if (r->traction==0) r->chassis_state=old_chassis_state;
 							if (r->shipover) {
@@ -1174,7 +1174,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 #endif
 
     /* Buildings: */ 
-    for (Building& b: buildings) {
+    for (Building& b: map.buildings) {
       if (b.type==Building::TYPE::FACTORY_ELECTRONICS ||
           b.type==Building::TYPE::FACTORY_NUCLEAR ||
           b.type==Building::TYPE::FACTORY_PHASERS ||
@@ -1245,7 +1245,7 @@ bool NETHER::cycle(unsigned char *keyboard)
                               if (bullet.type == Bullet::TYPE::MISSILES) persistence = MISSILE_PERSISTENCE;
                               if (bullet.type == Bullet::TYPE::PHASERS) persistence = PHASER_PERSISTENCE;
                               Robot* r = 0;
-                              if (bullet.step >= persistence || bullet.checkCollision(buildings, robots, &r)) {
+                              if (bullet.step >= persistence || bullet.checkCollision(map.buildings, robots, &r)) {
                                 ret = true;
                                 if (bullet.step < persistence) {
                                   explosions.emplace_back(bullet.pos, 0);

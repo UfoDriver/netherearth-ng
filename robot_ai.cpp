@@ -97,7 +97,7 @@ void NETHER::AI_precomputations(void)
     }
   }
 
-  for (const Building& b: buildings) {
+  for (const Building& b: map.buildings) {
     fill_zone(discreetmap, map.width() * 2, T_BUILDING, int(b.pos.x / 0.5), int(b.pos.y / 0.5), 2, 2);
   }
 }
@@ -652,7 +652,7 @@ int NETHER::AI_program_capture(Robot& robot, Vector *program_goal, int player)
 
       *program_goal = Vector(-1, -1, -1);
 
-      for (const Building& b: buildings) {
+      for (const Building& b: map.buildings) {
         if (robot.program_parameter.as_int == Robot::P_PARAM_WARBASES &&
             b.type == Building::TYPE::WARBASE &&
             b.owner != player &&
@@ -839,7 +839,7 @@ int NETHER::AI_program_destroy(Robot& robot, Vector *program_goal, int player)
 
       *program_goal = Vector(-1, -1, -1);
 
-      for (const Building& b: buildings) {
+      for (const Building& b: map.buildings) {
         if (robot.program_parameter.as_int == Robot::P_PARAM_WARBASES &&
             b.type == Building::TYPE::WARBASE &&
             b.owner!=player &&

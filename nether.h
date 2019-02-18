@@ -130,7 +130,6 @@ private:
   float zoom;
   Vector camera, viewp;
 
-  std::vector<Building> buildings;
   std::vector<Robot*> robots[2];
   std::vector<Bullet> bullets;
   std::vector<Explosion> explosions;

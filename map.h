@@ -16,15 +16,16 @@ public:
 
   std::vector<int> map;
 
-  void resize(int width, int height);
-  void draw(const Vector& viewp, bool shadows, std::vector<Building>& buildings, const Vector& light);
+  void resize(int const width, int const height);
+  void draw(const Vector& viewp, const bool shadows, const Vector& light);
 
   int width() const { return Width; }
   int height() const { return Height; }
-  bool loadMap(const std::string& filename, std::vector<Building>& buildings);
+  bool loadMap(const std::string& filename);
   float maxZ(float x[2], float y[2]);
   int terrain(float x, float y);
   int worseTerrain(float x[2], float y[2]);
+  std::vector<Building> buildings;
 private:
   int Width;
   int Height;

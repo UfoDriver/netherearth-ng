@@ -89,7 +89,7 @@ NETHER::NETHER(const std::string& mapname): menu(this), radar(this), controlled(
 #endif
 
 	/* Load map: */ 
-	map.loadMap(mapname, buildings);
+	map.loadMap(mapname);
 
 #ifdef _WRITE_REPORT_
 	fprintf(debug_fp,"Initializing game variables...\n");
@@ -374,10 +374,9 @@ void NETHER::drawGame(bool shadows)
 
   if (explosions.size()) {
     int minstep = 128;
-    std::for_each(explosions.begin(), explosions.end(),
-                  [&minstep](const auto& explosion) {
-                    if (explosion.size == 2 && explosion.step < minstep) minstep = explosion.step;
-                  });
+    for (const Explosion& explosion: explosions) {
+      if (explosion.size == 2 && explosion.step < minstep) minstep = explosion.step;
+    }
     float r = (128 - minstep) / 256.0;
     float offs = sin(minstep) * r;
     gluLookAt(viewp.x + camera.x * zoom + offs,
@@ -405,7 +404,7 @@ void NETHER::drawGame(bool shadows)
     Vector light(lightpos[0], lightpos[1], lightpos[2]);
     light=light / light.z;
 
-    map.draw(viewp, shadows, buildings, light);
+    map.draw(viewp, shadows, light);
   }
 
   /* Draw the robots and bullets: */
@@ -781,8 +780,8 @@ bool NETHER::saveGame(const std::string& filename)
 
   oFile << ship->landed << '\n';
 
-  oFile << buildings.size() << '\n';
-  for (Building& b: buildings) {
+  oFile << map.buildings.size() << '\n';
+  for (Building& b: map.buildings) {
     oFile << b;
   }
 
@@ -822,7 +821,7 @@ bool NETHER::loadGame(const std::string& filename)
   inFile >> mapWidth >> mapHeight;
 
   explosions.clear();
-  buildings.clear();
+  map.buildings.clear();
   for (int i = 0; i < 2; i++) {
     for (Robot* r: robots[i]) delete r;
     robots[i].clear();
@@ -848,7 +847,7 @@ bool NETHER::loadGame(const std::string& filename)
   int length;
   inFile >> length;
   for (int k = 0; k < length; k++) {
-    buildings.push_back(Building(inFile));
+    map.buildings.push_back(Building(inFile));
   }
 
   for (int i = 0; i < 2; i++) {
@@ -913,8 +912,8 @@ bool NETHER::saveDebugReport(const std::string& filename)
   else
     log << "SHIP NOT LANDED\n";
 
-  log << "# OF BUILDINGS: " << buildings.size() << '\n';
-  for (const Building& b: buildings) {
+  log << "# OF BUILDINGS: " << map.buildings.size() << '\n';
+  for (const Building& b: map.buildings) {
     log << "BUILDING:\n"
         << " TYPE: " << int(b.type)
         << "\n OWNER: " << b.owner

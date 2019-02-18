@@ -84,7 +84,7 @@ void NETHER::AI_enemy()
       int forces[2]={0,0};
 
       mean_factory_position=Vector(0,0,0);
-      for (const Building& b: buildings) {
+      for (const Building& b: map.buildings) {
         if (b.type==Building::TYPE::FACTORY_ELECTRONICS ||
             b.type==Building::TYPE::FACTORY_NUCLEAR ||
             b.type==Building::TYPE::FACTORY_PHASERS ||
@@ -96,14 +96,14 @@ void NETHER::AI_enemy()
       }
       mean_factory_position=mean_factory_position/(factories[0]+factories[1]);
 
-      for (Building& b: buildings) {
+      for (Building& b: map.buildings) {
         if (b.type==Building::TYPE::WARBASE &&
             b.owner==2) {
           forces[0]=0;
           forces[1]=0;
 
           tmpr->pos=b.pos+Vector(2.5,0.5,0);
-          if (!tmpr->checkCollision(buildings, robots, true, ship)) {
+          if (!tmpr->checkCollision(map.buildings, robots, true, ship)) {
             /* Find the closest WARBASE to the available FACTORIES: */ 
             if (closest_to_factories_warbase==0 ||
                 (closest_to_factories_warbase->pos-b.pos).norma()<distance_to_factories) {
@@ -152,7 +152,7 @@ void NETHER::AI_enemy()
 	/* If the warbase in danger id blocked, build robots from another warbase: */ 
 	if (in_danger_warbase!=0) {
 		tmpr->pos=in_danger_warbase->pos+Vector(2.0,0.5,0);
-		if (tmpr->checkCollision(buildings, robots, true, ship)) in_danger_warbase=closest_to_enemy_warbase;
+		if (tmpr->checkCollision(map.buildings, robots, true, ship)) in_danger_warbase=closest_to_enemy_warbase;
 	} /* if */ 
 
 	delete tmpr;
@@ -469,7 +469,7 @@ Robot *NETHER::AI_enemy_newrobot(int state,Vector pos)
 		r->calculateCMC(Resources::pieceTiles[1]);
 		r->shipover=false;
 
-		if (!r->checkCollision(buildings, robots, true, ship)) {
+		if (!r->checkCollision(map.buildings, robots, true, ship)) {
 			robots[1].push_back(r);
 			AI_newrobot(r->pos,0);
 

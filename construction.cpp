@@ -131,7 +131,7 @@ void NETHER::constructionDraw(int width, int height)
   glColor3f(1.0f, 0.0f, 0.0f);
   glTranslatef(12, 15, 0);
   in_construction.calculateCMC(Resources::pieceTiles[0]);
-  if (in_construction.checkCollision(buildings, robots, true, ship)) {
+  if (in_construction.checkCollision(map.buildings, robots, true, ship)) {
     if ((int(animation_timer * 4) % 2) == 0) scaledglprintf(0.01f, 0.01f, "ENTRANCE BLOCKED!");
   }
 
@@ -321,7 +321,7 @@ bool NETHER::construction_cycle(unsigned char *keyboard)
       r->calculateCMC(Resources::pieceTiles[0]);
       r->shipover=false;
 
-      if (!r->checkCollision(buildings, robots, true, ship)) {
+      if (!r->checkCollision(map.buildings, robots, true, ship)) {
         robots[0].push_back(r);
         AI_newrobot(r->pos,0);
 
