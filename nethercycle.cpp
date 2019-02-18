@@ -86,9 +86,9 @@ bool NETHER::cycle(unsigned char *keyboard)
 
 	/* ENEMY Artificial Intelligence: */ 
 	if (stats.second==0) {
-		if (level==0 && (stats.hour&0x01)==0 && stats.minute==0) AI_enemy();
-		if (level==1 && stats.minute==0) AI_enemy();
-		if (level>=2 && (stats.minute==0 || stats.minute==30)) AI_enemy();
+		if (level==0 && (stats.hour&0x01)==0 && stats.minute==0) ai.enemy();
+		if (level==1 && stats.minute==0) ai.enemy();
+		if (level>=2 && (stats.minute==0 || stats.minute==30)) ai.enemy();
 	} /* if */ 
 
 #ifdef _WRITE_REPORT_
@@ -861,16 +861,16 @@ bool NETHER::cycle(unsigned char *keyboard)
 						(int(r->pos.y*256)%128)==0) {
 						switch(r->angle) {
 						case 0:
-							if (AI_WorseMapTerrain(int((r->pos.x+0.5)/0.5),int((r->pos.y-0.5)/0.5),1,2)>T_HOLE) r->op=ROBOTOP_NONE;
+							if (ai.worseMapTerrain(int((r->pos.x+0.5)/0.5),int((r->pos.y-0.5)/0.5),1,2)>T_HOLE) r->op=ROBOTOP_NONE;
 							break;
 						case 90:
-							if (AI_WorseMapTerrain(int((r->pos.x-0.5)/0.5),int((r->pos.y+0.5)/0.5),2,1)>T_HOLE) r->op=ROBOTOP_NONE;
+							if (ai.worseMapTerrain(int((r->pos.x-0.5)/0.5),int((r->pos.y+0.5)/0.5),2,1)>T_HOLE) r->op=ROBOTOP_NONE;
 							break;
 						case 180:
-							if (AI_WorseMapTerrain(int((r->pos.x-1.0)/0.5),int((r->pos.y-0.5)/0.5),1,2)>T_HOLE) r->op=ROBOTOP_NONE;
+							if (ai.worseMapTerrain(int((r->pos.x-1.0)/0.5),int((r->pos.y-0.5)/0.5),1,2)>T_HOLE) r->op=ROBOTOP_NONE;
 							break;
 						case 270:
-							if (AI_WorseMapTerrain(int((r->pos.x-0.5)/0.5),int((r->pos.y-1.0)/0.5),2,1)>T_HOLE) r->op=ROBOTOP_NONE;
+							if (ai.worseMapTerrain(int((r->pos.x-0.5)/0.5),int((r->pos.y-1.0)/0.5),2,1)>T_HOLE) r->op=ROBOTOP_NONE;
 							break;
 						} /* switch */ 
 					} /* if */ 
@@ -992,7 +992,7 @@ bool NETHER::cycle(unsigned char *keyboard)
                                                          [exp, this] (auto& r) {
                                                            float distance=(r->pos - exp.pos).norma();
                                                            if (distance <= NUCLEAR_RADIUS) {
-                                                             AI_killrobot(r->pos);
+                                                             ai.killRobot(r->pos);
                                                              return true;
                                                            } else {
                                                              return false;
@@ -1006,7 +1006,7 @@ bool NETHER::cycle(unsigned char *keyboard)
                                                        [exp, this](auto& b) {
                                                          float distance = (b.pos - (exp.pos - Vector(0.5, 0.5, 0.5))).norma();
                                                          if (distance <= NUCLEAR_RADIUS) {
-                                                           AI_removebuilding(b.pos);
+                                                           ai.removeBuilding(b.pos);
                                                            return true;
                                                          } else {
                                                            return false;
@@ -1043,7 +1043,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 								ship->pos.z=r->pos.z+r->cmc.z[1];
 							} /* if */ 
 						} else {
-							AI_moverobot(old_pos,r->pos,i);
+							ai.moveRobot(old_pos,r->pos,i);
 						} /* if */ 
 						
 						if (r->op==ROBOTOP_FORWARD && (r->angle==0 || r->angle==180) && (int(r->pos.x*256)%128)==0) r->op=ROBOTOP_NONE;
@@ -1076,26 +1076,26 @@ bool NETHER::cycle(unsigned char *keyboard)
 								r->op=ROBOTOP_FORWARD;
 								break;
 							case Robot::PROGRAM_STOPDEFEND:
-                              r->op = AI_program_stopdefend(*r, &(r->program_goal), i + 1);
+                              r->op = ai.programStopDefend(*r, &(r->program_goal), i + 1);
 								break;
 							case Robot::PROGRAM_ADVANCE:
-                              r->op=AI_program_advance(*r, i + 1);
+                              r->op=ai.programAdvance(*r, i + 1);
 								if (r->op==ROBOTOP_FORWARD && r->angle==90) r->program_parameter.as_int--;
 								if (r->op==ROBOTOP_FORWARD && r->angle==270) r->program_parameter.as_int++;
 								if (r->program_parameter.as_int == 0) r->program=Robot::PROGRAM_STOPDEFEND;
 								break;
 							case Robot::PROGRAM_RETREAT:
-                              r->op=AI_program_retreat(*r, i + 1);
+                              r->op=ai.programRetreat(*r, i + 1);
 								if (r->op==ROBOTOP_FORWARD && r->angle==270) r->program_parameter.as_int--;
 								if (r->op==ROBOTOP_FORWARD && r->angle==90) r->program_parameter.as_int++;
 								if (r->program_parameter.as_int == 0) r->program=Robot::PROGRAM_STOPDEFEND;
 								break;
 							case Robot::PROGRAM_DESTROY:
-								r->op = AI_program_destroy(*r, &(r->program_goal), i + 1);
+								r->op = ai.programDestroy(*r, &(r->program_goal), i + 1);
 								// if (r->program_goal.x==-1) r->program=PROGRAM_STOPDEFEND;
 								break;
 							case Robot::PROGRAM_CAPTURE:
-								r->op = AI_program_capture(*r, &(r->program_goal), i + 1);
+								r->op = ai.programCapture(*r, &(r->program_goal), i + 1);
 								// if (r.program_goal.x==-1) r.program=PROGRAM_STOPDEFEND;
 								break;
 							} /* switch */ 
@@ -1163,7 +1163,7 @@ bool NETHER::cycle(unsigned char *keyboard)
           b.type==Building::TYPE::FACTORY_MISSILES ||
           b.type==Building::TYPE::FACTORY_CANNONS	||
           b.type==Building::TYPE::FACTORY_CHASSIS) {
-        int robot=AI_robothere(b.pos+Vector(1,0,0));
+        int robot=ai.roboThere(b.pos+Vector(1,0,0));
         if (robot==0) {
           b.status=0;
         } else {
@@ -1184,7 +1184,7 @@ bool NETHER::cycle(unsigned char *keyboard)
       } /* if */ 
 
       if (b.type==Building::TYPE::WARBASE) {
-        int robot=AI_robothere(b.pos+Vector(2,0,0));
+        int robot=ai.roboThere(b.pos+Vector(2,0,0));
         if (robot==0) {
           b.status=0;
         } else {
@@ -1245,7 +1245,7 @@ bool NETHER::cycle(unsigned char *keyboard)
                                     menu.killmenu(Menu::TYPE::ALL);
                                     menu.newmenu(Menu::TYPE::GENERAL);
                                   }
-                                  AI_killrobot(r->pos);
+                                  ai.killRobot(r->pos);
 
                                   find_and_destroy_robot(map.robots, r);
                                 }

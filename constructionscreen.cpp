@@ -88,7 +88,7 @@ bool ConstructionScreen::cycle(unsigned char *keyboard)
 
       if (!r->checkCollision(nether->map.buildings, nether->map.robots, true, nether->ship)) {
         nether->map.robots[0].push_back(r);
-        nether->AI_newrobot(r->pos,0);
+        nether->ai.newRobot(r->pos,0);
 
         int cost[7];
         in_construction.cost(0, cost, nether->stats.resources);

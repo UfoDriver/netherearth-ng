@@ -42,13 +42,8 @@ extern float MINY,MAXY,MINX,MAXX;
 extern bool show_radar;
 
 
-#ifdef _WRITE_REPORT_
-FILE *debug_fp=0;
-#endif
-
-
 NETHER::NETHER(const std::string& mapname): menu(this), radar(this), optionsScreen(this),
-                                            constructionScreen(this), camera(0, 0, 0, 0),
+                                            constructionScreen(this), ai(this), camera(0, 0, 0, 0),
                                             controlled(NULL)
 {
   if (shadows == 1) {
@@ -93,7 +88,7 @@ NETHER::NETHER(const std::string& mapname): menu(this), radar(this), optionsScre
   menu.needsRedraw = 2;
   radar.needsRedraw = 1;
 
-  AI_precomputations();
+  ai.makePrecomputations();
 }
 
 
@@ -101,7 +96,7 @@ NETHER::~NETHER()
 {
   map.resize(0, 0);
   Resources::instance()->deleteObjects();
-  AI_deleteprecomputations();
+  ai.deletePrecomputations();
   delete ship;
   ship = 0;
 }
@@ -335,7 +330,7 @@ bool NETHER::loadGame(const std::string& filename)
 {
   std::ifstream inFile(filename);
 
-  AI_deleteprecomputations();
+  ai.deletePrecomputations();
 
   inFile >> map;
   inFile >> lightpos[0] >> lightpos[1] >> lightpos[2] >> lightpos[3];
@@ -381,7 +376,7 @@ bool NETHER::loadGame(const std::string& filename)
   menu.act_menu = Menu::TYPE(actMenu_);
   menu.act_button = StatusButton::NAME(actButton_);
 
-  AI_precomputations();
+  ai.makePrecomputations();
   return true;
 }
 

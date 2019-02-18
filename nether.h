@@ -12,6 +12,7 @@
 #include "statusbutton.h"
 #include "robot.h"
 #include "bullet.h"
+#include "ai.h"
 #include "explosion.h"
 #include "particle.h"
 #include "ship.h"
@@ -88,39 +89,14 @@ private:
   void draw(int w, int h);
   void drawGame(bool shadows);
 
-	void AI_enemy();
-	Robot* AI_enemy_newrobot(int state,Vector pos);
-	void AI_precomputations();
-	void AI_deleteprecomputations();
-	void AI_release();
-	int  AI_WorseMapTerrain(int x,int y,int dx,int dy);
-	void AI_newrobot(Vector pos,int owner);
-	int  AI_killrobot(Vector pos);
-	void AI_moverobot(Vector oldpos,Vector newpos,int owner);
-	void AI_removebuilding(Vector pos);
-  void AI_availableoperators(const Robot& robot, std::vector<AIOperator>& l);
-  bool AI_expandoperators(int x, int y, int angle, const Robot& robot, int previous, int oldcost, int depth);
-  int  AI_searchengine(const Robot& robot, int goaltype, Vector goalpos, int depth);
-  void AI_resetsearch(Vector pos, int depth);
-  int  AI_program_advance(Robot& robot, int player);
-  int  AI_program_retreat(Robot& robot, int player);
-  int  AI_program_capture(Robot& robot, Vector *program_goal, int player);
-  int  AI_program_destroy(Robot& robot, Vector *program_goal, int player);
-  int  AI_program_stopdefend(Robot& robot, Vector *program_goal, int player);
-  void AI_rankoperators_advance(std::vector<AIOperator>& l);
-  void AI_rankoperators_retreat(std::vector<AIOperator>& l);
-  void AI_rankoperators_capture(std::vector<AIOperator>&l, Vector goal);
-  const AIOperator AI_chooseoperator(std::vector<AIOperator>& l, int factor);
-	int  AI_robothere(Vector pos);
-	int  AI_RealShotPaths(int x,int y,int player,int persistence);
-
-	/* Game variables: */
+  /* Game variables: */
   Menu menu;
   Radar radar;
   SoundManager sManager;
   Map map;
   OptionsScreen optionsScreen;
   ConstructionScreen constructionScreen;
+  AI ai;
 
   float lightpos[4];
   Vector lightposv;
@@ -139,16 +115,11 @@ private:
   int game_finished;
   int game_started;
 
-  /* Artificial intelligence variables: */
-  std::vector<int> discreetmap;
-  std::vector<int> bk_discreetmap;
-  std::vector<AIOperator> searchmap;
-  std::vector<int> attackmap;
-
   friend class Menu;
   friend class Radar;
   friend class OptionsScreen;
   friend class ConstructionScreen;
+  friend class AI;
 };
 
 #endif

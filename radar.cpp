@@ -66,8 +66,8 @@ void Radar::draw(const int width, const int height, const int split, const int s
       for (int x = 0; x < maxx; x++) {
         if (x + startx < (nether->map.width() * 2) &&
             y + starty < (nether->map.height() * 2) &&
-            nether->discreetmap.size()) {
-          switch(nether->discreetmap[x + startx + (y + starty) * (nether->map.width() * 2)]) {
+            nether->ai.discreetmapSize()) {
+          switch(nether->ai.discreetmapValue(x + startx + (y + starty) * (nether->map.width() * 2))) {
           case T_GRASS:
             glColor3f(0.0, 1.0, 0.0);
             break;

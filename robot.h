@@ -31,10 +31,10 @@ public:
   int cost();
   void cost(int player, int* res, int resources[2][7]);
   bool operator==(const Robot& other) const { return id == other.id; };
-  bool hasCannons() { return pieces[0]; }
-  bool hasMissiles() { return pieces[1]; }
-  bool hasPhasers() { return pieces[2]; }
-  bool hasElectronics() { return pieces[4]; }
+  bool hasCannons() const { return pieces[0]; }
+  bool hasMissiles() const { return pieces[1]; }
+  bool hasPhasers() const { return pieces[2]; }
+  bool hasElectronics() const { return pieces[4]; }
   bool checkCollision(const std::vector<Building>& buildings,
                       const std::vector<Robot*> robots[2], bool complete, Ship* ship);
 
