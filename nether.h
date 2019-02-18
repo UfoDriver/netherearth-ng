@@ -82,7 +82,7 @@ public:
   bool loadGame(const std::string& filename);
   bool saveDebugReport(const std::string& filename);
 
-  Ship *ship;
+  Ship* getShip() const { return ship; }
 
 private:
   bool cycle(unsigned char *keyboard);
@@ -90,6 +90,7 @@ private:
   void drawGame(bool shadows);
 
   /* Game variables: */
+  Ship *ship;
   Menu menu;
   Radar radar;
   SoundManager sManager;

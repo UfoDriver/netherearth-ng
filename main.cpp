@@ -182,7 +182,7 @@ int main(int argc, char** argv)
 							/* Toogle FULLSCREEN mode: */ 
                           if (game!=0) {
                             Resources::instance()->refreshDisplayLists();
-                            game->ship->refresh_display_lists();
+                            game->getShip()->refresh_display_lists();
                           }
 							if (nethertittle!=0) nethertittle->refresh_display_lists();
 							if (game!=0) Resources::instance()->deleteObjects();
@@ -246,7 +246,7 @@ int main(int argc, char** argv)
 					if (val==3) {
                       if (game!=0) {
                         Resources::instance()->refreshDisplayLists();
-                        game->ship->refresh_display_lists();
+                        game->getShip()->refresh_display_lists();
                       }
 						if (nethertittle!=0) nethertittle->refresh_display_lists();
 						if (game!=0) Resources::instance()->deleteObjects();
