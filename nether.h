@@ -21,6 +21,7 @@
 #include "menu.h"
 #include "radar.h"
 #include "stats.h"
+#include "optionsscreen.h"
 #include "soundmanager.h"
 #include "SDL/SDL.h"
 
@@ -84,12 +85,10 @@ public:
 private:
 	bool cycle(unsigned char *keyboard);
 	bool construction_cycle(unsigned char *keyboard);
-	bool option_cycle(unsigned char *keyboard);
 
   void draw(int w, int h);
   void drawGame(bool shadows);
   void constructionDraw(int w, int h);
-  void optionsDraw(int w, int h);
 
 	void AI_enemy();
 	Robot* AI_enemy_newrobot(int state,Vector pos);
@@ -122,6 +121,7 @@ private:
   Radar radar;
   SoundManager sManager;
   Map map;
+  OptionsScreen optionsScreen;
 
   float lightpos[4];
   Vector lightposv;
@@ -142,9 +142,6 @@ private:
   int game_finished;
   int game_started;
 
-  /* Option/Pause menu variables: */
-  int option_menu;
-
   /* Artificial intelligence variables: */
   std::vector<int> discreetmap;
   std::vector<int> bk_discreetmap;
@@ -153,6 +150,7 @@ private:
 
   friend class Menu;
   friend class Radar;
+  friend class OptionsScreen;
 };
 
 #endif

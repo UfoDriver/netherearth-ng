@@ -1276,8 +1276,7 @@ bool NETHER::cycle(unsigned char *keyboard)
     menu.cycle();
 
     if (game_state == NETHER::STATE::PLAYING && keyboard[pause_key] && !old_keyboard[pause_key]) {
-      game_state = NETHER::STATE::PAUSE;
-      option_menu = 0;
+      optionsScreen.open();
     }
 
     if ((stats.stats[0][0] == 0 || stats.stats[1][0] == 0) && game_finished == 0) {
