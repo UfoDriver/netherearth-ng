@@ -47,7 +47,8 @@ FILE *debug_fp=0;
 #endif
 
 
-NETHER::NETHER(const std::string& mapname): menu(this), radar(this), controlled(NULL)
+NETHER::NETHER(const std::string& mapname): menu(this), radar(this), camera(0, 0, 0, 0),
+                                            controlled(NULL)
 {
 #ifdef _WRITE_REPORT_
 	debug_fp=fopen("report.txt","w");
@@ -102,7 +103,7 @@ NETHER::NETHER(const std::string& mapname): menu(this), radar(this), controlled(
 	camera.x=6;
 	camera.y=-6;
 	camera.z=11;
-	zoom=1;
+	camera.zoom=1;
 
 	game_state=NETHER::STATE::PLAYING;
 	animation_timer=0;
@@ -367,17 +368,17 @@ void NETHER::draw(int width, int height)
 
 void NETHER::drawGame(bool shadows)
 {
-  MINY =- 8 * zoom;
-  MINX =- (10 + viewp.z * 4) * zoom;
-  MAXY = (9 + viewp.z * 4) * zoom;
-  MAXX = 8 * zoom;
+  MINY =- 8 * camera.zoom;
+  MINX =- (10 + viewp.z * 4) * camera.zoom;
+  MAXY = (9 + viewp.z * 4) * camera.zoom;
+  MAXX = 8 * camera.zoom;
 
   /* Draw the map: */
   {
     Vector light(lightpos[0], lightpos[1], lightpos[2]);
     light=light / light.z;
 
-    map.draw(viewp, shadows, light, camera, zoom);
+    map.draw(viewp, shadows, light, camera);
   }
 
   /* Draw the robots and bullets: */

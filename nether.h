@@ -15,6 +15,7 @@
 #include "explosion.h"
 #include "particle.h"
 #include "ship.h"
+#include "camera.h"
 #include "map.h"
 #include "ai_operator.h"
 #include "menu.h"
@@ -80,7 +81,6 @@ public:
 
   Ship *ship;
 
-
 private:
 	bool cycle(unsigned char *keyboard);
 	bool construction_cycle(unsigned char *keyboard);
@@ -127,8 +127,8 @@ private:
   Vector lightposv;
   unsigned char old_keyboard[SDLK_LAST];
 
-  float zoom;
-  Vector camera, viewp;
+  Camera camera;
+  Vector viewp;
 
   std::vector<Robot*> robots[2];
 

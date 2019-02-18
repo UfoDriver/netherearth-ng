@@ -69,12 +69,12 @@ bool NETHER::cycle(unsigned char *keyboard)
 #endif
 
 	if (keyboard[SDLK_PAGEUP]) {
-		zoom*=1.1;
-		if (zoom>4) zoom=4;
+		camera.zoom*=1.1;
+		if (camera.zoom>4) camera.zoom=4;
 	} /* if */ 
 	if (keyboard[SDLK_PAGEDOWN]) {
-		zoom/=1.1;
-		if (zoom<0.5) zoom=0.5;
+		camera.zoom/=1.1;
+		if (camera.zoom<0.5) camera.zoom=0.5;
 	} /* if */ 
 
     stats.recompute(map.buildings);
@@ -733,24 +733,24 @@ bool NETHER::cycle(unsigned char *keyboard)
 
 		viewp.x=ship->pos.x+0.5;
 		viewp.y=ship->pos.y+0.5;
-		viewp.z=ship->pos.z-3*zoom;
+		viewp.z=ship->pos.z-3*camera.zoom;
 		if (viewp.z<0) viewp.z=0;
-		if (viewp.x<3*zoom) {
-			viewp.x=3*zoom;
-			if (viewp.x>map.width()-3*zoom) viewp.x=map.width()/2;
+		if (viewp.x<3*camera.zoom) {
+			viewp.x=3*camera.zoom;
+			if (viewp.x>map.width()-3*camera.zoom) viewp.x=map.width()/2;
 		} else {
-			if (viewp.x>map.width()-3*zoom) {
-				viewp.x=map.width()-3*zoom;
-				if (viewp.x<3*zoom) viewp.x=map.width()/2;
+			if (viewp.x>map.width()-3*camera.zoom) {
+				viewp.x=map.width()-3*camera.zoom;
+				if (viewp.x<3*camera.zoom) viewp.x=map.width()/2;
 			} /* if */ 
 		} /* if */ 
-		if (viewp.y<3*zoom) {
-			viewp.y=3*zoom;
-			if (viewp.y>map.height()-3*zoom) viewp.y=map.height()/2; 
+		if (viewp.y<3*camera.zoom) {
+			viewp.y=3*camera.zoom;
+			if (viewp.y>map.height()-3*camera.zoom) viewp.y=map.height()/2; 
 		} else {
-			if (viewp.y>map.height()-3*zoom) {
-				viewp.y=map.height()-3*zoom;
-				if (viewp.y<3*zoom) viewp.y=map.height()/2; 
+			if (viewp.y>map.height()-3*camera.zoom) {
+				viewp.y=map.height()-3*camera.zoom;
+				if (viewp.y<3*camera.zoom) viewp.y=map.height()/2; 
 			} /* if */ 
 		} /* if */ 
 

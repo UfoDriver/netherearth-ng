@@ -2,10 +2,10 @@
 #define MAP_H
 
 #include <vector>
-#include <GL/gl.h>
 
 #include "building.h"
 #include "bullet.h"
+#include "camera.h"
 #include "explosion.h"
 #include "particle.h"
 #include "vector.h"
@@ -19,8 +19,7 @@ public:
   std::vector<int> map;
 
   void resize(int const width, int const height);
-  void draw(const Vector& viewp, const bool shadows, const Vector& light, const Vector& camera,
-            const int zoom);
+  void draw(const Vector& viewp, const bool shadows, const Vector& light, const Camera& camera);
 
   int width() const { return Width; }
   int height() const { return Height; }

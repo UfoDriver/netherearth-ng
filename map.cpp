@@ -1,3 +1,4 @@
+#include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glut.h>
 #include <algorithm>
@@ -21,8 +22,7 @@ void Map::resize(const int width, const int height)
 }
 
 
-void Map::draw(const Vector& viewp, const bool shadows, const Vector& light, const Vector& camera,
-               const int zoom)
+void Map::draw(const Vector& viewp, const bool shadows, const Vector& light, const Camera& camera)
 {
   if (explosions.size()) {
     int minstep = 128;
@@ -31,17 +31,17 @@ void Map::draw(const Vector& viewp, const bool shadows, const Vector& light, con
     }
     float r = (128 - minstep) / 256.0;
     float offs = sin(minstep) * r;
-    gluLookAt(viewp.x + camera.x * zoom + offs,
-              viewp.y + camera.y * zoom + offs,
-              viewp.z + camera.z * zoom,
+    gluLookAt(viewp.x + camera.x * camera.zoom + offs,
+              viewp.y + camera.y * camera.zoom + offs,
+              viewp.z + camera.z * camera.zoom,
               viewp.x + offs,
               viewp.y + offs,
               viewp.z,
               0, 0, 1);
   } else {
-    gluLookAt(viewp.x + camera.x * zoom,
-              viewp.y + camera.y * zoom,
-              viewp.z + camera.z * zoom,
+    gluLookAt(viewp.x + camera.x * camera.zoom,
+              viewp.y + camera.y * camera.zoom,
+              viewp.z + camera.z * camera.zoom,
               viewp.x,
               viewp.y,
               viewp.z,
@@ -107,7 +107,8 @@ void Map::draw(const Vector& viewp, const bool shadows, const Vector& light, con
     }
   }
 
-  // ship will be here
+  // ship drawing will be here
+
   if (!shadows) {
     for (const Explosion& exp: explosions) {
       float a = (128.0f - exp.step) / 80.0f;
