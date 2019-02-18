@@ -19,6 +19,10 @@ void Map::resize(const int width, const int height)
   Height = height;
   map.clear();
   map.reserve(width * height);
+  for (Robot* r: robots[0]) delete r;
+  for (Robot* r: robots[1]) delete r;
+  robots[0].clear();
+  robots[1].clear();
 }
 
 

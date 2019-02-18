@@ -100,8 +100,6 @@ NETHER::NETHER(const std::string& mapname): menu(this), radar(this), optionsScre
 NETHER::~NETHER()
 {
   map.resize(0, 0);
-  for (Robot* r: map.robots[0]) delete r;
-  for (Robot* r: map.robots[1]) delete r;
   Resources::instance()->deleteObjects();
   AI_deleteprecomputations();
   delete ship;
@@ -268,22 +266,7 @@ void NETHER::draw(int width, int height)
     else Resources::messageTiles[1].draw(Color(1.0, 1.0, 1.0));
   }
 
-  /* Draw the RADAR screen: */
-  if (show_radar && radar.needsRedraw <= 1) {
-    float lightpos2[4] = {0, 0, 1000, 0};
-    glLightfv(GL_LIGHT0, GL_POSITION, lightpos2);
-    glClearColor(0.0, 0.0, 0,0);
-    glViewport(0, 0, split, splity);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(0, float(split), 0, float(splity), -100, 100);
-    glScissor(0, 0, split, splity);
-    glScalef(width / 640.0, height / 480.0, 1);
-    radar.draw();
-  }
-  radar.needsRedraw--;
-  if (radar.needsRedraw < 0) radar.needsRedraw = 3;
-
+  radar.draw(width, height, split, splity);
   menu.draw(width, height);
 }
 
