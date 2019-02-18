@@ -27,6 +27,7 @@ public:
   {}
   explicit Building(std::istream& in);
 
+  void draw(const bool shadows, const int detaillevel, const Vector& light) const;
   static const std::vector<Building> readMapFile(std::istream& inFile);
 
   Vector pos;

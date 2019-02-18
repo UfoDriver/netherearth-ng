@@ -1,6 +1,8 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
+#include "color.h"
+
 
 const int BONUSES[][5] = {{0, 5, 6, 6, 8},
                           {0, 5, 8, 9, 12},
@@ -21,5 +23,8 @@ const int N_BUILDINGS = 9;
 const int N_BULLETS = 3;
 const int N_OBJECTS = 12;
 const int N_PIECES = 11;
+
+const Color PLAYER1_COLOR = {0.3f, 0.3f, 0.8f};
+const Color PLAYER2_COLOR {0.8f, 0.3f, 0.3f};
 
 #endif // CONSTANTS_H
