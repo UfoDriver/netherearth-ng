@@ -994,7 +994,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 					if (r->op==ROBOTOP_NUCLEAR) {
                       Explosion exp(r->pos, 2);
 
-                      explosions.push_back(exp);
+                      map.explosions.push_back(exp);
 
 						/* Robot destroyed: */ 
 						if (r==controlled) {
@@ -1248,14 +1248,14 @@ bool NETHER::cycle(unsigned char *keyboard)
                               if (bullet.step >= persistence || bullet.checkCollision(map.buildings, robots, &r)) {
                                 ret = true;
                                 if (bullet.step < persistence) {
-                                  explosions.emplace_back(bullet.pos, 0);
+                                  map.explosions.emplace_back(bullet.pos, 0);
                                 }
                               }
                               if (r != 0) {
                                 /* The bullet has collided with a robot: */
                                 if (!r->bulletHit(bullet.type)) {
                                   /* Robot destroyed: */
-                                  explosions.emplace_back(r->pos,1);
+                                  map.explosions.emplace_back(r->pos,1);
                                   sManager.playExplosion(ship->pos, r->pos);
                                   if (r == controlled) {
                                     controlled->shipover = false;
@@ -1277,14 +1277,14 @@ bool NETHER::cycle(unsigned char *keyboard)
 	fflush(debug_fp);
 #endif
     /* Nuclear explosions: */
-    explosions.erase(std::remove_if(explosions.begin(), explosions.end(),
+    map.explosions.erase(std::remove_if(map.explosions.begin(), map.explosions.end(),
                                     [](auto& exp) {
                                       if (exp.size == 0) exp.step += 2;
                                       if (exp.size == 1) exp.step++;
                                       exp.step++;
                                       return exp.step >= 128;
                                     }),
-                     explosions.end());
+                     map.explosions.end());
 
 #ifdef _WRITE_REPORT_
 	fprintf(debug_fp,"Particles\n");

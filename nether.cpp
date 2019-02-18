@@ -372,39 +372,12 @@ void NETHER::drawGame(bool shadows)
   MAXY = (9 + viewp.z * 4) * zoom;
   MAXX = 8 * zoom;
 
-  if (explosions.size()) {
-    int minstep = 128;
-    for (const Explosion& explosion: explosions) {
-      if (explosion.size == 2 && explosion.step < minstep) minstep = explosion.step;
-    }
-    float r = (128 - minstep) / 256.0;
-    float offs = sin(minstep) * r;
-    gluLookAt(viewp.x + camera.x * zoom + offs,
-              viewp.y + camera.y * zoom + offs,
-              viewp.z + camera.z * zoom,
-              viewp.x + offs,
-              viewp.y + offs,
-              viewp.z,
-              0, 0, 1);
-  } else {
-    gluLookAt(viewp.x + camera.x * zoom,
-              viewp.y + camera.y * zoom,
-              viewp.z + camera.z * zoom,
-              viewp.x,
-              viewp.y,
-              viewp.z,
-              0, 0, 1);
-  }
-
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-
   /* Draw the map: */
   {
     Vector light(lightpos[0], lightpos[1], lightpos[2]);
     light=light / light.z;
 
-    map.draw(viewp, shadows, light);
+    map.draw(viewp, shadows, light, camera, zoom);
   }
 
   /* Draw the robots and bullets: */
@@ -459,38 +432,6 @@ void NETHER::drawGame(bool shadows)
   }
 
   /* Draw the extras: */
-
-  /* Draw nuclear explosions: */
-  if (!shadows) {
-    for (const Explosion& exp: explosions) {
-      float a = (128.0f - exp.step) / 80.0f;
-      float r = 1.0;
-      if (exp.size == 0) {
-        r = (float(exp.step) / 512.0f) + 0.1;
-      }
-      if (exp.size == 1) {
-        r = (float(exp.step) / 96.0f) + 0.5;
-      }
-      if (exp.size == 2) {
-        r = (float(exp.step) / 48.0f) + 1.0;
-      }
-      if (a < 0) a = 0;
-      if (a > 1) a = 1;
-
-      glPushMatrix();
-      glTranslatef(exp.pos.x, exp.pos.y, exp.pos.z);
-      glColor4f(1.0f, 0.5f, 0.0,a);
-      glDepthMask(GL_FALSE);
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-      glEnable(GL_BLEND);
-      // Somehow solid sphere dumps core
-      // glutSolidSphere(r, 8, 8);
-      glutWireSphere(r, 8, 8);
-      glDisable(GL_BLEND);
-      glDepthMask(GL_TRUE);
-      glPopMatrix();
-    }
-  }
 }
 
 
@@ -775,8 +716,8 @@ bool NETHER::saveGame(const std::string& filename)
     oFile << std::make_pair(bullet, robots);
   }
 
-  oFile << explosions.size() << '\n';
-  for (Explosion& e: explosions) {
+  oFile << map.explosions.size() << '\n';
+  for (Explosion& e: map.explosions) {
     oFile << e;
   }
 
@@ -798,7 +739,7 @@ bool NETHER::loadGame(const std::string& filename)
 
   inFile >> mapWidth >> mapHeight;
 
-  explosions.clear();
+  map.explosions.clear();
   map.buildings.clear();
   for (int i = 0; i < 2; i++) {
     for (Robot* r: robots[i]) delete r;
@@ -842,7 +783,7 @@ bool NETHER::loadGame(const std::string& filename)
 
   inFile >> length;
   for (int k = 0; k < length; k++) {
-    explosions.emplace_back(inFile);
+    map.explosions.emplace_back(inFile);
   }
 
   inFile >> stats;
@@ -950,8 +891,8 @@ bool NETHER::saveDebugReport(const std::string& filename)
     log << bullet.cmc << '\n';
   }
 
-  log << "# EXPLOSIONS " << explosions.size() << '\n';
-  for (Explosion& e: explosions) {
+  log << "# EXPLOSIONS " << map.explosions.size() << '\n';
+  for (Explosion& e: map.explosions) {
     log << "EXPLOSION:\n POSITION:\n";
     log << e.pos;
     log << " STEP: " << e.step << "\n SIZE: " << e.size << "\n\n";

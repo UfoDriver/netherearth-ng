@@ -6,6 +6,7 @@
 
 #include "building.h"
 #include "bullet.h"
+#include "explosion.h"
 #include "particle.h"
 #include "vector.h"
 
@@ -18,7 +19,8 @@ public:
   std::vector<int> map;
 
   void resize(int const width, int const height);
-  void draw(const Vector& viewp, const bool shadows, const Vector& light);
+  void draw(const Vector& viewp, const bool shadows, const Vector& light, const Vector& camera,
+            const int zoom);
 
   int width() const { return Width; }
   int height() const { return Height; }
@@ -28,6 +30,7 @@ public:
   int worseTerrain(float x[2], float y[2]);
   std::vector<Building> buildings;
   std::vector<Bullet> bullets;
+  std::vector<Explosion> explosions;
   std::vector<Particle> particles;
 private:
   int Width;

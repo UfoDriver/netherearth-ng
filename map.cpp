@@ -1,4 +1,7 @@
+#include <GL/glu.h>
+#include <GL/glut.h>
 #include <algorithm>
+#include <cmath>
 
 #include "map.h"
 #include "nether.h"
@@ -18,9 +21,35 @@ void Map::resize(const int width, const int height)
 }
 
 
-void Map::draw(const Vector& viewp, const bool shadows, const Vector& light)
+void Map::draw(const Vector& viewp, const bool shadows, const Vector& light, const Vector& camera,
+               const int zoom)
 {
+  if (explosions.size()) {
+    int minstep = 128;
+    for (const Explosion& explosion: explosions) {
+      if (explosion.size == 2 && explosion.step < minstep) minstep = explosion.step;
+    }
+    float r = (128 - minstep) / 256.0;
+    float offs = sin(minstep) * r;
+    gluLookAt(viewp.x + camera.x * zoom + offs,
+              viewp.y + camera.y * zoom + offs,
+              viewp.z + camera.z * zoom,
+              viewp.x + offs,
+              viewp.y + offs,
+              viewp.z,
+              0, 0, 1);
+  } else {
+    gluLookAt(viewp.x + camera.x * zoom,
+              viewp.y + camera.y * zoom,
+              viewp.z + camera.z * zoom,
+              viewp.x,
+              viewp.y,
+              viewp.z,
+              0, 0, 1);
+  }
+
   glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
 
   if (!shadows) {
     glPushMatrix();
@@ -79,7 +108,36 @@ void Map::draw(const Vector& viewp, const bool shadows, const Vector& light)
   }
 
   // ship will be here
-  // nuclear explosion will be here
+  if (!shadows) {
+    for (const Explosion& exp: explosions) {
+      float a = (128.0f - exp.step) / 80.0f;
+      float r = 1.0;
+      if (exp.size == 0) {
+        r = (float(exp.step) / 512.0f) + 0.1;
+      }
+      if (exp.size == 1) {
+        r = (float(exp.step) / 96.0f) + 0.5;
+      }
+      if (exp.size == 2) {
+        r = (float(exp.step) / 48.0f) + 1.0;
+      }
+      if (a < 0) a = 0;
+      if (a > 1) a = 1;
+
+      glPushMatrix();
+      glTranslatef(exp.pos.x, exp.pos.y, exp.pos.z);
+      glColor4f(1.0f, 0.5f, 0.0,a);
+      glDepthMask(GL_FALSE);
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      glEnable(GL_BLEND);
+      // Somehow solid sphere dumps core
+      // glutSolidSphere(r, 8, 8);
+      glutWireSphere(r, 8, 8);
+      glDisable(GL_BLEND);
+      glDepthMask(GL_TRUE);
+      glPopMatrix();
+    }
+  }
 
   if (!shadows) {
     for (const Particle& particle: particles) {
