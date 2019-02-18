@@ -9,6 +9,7 @@ public:
   Explosion(): step(0), size(0) {};
   Explosion(Vector p, int sz): pos(p), step(0), size(sz) {};
   explicit Explosion(std::istream& in);
+  bool cycle();
 
   Vector pos;
   int step;

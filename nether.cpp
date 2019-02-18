@@ -919,3 +919,30 @@ bool NETHER::saveDebugReport(const std::string& filename)
 
   return true;
 }
+
+
+bool Map::cycle()
+{
+  // Keyboard/zoom
+  // ship movement
+  // robot menu process/redrawing
+  // viewport calculation
+  // Status redraw
+  // Ship on the factory/robot handling
+  // Robots cycling
+  // Building cycling (capturing)
+  // Bullets cycling
+  // Nuclear explosion stepping/removal
+  // Menu cycling
+  // Game goals checking
+
+  explosions.erase(std::remove_if(explosions.begin(), explosions.end(),
+                                  [](auto& exp) { return !exp.cycle(); }),
+                   explosions.end());
+
+  particles.erase(std::remove_if(particles.begin(), particles.end(),
+                                 [](auto& particle) { return !particle.cycle(); }),
+                  particles.end());
+
+  return true;
+}

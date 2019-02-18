@@ -1272,58 +1272,23 @@ bool NETHER::cycle(unsigned char *keyboard)
                             }),
                   map.bullets.end());
 
-#ifdef _WRITE_REPORT_
-	fprintf(debug_fp,"Nuclear explosions\n");
-	fflush(debug_fp);
-#endif
-    /* Nuclear explosions: */
-    map.explosions.erase(std::remove_if(map.explosions.begin(), map.explosions.end(),
-                                    [](auto& exp) {
-                                      if (exp.size == 0) exp.step += 2;
-                                      if (exp.size == 1) exp.step++;
-                                      exp.step++;
-                                      return exp.step >= 128;
-                                    }),
-                     map.explosions.end());
-
-#ifdef _WRITE_REPORT_
-	fprintf(debug_fp,"Particles\n");
-	fflush(debug_fp);
-#endif
-
-    map.particles.erase(std::remove_if(map.particles.begin(), map.particles.end(),
-                                   [](auto& particle) { return !particle.cycle(); }),
-                    map.particles.end());
-
-
-#ifdef _WRITE_REPORT_
-	fprintf(debug_fp,"Starting STATUS cycle\n");
-	fflush(debug_fp);
-#endif
-
-	/* STATUS Cycle: */
+    map.cycle();
     menu.cycle();
 
-	if (game_state==NETHER::STATE::PLAYING && keyboard[pause_key] && !old_keyboard[pause_key]) {
-      game_state=NETHER::STATE::PAUSE;
-		option_menu=0;
-	} /* if */ 
-
-	if ((stats.stats[0][0]==0 || stats.stats[1][0]==0) && game_finished==0) {
-		game_finished++;
-		game_started=0;
-	} /* if */ 
-	if (game_finished>0) game_finished++;
-	if (game_finished>=END_TIME) return false;
-
-	if (game_started>0) game_started--;
-
-#ifdef _WRITE_REPORT_
-	fprintf(debug_fp,"PLAY CYCLE ENDS\n");
-	fflush(debug_fp);
-#endif
-
-	return true;
+    if (game_state == NETHER::STATE::PLAYING && keyboard[pause_key] && !old_keyboard[pause_key]) {
+      game_state = NETHER::STATE::PAUSE;
+      option_menu = 0;
     }
-} /* NETHER::cycle */ 
 
+    if ((stats.stats[0][0] == 0 || stats.stats[1][0] == 0) && game_finished == 0) {
+      game_finished++;
+      game_started = 0;
+    }
+    if (game_finished > 0) game_finished++;
+    if (game_finished >= END_TIME) return false;
+
+    if (game_started > 0) game_started--;
+
+    return true;
+  }
+}
