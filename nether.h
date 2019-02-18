@@ -151,7 +151,6 @@ private:
   std::vector<AIOperator> searchmap;
   std::vector<int> attackmap;
 
-  friend class Map;
   friend class Menu;
   friend class Radar;
 };
