@@ -131,9 +131,7 @@ private:
   Vector camera, viewp;
 
   std::vector<Robot*> robots[2];
-  std::vector<Bullet> bullets;
   std::vector<Explosion> explosions;
-  std::vector<Particle> particles;
 
   Stats stats;
 

@@ -63,6 +63,33 @@ void Map::draw(const Vector& viewp, const bool shadows, const Vector& light)
       glPopMatrix();
     }
   }
+
+  // robots drawing will be here
+
+  for (const Bullet& bullet: bullets) {
+    if (bullet.pos.y >= (viewp.y + MINY) &&
+        bullet.pos.y <= (viewp.y + MAXY) &&
+        bullet.pos.x >= (viewp.x + MINX) &&
+        bullet.pos.x <= (viewp.x + MAXX)) {
+      glPushMatrix();
+      glTranslatef(bullet.pos.x, bullet.pos.y, bullet.pos.z);
+      bullet.draw(shadows, Resources::bulletTiles, particles);
+      glPopMatrix();
+    }
+  }
+
+  // ship will be here
+  // nuclear explosion will be here
+
+  if (!shadows) {
+    for (const Particle& particle: particles) {
+      if (particle.pos.y >= (viewp.y + MINY) &&
+          particle.pos.y <= (viewp.y + MAXY) &&
+          particle.pos.x >= (viewp.x + MINX) &&
+          particle.pos.x <= (viewp.x + MAXX))
+        particle.draw();
+    }
+  }
 }
 
 

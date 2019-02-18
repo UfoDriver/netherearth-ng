@@ -4,9 +4,10 @@
 #include <vector>
 #include <GL/gl.h>
 
+#include "building.h"
+#include "bullet.h"
+#include "particle.h"
 #include "vector.h"
-
-class Building;
 
 
 class Map
@@ -26,6 +27,8 @@ public:
   int terrain(float x, float y);
   int worseTerrain(float x[2], float y[2]);
   std::vector<Building> buildings;
+  std::vector<Bullet> bullets;
+  std::vector<Particle> particles;
 private:
   int Width;
   int Height;

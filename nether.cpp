@@ -422,18 +422,6 @@ void NETHER::drawGame(bool shadows)
         }
       }
     }
-
-    for (const Bullet& bullet: bullets) {
-      if (bullet.pos.y >= (viewp.y + MINY) &&
-          bullet.pos.y <= (viewp.y + MAXY) &&
-          bullet.pos.x >= (viewp.x + MINX) &&
-          bullet.pos.x <= (viewp.x + MAXX)) {
-        glPushMatrix();
-        glTranslatef(bullet.pos.x, bullet.pos.y, bullet.pos.z);
-        bullet.draw(shadows, Resources::bulletTiles, particles);
-        glPopMatrix();
-      }
-    }
   }
 
   /* Draw the ship: */
@@ -501,16 +489,6 @@ void NETHER::drawGame(bool shadows)
       glDisable(GL_BLEND);
       glDepthMask(GL_TRUE);
       glPopMatrix();
-    }
-  }
-
-  if (!shadows) {
-    for (const Particle& particle: particles) {
-      if (particle.pos.y >= (viewp.y + MINY) &&
-          particle.pos.y <= (viewp.y + MAXY) &&
-          particle.pos.x >= (viewp.x + MINX) &&
-          particle.pos.x <= (viewp.x + MAXX))
-        particle.draw();
     }
   }
 }
@@ -792,8 +770,8 @@ bool NETHER::saveGame(const std::string& filename)
     }
   }
 
-  oFile << bullets.size() << '\n';
-  for (Bullet& bullet: bullets) {
+  oFile << map.bullets.size() << '\n';
+  for (Bullet& bullet: map.bullets) {
     oFile << std::make_pair(bullet, robots);
   }
 
@@ -826,7 +804,7 @@ bool NETHER::loadGame(const std::string& filename)
     for (Robot* r: robots[i]) delete r;
     robots[i].clear();
   }
-  bullets.clear();
+  map.bullets.clear();
   map.resize(mapWidth, mapHeight);
   for (int i = 0; i < mapHeight; i++) {
     for (int j = 0; j < mapWidth; j++) {
@@ -859,7 +837,7 @@ bool NETHER::loadGame(const std::string& filename)
 
   inFile >> length;
   for (int k = 0; k < length; k++) {
-    bullets.emplace_back(inFile, robots);
+    map.bullets.emplace_back(inFile, robots);
   }
 
   inFile >> length;
@@ -954,8 +932,8 @@ bool NETHER::saveDebugReport(const std::string& filename)
     }
   }
 
-  log << "\n# BULLETS: " << bullets.size() << '\n';
-  for (Bullet& bullet: bullets) {
+  log << "\n# BULLETS: " << map.bullets.size() << '\n';
+  for (Bullet& bullet: map.bullets) {
     log << " BULLET:\n TYPE: " << int(bullet.type)
         << "\n STEP: " << bullet.step
         << "\n ANGLE: " << bullet.angle << '\n';

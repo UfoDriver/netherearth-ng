@@ -936,7 +936,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 										pos.x+=((rand()%2)==0 ? -0.5 : 0.5);
 										break;
 									} /* switch */ 									
-									particles.emplace_back(pos, sp1, Vector(0, 0, 0.05), 0, 0.3, color, 1.0, 0.0, 20+ (rand() % 10));
+									map.particles.emplace_back(pos, sp1, Vector(0, 0, 0.05), 0, 0.3, color, 1.0, 0.0, 20+ (rand() % 10));
 								} /* for */ 
 							} /* if */ 
 						} /* if */ 
@@ -965,7 +965,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 						pos.z = r->piecez(0) + 0.3f;
 						Bullet bullet(Bullet::TYPE::CANNONS, pos, r->angle, r);
 						bullet.computeCMC(Resources::bulletTiles);
-						bullets.push_back(bullet);
+						map.bullets.push_back(bullet);
                         sManager.playShot(ship->pos, r->pos);
 					} /* if */ 
 
@@ -974,7 +974,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 						pos.z = r->piecez(1) + 0.2f;
                         Bullet bullet(Bullet::TYPE::MISSILES, pos, r->angle, r);
 						bullet.computeCMC(Resources::bulletTiles);
-						bullets.push_back(bullet);
+						map.bullets.push_back(bullet);
                         sManager.playShot(ship->pos, r->pos);
 					} /* if */ 
 
@@ -983,7 +983,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 						pos.z = r->piecez(2) + 0.3f;
 						Bullet bullet(Bullet::TYPE::PHASERS, pos, r->angle, r);
 						bullet.computeCMC(Resources::bulletTiles);
-						bullets.push_back(bullet);
+						map.bullets.push_back(bullet);
                         sManager.playShot(ship->pos, r->pos);
 					} /* if */ 
 
@@ -1231,7 +1231,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 
     /* Bullets: */
 
-    bullets.erase(remove_if(bullets.begin(), bullets.end(),
+    map.bullets.erase(remove_if(map.bullets.begin(), map.bullets.end(),
                             [this](auto& bullet) {
                               bool ret = false;
 
@@ -1270,7 +1270,7 @@ bool NETHER::cycle(unsigned char *keyboard)
                               }
                               return ret;
                             }),
-                  bullets.end());
+                  map.bullets.end());
 
 #ifdef _WRITE_REPORT_
 	fprintf(debug_fp,"Nuclear explosions\n");
@@ -1291,9 +1291,9 @@ bool NETHER::cycle(unsigned char *keyboard)
 	fflush(debug_fp);
 #endif
 
-    particles.erase(std::remove_if(particles.begin(), particles.end(),
+    map.particles.erase(std::remove_if(map.particles.begin(), map.particles.end(),
                                    [](auto& particle) { return !particle.cycle(); }),
-                    particles.end());
+                    map.particles.end());
 
 
 #ifdef _WRITE_REPORT_
