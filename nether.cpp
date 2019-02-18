@@ -289,14 +289,7 @@ bool NETHER::saveGame(const std::string& filename)
 {
   std::ofstream oFile(filename);
 
-  oFile << map.width() << ' ' << map.height() << '\n';
-
-  for (int i = 0; i < map.height(); i++) {
-    for (int j = 0; j < map.width(); j++) {
-      oFile << map.map[j + i * map.width()] << ' ';
-    }
-    oFile << '\n';
-  }
+  oFile << map;
 
   oFile << std::setw(8) << lightpos[0] << ' '
         << std::setw(8) << lightpos[1] << ' '
@@ -305,9 +298,7 @@ bool NETHER::saveGame(const std::string& filename)
   oFile << lightposv
         << camera
         << viewp
-        << ship->pos;
-
-  oFile << ship->landed << '\n';
+        << *ship;
 
   oFile << map.buildings.size() << '\n';
   for (Building& b: map.buildings) {
@@ -342,36 +333,16 @@ bool NETHER::saveGame(const std::string& filename)
 
 bool NETHER::loadGame(const std::string& filename)
 {
-  int mapWidth, mapHeight;
   std::ifstream inFile(filename);
 
   AI_deleteprecomputations();
 
-  inFile >> mapWidth >> mapHeight;
-
-  map.explosions.clear();
-  map.buildings.clear();
-  for (int i = 0; i < 2; i++) {
-    for (Robot* r: map.robots[i]) delete r;
-    map.robots[i].clear();
-  }
-  map.bullets.clear();
-  map.resize(mapWidth, mapHeight);
-  for (int i = 0; i < mapHeight; i++) {
-    for (int j = 0; j < mapWidth; j++) {
-      int tile;
-      inFile >> tile;
-      map.map.push_back(tile);
-    }
-  }
-
+  inFile >> map;
   inFile >> lightpos[0] >> lightpos[1] >> lightpos[2] >> lightpos[3];
   inFile >> lightposv
          >> camera
          >> viewp
-         >> ship->pos;
-
-  inFile >> ship->landed;
+         >> *ship;
 
   int length;
   inFile >> length;

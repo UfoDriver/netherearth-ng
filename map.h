@@ -40,5 +40,8 @@ private:
 };
 
 
+std::ostream& operator<<(std::ostream& out, const Map& map);
+std::istream& operator>>(std::istream& in, Map& map);
+
 
 #endif // MAP_H

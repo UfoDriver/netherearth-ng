@@ -19,6 +19,9 @@ void Map::resize(const int width, const int height)
   Height = height;
   map.clear();
   map.reserve(width * height);
+  explosions.clear();
+  buildings.clear();
+  bullets.clear();
   for (Robot* r: robots[0]) delete r;
   for (Robot* r: robots[1]) delete r;
   robots[0].clear();
@@ -278,4 +281,35 @@ bool Map::cycle()
                   particles.end());
 
   return true;
+}
+
+
+std::ostream& operator<<(std::ostream& out, const Map& map)
+{
+  out << map.width() << ' ' << map.height() << '\n';
+
+  for (int i = 0; i < map.height(); i++) {
+    for (int j = 0; j < map.width(); j++) {
+      out << map.map[j + i * map.width()] << ' ';
+    }
+    out << '\n';
+  }
+  return out;
+}
+
+
+std::istream& operator>>(std::istream& in, Map& map)
+{
+  int width, height;
+  in >> width >> height;
+  map.resize(width, height);
+
+  for (int i = 0; i < height; i++) {
+    for (int j = 0; j < width; j++) {
+      int tile;
+      in >> tile;
+      map.map.push_back(tile);
+    }
+  }
+  return in;
 }

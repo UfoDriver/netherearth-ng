@@ -158,3 +158,15 @@ void Ship::draw(const bool shadows, const Vector& light, const Map& map, const R
     glPopMatrix();
   }
 }
+
+
+std::ostream& operator<<(std::ostream& out, const Ship& ship)
+{
+  return out << ship.pos << ship.landed << '\n';
+}
+
+
+std::istream& operator>>(std::istream& in, Ship& ship)
+{
+  return in >> ship.pos >> ship.landed;
+}

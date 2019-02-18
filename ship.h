@@ -32,4 +32,8 @@ public:
 };
 
 
+std::ostream& operator<<(std::ostream& out, const Ship& ship);
+std::istream& operator>>(std::istream& in, Ship& ship);
+
+
 # endif // SHIP_H
