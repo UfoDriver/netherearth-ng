@@ -2,14 +2,14 @@
 #define AI_OPERATOR_H
 
 #include <iostream>
-
+#include "robot.h"
 #include "vector.h"
 
 
 class AIOperator {
 public:
   Vector newpos;
-  int first_robotop;
+  Robot::OPERATOR first_robotop;
   int cost;
   int previous;
   bool deadend;

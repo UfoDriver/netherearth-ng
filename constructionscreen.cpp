@@ -82,7 +82,7 @@ bool ConstructionScreen::cycle(unsigned char *keyboard)
       *r=in_construction;
       r->angle=0;
       r->program=Robot::PROGRAM_FORWARD;
-      r->op=ROBOTOP_NONE;
+      r->op=Robot::OPERATOR::NONE;
       r->calculateCMC(Resources::pieceTiles[0]);
       r->shipover=false;
 

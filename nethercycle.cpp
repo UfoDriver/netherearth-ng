@@ -370,36 +370,36 @@ bool NETHER::cycle(unsigned char *keyboard)
 						/* Fire Nuclear: */ 
 						if ((controlled->angle==0 || controlled->angle==90 ||
 							 controlled->angle==180 || controlled->angle==270) &&
-							 controlled->pieces[3] &&
+							 controlled->hasNuclear() &&
 							 controlled->firetimer==0) {
-							controlled->op=ROBOTOP_NUCLEAR;
+                          controlled->op=Robot::OPERATOR::NUCLEAR;
 						} /* if */ 						
 						break;
 					case StatusButton::NAME::COMBAT2:
 						/* Fire Phasers: */ 
 						if ((controlled->angle==0 || controlled->angle==90 ||
 							 controlled->angle==180 || controlled->angle==270) &&
-							 controlled->pieces[2] &&
-							 controlled->op==ROBOTOP_NONE) {
-							controlled->op=ROBOTOP_PHASERS;
+							 controlled->hasPhasers() &&
+                            controlled->op==Robot::OPERATOR::NONE) {
+                          controlled->op=Robot::OPERATOR::PHASERS;
 						} /* if */ 
 						break;
 					case StatusButton::NAME::COMBAT3:
 						/* Fire Missiles: */ 
 						if ((controlled->angle==0 || controlled->angle==90 ||
 							 controlled->angle==180 || controlled->angle==270) &&
-							 controlled->pieces[1] &&
-							 controlled->op==ROBOTOP_NONE) {
-							controlled->op=ROBOTOP_MISSILES;
+							 controlled->hasMissiles() &&
+							 controlled->op==Robot::OPERATOR::NONE) {
+                          controlled->op=Robot::OPERATOR::MISSILES;
 						} /* if */ 
 						break;
 					case StatusButton::NAME::COMBAT4:
 						/* Fire Canons: */ 
 						if ((controlled->angle==0 || controlled->angle==90 ||
 							 controlled->angle==180 || controlled->angle==270) &&
-							 controlled->pieces[0] &&
-							 controlled->op==ROBOTOP_NONE) {
-							controlled->op=ROBOTOP_CANNONS;
+							 controlled->hasCannons() &&
+                            controlled->op==Robot::OPERATOR::NONE) {
+                          controlled->op=Robot::OPERATOR::CANNONS;
 						} /* if */ 
 						break;
 					case StatusButton::NAME::COMBAT5:
@@ -796,7 +796,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 					/* The ship has landed over a robot: */ 
 					r->shipover=true;
 					controlled=r;
-					if (controlled->op==ROBOTOP_FORWARD) controlled->op=ROBOTOP_NONE;
+					if (controlled->op==Robot::OPERATOR::FORWARD) controlled->op=Robot::OPERATOR::NONE;
 					if (controlled->program==Robot::PROGRAM_FORWARD) controlled->program=Robot::PROGRAM_STOPDEFEND;
 					menu.replaceMenu(Menu::TYPE::GENERAL, Menu::TYPE::ROBOT,
                                      StatusButton::NAME::ROBOT4);
@@ -856,30 +856,30 @@ bool NETHER::cycle(unsigned char *keyboard)
 #endif
 
 					/* Avoid that a Robot can walk agains another and they both get stuck: */ 
-					if (r->op==ROBOTOP_FORWARD &&
+    if (r->op==Robot::OPERATOR::FORWARD &&
 						(int(r->pos.x*256)%128)==0 &&
 						(int(r->pos.y*256)%128)==0) {
 						switch(r->angle) {
 						case 0:
-							if (ai.worseMapTerrain(int((r->pos.x+0.5)/0.5),int((r->pos.y-0.5)/0.5),1,2)>T_HOLE) r->op=ROBOTOP_NONE;
+                          if (ai.worseMapTerrain(int((r->pos.x+0.5)/0.5),int((r->pos.y-0.5)/0.5),1,2) > T_HOLE)
+                            r->op=Robot::OPERATOR::NONE;
 							break;
 						case 90:
-							if (ai.worseMapTerrain(int((r->pos.x-0.5)/0.5),int((r->pos.y+0.5)/0.5),2,1)>T_HOLE) r->op=ROBOTOP_NONE;
+							if (ai.worseMapTerrain(int((r->pos.x-0.5)/0.5),int((r->pos.y+0.5)/0.5),2,1) > T_HOLE)
+                              r->op=Robot::OPERATOR::NONE;
 							break;
 						case 180:
-							if (ai.worseMapTerrain(int((r->pos.x-1.0)/0.5),int((r->pos.y-0.5)/0.5),1,2)>T_HOLE) r->op=ROBOTOP_NONE;
+							if (ai.worseMapTerrain(int((r->pos.x-1.0)/0.5),int((r->pos.y-0.5)/0.5),1,2) > T_HOLE)
+                              r->op=Robot::OPERATOR::NONE;
 							break;
 						case 270:
-							if (ai.worseMapTerrain(int((r->pos.x-0.5)/0.5),int((r->pos.y-1.0)/0.5),2,1)>T_HOLE) r->op=ROBOTOP_NONE;
+							if (ai.worseMapTerrain(int((r->pos.x-0.5)/0.5),int((r->pos.y-1.0)/0.5),2,1) > T_HOLE)
+                              r->op=Robot::OPERATOR::NONE;
 							break;
 						} /* switch */ 
 					} /* if */ 
 
-#ifdef _WRITE_REPORT_
-	fprintf(debug_fp,"ROBOT COMMAND: %i\n",r.op);
-	fflush(debug_fp);
-#endif
-					if (r->op==ROBOTOP_FORWARD) {
+    if (r->op==Robot::OPERATOR::FORWARD) {
 						float speed = r->robotSpeed(terrain);
 
 						/* BIPOD ANIMATION: */ 
@@ -937,12 +937,12 @@ bool NETHER::cycle(unsigned char *keyboard)
 						if (r->traction==0) r->chassis_state=0;
 					} /* if */ 
 
-					if (r->op==ROBOTOP_LEFT) r->angle -= r->robotRotationSpeed(terrain);
-					if (r->op==ROBOTOP_RIGHT) r->angle += r->robotRotationSpeed(terrain);
+    if (r->op==Robot::OPERATOR::LEFT) r->angle -= r->robotRotationSpeed(terrain);
+					if (r->op==Robot::OPERATOR::RIGHT) r->angle += r->robotRotationSpeed(terrain);
 					if (r->angle>=360) r->angle-=360;
 					if (r->angle<0) r->angle+=360;
 
-					if (r->op==ROBOTOP_CANNONS && r->firetimer==0) {
+					if (r->op==Robot::OPERATOR::CANNONS && r->firetimer==0) {
 						Vector pos(r->pos);
 						pos.z = r->piecez(0) + 0.3f;
 						Bullet bullet(Bullet::TYPE::CANNONS, pos, r->angle, r);
@@ -951,7 +951,7 @@ bool NETHER::cycle(unsigned char *keyboard)
                         sManager.playShot(ship->pos, r->pos);
 					} /* if */ 
 
-					if (r->op==ROBOTOP_MISSILES && r->firetimer==0) {
+					if (r->op==Robot::OPERATOR::MISSILES && r->firetimer==0) {
 						Vector pos (r->pos);
 						pos.z = r->piecez(1) + 0.2f;
                         Bullet bullet(Bullet::TYPE::MISSILES, pos, r->angle, r);
@@ -960,7 +960,7 @@ bool NETHER::cycle(unsigned char *keyboard)
                         sManager.playShot(ship->pos, r->pos);
 					} /* if */ 
 
-					if (r->op==ROBOTOP_PHASERS && r->firetimer==0) {
+					if (r->op==Robot::OPERATOR::PHASERS && r->firetimer==0) {
 						Vector pos(r->pos);
 						pos.z = r->piecez(2) + 0.3f;
 						Bullet bullet(Bullet::TYPE::PHASERS, pos, r->angle, r);
@@ -969,11 +969,12 @@ bool NETHER::cycle(unsigned char *keyboard)
                         sManager.playShot(ship->pos, r->pos);
 					} /* if */ 
 
-					if (r->op==ROBOTOP_CANNONS ||
-						r->op==ROBOTOP_MISSILES ||
-						r->op==ROBOTOP_PHASERS) r->firetimer++;
+					if (r->op==Robot::OPERATOR::CANNONS ||
+						r->op==Robot::OPERATOR::MISSILES ||
+						r->op==Robot::OPERATOR::PHASERS)
+                      r->firetimer++;
 
-					if (r->op==ROBOTOP_NUCLEAR) {
+					if (r->op==Robot::OPERATOR::NUCLEAR) {
                       Explosion exp(r->pos, 2);
 
                       map.explosions.push_back(exp);
@@ -1046,25 +1047,27 @@ bool NETHER::cycle(unsigned char *keyboard)
 							ai.moveRobot(old_pos,r->pos,i);
 						} /* if */ 
 						
-						if (r->op==ROBOTOP_FORWARD && (r->angle==0 || r->angle==180) && (int(r->pos.x*256)%128)==0) r->op=ROBOTOP_NONE;
-						if (r->op==ROBOTOP_FORWARD && (r->angle==90 || r->angle==270) && (int(r->pos.y*256)%128)==0) r->op=ROBOTOP_NONE;
-						if (r->op==ROBOTOP_LEFT && (r->angle%90)==0) r->op=ROBOTOP_NONE;
-						if (r->op==ROBOTOP_RIGHT && (r->angle%90)==0) r->op=ROBOTOP_NONE;
-						if (r->op==ROBOTOP_CANNONS && r->firetimer>=64) {
-							r->op=ROBOTOP_NONE;
+						if (r->op==Robot::OPERATOR::FORWARD && (r->angle==0 || r->angle==180) && (int(r->pos.x*256)%128)==0)
+                          r->op=Robot::OPERATOR::NONE;
+						if (r->op==Robot::OPERATOR::FORWARD && (r->angle==90 || r->angle==270) && (int(r->pos.y*256)%128)==0)
+                          r->op=Robot::OPERATOR::NONE;
+						if (r->op==Robot::OPERATOR::LEFT && (r->angle%90)==0) r->op=Robot::OPERATOR::NONE;
+						if (r->op==Robot::OPERATOR::RIGHT && (r->angle%90)==0) r->op=Robot::OPERATOR::NONE;
+						if (r->op==Robot::OPERATOR::CANNONS && r->firetimer>=64) {
+							r->op=Robot::OPERATOR::NONE;
 							r->firetimer=0;
 						} /* if */ 
-						if (r->op==ROBOTOP_MISSILES && r->firetimer>=64) {
-							r->op=ROBOTOP_NONE;
+						if (r->op==Robot::OPERATOR::MISSILES && r->firetimer>=64) {
+							r->op=Robot::OPERATOR::NONE;
 							r->firetimer=0;
 						} /* if */ 
-						if (r->op==ROBOTOP_PHASERS && r->firetimer>=64) {
-							r->op=ROBOTOP_NONE;
+						if (r->op==Robot::OPERATOR::PHASERS && r->firetimer>=64) {
+							r->op=Robot::OPERATOR::NONE;
 							r->firetimer=0;
 						} /* if */ 
 
 						/* Follow ROBOT program: */ 
-						if (r->op==ROBOTOP_NONE && !r->shipover) {
+						if (r->op==Robot::OPERATOR::NONE && !r->shipover) {
 #ifdef _WRITE_REPORT_
 	fprintf(debug_fp,"Robot program: %i\n",r->program);
 	fflush(debug_fp);
@@ -1073,21 +1076,21 @@ bool NETHER::cycle(unsigned char *keyboard)
 							case Robot::PROGRAM_NONE:
 								break;
 							case Robot::PROGRAM_FORWARD:
-								r->op=ROBOTOP_FORWARD;
+								r->op=Robot::OPERATOR::FORWARD;
 								break;
 							case Robot::PROGRAM_STOPDEFEND:
                               r->op = ai.programStopDefend(*r, &(r->program_goal), i + 1);
 								break;
 							case Robot::PROGRAM_ADVANCE:
                               r->op=ai.programAdvance(*r, i + 1);
-								if (r->op==ROBOTOP_FORWARD && r->angle==90) r->program_parameter.as_int--;
-								if (r->op==ROBOTOP_FORWARD && r->angle==270) r->program_parameter.as_int++;
+								if (r->op==Robot::OPERATOR::FORWARD && r->angle==90) r->program_parameter.as_int--;
+								if (r->op==Robot::OPERATOR::FORWARD && r->angle==270) r->program_parameter.as_int++;
 								if (r->program_parameter.as_int == 0) r->program=Robot::PROGRAM_STOPDEFEND;
 								break;
 							case Robot::PROGRAM_RETREAT:
                               r->op=ai.programRetreat(*r, i + 1);
-								if (r->op==ROBOTOP_FORWARD && r->angle==270) r->program_parameter.as_int--;
-								if (r->op==ROBOTOP_FORWARD && r->angle==90) r->program_parameter.as_int++;
+								if (r->op==Robot::OPERATOR::FORWARD && r->angle==270) r->program_parameter.as_int--;
+								if (r->op==Robot::OPERATOR::FORWARD && r->angle==90) r->program_parameter.as_int++;
 								if (r->program_parameter.as_int == 0) r->program=Robot::PROGRAM_STOPDEFEND;
 								break;
 							case Robot::PROGRAM_DESTROY:
@@ -1102,39 +1105,39 @@ bool NETHER::cycle(unsigned char *keyboard)
 						} /* if */ 
 
 						/* Follow USER's command: */ 
-						if (r->op==ROBOTOP_NONE && r->shipover &&
+						if (r->op==Robot::OPERATOR::NONE && r->shipover &&
 							(menu.act_menu==Menu::TYPE::DIRECTCONTROL ||
 							 menu.act_menu==Menu::TYPE::DIRECTCONTROL2)) {
 							if (keyboard[right_key]) {
 								if (r->angle==0) {
-									r->op=ROBOTOP_FORWARD;
+									r->op=Robot::OPERATOR::FORWARD;
 								} else {
-									if (r->angle==270) r->op=ROBOTOP_RIGHT;
-												  else r->op=ROBOTOP_LEFT;
+									if (r->angle==270) r->op=Robot::OPERATOR::RIGHT;
+												  else r->op=Robot::OPERATOR::LEFT;
 								} /* if */ 
 							} /* if */ 
 							if (keyboard[left_key]) {
 								if (r->angle==180) {
-									r->op=ROBOTOP_FORWARD;
+									r->op=Robot::OPERATOR::FORWARD;
 								} else {
-									if (r->angle==90) r->op=ROBOTOP_RIGHT;
-												 else r->op=ROBOTOP_LEFT;
+									if (r->angle==90) r->op=Robot::OPERATOR::RIGHT;
+												 else r->op=Robot::OPERATOR::LEFT;
 								} /* if */ 
 							} /* if */ 
 							if (keyboard[up_key]) {
 								if (r->angle==90) {
-									r->op=ROBOTOP_FORWARD;
+									r->op=Robot::OPERATOR::FORWARD;
 								} else {
-									if (r->angle==0) r->op=ROBOTOP_RIGHT;
-												else r->op=ROBOTOP_LEFT;
+									if (r->angle==0) r->op=Robot::OPERATOR::RIGHT;
+												else r->op=Robot::OPERATOR::LEFT;
 								} /* if */ 
 							} /* if */ 
 							if (keyboard[down_key]) {
 								if (r->angle==270) {
-									r->op=ROBOTOP_FORWARD;
+									r->op=Robot::OPERATOR::FORWARD;
 								} else {
-									if (r->angle==180) r->op=ROBOTOP_RIGHT;
-												  else r->op=ROBOTOP_LEFT;
+									if (r->angle==180) r->op=Robot::OPERATOR::RIGHT;
+												  else r->op=Robot::OPERATOR::LEFT;
 								} /* if */ 
 							} /* if */ 
 

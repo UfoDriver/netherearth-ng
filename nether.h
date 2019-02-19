@@ -49,15 +49,6 @@ enum RESOURCES {R_GENERAL,
                 R_CANNONS,
                 R_CHASSIS};
 
-enum ROBOT_OPERATORS {ROBOTOP_NONE = -1,
-                      ROBOTOP_FORWARD,
-                      ROBOTOP_LEFT,
-                      ROBOTOP_RIGHT,
-                      ROBOTOP_CANNONS,
-                      ROBOTOP_MISSILES,
-                      ROBOTOP_PHASERS,
-                      ROBOTOP_NUCLEAR};
-
 
 class NETHER {
 public:

@@ -22,6 +22,16 @@ public:
                       P_PARAM_WARBASES,
                       P_PARAM_NFACTORIES,
                       P_PARAM_EFACTORIES};
+
+  enum class OPERATOR {NONE = -1,
+                       FORWARD,
+                       LEFT,
+                       RIGHT,
+                       CANNONS,
+                       MISSILES,
+                       PHASERS,
+                       NUCLEAR};
+
   Robot();
   explicit Robot(std::istream& in);
   bool valid();
@@ -34,6 +44,7 @@ public:
   bool hasCannons() const { return pieces[0]; }
   bool hasMissiles() const { return pieces[1]; }
   bool hasPhasers() const { return pieces[2]; }
+  bool hasNuclear() const { return pieces[3]; }
   bool hasElectronics() const { return pieces[4]; }
   bool checkCollision(const std::vector<Building>& buildings,
                       const std::vector<Robot*> robots[2], bool complete, Ship* ship);
@@ -54,7 +65,7 @@ public:
   } program_parameter;
   Vector program_goal;
 
-  int op;
+  OPERATOR op;
   bool shipover;
   int firetimer;
   int strength;

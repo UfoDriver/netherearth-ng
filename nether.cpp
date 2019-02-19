@@ -415,7 +415,7 @@ bool NETHER::saveDebugReport(const std::string& filename)
       log << " PROGRAM PARAMETER: " << r->program_parameter.as_int << '\n';
       log << " PROGRAM GOAL: ";
       log << r->program_goal;
-           log << " ACTUAL OPERATOR: " << r->op << '\n';
+      log << " ACTUAL OPERATOR: " << int(r->op) << '\n';
       if (r->shipover)
         log << " HAS THE SHIP OVER IT\n";
       else

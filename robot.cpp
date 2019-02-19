@@ -40,16 +40,18 @@ Robot::Robot(std::istream& in)
     in >> pieces[j];
   }
   int program_;
+  int op_;
   in >> program_ >> program_parameter.as_int;
   program = Robot::ROBOT_PROGRAMS(program_);
   in >> program_goal;
-  in >> op;
+  in >> op_;
   in >> shipover;
   in >> firetimer >> strength;
   in >> pos;
   in >> angle;
   in >> cmc;
   in >> electronics_state >> chassis_state;
+  op = Robot::OPERATOR(op_);
 }
 
 
@@ -580,7 +582,7 @@ std::ostream& operator<<(std::ostream& out, const Robot& robot)
   }
   out << robot.program << ' ' << robot.program_parameter.as_int << '\n';
   return out << robot.program_goal
-             << robot.op << '\n'
+             << int(robot.op) << '\n'
              << robot.shipover << '\n'
              << robot.firetimer << ' ' << robot.strength << '\n'
              << robot.pos

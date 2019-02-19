@@ -205,7 +205,7 @@ void AI::enemy()
 	tmpr->pieces[4]=false;
 	tmpr->angle=0;
 	tmpr->program=Robot::PROGRAM_FORWARD;
-	tmpr->op=ROBOTOP_NONE;
+	tmpr->op=Robot::OPERATOR::NONE;
 	tmpr->calculateCMC(Resources::pieceTiles[1]);
 	tmpr->shipover=false;
 
@@ -595,7 +595,7 @@ Robot* AI::enemyNewRobot(const STATE state, const Vector& pos)
 		r->pos=pos;
 		r->angle=0;
 		r->program=Robot::PROGRAM_FORWARD;
-		r->op=ROBOTOP_NONE;
+		r->op=Robot::OPERATOR::NONE;
 		r->calculateCMC(Resources::pieceTiles[1]);
 		r->shipover=false;
 
@@ -643,10 +643,10 @@ void AI::availableOperators(const Robot& robot, std::vector<AIOperator>& l)
       op.cost = cost;
       op.previous = -1;
       op.deadend = false;
-      if (dif == 0) op.first_robotop = ROBOTOP_FORWARD;
-      if (dif == 90) op.first_robotop = ROBOTOP_RIGHT;
-      if (dif == 180) op.first_robotop = ROBOTOP_RIGHT;
-      if (dif == 270) op.first_robotop = ROBOTOP_LEFT;
+      if (dif == 0) op.first_robotop = Robot::OPERATOR::FORWARD;
+      if (dif == 90) op.first_robotop = Robot::OPERATOR::RIGHT;
+      if (dif == 180) op.first_robotop = Robot::OPERATOR::RIGHT;
+      if (dif == 270) op.first_robotop = Robot::OPERATOR::LEFT;
       op.newpos = Vector(robot.pos.x + xd[i] * 0.5, robot.pos.y + yd[i] * 0.5, robot.pos.z);
       l.push_back(op);
     }
@@ -694,10 +694,10 @@ bool AI::expandOperators(const int x, const int y, const int angle, const Robot&
 					searchmap[newpos].cost=cost;
 					searchmap[newpos].previous=previous;
 					searchmap[newpos].deadend=false;
-					if (dif==0) searchmap[newpos].first_robotop=ROBOTOP_FORWARD;
-					if (dif==90) searchmap[newpos].first_robotop=ROBOTOP_RIGHT;
-					if (dif==180) searchmap[newpos].first_robotop=ROBOTOP_RIGHT;
-					if (dif==270) searchmap[newpos].first_robotop=ROBOTOP_LEFT;
+					if (dif==0) searchmap[newpos].first_robotop=Robot::OPERATOR::FORWARD;
+					if (dif==90) searchmap[newpos].first_robotop=Robot::OPERATOR::RIGHT;
+					if (dif==180) searchmap[newpos].first_robotop=Robot::OPERATOR::RIGHT;
+					if (dif==270) searchmap[newpos].first_robotop=Robot::OPERATOR::LEFT;
 					searchmap[newpos].newpos=Vector((x+xd[i])*0.5,(y+yd[i])*0.5,0);
 
 					/* Continue the search process: */ 
@@ -718,7 +718,7 @@ bool AI::expandOperators(const int x, const int y, const int angle, const Robot&
 }
 
 
-int AI::searchEngine(const Robot& robot, const int goaltype, const Vector& goalpos, const int depth)
+Robot::OPERATOR AI::searchEngine(const Robot& robot, const int goaltype, const Vector& goalpos, const int depth)
 {
   int x, y, dx, dy;
   /* Expand the search tree: */
@@ -729,7 +729,7 @@ int AI::searchEngine(const Robot& robot, const int goaltype, const Vector& goalp
   searchmap[offs].used = true;
   searchmap[offs].cost = 0;
   searchmap[offs].previous = -1;
-  searchmap[offs].first_robotop = ROBOTOP_NONE;
+  searchmap[offs].first_robotop = Robot::OPERATOR::NONE;
   searchmap[offs].newpos = robot.pos;
   searchmap[offs].deadend = false;
   expandOperators(x, y, robot.angle, robot, y * (map->width() * 2) + x, 0, depth);
@@ -765,7 +765,7 @@ int AI::searchEngine(const Robot& robot, const int goaltype, const Vector& goalp
     }
 
     if (bestop != 0) {
-      int rop;
+      Robot::OPERATOR rop;
       AIOperator *prev;
 
       prev = bestop;
@@ -778,14 +778,14 @@ int AI::searchEngine(const Robot& robot, const int goaltype, const Vector& goalp
       return rop;
     } else {
       resetSearch(robot.pos, depth);
-      return ROBOTOP_NONE;
+      return Robot::OPERATOR::NONE;
     }
 
     resetSearch(robot.pos, depth);
     if (bestop != 0)
       return bestop->first_robotop;
     else
-      return ROBOTOP_NONE;
+      return Robot::OPERATOR::NONE;
   }
 
   /* RETREAT PROGRAM: */
@@ -819,7 +819,7 @@ int AI::searchEngine(const Robot& robot, const int goaltype, const Vector& goalp
 		} /* for */ 
 
 		if (bestop!=0) {
-			int rop;
+          Robot::OPERATOR rop;
 			AIOperator *prev;
 
 			prev=bestop;
@@ -833,12 +833,12 @@ int AI::searchEngine(const Robot& robot, const int goaltype, const Vector& goalp
 			return rop;
 		} else {
 			resetSearch(robot.pos,depth);
-			return ROBOTOP_NONE;
+			return Robot::OPERATOR::NONE;
 		} /* if */ 
 
 		resetSearch(robot.pos,depth);
 		if (bestop!=0) return bestop->first_robotop;
-				  else return ROBOTOP_NONE;
+				  else return Robot::OPERATOR::NONE;
 	} /* if */ 
 
 	/* CAPTURE PROGRAM: */ 
@@ -882,7 +882,7 @@ int AI::searchEngine(const Robot& robot, const int goaltype, const Vector& goalp
 #endif
 
 		if (bestop!=0) {
-			int rop;
+          Robot::OPERATOR rop;
 			AIOperator *prev;
 
 			prev=bestop;
@@ -896,12 +896,12 @@ int AI::searchEngine(const Robot& robot, const int goaltype, const Vector& goalp
 			return rop;
 		} else {
 			resetSearch(robot.pos,depth);
-			return ROBOTOP_NONE;
+			return Robot::OPERATOR::NONE;
 		} /* if */ 
 
 		resetSearch(robot.pos,depth);
 		if (bestop!=0) return bestop->first_robotop;
-				  else return ROBOTOP_NONE;
+				  else return Robot::OPERATOR::NONE;
 	} /* if */ 
 
 
@@ -952,7 +952,7 @@ int AI::searchEngine(const Robot& robot, const int goaltype, const Vector& goalp
 		if (bestop2!=0) bestop=bestop2;
 
 		if (bestop!=0) {
-			int rop;
+          Robot::OPERATOR rop;
 			AIOperator *prev;
 
 			prev=bestop;
@@ -966,15 +966,15 @@ int AI::searchEngine(const Robot& robot, const int goaltype, const Vector& goalp
 			return rop;
 		} else {
 			resetSearch(robot.pos,depth);
-			return ROBOTOP_NONE;
+			return Robot::OPERATOR::NONE;
 		} /* if */ 
 
 		resetSearch(robot.pos, depth);
 		if (bestop!=0) return bestop->first_robotop;
-				  else return ROBOTOP_NONE;
+				  else return Robot::OPERATOR::NONE;
 	} /* if */ 
 
-	return ROBOTOP_NONE;
+	return Robot::OPERATOR::NONE;
 }
 
 
@@ -995,13 +995,13 @@ void AI::resetSearch(const Vector& pos, const int depth)
 }
 
 
-int AI::programAdvance(const Robot& robot, const int player)
+Robot::OPERATOR AI::programAdvance(const Robot& robot, const int player)
 {
   std::vector<AIOperator> operators;
   Vector tmp_goal;
 
-  int op = programStopDefend(robot, &tmp_goal, player);
-  if (op != ROBOTOP_NONE) return op;
+  Robot::OPERATOR op = programStopDefend(robot, &tmp_goal, player);
+  if (op != Robot::OPERATOR::NONE) return op;
 
   int type = killRobot(robot.pos);
 
@@ -1030,14 +1030,14 @@ int AI::programAdvance(const Robot& robot, const int player)
 }
 
 
-int AI::programRetreat(const Robot& robot, const int player)
+Robot::OPERATOR AI::programRetreat(const Robot& robot, const int player)
 {
   int type;
   std::vector<AIOperator> operators;
 
   Vector tmp_goal;
-  int op = programStopDefend(robot, &tmp_goal, player);
-  if (op != ROBOTOP_NONE) return op;
+  Robot::OPERATOR op = programStopDefend(robot, &tmp_goal, player);
+  if (op != Robot::OPERATOR::NONE) return op;
 
   type = killRobot(robot.pos);
 
@@ -1067,10 +1067,10 @@ int AI::programRetreat(const Robot& robot, const int player)
 }
 
 
-int AI::programStopDefend(const Robot& robot, Vector *program_goal, const int player)
+Robot::OPERATOR AI::programStopDefend(const Robot& robot, Vector *program_goal, const int player)
 {
   /* First of all, delete the robot from the discreet map: */
-  int op = ROBOTOP_NONE;
+  Robot::OPERATOR op = Robot::OPERATOR::NONE;
   int type = killRobot(robot.pos);
   std::vector<AIOperator> lops;
 
@@ -1165,34 +1165,34 @@ int AI::programStopDefend(const Robot& robot, Vector *program_goal, const int pl
           if (robot.angle == 270) dirmask = 8;
           if ((rsp & dirmask) != 0) {
             if ((prsp & dirmask) !=0 ) {
-              op = ROBOTOP_PHASERS;
+              op = Robot::OPERATOR::PHASERS;
             } else {
               if ((mrsp & dirmask) != 0) {
-                op = ROBOTOP_MISSILES;
+                op = Robot::OPERATOR::MISSILES;
               } else {
-                op = ROBOTOP_CANNONS;
+                op = Robot::OPERATOR::CANNONS;
               }
             }
           } else {
             dirmask *= 2;
             if (dirmask >= 16) dirmask = 1;
             if ((rsp & dirmask) != 0) {
-              op = ROBOTOP_RIGHT;
+              op = Robot::OPERATOR::RIGHT;
             } else {
-              op = ROBOTOP_LEFT;
+              op = Robot::OPERATOR::LEFT;
             }
           }
         } else {
           /* There are no enemy robots at sight: */
-          op = ROBOTOP_NONE;
+          op = Robot::OPERATOR::NONE;
         }
       } else {
         /* There are no enemy robots at sight: */
-        op = ROBOTOP_NONE;
+        op = Robot::OPERATOR::NONE;
       }
     } else {
       /* There are no enemy robots: */
-      op = ROBOTOP_NONE;
+      op = Robot::OPERATOR::NONE;
     }
   }
 
@@ -1206,13 +1206,13 @@ int AI::programStopDefend(const Robot& robot, Vector *program_goal, const int pl
 }
 
 
-int AI::programCapture(const Robot& robot, Vector *program_goal, const int player)
+Robot::OPERATOR AI::programCapture(const Robot& robot, Vector *program_goal, const int player)
 {
   /* First of all, delete the robot from the discreet map: */
   std::vector<AIOperator> l;
 
-  int op = programStopDefend(robot, program_goal, player);
-  if (op != ROBOTOP_NONE) return op;
+  Robot::OPERATOR op = programStopDefend(robot, program_goal, player);
+  if (op != Robot::OPERATOR::NONE) return op;
 
   int type = killRobot(robot.pos);
   availableOperators(robot, l);
@@ -1299,10 +1299,10 @@ int AI::programCapture(const Robot& robot, Vector *program_goal, const int playe
 }
 
 
-int AI::programDestroy(const Robot& robot, Vector *program_goal, const int player)
+Robot::OPERATOR AI::programDestroy(const Robot& robot, Vector *program_goal, const int player)
 {
   /* First of all, delete the robot from the discreet map: */
-  int op = ROBOTOP_NONE;
+  Robot::OPERATOR op = Robot::OPERATOR::NONE;
   int type = killRobot(robot.pos);
   std::vector<AIOperator> lops;
 
@@ -1359,7 +1359,7 @@ int AI::programDestroy(const Robot& robot, Vector *program_goal, const int playe
           }
         }
       } else {
-        if (program_goal->x != -1) op = ROBOTOP_NUCLEAR;
+        if (program_goal->x != -1) op = Robot::OPERATOR::NUCLEAR;
       }
 
     } else {
@@ -1453,21 +1453,21 @@ int AI::programDestroy(const Robot& robot, Vector *program_goal, const int playe
             if (robot.angle == 270) dirmask = 8;
             if ((rsp & dirmask) != 0) {
               if ((prsp & dirmask) != 0) {
-                op = ROBOTOP_PHASERS;
+                op = Robot::OPERATOR::PHASERS;
               } else {
                 if ((mrsp & dirmask) != 0) {
-                  op = ROBOTOP_MISSILES;
+                  op = Robot::OPERATOR::MISSILES;
                 } else {
-                  op = ROBOTOP_CANNONS;
+                  op = Robot::OPERATOR::CANNONS;
                 }
               }
             } else {
               dirmask *= 2;
               if (dirmask >= 16) dirmask = 1;
               if ((rsp & dirmask) != 0) {
-                op = ROBOTOP_RIGHT;
+                op = Robot::OPERATOR::RIGHT;
               } else {
-                op = ROBOTOP_LEFT;
+                op = Robot::OPERATOR::LEFT;
               }
             }
           } else {
@@ -1496,7 +1496,7 @@ int AI::programDestroy(const Robot& robot, Vector *program_goal, const int playe
         }
       } else {
         /* There are no enemy robots: */
-        op = ROBOTOP_NONE;
+        op = Robot::OPERATOR::NONE;
       }
     }
   }

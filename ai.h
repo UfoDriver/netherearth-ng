@@ -2,12 +2,12 @@
 #define AI_H
 
 #include <vector>
+#include "robot.h"
 #include "vector.h"
 
 class AIOperator;
 class Map;
 class NETHER;
-class Robot;
 
 
 class AI
@@ -28,11 +28,11 @@ public:
   void moveRobot(const Vector& oldpos, const Vector& newpos, const int owner);
   int killRobot(const Vector& pos);
   int robotHere(const Vector& pos);
-  int programAdvance(const Robot& robot, const int player);
-  int programRetreat(const Robot& robot, const int player);
-  int programCapture(const Robot& robot, Vector *program_goal, const int player);
-  int programDestroy(const Robot& robot, Vector *program_goal, const int player);
-  int programStopDefend(const Robot& robot, Vector *program_goal, const int player);
+  Robot::OPERATOR programAdvance(const Robot& robot, const int player);
+  Robot::OPERATOR programRetreat(const Robot& robot, const int player);
+  Robot::OPERATOR programCapture(const Robot& robot, Vector *program_goal, const int player);
+  Robot::OPERATOR programDestroy(const Robot& robot, Vector *program_goal, const int player);
+  Robot::OPERATOR programStopDefend(const Robot& robot, Vector *program_goal, const int player);
   void removeBuilding(const Vector& pos);
   int discreetmapSize() const { return discreetmap.size(); }
   int discreetmapValue(int index) const { return discreetmap[index]; }
@@ -43,7 +43,7 @@ private:
   void availableOperators(const Robot& robot, std::vector<AIOperator>& l);
   bool expandOperators(const int x, const int y, const int angle, const Robot& robot,
                        const int previous, const int oldcost, const int depth);
-  int searchEngine(const Robot& robot, const int goaltype, const Vector& goalpos, const int depth);
+  Robot::OPERATOR searchEngine(const Robot& robot, const int goaltype, const Vector& goalpos, const int depth);
   void resetSearch(const Vector& pos, const int depth);
   void rankOperatorsAdvance(std::vector<AIOperator>& l);
   void rankOperatorsRetreat(std::vector<AIOperator>& l);
