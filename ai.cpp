@@ -159,7 +159,7 @@ void AI::removeBuilding(const Vector& pos)
 void AI::enemy()
 {
 	Building *in_danger_warbase=0;
-	int state=AI_STATE_EXPANDING;
+	STATE state = STATE::EXPANDING;
 	int nrobots[3]={0,0,0};	/* EXPANDING / ATTACING / DEFENDING */ 
 	Vector mean_factory_position;
 	Building *closest_to_factories_warbase=0;
@@ -270,7 +270,7 @@ void AI::enemy()
           } /* for */
 
           if (forces[0]>forces[1]) {
-            state=AI_STATE_DEFENDING;
+            state = STATE::DEFENDING;
             in_danger_warbase=&b;
           } /* if */ 
         } /* if */ 
@@ -308,7 +308,7 @@ void AI::enemy()
 		
 //		fprintf(fp,"Trying to BUILD a robot to DEFEND the WARBASE \n");
 
-		r=enemyNewRobot(AI_STATE_DEFENDING,in_danger_warbase->pos+Vector(2.5,0.5,0));
+		r = enemyNewRobot(STATE::DEFENDING, in_danger_warbase->pos+Vector(2.5,0.5,0));
 		if (r!=0) {
 			
 //			fprintf(fp,"Achieved.\n");
@@ -374,7 +374,7 @@ void AI::enemy()
 				break;
 			} /* switch */  
 
-			Robot *r=enemyNewRobot(AI_STATE_EXPANDING,closest_to_factories_warbase->pos+Vector(2.5,0.5,0));
+			Robot *r=enemyNewRobot(STATE::EXPANDING,closest_to_factories_warbase->pos+Vector(2.5,0.5,0));
 //			fprintf(fp,"Trying to BUILD a robot to CONQUER FACTORIES \n");
 			if (r!=0) {
 				if (factories[1]>factories[0]) {			
@@ -398,7 +398,7 @@ void AI::enemy()
 //				fprintf(fp,"Trying to BUILD a robot to CONQUER WARBASES \n");
 				
 				if (nether->stats.resources[1][0]+nether->stats.resources[1][6]<40) return;
-				Robot *r=enemyNewRobot(AI_STATE_CONQUERING,closest_to_enemy_warbase->pos+Vector(2.5,0.5,0));
+				Robot *r=enemyNewRobot(STATE::CONQUERING,closest_to_enemy_warbase->pos+Vector(2.5,0.5,0));
 				if (r!=0) {
 
 //					fprintf(fp,"Achieved.\n");
@@ -428,7 +428,7 @@ void AI::enemy()
 					break;
 				} /* switch */ 
 
-				Robot *r=enemyNewRobot(AI_STATE_FIGHTING,closest_to_enemy_warbase->pos+Vector(2.5,0.5,0));
+				Robot *r=enemyNewRobot(STATE::FIGHTING,closest_to_enemy_warbase->pos+Vector(2.5,0.5,0));
 
 //				fprintf(fp,"Trying to BUILD a robot to ATTACK ROBOTS \n");
 				
@@ -446,7 +446,7 @@ void AI::enemy()
 }
 
 
-Robot* AI::enemyNewRobot(const int state, const Vector& pos)
+Robot* AI::enemyNewRobot(const STATE state, const Vector& pos)
 {
 	int traction=0;
 	bool pieces[5]={false,false,false,false,false};
@@ -472,7 +472,7 @@ Robot* AI::enemyNewRobot(const int state, const Vector& pos)
 	} /* if */ 
 
 	switch(state) {
-	case AI_STATE_EXPANDING:
+	case STATE::EXPANDING:
 		if (rg+nether->stats.resources[1][R_CANNONS]+nether->stats.resources[1][R_MISSILES]+nether->stats.resources[1][R_PHASERS]>40 &&
 			(level>=2 ||
 			(level==1 && (rand()%2)==0) ||
@@ -491,7 +491,7 @@ Robot* AI::enemyNewRobot(const int state, const Vector& pos)
 
 		if (rg+nether->stats.resources[1][R_ELECTRONICS]>10) pieces[4]=true;
 		break;
-	case AI_STATE_DEFENDING:
+	case STATE::DEFENDING:
 		if (rg+nether->stats.resources[1][R_PHASERS]>20 &&
 			(level>=2 ||
 			(level==1 && (rand()%2)==0) ||
@@ -508,7 +508,7 @@ Robot* AI::enemyNewRobot(const int state, const Vector& pos)
 
 		if (rg+nether->stats.resources[1][R_ELECTRONICS]>30) pieces[4]=true;
 		break;
-	case AI_STATE_FIGHTING:
+	case STATE::FIGHTING:
 		if (rg+nether->stats.resources[1][R_PHASERS]>20 &&
 			(level>=2 ||
 			(level==1 && (rand()%2)==0) ||
@@ -525,7 +525,7 @@ Robot* AI::enemyNewRobot(const int state, const Vector& pos)
 
 		if (rg+nether->stats.resources[1][R_ELECTRONICS]>20) pieces[4]=true;
 		break;
-	case AI_STATE_CONQUERING:
+	case STATE::CONQUERING:
 		if (rg+nether->stats.resources[1][R_CANNONS]+nether->stats.resources[1][R_MISSILES]+nether->stats.resources[1][R_PHASERS]>40 &&
 			(level>=2 ||
 			(level==1 && (rand()%2)==0) ||
@@ -544,7 +544,7 @@ Robot* AI::enemyNewRobot(const int state, const Vector& pos)
 
 		if (rg+nether->stats.resources[1][R_ELECTRONICS]>10) pieces[4]=true;
 		break;
-	case AI_STATE_DESTROYING:
+	case STATE::DESTROYING:
 		if (rg+nether->stats.resources[1][R_NUCLEAR]>40) pieces[3]=true;
 		if (rg+nether->stats.resources[1][R_CANNONS]+nether->stats.resources[1][R_MISSILES]+nether->stats.resources[1][R_PHASERS]>40 &&
 			(level>=2 ||

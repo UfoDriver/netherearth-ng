@@ -47,7 +47,7 @@ void OptionsScreen::draw(int w, int h, const float lightpos[4])
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  if (nether->game_state == NETHER::STATE::PAUSE) {
+  if (nether->getGameState() == NETHER::STATE::PAUSE) {
     if (selectedOption == 0)
       glColor3f(1.0, 0.0, 0.0);
     else
@@ -77,7 +77,7 @@ void OptionsScreen::draw(int w, int h, const float lightpos[4])
     scaledglprintf(0.01, 0.01, "QUIT GAME");
   }
 
-  if (nether->game_state == NETHER::STATE::SAVINGGAME) {
+  if (nether->getGameState() == NETHER::STATE::SAVINGGAME) {
     glColor3f(0.5, 0.5, 1.0);
     glTranslatef(0, 6, 0);
     scaledglprintf(0.01, 0.01, "CHOOSE SLOT TO SAVE");
@@ -107,7 +107,7 @@ void OptionsScreen::draw(int w, int h, const float lightpos[4])
     }
   }
 
-  if (nether->game_state == NETHER::STATE::LOADINGGAME) {
+  if (nether->getGameState() == NETHER::STATE::LOADINGGAME) {
     glColor3f(0.5, 0.5, 1.0);
     glTranslatef(0, 6, 0);
     scaledglprintf(0.01, 0.01, "CHOOSE SLOT TO LOAD");
@@ -141,19 +141,19 @@ void OptionsScreen::draw(int w, int h, const float lightpos[4])
 
 bool OptionsScreen::cycle(unsigned char *keyboard)
 {
-  switch (nether->game_state) {
+  switch (nether->getGameState()) {
   case NETHER::STATE::PAUSE:
     if (keyboard[fire_key] && !nether->old_keyboard[fire_key]) {
       switch(selectedOption) {
       case 0:
-        nether->game_state = NETHER::STATE::PLAYING;
+        nether->setGameState(NETHER::STATE::PLAYING);
         break;
       case 1:
-        nether->game_state = NETHER::STATE::LOADINGGAME;
+        nether->setGameState(NETHER::STATE::LOADINGGAME);
         selectedOption=0;
         break;
       case 2:
-        nether->game_state = NETHER::STATE::SAVINGGAME;
+        nether->setGameState(NETHER::STATE::SAVINGGAME);
         selectedOption=0;
         break;
       case 3:
@@ -177,7 +177,7 @@ bool OptionsScreen::cycle(unsigned char *keyboard)
     if (keyboard[fire_key] && !nether->old_keyboard[fire_key]) {
       switch(selectedOption) {
       case 0:
-        nether->game_state = NETHER::STATE::PAUSE;
+        nether->setGameState(NETHER::STATE::PAUSE);
         selectedOption = 2;
         break;
       case 1:
@@ -189,7 +189,7 @@ bool OptionsScreen::cycle(unsigned char *keyboard)
           sprintf(filename,"savedgame%i.txt", selectedOption-1);
           nether->saveGame(filename);
           nether->saveDebugReport("debugreport.txt");
-          nether->game_state = NETHER::STATE::PAUSE;
+          nether->setGameState(NETHER::STATE::PAUSE);
           selectedOption = 2;
           nether->menu.needsRedraw = 2;
           nether->radar.needsRedraw = 1;
@@ -212,7 +212,7 @@ bool OptionsScreen::cycle(unsigned char *keyboard)
     if (keyboard[fire_key] && !nether->old_keyboard[fire_key]) {
       switch (selectedOption) {
       case 0:
-        nether->game_state = NETHER::STATE::PAUSE;
+        nether->setGameState(NETHER::STATE::PAUSE);
         selectedOption = 1;
         break;
       case 1:
@@ -229,7 +229,7 @@ bool OptionsScreen::cycle(unsigned char *keyboard)
           nether->stats.requestRecomputing();
           nether->game_finished = 0;
           nether->game_started = INTRO_TIME;
-          nether->game_state = NETHER::STATE::PAUSE;
+          nether->setGameState(NETHER::STATE::PAUSE);
           selectedOption = 2;
         }
       }
@@ -253,6 +253,6 @@ bool OptionsScreen::cycle(unsigned char *keyboard)
 
 void OptionsScreen::open()
 {
-  nether->game_state = NETHER::STATE::PAUSE;
+  nether->setGameState(NETHER::STATE::PAUSE);
   selectedOption = 0;
 }

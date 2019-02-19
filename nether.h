@@ -57,12 +57,6 @@ enum ROBOT_OPERATORS {ROBOTOP_NONE = -1,
                       ROBOTOP_PHASERS,
                       ROBOTOP_NUCLEAR};
 
-enum AI_STATES {AI_STATE_EXPANDING,
-                AI_STATE_FIGHTING,
-                AI_STATE_DEFENDING,
-                AI_STATE_CONQUERING,
-                AI_STATE_DESTROYING};
-
 
 class NETHER {
 public:
@@ -83,6 +77,8 @@ public:
   bool saveDebugReport(const std::string& filename);
 
   Ship* getShip() const { return ship; }
+  STATE getGameState() { return game_state; };
+  void setGameState(STATE newState) { game_state = newState; }
 
 private:
   bool cycle(unsigned char *keyboard);
