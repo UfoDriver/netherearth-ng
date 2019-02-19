@@ -110,7 +110,7 @@ bool ConstructionScreen::cycle(unsigned char *keyboard)
 }
 
 
-void ConstructionScreen::draw(int width, int height, const Vector& lightposv)
+void ConstructionScreen::draw(int width, int height, const Light& light)
 {
   float lightpos2[4] = {0, 0, 1000, 1};
   float tmpls[4] = {1.0F, 1.0F, 1.0F, 1.0};
@@ -275,7 +275,7 @@ void ConstructionScreen::draw(int width, int height, const Vector& lightposv)
     glRotatef(30, 1, 0, 0);
     glRotatef(nether->animation_timer * 32, 0, 1, 0);
     glRotatef(-90, 1, 0, 0);
-    in_construction.draw(0, false, Resources::pieceTiles, lightposv);
+    in_construction.draw(0, false, Resources::pieceTiles, light.asVector());
     glPopMatrix();
   }
 

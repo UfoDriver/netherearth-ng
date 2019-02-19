@@ -29,6 +29,7 @@ public:
   float maxZ(float x[2], float y[2]) const;
   int terrain(float x, float y);
   int worseTerrain(float x[2], float y[2]);
+
   std::vector<Building> buildings;
   std::vector<Bullet> bullets;
   std::vector<Explosion> explosions;

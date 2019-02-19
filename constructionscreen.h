@@ -1,6 +1,7 @@
 #ifndef CONSTRUCTIONSCREEN_H
 #define CONSTRUCTIONSCREEN_H
 
+#include "light.h"
 #include "robot.h"
 
 class NETHER;
@@ -9,9 +10,10 @@ class NETHER;
 class ConstructionScreen
 {
 public:
-  explicit ConstructionScreen(NETHER* nether): nether(nether), construction_pointer(0) {}
+  explicit ConstructionScreen(NETHER* nether): construction_pointer(0), construction{},
+                                               nether(nether) {}
   bool cycle(unsigned char *keyboard);
-  void draw(int width, int height, const Vector& lightposv);
+  void draw(int width, int height, const Light& light);
   void open(const Building& factory);
 
 private:

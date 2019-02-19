@@ -449,6 +449,7 @@ void C3DObject::draw(const Color& color)
       glEnd();
     }
   }
+  // drawcmc(color);
 }
 
 

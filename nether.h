@@ -18,6 +18,7 @@
 #include "ship.h"
 #include "camera.h"
 #include "map.h"
+#include "light.h"
 #include "ai_operator.h"
 #include "menu.h"
 #include "radar.h"
@@ -94,9 +95,8 @@ private:
   OptionsScreen optionsScreen;
   ConstructionScreen constructionScreen;
   AI ai;
+  Light light;
 
-  float lightpos[4];
-  Vector lightposv;
   unsigned char old_keyboard[SDLK_LAST];
 
   Camera camera;

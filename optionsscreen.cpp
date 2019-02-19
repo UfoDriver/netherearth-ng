@@ -2,13 +2,14 @@
 #include <GL/glu.h>
 
 #include "glprintf.h"
+#include "light.h"
 #include "nether.h"
 #include "optionsscreen.h"
 
 extern int up_key, down_key, left_key, right_key, fire_key, pause_key;
 
 
-void OptionsScreen::draw(int w, int h, const float lightpos[4])
+void OptionsScreen::draw(int w, int h, const Light& light)
 {
   float tmpls[4] = {1.0F, 1.0F, 1.0F, 1.0};
   float tmpld[4] = {0.6F, 0.6F, 0.6F, 1.0};
@@ -32,7 +33,7 @@ void OptionsScreen::draw(int w, int h, const float lightpos[4])
   glEnable(GL_DEPTH_TEST);
 
   /* Draw the MENU: */
-  glLightfv(GL_LIGHT0, GL_POSITION, lightpos);
+  glLightfv(GL_LIGHT0, GL_POSITION, light.raw());
   glClearColor(0, 0, 0, 0.0);
   glViewport(splitx[0], splity[0], splitx[1] - splitx[0], splity[1] - splity[0]);
   float ratio = float(splitx[1] - splitx[0]) / float(splity[1] - splity[0]);

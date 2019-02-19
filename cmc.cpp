@@ -390,12 +390,11 @@ bool point_inside_cmc(float *cmc_p,float *p)
 				   2,0,6,4,
 				   6,7,4,5,
 				   2,3,0,1};
-	int i;
 
 	float pa[4],pb[4],v[4],w[4];
 	float paeq[4],pbeq[4];
 
-	for(i=0;i<6;i+=2) {
+	for (int i = 0; i < 6; i += 2) {
 		pa[0]=cmc_p[faces[i*4]*3];
 		pa[1]=cmc_p[faces[i*4]*3+1];
 		pa[2]=cmc_p[faces[i*4]*3+2];

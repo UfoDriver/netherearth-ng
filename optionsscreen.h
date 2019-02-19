@@ -1,6 +1,7 @@
 #ifndef OPTIONSSCREEN_H
 #define OPTIONSSCREEN_H
 
+class Light;
 class NETHER;
 
 
@@ -9,7 +10,7 @@ class OptionsScreen
 public:
   explicit OptionsScreen(NETHER* nether): selectedOption(0), nether(nether) {}
 
-  void draw(int w, int h, const float lightpos[4]);
+  void draw(int w, int h, const Light& light);
   bool cycle(unsigned char *keyboard);
   void open();
 

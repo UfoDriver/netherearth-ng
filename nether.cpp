@@ -36,9 +36,9 @@ extern int frames_per_sec;
 extern bool fullscreen;
 extern int shadows;
 extern bool sound;
-extern int up_key,down_key,left_key,right_key,fire_key,pause_key;
+extern int up_key, down_key, left_key, right_key, fire_key, pause_key;
 extern int level;
-extern float MINY,MAXY,MINX,MAXX;
+extern float MINY, MAXY, MINX, MAXX;
 extern bool show_radar;
 
 
@@ -47,27 +47,15 @@ NETHER::NETHER(const std::string& mapname): menu(this), radar(this), optionsScre
                                             camera(0, 0, 0, 0), controlled(NULL)
 {
   if (shadows == 1) {
-    lightpos[0] = -1000;
-    lightpos[1] = -3000;
-    lightpos[2] = 5000;
-    lightpos[3] = 1;
-    lightposv.x = lightpos[0];
-    lightposv.y = lightpos[1];
-    lightposv.z = lightpos[2];
+    light.set(-1000, -3000, 5000, 1);
   } else {
-    lightpos[0] = 0;
-    lightpos[1] = 0;
-    lightpos[2] = 5000;
-    lightpos[3] = 1;
-    lightposv.x = lightpos[0];
-    lightposv.y = lightpos[1];
-    lightposv.z = lightpos[2];
+    light.set(0, 0, 5000, 1);
   }
 
   Resources::instance()->loadObjects();
 
   ship = new Ship("models/ship.asc", "textures/");
-  ship->ComputeShadow(lightposv);
+  ship->ComputeShadow(light.asVector());
 
   map.loadMap(mapname);
 
@@ -137,13 +125,13 @@ void NETHER::gameredraw(int w,int h)
     draw(w, h);
     break;
   case NETHER::STATE::CONSTRUCTION:
-    constructionScreen.draw(w, h, lightposv);
+    constructionScreen.draw(w, h, light);
     break;
   case NETHER::STATE::PAUSE:
   case NETHER::STATE::SAVINGGAME:
   case NETHER::STATE::LOADINGGAME:
     draw(w, h);
-    optionsScreen.draw(w, h, lightpos);
+    optionsScreen.draw(w, h, light);
     break;
   }
 
@@ -182,7 +170,7 @@ void NETHER::draw(int width, int height)
   glClearStencil(0);
 
   /* Draw the GAME screen: */
-  glLightfv(GL_LIGHT0, GL_POSITION, lightpos);
+  glLightfv(GL_LIGHT0, GL_POSITION, light.raw());
   glClearColor(0, 0, 0, 0.0);
   glViewport(0, splity, split, height - splity);
   float ratio = float(split) / float(height - splity);
@@ -273,10 +261,10 @@ void NETHER::drawGame(bool shadows)
   MAXY = (9 + viewp.z * 4) * camera.zoom;
   MAXX = 8 * camera.zoom;
 
-  Vector light(lightpos[0], lightpos[1], lightpos[2]);
-  light = light / light.z;
-  map.draw(viewp, shadows, light, camera);
-  ship->draw(shadows, light, map, controlled);
+  Vector newLight(light.asVector());
+  newLight = newLight / newLight.z;
+  map.draw(viewp, shadows, newLight, camera);
+  ship->draw(shadows, newLight, map, controlled);
 }
 
 
@@ -286,11 +274,7 @@ bool NETHER::saveGame(const std::string& filename)
 
   oFile << map;
 
-  oFile << std::setw(8) << lightpos[0] << ' '
-        << std::setw(8) << lightpos[1] << ' '
-        << std::setw(8) << lightpos[2] << ' '
-        << std::setw(8) << lightpos[3] << '\n';
-  oFile << lightposv
+  oFile << light
         << camera
         << viewp
         << *ship;
@@ -332,9 +316,8 @@ bool NETHER::loadGame(const std::string& filename)
 
   ai.deletePrecomputations();
 
-  inFile >> map;
-  inFile >> lightpos[0] >> lightpos[1] >> lightpos[2] >> lightpos[3];
-  inFile >> lightposv
+  inFile >> map
+         >> light
          >> camera
          >> viewp
          >> *ship;
@@ -394,11 +377,11 @@ bool NETHER::saveDebugReport(const std::string& filename)
     log << '\n';
   }
 
-  log << "LIGHTPOS: " << lightpos[0] << ' '
-      << lightpos[1] << ' '
-      << lightpos[2] << ' '
-      << lightpos[3] << '\n';
-  log << "LIGHTPOSV: " << lightposv;
+  log << "LIGHTPOS: " << light.raw()[0] << ' '
+      << light.raw()[1] << ' '
+      << light.raw()[2] << ' '
+      << light.raw()[3] << '\n';
+  log << "LIGHTPOSV: " << light.asVector();
   log << "CAMERA: " << camera;
   log << "VIEWP: " << viewp;
   log << "SHIPP: " << ship->pos;
