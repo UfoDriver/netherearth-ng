@@ -75,11 +75,12 @@ public:
 
   Robot* getControlled() const { return controlled; }
   Ship* getShip() const { return ship; }
-  STATE getGameState() { return gameState; };
+  STATE getGameState() const { return gameState; };
   void setGameState(STATE newState) { gameState = newState; }
   void setGameFinished(int time) { gameFinished = time; }
   void setGameStarted(int time) { gameStarted = time; }
-
+  void increaseAnimationTimer(float delta) { animationTimer += delta; }
+  float getAnimationTimer() const { return animationTimer; }
 
   std::pair<int, int> getRobotsCount() const;
   std::array<std::pair<int, int>, 7> getBuildingStats() const;
@@ -87,6 +88,7 @@ public:
 
   Map map;
   AI ai;
+  SoundManager sManager;
 
   unsigned char old_keyboard[SDLK_LAST];
 
@@ -99,7 +101,6 @@ private:
   Ship *ship;
   Menu menu;
   Radar radar;
-  SoundManager sManager;
   OptionsScreen optionsScreen;
   ConstructionScreen constructionScreen;
   Light light;
@@ -109,9 +110,8 @@ private:
 
   Stats stats;
 
-  float animation_timer;
-
   STATE gameState;
+  float animationTimer;
   int gameFinished;
   int gameStarted;
 

@@ -385,7 +385,7 @@ int Robot::cost()
   if (traction == 1) tmp = 5;
   if (traction == 2) tmp = 10;
 
-  for (int i = 0;i < 5; i++) {
+  for (int i = 0; i < 5; i++) {
     if (pieces[i]) tmp += cost[i];
   }
 

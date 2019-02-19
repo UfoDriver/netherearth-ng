@@ -67,7 +67,7 @@ NETHER::NETHER(const std::string& mapname): ai(this, &map), menu(this), radar(th
   camera.zoom = 1;
 
   gameState = NETHER::STATE::PLAYING;
-  animation_timer = 0;
+  animationTimer = 0;
   controlled = 0;
   gameFinished = 0;
   gameStarted = INTRO_TIME;

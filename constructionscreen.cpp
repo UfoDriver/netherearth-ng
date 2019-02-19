@@ -30,10 +30,10 @@ bool ConstructionScreen::cycle(unsigned char *keyboard)
     int cost[7];
     bool tmp[8];
     Robot r_tmp;
-    bool enoughresources=true;
+    bool enoughresources = true;
 
     r_tmp=in_construction;
-    for (int i = 0; i < 8; i++) tmp[i]=construction[i];
+    for (int i = 0; i < 8; i++) tmp[i] = construction[i];
 
     if (construction[construction_pointer-20]) {
       if (construction_pointer<=22) in_construction.traction=-1;
@@ -51,7 +51,7 @@ bool ConstructionScreen::cycle(unsigned char *keyboard)
     }
 
     in_construction.cost(0, cost, nether->stats.resources);
-    enoughresources=true;
+    enoughresources = true;
     for (int i = 0; i < 7; i++) {
       if (nether->stats.resources[0][i] < cost[i]) {
         /* Not enough resources! */
@@ -70,31 +70,31 @@ bool ConstructionScreen::cycle(unsigned char *keyboard)
     }
   }
 
-  if (construction_pointer==0 && keyboard[fire_key] && !nether->old_keyboard[fire_key]) {
-    nether->gameState = NETHER::STATE::PLAYING;
-    nether->ship->pos.z = 2.0;
+  if (construction_pointer == 0 && keyboard[fire_key] && !nether->old_keyboard[fire_key]) {
+    nether->setGameState(NETHER::STATE::PLAYING);
+    nether->getShip()->pos.z = 2.0;
   }
 
-  if (construction_pointer==10 && keyboard[fire_key] && !nether->old_keyboard[fire_key]) {
+  if (construction_pointer == 10 && keyboard[fire_key] && !nether->old_keyboard[fire_key]) {
     if (in_construction.valid()) {
       /* Valid robot, build it: */
       Robot *r = new Robot();
-      *r=in_construction;
-      r->angle=0;
-      r->program=Robot::PROGRAM_FORWARD;
-      r->op=Robot::OPERATOR::NONE;
+      *r = in_construction;
+      r->angle = 0;
+      r->program = Robot::PROGRAM_FORWARD;
+      r->op = Robot::OPERATOR::NONE;
       r->calculateCMC(Resources::pieceTiles[0]);
       r->shipover=false;
 
-      if (!r->checkCollision(nether->map.buildings, nether->map.robots, true, nether->ship)) {
+      if (!r->checkCollision(nether->map.buildings, nether->map.robots, true, nether->getShip())) {
         nether->map.robots[0].push_back(r);
         nether->ai.newRobot(r->pos,0);
 
         int cost[7];
         in_construction.cost(0, cost, nether->stats.resources);
         for (int i = 0; i < 7; i++) nether->stats.resources[0][i] -= cost[i];
-        nether->gameState = NETHER::STATE::PLAYING;
-        nether->ship->pos.z = 2.0;
+        nether->setGameState(NETHER::STATE::PLAYING);
+        nether->getShip()->pos.z = 2.0;
         nether->sManager.playConstruction();
       } else {
         delete r;
@@ -104,8 +104,8 @@ bool ConstructionScreen::cycle(unsigned char *keyboard)
     }
   }
 
-  nether->menu.needsRedraw = 2;
-  nether->radar.needsRedraw = 1;
+  nether->redrawMenu();
+  nether->redrawRadar();
   return true;
 }
 
@@ -118,7 +118,7 @@ void ConstructionScreen::draw(int width, int height, const Light& light)
   float tmpla[4] = {0.1F, 0.1F, 0.1F, 1.0};
 
   /* Enable Lights, etc.: */
-  //	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);	// Really Nice Perspective Calculations
+  // glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);	// Really Nice Perspective Calculations
   glEnable(GL_LIGHT0);
   glLightfv(GL_LIGHT0, GL_AMBIENT, tmpla);
   glLightfv(GL_LIGHT0, GL_DIFFUSE, tmpld);
@@ -178,7 +178,7 @@ void ConstructionScreen::draw(int width, int height, const Light& light)
     scaledglprintf(0.01f, 0.01f, "    CHASSIS %.2i", res[6]);
 
     int total = 0;
-    for (int i = 0;i < 7; i++) total += res[i];
+    for (int i = 0; i < 7; i++) total += res[i];
 
     glTranslatef(0, -2.4, 0);
     scaledglprintf(0.01f, 0.01f, "      TOTAL %.2i", total);
@@ -194,11 +194,11 @@ void ConstructionScreen::draw(int width, int height, const Light& light)
   glPushMatrix();
   glTranslatef(-10, 12, 0);
   {
-    float angle = float(sin(nether->animation_timer / 2) * 10);
-    float angle2 = float(sin(nether->animation_timer / 4) * 15);
+    float angle = float(sin(nether->getAnimationTimer() / 2) * 10);
+    float angle2 = float(sin(nether->getAnimationTimer() / 4) * 15);
     glRotatef(angle2-10, 1, 0, 0);
     glRotatef(angle, 0, 1, 0);
-    nether->animation_timer += 0.02;
+    nether->increaseAnimationTimer(0.02);
   }
   Resources::constructionTiles[0].draw(Color(0.5f, 0.5f, 0.5f));
   glTranslatef(0.0, -1.1, 1);
@@ -211,8 +211,8 @@ void ConstructionScreen::draw(int width, int height, const Light& light)
   glColor3f(1.0f, 0.0f, 0.0f);
   glTranslatef(12, 15, 0);
   in_construction.calculateCMC(Resources::pieceTiles[0]);
-  if (in_construction.checkCollision(nether->map.buildings, nether->map.robots, true, nether->ship)) {
-    if ((int(nether->animation_timer * 4) % 2) == 0) scaledglprintf(0.01f, 0.01f, "ENTRANCE BLOCKED!");
+  if (in_construction.checkCollision(nether->map.buildings, nether->map.robots, true, nether->getShip())) {
+    if ((int(nether->getAnimationTimer() * 4) % 2) == 0) scaledglprintf(0.01f, 0.01f, "ENTRANCE BLOCKED!");
   }
 
   glColor3f(0.3f, 0.8f, 1.0f);
@@ -260,7 +260,7 @@ void ConstructionScreen::draw(int width, int height, const Light& light)
       glTranslatef(6, - (13.5 - i * 3.5), 0);
       glScalef(2.4, 2.4, 2.4);
       glRotatef(30, 1, 0, 0);
-      glRotatef(nether->animation_timer * 32, 0, 1, 0);
+      glRotatef(nether->getAnimationTimer() * 32, 0, 1, 0);
       glRotatef(-90, 1, 0, 0);
       if (construction[i])
         Resources::pieceTiles[0][i].draw_notexture(Color(1.0, 1.0, 1.0));
@@ -273,7 +273,7 @@ void ConstructionScreen::draw(int width, int height, const Light& light)
     glTranslatef(0, -8,0);
     glScalef(4.0f, 4.0f, 4.0f);
     glRotatef(30, 1, 0, 0);
-    glRotatef(nether->animation_timer * 32, 0, 1, 0);
+    glRotatef(nether->getAnimationTimer() * 32, 0, 1, 0);
     glRotatef(-90, 1, 0, 0);
     in_construction.draw(0, false, Resources::pieceTiles, light.asVector());
     glPopMatrix();
@@ -327,7 +327,7 @@ void ConstructionScreen::draw(int width, int height, const Light& light)
 
 void ConstructionScreen::open(const Building& factory)
 {
-  nether->gameState = NETHER::STATE::CONSTRUCTION;
+  nether->setGameState(NETHER::STATE::CONSTRUCTION);
   construction_pointer = 0;
   for (int i = 0; i < 8; i++)
     construction[i] = false;
