@@ -1,6 +1,7 @@
 #ifndef STATS_H
 #define STATS_H
 
+#include <array>
 #include <iostream>
 #include <vector>
 
@@ -17,6 +18,8 @@ public:
   void recompute(const std::vector<Building>& buildings);
   void requestRecomputing() { needsRecomputing = true; }
   bool tick(int level);
+  std::array<std::pair<int, int>, 7> getBuildingStats() const;
+  std::array<std::pair<int, int>, 7> getResourceStats() const;
 
   int day;
   int hour;

@@ -1,6 +1,7 @@
 #ifndef NETHER_HEADER
 #define NETHER_HEADER
 
+#include <array>
 #include <cstring>
 #include <string>
 #include "vector.h"
@@ -68,9 +69,26 @@ public:
   bool loadGame(const std::string& filename);
   bool saveDebugReport(const std::string& filename);
 
+  void redrawMenu() { menu.requestRedraw(); }
+  void redrawRadar() { radar.requestRedraw(); }
+  void requestStatsRecomputing() { stats.requestRecomputing(); }
+
+  Robot* getControlled() const { return controlled; }
   Ship* getShip() const { return ship; }
   STATE getGameState() { return game_state; };
   void setGameState(STATE newState) { game_state = newState; }
+  void setGameFinished(int time) { game_finished = time; }
+  void setGameStarted(int time) { game_started = time; }
+
+
+  std::pair<int, int> getRobotsCount() const;
+  std::array<std::pair<int, int>, 7> getBuildingStats() const;
+  std::array<std::pair<int, int>, 7> getResourceStats() const;
+
+  Map map;
+  AI ai;
+
+  unsigned char old_keyboard[SDLK_LAST];
 
 private:
   bool cycle(unsigned char *keyboard);
@@ -82,13 +100,9 @@ private:
   Menu menu;
   Radar radar;
   SoundManager sManager;
-  Map map;
   OptionsScreen optionsScreen;
   ConstructionScreen constructionScreen;
-  AI ai;
   Light light;
-
-  unsigned char old_keyboard[SDLK_LAST];
 
   Camera camera;
   Vector viewp;
@@ -103,9 +117,6 @@ private:
   int game_finished;
   int game_started;
 
-  friend class Menu;
-  friend class Radar;
-  friend class OptionsScreen;
   friend class ConstructionScreen;
   friend class AI;
 };

@@ -192,8 +192,8 @@ bool OptionsScreen::cycle(unsigned char *keyboard)
           nether->saveDebugReport("debugreport.txt");
           nether->setGameState(NETHER::STATE::PAUSE);
           selectedOption = 2;
-          nether->menu.needsRedraw = 2;
-          nether->radar.needsRedraw = 1;
+          nether->redrawMenu();
+          nether->redrawRadar();
         }
       }
     }
@@ -223,13 +223,11 @@ bool OptionsScreen::cycle(unsigned char *keyboard)
         {
           char filename[80];
           sprintf(filename, "savedgame%i.txt", selectedOption - 1);
-          nether->menu.killmenu(nether->menu.act_menu);
           nether->loadGame(filename);
-          nether->menu.newmenu(nether->menu.act_menu);
-          nether->menu.needsRedraw = 2;
-          nether->stats.requestRecomputing();
-          nether->game_finished = 0;
-          nether->game_started = INTRO_TIME;
+          nether->redrawMenu();
+          nether->requestStatsRecomputing();
+          nether->setGameFinished(0);
+          nether->setGameStarted(INTRO_TIME);
           nether->setGameState(NETHER::STATE::PAUSE);
           selectedOption = 2;
         }

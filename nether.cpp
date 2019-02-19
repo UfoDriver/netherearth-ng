@@ -312,6 +312,7 @@ bool NETHER::saveGame(const std::string& filename)
 
 bool NETHER::loadGame(const std::string& filename)
 {
+  menu.killmenu(menu.act_menu);
   std::ifstream inFile(filename);
 
   ai.deletePrecomputations();
@@ -360,6 +361,7 @@ bool NETHER::loadGame(const std::string& filename)
   menu.act_button = StatusButton::NAME(actButton_);
 
   ai.makePrecomputations();
+  menu.newmenu(menu.act_menu);
   return true;
 }
 
@@ -476,4 +478,22 @@ bool NETHER::saveDebugReport(const std::string& filename)
   log << "\nMENU " << int(menu.act_menu) << "\nACT BUTTON: " << int(menu.act_button) << '\n';
 
   return true;
+}
+
+
+std::pair<int, int> NETHER::getRobotsCount() const
+{
+  return std::make_pair(map.robots[0].size(), map.robots[1].size());
+}
+
+
+std::array<std::pair<int, int>, 7> NETHER::getBuildingStats() const
+{
+  return stats.getBuildingStats();
+}
+
+
+std::array<std::pair<int, int>, 7> NETHER::getResourceStats() const
+{
+  return stats.getResourceStats();
 }
