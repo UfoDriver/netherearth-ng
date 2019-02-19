@@ -2,6 +2,7 @@
 #include "windows.h"
 #endif
 
+#include <algorithm>
 #include <iomanip>
 
 #include "math.h"
@@ -17,76 +18,65 @@
 #include "cmc.h"
 
 
-bool point_inside_cmc(float *cmc_p,float *p);
-bool plane_collision(float *pa,float *va,float *wa,float *pb,float *vb,float *wb);
+bool point_inside_cmc(float *cmc_p, float *p);
+bool plane_collision(float *pa, float *va, float *wa, float *pb, float *vb, float *wb);
 
-/* Order of the faces in a CMC: */ 
-int faces[24]={0,1,4,5,
-			   2,3,6,7,
-			   3,1,7,5,
-			   2,0,6,4,
-			   6,7,4,5,
-			   2,3,0,1};
+/* Order of the faces in a CMC: */
+int faces[24] = {0, 1, 4, 5,
+                 2, 3, 6, 7,
+                 3, 1, 7, 5,
+                 2, 0, 6, 4,
+                 6, 7, 4, 5,
+                 2, 3, 0, 1};
 
 
+CMC::CMC() : x {0, 0}, y {0, 0}, z {0, 0} {}
 
-CMC::CMC()
+
+CMC::CMC(float *p, int np)
 {
-	x[0]=x[1]=0;
-	y[0]=y[1]=0;
-	z[0]=z[1]=0;
-} /* CMC::CMC */ 
+  if (np > 0) {
+    x[0] = x[1] = p[0];
+    y[0] = y[1] = p[1];
+    z[0] = z[1] = p[2];
+  }
+
+  for (int i = 1, offs = 3; i < np; i++, offs += 3) {
+    x[0] = std::min(x[0], p[offs]);
+    x[1] = std::max(x[0], p[offs]);
+    y[0] = std::min(y[0], p[offs + 1]);
+    y[1] = std::max(y[1], p[offs + 1]);
+    z[0] = std::min(z[0], p[offs + 2]);
+    z[1] = std::max(z[1], p[offs + 2]);
+  }
+}
 
 
-CMC::CMC(float *p,int np)
+CMC::CMC(float *px, float *py, float *pz, int np)
 {
-	int i,offs;
+  if (np > 0) {
+    x[0] = x[1] = px[0];
+    y[0] = y[1] = px[0];
+    z[0] = z[1] = px[0];
+  }
 
-	if (np>0) {
-		x[0]=x[1]=p[0];
-		y[0]=y[1]=p[1];
-		z[0]=z[1]=p[2];
-	} /* if */ 
-
-	for(i=1,offs=3;i<np;i++,offs+=3) {
-		if (p[offs]<x[0]) x[0]=p[offs];
-		if (p[offs]>x[1]) x[1]=p[offs];
-		if (p[offs+1]<y[0]) y[0]=p[offs+1];
-		if (p[offs+1]>y[1]) y[1]=p[offs+1];
-		if (p[offs+2]<z[0]) z[0]=p[offs+2];
-		if (p[offs+2]>z[1]) z[1]=p[offs+2];
-	} /* for */ 
-} /* CMC::CMC */ 
-
-
-CMC::CMC(float *px,float *py,float *pz,int np)
-{
-	int i;
-
-	if (np>0) {
-		x[0]=x[1]=px[0];
-		y[0]=y[1]=px[0];
-		z[0]=z[1]=px[0];
-	} /* if */ 
-
-	for(i=1;i<np;i++) {
-		if (px[i]<x[0]) x[0]=px[i];
-		if (px[i]>x[1]) x[1]=px[i];
-		if (py[i]<y[0]) y[0]=py[i];
-		if (py[i]>y[1]) y[1]=py[i];
-		if (pz[i]<z[0]) z[0]=pz[i];
-		if (pz[i]>z[1]) z[1]=pz[i];
-	} /* for */ 
-} /* CMC::CMC */ 
-
+  for (int i = 1; i < np; i++) {
+    x[0] = std::min(px[i], x[0]);
+    x[1] = std::max(px[i], x[1]);
+    y[0] = std::min(py[i], y[0]);
+    y[1] = std::max(py[i], y[1]);
+    z[0] = std::min(pz[i], z[0]);
+    z[1] = std::max(pz[i], z[1]);
+  }
+}
 
 
 void CMC::reset(void)
 {
-	x[0]=x[1]=0;
-	y[0]=y[1]=0;
-	z[0]=z[1]=0;
-} /* CMC::set */ 
+  x[0] = x[1] = 0;
+  y[0] = y[1] = 0;
+  z[0] = z[1] = 0;
+}
 
 
 void CMC::set(const std::vector<Vector> &p)
@@ -98,35 +88,34 @@ void CMC::set(const std::vector<Vector> &p)
   }
 
   for (Vector point: p) {
-    if (point.x < x[0]) x[0] = point.x;
-    if (point.x > x[1]) x[1] = point.x;
-    if (point.y < y[0]) y[0] = point.y;
-    if (point.y > y[1]) y[1] = point.y;
-    if (point.z < z[0]) z[0] = point.z;
-    if (point.z > z[1]) z[1] = point.z;
+    x[0] = std::min(point.x, x[0]);
+    x[1] = std::max(point.x, x[1]);
+    y[0] = std::min(point.y, y[0]);
+    y[1] = std::max(point.y, y[1]);
+    z[0] = std::min(point.z, z[0]);
+    z[1] = std::max(point.z, z[1]);
   }
 }
 
 
-void CMC::set(float *px,float *py,float *pz,int np)
+void CMC::set(float *px, float *py, float *pz, int np)
 {
-	int i;
 
-	if (np>0) {
-		x[0]=x[1]=px[0];
-		y[0]=y[1]=px[0];
-		z[0]=z[1]=px[0];
-	} /* if */ 
+  if (np > 0) {
+    x[0] = x[1] = px[0];
+    y[0] = y[1] = px[0];
+    z[0] = z[1] = px[0];
+  }
 
-	for(i=1;i<np;i++) {
-		if (px[i]<x[0]) x[0]=px[i];
-		if (px[i]>x[1]) x[1]=px[i];
-		if (py[i]<y[0]) y[0]=py[i];
-		if (py[i]>y[1]) y[1]=py[i];
-		if (pz[i]<z[0]) z[0]=pz[i];
-		if (pz[i]>z[1]) z[1]=pz[i];
-	} /* for */ 
-} /* CMC::set */ 
+  for (int i = 1; i < np; i++) {
+    x[0] = std::min(x[0], px[i]);
+    x[1] = std::max(x[1], px[i]);
+    y[0] = std::min(y[0], py[i]);
+    y[1] = std::max(y[1], py[i]);
+    z[0] = std::min(z[0], pz[i]);
+    z[1] = std::max(z[1], pz[i]);
+  }
+}
 
 
 void CMC::expand(CMC *o2, float *m)
@@ -134,155 +123,151 @@ void CMC::expand(CMC *o2, float *m)
   float v[4], out[4];
 
   for (int i = 0; i < 8; i++) {
-    v[0] =((i & 1)== 0 ? o2->x[0] : o2->x[1]);
-    v[1] =((i & 2)== 0 ? o2->y[0] : o2->y[1]);
-    v[2] = ((i & 4)==0 ? o2->z[0] : o2->z[1]);
+    v[0] = ((i & 1) == 0 ? o2->x[0] : o2->x[1]);
+    v[1] = ((i & 2) == 0 ? o2->y[0] : o2->y[1]);
+    v[2] = ((i & 4) == 0 ? o2->z[0] : o2->z[1]);
     v[3] = 1;
     ApplyMatrix(v, m, out);
-    if (out[0] < x[0]) x[0] = out[0];
-    if (out[0] > x[1]) x[1] = out[0];
-    if (out[1] < y[0]) y[0] = out[1];
-    if (out[1] > y[1]) y[1] = out[1];
-    if (out[2] < z[0]) z[0] = out[2];
-    if (out[2] > z[1]) z[1] = out[2];
+    x[0] = std::min(x[0], out[0]);
+    x[1] = std::max(x[0], out[0]);
+    y[0] = std::min(y[0], out[1]);
+    y[1] = std::max(y[0], out[1]);
+    z[0] = std::min(z[0], out[2]);
+    z[1] = std::max(z[0], out[2]);
   }
 }
 
 
-void CMC::drawabsolute(float r,float g,float b)
+void CMC::drawabsolute(float r, float g, float b)
 {
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	gluLookAt(0,-30,-20,0,0,-2,0,-1,0);
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity();
+  glMatrixMode(GL_PROJECTION);
+  glPushMatrix();
+  gluLookAt(0, -30, -20, 0, 0, -2, 0, -1, 0);
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+  glLoadIdentity();
 
-	draw(r,g,b);
+  draw(r, g, b);
 
-	glPopMatrix();
-	glMatrixMode(GL_PROJECTION);
-	glPopMatrix();
-} /* CMC::drawabsolute */ 
+  glPopMatrix();
+  glMatrixMode(GL_PROJECTION);
+  glPopMatrix();
+}
 
 
-void CMC::draw(float r,float g,float b)
+void CMC::draw(float r, float g, float b)
 {
-	float c[4];
+  float c[4];
 
-	glGetFloatv(GL_CURRENT_COLOR,c);
-	glColor3f(r,g,b);
-	glBegin(GL_LINES);
-	glVertex3f(x[0],y[0],z[0]);
-	glVertex3f(x[1],y[0],z[0]);
+  glGetFloatv(GL_CURRENT_COLOR, c);
+  glColor3f(r, g, b);
+  glBegin(GL_LINES);
+  glVertex3f(x[0], y[0], z[0]);
+  glVertex3f(x[1], y[0], z[0]);
 
-	glVertex3f(x[1],y[0],z[0]);
-	glVertex3f(x[1],y[1],z[0]);
+  glVertex3f(x[1], y[0], z[0]);
+  glVertex3f(x[1], y[1], z[0]);
 
-	glVertex3f(x[1],y[1],z[0]);
-	glVertex3f(x[0],y[1],z[0]);
+  glVertex3f(x[1], y[1], z[0]);
+  glVertex3f(x[0], y[1], z[0]);
 
-	glVertex3f(x[0],y[1],z[0]);
-	glVertex3f(x[0],y[0],z[0]);
+  glVertex3f(x[0], y[1], z[0]);
+  glVertex3f(x[0], y[0], z[0]);
 
-	glVertex3f(x[0],y[0],z[1]);
-	glVertex3f(x[1],y[0],z[1]);
+  glVertex3f(x[0], y[0], z[1]);
+  glVertex3f(x[1], y[0], z[1]);
 
-	glVertex3f(x[1],y[0],z[1]);
-	glVertex3f(x[1],y[1],z[1]);
+  glVertex3f(x[1], y[0], z[1]);
+  glVertex3f(x[1], y[1], z[1]);
 
-	glVertex3f(x[1],y[1],z[1]);
-	glVertex3f(x[0],y[1],z[1]);
+  glVertex3f(x[1], y[1], z[1]);
+  glVertex3f(x[0], y[1], z[1]);
 
-	glVertex3f(x[0],y[1],z[1]);
-	glVertex3f(x[0],y[0],z[1]);
+  glVertex3f(x[0], y[1], z[1]);
+  glVertex3f(x[0], y[0], z[1]);
 
-	glVertex3f(x[0],y[0],z[0]);
-	glVertex3f(x[0],y[0],z[1]);
+  glVertex3f(x[0], y[0], z[0]);
+  glVertex3f(x[0], y[0], z[1]);
 
-	glVertex3f(x[1],y[0],z[0]);
-	glVertex3f(x[1],y[0],z[1]);
+  glVertex3f(x[1], y[0], z[0]);
+  glVertex3f(x[1], y[0], z[1]);
 
-	glVertex3f(x[0],y[1],z[0]);
-	glVertex3f(x[0],y[1],z[1]);
+  glVertex3f(x[0], y[1], z[0]);
+  glVertex3f(x[0], y[1], z[1]);
 
-	glVertex3f(x[1],y[1],z[0]);
-	glVertex3f(x[1],y[1],z[1]);
-	glEnd();
-	glColor4f(c[0],c[1],c[2],c[3]);
-} /* CMC::draw */ 
+  glVertex3f(x[1], y[1], z[0]);
+  glVertex3f(x[1], y[1], z[1]);
+  glEnd();
+  glColor4f(c[0], c[1], c[2], c[3]);
+}
 
 
-
-bool CMC::collision(CMC *o2)
+bool CMC::collision(const CMC &other)
 {
-	if (o2->x[0]==o2->x[1] || x[0]==x[1]) {
-		if (o2->x[0]>x[1] || o2->x[1]<x[0]) return false;
-	} else {
-		if (o2->x[0]>=x[1] || o2->x[1]<=x[0]) return false;
-	} /* if */ 
-	if (o2->y[0]==o2->y[1] || y[0]==y[1]) {
-		if (o2->y[0]>y[1] || o2->y[1]<y[0]) return false;
-	} else {
-		if (o2->y[0]>=y[1] || o2->y[1]<=y[0]) return false;
-	} /* if */ 
-	if (o2->z[0]==o2->z[1] || z[0]==z[1]) {
-		if (o2->z[0]>z[1] || o2->z[1]<z[0]) return false;
-	} else {
-		if (o2->z[0]>=z[1] || o2->z[1]<=z[0]) return false;
-	} /* if */ 
+  if (other.x[0] == other.x[1] || x[0] == x[1]) {
+    if (other.x[0] > x[1] || other.x[1] < x[0]) return false;
+  } else {
+    if (other.x[0] >= x[1] || other.x[1] <=x [0]) return false;
+  }
+  if (other.y[0] == other.y[1] || y[0] == y[1]) {
+    if (other.y[0] > y[1] || other.y[1] < y[0]) return false;
+  } else {
+    if (other.y[0] >= y[1] || other.y[1] <= y[0]) return false;
+  }
+  if (other.z[0] == other.z[1] || z[0] == z[1]) {
+    if (other.z[0] > z[1] || other.z[1] < z[0]) return false;
+  } else {
+    if (other.z[0] >= z[1] || other.z[1] <= z[0]) return false;
+  }
 
-	return true;
-} /* collision */ 
+  return true;
+}
 
 
 
-bool CMC::collision(float *m,CMC *o2,float *m2)
+bool CMC::collision(float *m, const CMC& other, float *m2)
 {
-	float a_points[24];
-	float b_points[24];
-	CMC *a_cmc,*b_cmc;
+  float a_points[24];
+  float b_points[24];
 
-	/* Calcular las coordenadas "mundo" de los vértices de las cmcs: */ 
-	{
-		float v[4],out[4];
-		int i;
-		for(i=0;i<8;i++) {
-			v[0]=((i&1)==0 ? x[0]:x[1]);
-			v[1]=((i&2)==0 ? y[0]:y[1]);
-			v[2]=((i&4)==0 ? z[0]:z[1]);
-			v[3]=1;
-			ApplyMatrix(v,m,out);
-			a_points[i*3]=out[0];
-			a_points[i*3+1]=out[1];
-			a_points[i*3+2]=out[2];
+  /* Calcular las coordenadas "mundo" de los vértices de las cmcs: */
+  {
+    float v[4], out[4];
+    for (int i = 0; i < 8; i++) {
+      v[0] = ((i & 1) == 0 ? x[0] : x[1]);
+      v[1] = ((i & 2) == 0 ? y[0] : y[1]);
+      v[2] = ((i & 4) == 0 ? z[0] : z[1]);
+      v[3] = 1;
+      ApplyMatrix(v, m, out);
+      a_points[i * 3] = out[0];
+      a_points[i * 3 + 1] = out[1];
+      a_points[i * 3 + 2] = out[2];
 
-			v[0]=((i&1)==0 ? o2->x[0]:o2->x[1]);
-			v[1]=((i&2)==0 ? o2->y[0]:o2->y[1]);
-			v[2]=((i&4)==0 ? o2->z[0]:o2->z[1]);
-			v[3]=1;
-			ApplyMatrix(v,m2,out);
-			b_points[i*3]=out[0];
-			b_points[i*3+1]=out[1];
-			b_points[i*3+2]=out[2];
-		} /* for */ 
-	}
+      v[0] = ((i & 1) == 0 ? other.x[0] : other.x[1]);
+      v[1] = ((i & 2) == 0 ? other.y[0] : other.y[1]);
+      v[2] = ((i & 4) == 0 ? other.z[0] : other.z[1]);
+      v[3] = 1;
+      ApplyMatrix(v, m2, out);
+      b_points[i * 3] = out[0];
+      b_points[i * 3 + 1] = out[1];
+      b_points[i * 3 + 2] = out[2];
+    }
+  }
 
-	/* Hacer una primera precolisión: */ 
-	a_cmc=new CMC(a_points,8);
-	b_cmc=new CMC(b_points,8);
-	if (!a_cmc->collision(b_cmc)) return false;
+  /* Hacer una primera precolisión: */
+  CMC a_cmc(a_points, 8);
+  CMC b_cmc(b_points, 8);
+  if (!a_cmc.collision(b_cmc)) return false;
 
-//	a_cmc->drawabsolute(1,1,1);
-//	b_cmc->drawabsolute(1,1,1);
+  //	a_cmc->drawabsolute(1,1,1);
+  //	b_cmc->drawabsolute(1,1,1);
 
-	/* Colisión detallada: */ 
-	/* PARTE 1: Colisión de caras */ 
+  /* Colisión detallada: */
+  /* PARTE 1: Colisión de caras */
 	{
 		int i,j,k;
 		float plane_a_points[12];
 		float plane_b_points[12];
-		CMC *plane_a_cmc,*plane_b_cmc;
 
 		float pa[4],va[4],wa[4];
 		float pb[4],vb[4],wb[4];
@@ -293,9 +278,9 @@ bool CMC::collision(float *m,CMC *o2,float *m2)
 				plane_a_points[k*3+1]=a_points[faces[i*4+k]*3+1];
 				plane_a_points[k*3+2]=a_points[faces[i*4+k]*3+2];
 			} /* for */ 
-			plane_a_cmc=new CMC(plane_a_points,4);
+			CMC plane_a_cmc(plane_a_points,4);
 
-			if (plane_a_cmc->collision(b_cmc)) {
+			if (plane_a_cmc.collision(b_cmc)) {
 				pa[0]=a_points[faces[i*4]*3];
 				pa[1]=a_points[faces[i*4]*3+1];
 				pa[2]=a_points[faces[i*4]*3+2];
@@ -317,9 +302,9 @@ bool CMC::collision(float *m,CMC *o2,float *m2)
 						plane_b_points[k*3+1]=b_points[faces[j*4+k]*3+1];
 						plane_b_points[k*3+2]=b_points[faces[j*4+k]*3+2];
 					} /* for */ 
-					plane_b_cmc=new CMC(plane_b_points,4);
+					CMC plane_b_cmc(plane_b_points,4);
 
-					if (plane_b_cmc->collision(plane_a_cmc)) {
+					if (plane_b_cmc.collision(plane_a_cmc)) {
 						pb[0]=b_points[faces[j*4]*3];
 						pb[1]=b_points[faces[j*4]*3+1];
 						pb[2]=b_points[faces[j*4]*3+2];
@@ -337,18 +322,10 @@ bool CMC::collision(float *m,CMC *o2,float *m2)
 
 						/* Colisión entre planos: */ 
 						if (plane_collision(pa,va,wa,pb,vb,wb)) {
-							delete plane_b_cmc;
-							delete plane_a_cmc;
-							delete a_cmc;
-							delete b_cmc;
 							return true;
 						} /* if */ 
 					} /* if */ 
-
-					delete plane_b_cmc;
 				} /* for */ 
-
-				delete plane_a_cmc;
 			} /* if */ 
 		} /* for */ 
 	}
@@ -361,24 +338,19 @@ bool CMC::collision(float *m,CMC *o2,float *m2)
 		/* B in A: */ 
 		if (point_inside_cmc(b_points,a_points)) return true;
 	}
-
-	delete a_cmc;
-	delete b_cmc;
-
 	return false;
 } /* collision */ 
 
 
-bool CMC::collision_simple(float *m,CMC *o2,float *m2) const
+bool CMC::collision_simple(float* m, const CMC& other, float* m2) const
 {
-	float a_points[24];
-	float b_points[24];
-	CMC *a_cmc,*b_cmc;
+  float a_points[24];
+  float b_points[24];
 
-	/* Calcular las coordenadas "mundo" de los vértices de las cmcs: */ 
-	{
-		float v[4],out[4];
-		int i;
+  /* Calcular las coordenadas "mundo" de los vértices de las cmcs: */
+  {
+    float v[4],out[4];
+    int i;
 		for(i=0;i<8;i++) {
 			v[0]=((i&1)==0 ? x[0]:x[1]);
 			v[1]=((i&2)==0 ? y[0]:y[1]);
@@ -389,9 +361,9 @@ bool CMC::collision_simple(float *m,CMC *o2,float *m2) const
 			a_points[i*3+1]=out[1];
 			a_points[i*3+2]=out[2];
 
-			v[0]=((i&1)==0 ? o2->x[0]:o2->x[1]);
-			v[1]=((i&2)==0 ? o2->y[0]:o2->y[1]);
-			v[2]=((i&4)==0 ? o2->z[0]:o2->z[1]);
+			v[0]=((i&1)==0 ? other.x[0]:other.x[1]);
+			v[1]=((i&2)==0 ? other.y[0]:other.y[1]);
+			v[2]=((i&4)==0 ? other.z[0]:other.z[1]);
 			v[3]=1;
 			ApplyMatrix(v,m2,out);
 			b_points[i*3]=out[0];
@@ -400,10 +372,10 @@ bool CMC::collision_simple(float *m,CMC *o2,float *m2) const
 		} /* for */ 
 	}
 
-	/* Hacer una primera precolisión: */ 
-	a_cmc=new CMC(a_points,8);
-	b_cmc=new CMC(b_points,8);
-	if (!a_cmc->collision(b_cmc)) return false;
+	/* Hacer una primera precolisión: */
+	CMC a_cmc(a_points,8);
+	CMC b_cmc(b_points,8);
+	if (!a_cmc.collision(b_cmc)) return false;
 
 	return true;
 } /* collision_simple */ 
@@ -724,18 +696,17 @@ bool plane_collision(float *pa,float *va,float *wa,float *pb,float *vb,float *wb
 
 bool CMC::load(FILE *fp)
 {
-	if (6!=fscanf(fp,"%f %f %f %f %f %f",&(x[0]),&(x[1]),&(y[0]),&(y[1]),&(z[0]),&(z[1]))) return false;
-
-	return true;
-} /* CMC::load */ 
+  if (6 != fscanf(fp, "%f %f %f %f %f %f", &(x[0]), &(x[1]), &(y[0]), &(y[1]), &(z[0]), &(z[1])))
+    return false;
+  return true;
+}
 
 
 bool CMC::save(FILE *fp)
 {
-	fprintf(fp,"%.8f %.8f\n%.8f %.8f\n%.8f %.8f\n",x[0],x[1],y[0],y[1],z[0],z[1]);
-
-	return true;
-} /* CMC::save */ 
+  fprintf(fp, "%.8f %.8f\n%.8f %.8f\n%.8f %.8f\n", x[0], x[1], y[0], y[1], z[0], z[1]);
+  return true;
+}
 
 
 std::ostream& operator<<(std::ostream& out, const CMC& cmc)

@@ -10,29 +10,29 @@ class Vector;
 
 class CMC {
 public:
-	CMC();
-	CMC(float *p,int np);
-	CMC(float *x,float *y,float *z,int np);
+  CMC();
+  CMC(float *p, int np);
+  CMC(float *x, float *y, float *z, int np);
 
-	void reset(void);
+  void reset(void);
 
-	void draw(float r,float g,float b);
-	void drawabsolute(float r,float g,float b);
+  void draw(float r, float g, float b);
+  void drawabsolute(float r, float g, float b);
 
   void set(const std::vector<Vector>& p);
-	void set(float *x,float *y,float *z,int np);
+  void set(float *x, float *y, float *z, int np);
 
-	void expand(CMC *o2,float *m);
+  void expand(CMC *o2, float *m);
 
-	bool collision(CMC *o2);
-	bool collision(float *m,CMC *o2,float *m2);
+  bool collision(const CMC &other);
+  bool collision(float *m, const CMC& other, float *m2);
 
-	bool collision_simple(float *m,CMC *o2,float *m2) const;
+  bool collision_simple(float *m, const CMC& other, float *m2) const;
 
-	bool load(FILE *fp);
-	bool save(FILE *fp);
+  bool load(FILE *fp);
+  bool save(FILE *fp);
 
-	float x[2],y[2],z[2];
+  float x[2], y[2], z[2];
 };
 
 std::ostream& operator<<(std::ostream& out, const CMC& cmc);
