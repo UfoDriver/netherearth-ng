@@ -71,7 +71,7 @@ bool ConstructionScreen::cycle(unsigned char *keyboard)
   }
 
   if (construction_pointer==0 && keyboard[fire_key] && !nether->old_keyboard[fire_key]) {
-    nether->game_state = NETHER::STATE::PLAYING;
+    nether->gameState = NETHER::STATE::PLAYING;
     nether->ship->pos.z = 2.0;
   }
 
@@ -93,7 +93,7 @@ bool ConstructionScreen::cycle(unsigned char *keyboard)
         int cost[7];
         in_construction.cost(0, cost, nether->stats.resources);
         for (int i = 0; i < 7; i++) nether->stats.resources[0][i] -= cost[i];
-        nether->game_state = NETHER::STATE::PLAYING;
+        nether->gameState = NETHER::STATE::PLAYING;
         nether->ship->pos.z = 2.0;
         nether->sManager.playConstruction();
       } else {
@@ -327,7 +327,7 @@ void ConstructionScreen::draw(int width, int height, const Light& light)
 
 void ConstructionScreen::open(const Building& factory)
 {
-  nether->game_state = NETHER::STATE::CONSTRUCTION;
+  nether->gameState = NETHER::STATE::CONSTRUCTION;
   construction_pointer = 0;
   for (int i = 0; i < 8; i++)
     construction[i] = false;

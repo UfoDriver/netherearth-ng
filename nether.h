@@ -75,10 +75,10 @@ public:
 
   Robot* getControlled() const { return controlled; }
   Ship* getShip() const { return ship; }
-  STATE getGameState() { return game_state; };
-  void setGameState(STATE newState) { game_state = newState; }
-  void setGameFinished(int time) { game_finished = time; }
-  void setGameStarted(int time) { game_started = time; }
+  STATE getGameState() { return gameState; };
+  void setGameState(STATE newState) { gameState = newState; }
+  void setGameFinished(int time) { gameFinished = time; }
+  void setGameStarted(int time) { gameStarted = time; }
 
 
   std::pair<int, int> getRobotsCount() const;
@@ -111,11 +111,11 @@ private:
 
   float animation_timer;
 
-  STATE game_state;
-  Robot* controlled;
+  STATE gameState;
+  int gameFinished;
+  int gameStarted;
 
-  int game_finished;
-  int game_started;
+  Robot* controlled;
 
   friend class ConstructionScreen;
   friend class AI;

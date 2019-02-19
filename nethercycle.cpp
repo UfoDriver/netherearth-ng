@@ -1260,18 +1260,18 @@ bool NETHER::cycle(unsigned char *keyboard)
     map.cycle();
     menu.cycle();
 
-    if (game_state == NETHER::STATE::PLAYING && keyboard[pause_key] && !old_keyboard[pause_key]) {
+    if (gameState == NETHER::STATE::PLAYING && keyboard[pause_key] && !old_keyboard[pause_key]) {
       optionsScreen.open();
     }
 
-    if ((stats.stats[0][0] == 0 || stats.stats[1][0] == 0) && game_finished == 0) {
-      game_finished++;
-      game_started = 0;
+    if ((stats.stats[0][0] == 0 || stats.stats[1][0] == 0) && gameFinished == 0) {
+      gameFinished++;
+      gameStarted = 0;
     }
-    if (game_finished > 0) game_finished++;
-    if (game_finished >= END_TIME) return false;
+    if (gameFinished > 0) gameFinished++;
+    if (gameFinished >= END_TIME) return false;
 
-    if (game_started > 0) game_started--;
+    if (gameStarted > 0) gameStarted--;
 
     return true;
   }

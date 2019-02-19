@@ -42,8 +42,8 @@ extern float MINY, MAXY, MINX, MAXX;
 extern bool show_radar;
 
 
-NETHER::NETHER(const std::string& mapname): menu(this), radar(this), optionsScreen(this),
-                                            constructionScreen(this), ai(this, &map),
+NETHER::NETHER(const std::string& mapname): ai(this, &map), menu(this), radar(this),
+                                            optionsScreen(this), constructionScreen(this),
                                             camera(0, 0, 0, 0), controlled(NULL)
 {
   if (shadows == 1) {
@@ -66,11 +66,11 @@ NETHER::NETHER(const std::string& mapname): menu(this), radar(this), optionsScre
   camera.z = 11;
   camera.zoom = 1;
 
-  game_state = NETHER::STATE::PLAYING;
+  gameState = NETHER::STATE::PLAYING;
   animation_timer = 0;
   controlled = 0;
-  game_finished = 0;
-  game_started = INTRO_TIME;
+  gameFinished = 0;
+  gameStarted = INTRO_TIME;
 
   menu.newmenu(Menu::TYPE::GENERAL);
   menu.needsRedraw = 2;
@@ -97,7 +97,7 @@ bool NETHER::gamecycle()
   SDL_PumpEvents();
   unsigned char* keyboard = SDL_GetKeyState(NULL);
 
-  switch(game_state) {
+  switch(gameState) {
   case NETHER::STATE::PLAYING:
     retval = cycle(keyboard);
     break;
@@ -120,7 +120,7 @@ bool NETHER::gamecycle()
 
 void NETHER::gameredraw(int w,int h)
 {
-  switch(game_state) {
+  switch(gameState) {
   case NETHER::STATE::PLAYING:
     draw(w, h);
     break;
@@ -220,7 +220,7 @@ void NETHER::draw(int width, int height)
     glDisable(GL_STENCIL_TEST);
   }
 
-  if (game_started > 0) {
+  if (gameStarted > 0) {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluPerspective(30.0, ratio, 1.0, 1024.0);
@@ -229,12 +229,12 @@ void NETHER::draw(int width, int height)
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    if (game_started > 40) glTranslatef(0, 0, (game_started - 40) * 2);
-    if (game_started < 20) glTranslatef(0, 0, (20 - game_started) * 2);
+    if (gameStarted > 40) glTranslatef(0, 0, (gameStarted - 40) * 2);
+    if (gameStarted < 20) glTranslatef(0, 0, (20 - gameStarted) * 2);
     Resources::messageTiles[0].draw(Color(1.0, 1.0, 1.0));
   }
 
-  if (game_finished > 100) {
+  if (gameFinished > 100) {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluPerspective(30.0, ratio, 1.0, 1024.0);
@@ -243,8 +243,8 @@ void NETHER::draw(int width, int height)
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    if (game_finished < 120) glTranslatef(0, 0, (120 - game_finished) * 2);
-    if (game_finished > 240) glTranslatef(0, 0, (game_finished - 240) * 2);
+    if (gameFinished < 120) glTranslatef(0, 0, (120 - gameFinished) * 2);
+    if (gameFinished > 240) glTranslatef(0, 0, (gameFinished - 240) * 2);
     if (stats.stats[0][0] == 0) Resources::messageTiles[2].draw(Color(1.0, 1.0, 1.0));
     else Resources::messageTiles[1].draw(Color(1.0, 1.0, 1.0));
   }
