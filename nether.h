@@ -81,6 +81,7 @@ public:
   void setGameStarted(int time) { gameStarted = time; }
   void increaseAnimationTimer(float delta) { animationTimer += delta; }
   float getAnimationTimer() const { return animationTimer; }
+  void addNewRobot(Robot* robot, int player);
 
   std::pair<int, int> getRobotsCount() const;
   std::array<std::pair<int, int>, 7> getBuildingStats() const;

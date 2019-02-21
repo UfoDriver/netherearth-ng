@@ -1,5 +1,6 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
+#include <numeric>
 #include <cmath>
 
 #include "constructionscreen.h"
@@ -10,103 +11,101 @@
 extern int up_key, down_key, left_key, right_key, fire_key;
 
 
+ConstructionScreen::MENU operator++(ConstructionScreen::MENU &m, int) {
+  using IntType = typename std::underlying_type<ConstructionScreen::MENU>::type;
+  m = static_cast<ConstructionScreen::MENU>(static_cast<IntType >(m) + 1);
+  return m;
+}
+
+
+ConstructionScreen::MENU operator--(ConstructionScreen::MENU &m, int) {
+  using IntType = typename std::underlying_type<ConstructionScreen::MENU>::type;
+  m = static_cast<ConstructionScreen::MENU>(static_cast<IntType >(m) - 1);
+  return m;
+}
+
+
 bool ConstructionScreen::cycle(unsigned char *keyboard)
 {
-  if (construction_pointer == 10 && keyboard[right_key] && !nether->old_keyboard[right_key])
-    construction_pointer = 20;
-  if (construction_pointer == 0 && keyboard[right_key] && !nether->old_keyboard[right_key])
-    construction_pointer = 10;
-  if (construction_pointer == 10 && keyboard[left_key] && !nether->old_keyboard[left_key])
-    construction_pointer = 0;
-  if (construction_pointer >= 20 && keyboard[left_key] && !nether->old_keyboard[left_key])
-    construction_pointer = 10;
+  if (menuPointer == MENU::START && keyboard[right_key] && !nether->old_keyboard[right_key])
+    menuPointer = MENU::BIPOD;
+  if (menuPointer == MENU::EXIT && keyboard[right_key] && !nether->old_keyboard[right_key])
+    menuPointer = MENU::START;
+  if (menuPointer == MENU::START && keyboard[left_key] && !nether->old_keyboard[left_key])
+    menuPointer = MENU::EXIT;
+  if (menuPointer >= MENU::BIPOD && keyboard[left_key] && !nether->old_keyboard[left_key])
+    menuPointer = MENU::START;
 
-  if (construction_pointer>=20 && construction_pointer<27 &&
-      keyboard[up_key] && !nether->old_keyboard[up_key]) construction_pointer++;
-  if (construction_pointer>20 && construction_pointer<=27 &&
-      keyboard[down_key] && !nether->old_keyboard[down_key]) construction_pointer--;
+  if (menuPointer >= MENU::BIPOD && menuPointer < MENU::ELECTRONICS &&
+      keyboard[up_key] && !nether->old_keyboard[up_key]) menuPointer++;
+  if (menuPointer > MENU::BIPOD && menuPointer <= MENU::ELECTRONICS &&
+      keyboard[down_key] && !nether->old_keyboard[down_key]) menuPointer--;
 
-  if (construction_pointer>=20 && keyboard[fire_key] && !nether->old_keyboard[fire_key]) {
-    int cost[7];
-    bool tmp[8];
-    Robot r_tmp;
-    bool enoughresources = true;
-
-    r_tmp=in_construction;
-    for (int i = 0; i < 8; i++) tmp[i] = construction[i];
-
-    if (construction[construction_pointer-20]) {
-      if (construction_pointer<=22) in_construction.traction=-1;
-      if (construction_pointer>=23) in_construction.pieces[construction_pointer-23]=false;
-      construction[construction_pointer-20]=false;
-    } else {
-      if (construction_pointer<=22) {
-        in_construction.traction=construction_pointer-20;
-        construction[0]=false;
-        construction[1]=false;
-        construction[2]=false;
-      }
-      if (construction_pointer>=23) in_construction.pieces[construction_pointer-23]=true;
-      construction[construction_pointer-20]=true;
-    }
-
-    in_construction.cost(0, cost, nether->stats.resources);
-    enoughresources = true;
-    for (int i = 0; i < 7; i++) {
-      if (nether->stats.resources[0][i] < cost[i]) {
-        /* Not enough resources! */
-        for (int j = 0; j < 8; j++) {
-          in_construction = r_tmp;
-          construction[j] = tmp[j];
-        }
-        enoughresources=false;
-      }
-    }
-
-    if (enoughresources) {
-      nether->sManager.playSelect();
-    } else {
-      nether->sManager.playWrong();
-    }
+  if (menuPointer >= MENU::BIPOD && keyboard[fire_key] && !nether->old_keyboard[fire_key]) {
+    constructRobot();
   }
 
-  if (construction_pointer == 0 && keyboard[fire_key] && !nether->old_keyboard[fire_key]) {
+  if (menuPointer == MENU::EXIT && keyboard[fire_key] && !nether->old_keyboard[fire_key]) {
+    delete staple;
     nether->setGameState(NETHER::STATE::PLAYING);
     nether->getShip()->pos.z = 2.0;
   }
 
-  if (construction_pointer == 10 && keyboard[fire_key] && !nether->old_keyboard[fire_key]) {
-    if (in_construction.valid()) {
-      /* Valid robot, build it: */
-      Robot *r = new Robot();
-      *r = in_construction;
-      r->angle = 0;
-      r->program = Robot::PROGRAM_FORWARD;
-      r->op = Robot::OPERATOR::NONE;
-      r->calculateCMC(Resources::pieceTiles[0]);
-      r->shipover=false;
-
-      if (!r->checkCollision(nether->map.buildings, nether->map.robots, true, nether->getShip())) {
-        nether->map.robots[0].push_back(r);
-        nether->ai.newRobot(r->pos,0);
-
-        int cost[7];
-        in_construction.cost(0, cost, nether->stats.resources);
-        for (int i = 0; i < 7; i++) nether->stats.resources[0][i] -= cost[i];
-        nether->setGameState(NETHER::STATE::PLAYING);
-        nether->getShip()->pos.z = 2.0;
-        nether->sManager.playConstruction();
-      } else {
-        delete r;
-      }
-    } else {
-      nether->sManager.playWrong();
-    }
+  if (menuPointer == MENU::START && keyboard[fire_key] && !nether->old_keyboard[fire_key]) {
+    buildRobot();
   }
 
   nether->redrawMenu();
   nether->redrawRadar();
   return true;
+}
+
+
+void ConstructionScreen::constructRobot()
+{
+  Robot proto(*staple);
+
+  if (menuPointer >= MENU::CANNON) {
+    proto.pieces[int(menuPointer) - 23] = !proto.pieces[int(menuPointer) - 23];
+  }
+
+  if (menuPointer <= MENU::ANTIGRAV) {
+    if (proto.traction == int(menuPointer) - 20) {
+      proto.traction = -1;
+    } else {
+      proto.traction = int(menuPointer) - 20;
+    }
+  }
+
+  if (nether->stats.canBuildRobot(0, proto)) {
+    staple->copyDesign(proto);
+    nether->sManager.playSelect();
+  } else {
+    nether->sManager.playWrong();
+  }
+}
+
+
+void ConstructionScreen::buildRobot()
+{
+  if (staple->valid()) {
+    staple->angle = 0;
+    staple->program = Robot::PROGRAM_FORWARD;
+    staple->op = Robot::OPERATOR::NONE;
+    staple->calculateCMC(Resources::pieceTiles[0]);
+    staple->shipover = false;
+
+    if (!staple->checkCollision(nether->map.buildings, nether->map.robots, true, nether->getShip())) {
+      nether->addNewRobot(staple, 0);
+      nether->stats.spendRobotResources(0, *staple);
+      nether->getShip()->pos.z = 2.0;
+      nether->setGameState(NETHER::STATE::PLAYING);
+      nether->sManager.playConstruction();
+      staple = nullptr;
+    }
+  } else {
+    nether->sManager.playWrong();
+  }
 }
 
 
@@ -136,7 +135,7 @@ void ConstructionScreen::draw(int width, int height, const Light& light)
 
   /* Draw the CONSTRUCTION screen: */
   glClearColor(0, 0, 0.0, 0);
-  glViewport(0, 0, width,height);
+  glViewport(0, 0, width, height);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   gluPerspective(30.0, float(width) / float(height), 1.0, 1024.0);
@@ -156,31 +155,28 @@ void ConstructionScreen::draw(int width, int height, const Light& light)
   scaledglprintf(0.01f, 0.01f, "-- AVAILABLE --");
 
   {
-    int res[7];
-
-    in_construction.cost(0, res, nether->stats.resources);
-    for (int i = 0; i < 7; i++) res[i] = nether->stats.resources[0][i] - res[i];
+    std::array<std::pair<int, int>, 7>resources {nether->stats.getResourceStats()};
+    std::array<int, 7> receipt {nether->stats.calculateCost(*staple)};
+    std::array<int, 7> normalized { nether->stats.normalizeCost(0, receipt)};
 
     glColor3f(0.5f, 1.0f, 0.5f);
     glTranslatef(0, -2.4, 0);
-    scaledglprintf(0.01f, 0.01f, "    GENERAL %.2i", res[0]);
+    scaledglprintf(0.01f, 0.01f, "    GENERAL %.2i", resources[0].first - normalized[0], 0);
     glTranslatef(0, -2.4, 0);
-    scaledglprintf(0.01f, 0.01f, "ELECTRONICS %.2i", res[1]);
+    scaledglprintf(0.01f, 0.01f, "ELECTRONICS %.2i", resources[1].first - normalized[1], 0);
     glTranslatef(0, -1.4, 0);
-    scaledglprintf(0.01f, 0.01f, "    NUCLEAR %.2i", res[2]);
+    scaledglprintf(0.01f, 0.01f, "    NUCLEAR %.2i", resources[2].first - normalized[2], 0);
     glTranslatef(0, -1.4, 0);
-    scaledglprintf(0.01f, 0.01f, "    PHASERS %.2i", res[3]);
+    scaledglprintf(0.01f, 0.01f, "    PHASERS %.2i", resources[3].first - normalized[3], 0);
     glTranslatef(0,-1.4,0);
-    scaledglprintf(0.01f, 0.01f, "   MISSILES %.2i", res[4]);
+    scaledglprintf(0.01f, 0.01f, "   MISSILES %.2i", resources[4].first - normalized[4], 0);
     glTranslatef(0, -1.4, 0);
-    scaledglprintf(0.01f, 0.01f, "     CANNON %.2i", res[5]);
+    scaledglprintf(0.01f, 0.01f, "     CANNON %.2i", resources[5].first - normalized[5], 0);
     glTranslatef(0, -1.4, 0);
-    scaledglprintf(0.01f, 0.01f, "    CHASSIS %.2i", res[6]);
-
-    int total = 0;
-    for (int i = 0; i < 7; i++) total += res[i];
+    scaledglprintf(0.01f, 0.01f, "    CHASSIS %.2i", resources[6].first - normalized[6], 0);
 
     glTranslatef(0, -2.4, 0);
+    int total = std::accumulate(receipt.cbegin(), receipt.cend(), 0);
     scaledglprintf(0.01f, 0.01f, "      TOTAL %.2i", total);
   }
 
@@ -210,9 +206,10 @@ void ConstructionScreen::draw(int width, int height, const Light& light)
   glPushMatrix();
   glColor3f(1.0f, 0.0f, 0.0f);
   glTranslatef(12, 15, 0);
-  in_construction.calculateCMC(Resources::pieceTiles[0]);
-  if (in_construction.checkCollision(nether->map.buildings, nether->map.robots, true, nether->getShip())) {
-    if ((int(nether->getAnimationTimer() * 4) % 2) == 0) scaledglprintf(0.01f, 0.01f, "ENTRANCE BLOCKED!");
+  staple->calculateCMC(Resources::pieceTiles[0]);
+  if (staple->checkCollision(nether->map.buildings, nether->map.robots, true, nether->getShip()) &&
+      (int(nether->getAnimationTimer() * 4) % 2) == 0) {
+    scaledglprintf(0.01f, 0.01f, "ENTRANCE BLOCKED!");
   }
 
   glColor3f(0.3f, 0.8f, 1.0f);
@@ -262,10 +259,21 @@ void ConstructionScreen::draw(int width, int height, const Light& light)
       glRotatef(30, 1, 0, 0);
       glRotatef(nether->getAnimationTimer() * 32, 0, 1, 0);
       glRotatef(-90, 1, 0, 0);
-      if (construction[i])
-        Resources::pieceTiles[0][i].draw_notexture(Color(1.0, 1.0, 1.0));
-      else
-        Resources::pieceTiles[0][i].draw_notexture(Color(0.5, 0.5, 0.5));
+
+      if (i < 3) {
+        if (staple->traction == i) {
+          Resources::pieceTiles[0][i].draw_notexture(Color(1.0, 1.0, 1.0));
+        } else {
+          Resources::pieceTiles[0][i].draw_notexture(Color(0.5, 0.5, 0.5));
+        }
+      } else {
+        if (staple->pieces[i - 3]) {
+          Resources::pieceTiles[0][i].draw_notexture(Color(1.0, 1.0, 1.0));
+        } else {
+          Resources::pieceTiles[0][i].draw_notexture(Color(0.5, 0.5, 0.5));
+        }
+      }
+
       glPopMatrix();
     }
 
@@ -275,49 +283,49 @@ void ConstructionScreen::draw(int width, int height, const Light& light)
     glRotatef(30, 1, 0, 0);
     glRotatef(nether->getAnimationTimer() * 32, 0, 1, 0);
     glRotatef(-90, 1, 0, 0);
-    in_construction.draw(0, false, Resources::pieceTiles, light.asVector());
+    staple->draw(0, false, Resources::pieceTiles, light.asVector());
     glPopMatrix();
   }
 
   glPushMatrix();
   glColor3f(0.75f, 0.0, 0.0);
-  if (construction_pointer == 0) {
+  if (menuPointer == MENU::EXIT) {
     glTranslatef(-14, -14, -1);
     glutSolidBox(3, 2, 0.5);
   }
-  if (construction_pointer == 10) {
+  if (menuPointer == MENU::START) {
     glTranslatef(-7, -14, -1);
     glutSolidBox(3, 2, 0.5);
   }
-  if (construction_pointer == 20) {
+  if (menuPointer == MENU::BIPOD) {
     glTranslatef(15.3, -13, -1);
     glutSolidBox(6, 1.7, 0.5);
   }
-  if (construction_pointer == 21) {
+  if (menuPointer == MENU::TRACKS) {
     glTranslatef(15.3, -9.2, -1);
     glutSolidBox(6, 1.7, 0.5);
   }
-  if (construction_pointer == 22) {
+  if (menuPointer == MENU::ANTIGRAV) {
     glTranslatef(15.3, -5.7, -1);
     glutSolidBox(6, 1.7, 0.5);
   }
-  if (construction_pointer == 23) {
+  if (menuPointer == MENU::CANNON) {
     glTranslatef(15.3, -2.2, -1);
     glutSolidBox(6, 1.7, 0.5);
   }
-  if (construction_pointer == 24) {
+  if (menuPointer == MENU::MISSILES) {
     glTranslatef(15.3, 1.2, -1);
     glutSolidBox(6, 1.7, 0.5);
   }
-  if (construction_pointer == 25) {
+  if (menuPointer == MENU::PHASERS) {
     glTranslatef(15.3, 4.7, -1);
     glutSolidBox(6, 1.7, 0.5);
   }
-  if (construction_pointer == 26) {
+  if (menuPointer == MENU::NUCLEAR) {
     glTranslatef(15.3, 8.2, -1);
     glutSolidBox(6, 1.7, 0.5);
   }
-  if (construction_pointer == 27) {
+  if (menuPointer == MENU::ELECTRONICS) {
     glTranslatef(15.3, 12, -1);
     glutSolidBox(6, 1.7, 0.5);
   }
@@ -328,17 +336,7 @@ void ConstructionScreen::draw(int width, int height, const Light& light)
 void ConstructionScreen::open(const Building& factory)
 {
   nether->setGameState(NETHER::STATE::CONSTRUCTION);
-  construction_pointer = 0;
-  for (int i = 0; i < 8; i++)
-    construction[i] = false;
-
-  in_construction.traction = -1;
-  in_construction.pieces[0] = false;
-  in_construction.pieces[1] = false;
-  in_construction.pieces[2] = false;
-  in_construction.pieces[3] = false;
-  in_construction.pieces[4] = false;
-  in_construction.pos.x = factory.pos.x + 2.5;
-  in_construction.pos.y = factory.pos.y + 0.5;
-  in_construction.pos.z = factory.pos.z;
+  menuPointer = MENU::EXIT;
+  staple = new Robot;
+  staple->pos = factory.pos + Vector(2.5, 0.5, 0);
 }

@@ -497,3 +497,10 @@ std::array<std::pair<int, int>, 7> NETHER::getResourceStats() const
 {
   return stats.getResourceStats();
 }
+
+
+void NETHER::addNewRobot(Robot* robot, int player)
+{
+  map.robots[player].push_back(robot);
+  ai.newRobot(robot->pos, player);
+}

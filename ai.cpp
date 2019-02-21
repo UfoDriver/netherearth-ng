@@ -571,9 +571,6 @@ Robot* AI::enemyNewRobot(const STATE state, const Vector& pos)
 
 	/* Build the robot: */ 
 	{
-		int i;
-		int cost[7];
-
 		Robot *r = new Robot();
 		r->traction=traction;
 		r->pieces[0]=pieces[0];
@@ -581,14 +578,10 @@ Robot* AI::enemyNewRobot(const STATE state, const Vector& pos)
 		r->pieces[2]=pieces[2];
 		r->pieces[3]=pieces[3];
 		r->pieces[4]=pieces[4];
-		r->cost(1, cost, nether->stats.resources);
 
-		for(int i=0;i<7;i++) {
-			if (nether->stats.resources[1][i]<cost[i]) {
-				/* Not enough resources! */ 
-				return 0;
-			} /* if */ 
-		} /* for */ 
+        if (!nether->stats.canBuildRobot(1, *r)) {
+          return 0;
+        }
 
 
 		/* Valid robot, build it: */ 
@@ -603,8 +596,7 @@ Robot* AI::enemyNewRobot(const STATE state, const Vector& pos)
 			map->robots[1].push_back(r);
 			newRobot(r->pos,0);
 
-			for(i=0;i<7;i++) nether->stats.resources[1][i]-=cost[i];
-
+            nether->stats.spendRobotResources(1, *r);
 			return r;
 		} else {
 			delete r;

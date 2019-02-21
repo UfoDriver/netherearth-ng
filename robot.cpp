@@ -9,8 +9,6 @@
 
 extern int detaillevel;
 
-
-int Robot::counter = 0;
 const float Robot::MS[4][3]={{0.0078125, 0.015625, 0.03125},
                              {0.00390625, 0.0078125, 0.03125},
                              {0, 0.0078125, 0.015625},
@@ -20,17 +18,13 @@ const int Robot::RS[4][3]={{2, 3, 5},
                            {1, 2, 5},
                            {0, 2, 3},
                            {0, 0, 5}};
+int Robot::counter = 0;
 
 
-Robot::Robot() : traction(-1), firetimer(0), strength(100),
+Robot::Robot() : traction(-1), pieces{}, firetimer(0), strength(100),
                  electronics_state(0), chassis_state(0), id(Robot::counter++)
 {
-  pieces[0]=false;
-  pieces[1]=false;
-  pieces[2]=false;
-  pieces[3]=false;
-  pieces[4]=false;
-};
+}
 
 
 Robot::Robot(std::istream& in)
@@ -338,58 +332,20 @@ void Robot::draw(int owner, bool shadows, std::vector<Piece3DObject> piece_tiles
 }
 
 
-void Robot::cost(int player, int* res, int resources[2][7])
-{
-  // int i;
-  int tmp;
-  int corr[5] = {5, 4, 3, 2, 1};
-  int cost[5] = {2, 4, 4, 20, 3};
-
-  res[0] = 0;
-  res[1] = 0;
-  res[2] = 0;
-  res[3] = 0;
-  res[4] = 0;
-  res[5] = 0;
-  res[6] = 0;
-
-  tmp = 0;
-  if (traction == 0) tmp = 3;
-  if (traction == 1) tmp = 5;
-  if (traction == 2) tmp = 10;
-  if (resources[player][6] > tmp) {
-    res[6] = tmp;
-  } else {
-    res[6] = resources[player][6];
-    res[0] = tmp - resources[player][6];
-  }
-
-  for(int i = 0; i < 5; i++) {
-    if (pieces[i]) {
-      if (resources[player][corr[i]] > cost[i]) {
-        res[corr[i]] = cost[i];
-      } else {
-        res[corr[i]] = resources[player][corr[i]];
-        res[0] += cost[i] - resources[player][corr[i]];
-      }
-    }
-  }
-}
-
 int Robot::cost()
 {
-  int tmp = 0;
+  int total = 0;
   int cost[5] = {2, 4, 4, 20, 3};
 
-  if (traction == 0) tmp = 3;
-  if (traction == 1) tmp = 5;
-  if (traction == 2) tmp = 10;
+  if (traction == 0) total = 3;
+  if (traction == 1) total = 5;
+  if (traction == 2) total = 10;
 
   for (int i = 0; i < 5; i++) {
-    if (pieces[i]) tmp += cost[i];
+    if (pieces[i]) total += cost[i];
   }
 
-  return tmp;
+  return total;
 }
 
 
@@ -589,4 +545,11 @@ std::ostream& operator<<(std::ostream& out, const Robot& robot)
              << robot.angle << '\n'
              << robot.cmc
              << robot.electronics_state << ' ' << robot.chassis_state << '\n';
+}
+
+
+void Robot::copyDesign(const Robot& robot)
+{
+  traction = robot.traction;
+  std::copy(std::begin(robot.pieces), std::end(robot.pieces), std::begin(pieces));
 }

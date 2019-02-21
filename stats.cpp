@@ -1,6 +1,6 @@
-#include "stats.h"
-
 #include "building.h"
+#include "robot.h"
+#include "stats.h"
 
 
 void Stats::recompute(const std::vector<Building>& buildings)
@@ -112,4 +112,62 @@ std::array<std::pair<int, int>, 7> Stats::getResourceStats() const
     data[i] = std::make_pair(resources[0][i], resources[1][i]);
   }
   return data;
+}
+
+
+bool Stats::canBuildRobot(int player, const Robot& robot)
+{
+  std::array<int, 7> invoice = calculateCost(robot);
+  int generalRequired = 0;
+  for (int i = 1; i < 7; i++) {
+    generalRequired -= std::min(resources[player][i] - invoice[i], 0);
+  }
+  return abs(generalRequired) <= resources[player][0];
+}
+
+
+void Stats::spendRobotResources(int player, const Robot& robot)
+{
+  std::array<int, 7> normalized {normalizeCost(player, calculateCost(robot))};
+  for (int i = 0; i < 7; i++) {
+    resources[player][i] -= normalized[i];
+  }
+}
+
+
+std::array<int, 7> Stats::calculateCost(const Robot& robot)
+{
+  int prices[6] = {0, 3, 20, 4, 4, 2};
+
+  std::array<int, 7> invoice {0};
+  // Calculate specific resources first, except chasis
+  for (int robotIndex = 0, priceIndex = 5; robotIndex < 5; robotIndex++, priceIndex--) {
+    if (robot.pieces[robotIndex]) {
+      invoice[priceIndex] = prices[priceIndex];
+    }
+  }
+
+  switch (robot.traction) {
+  case 0:
+    invoice[6] = 3;
+    break;
+  case 1:
+    invoice[6] = 5;
+    break;
+  case 2:
+    invoice[6] = 10;
+    break;
+  }
+  return invoice;
+}
+
+
+std::array<int, 7> Stats::normalizeCost(int player, const std::array<int, 7>& invoice)
+{
+  std::array<int, 7> normalized {0};
+  for (int i = 1; i < 7; i++) {
+    normalized[0] -= std::min(resources[player][i] - invoice[i], 0);
+    normalized[i] = std::min(resources[player][i], invoice[i]);
+  }
+  return normalized;
 }

@@ -39,7 +39,6 @@ public:
   bool bulletHit(Bullet::TYPE type);
   void draw(int owner, bool shadows, std::vector<Piece3DObject> piece_tiles[2], Vector lightposv);
   int cost();
-  void cost(int player, int* res, int resources[2][7]);
   bool operator==(const Robot& other) const { return id == other.id; };
   bool hasCannons() const { return pieces[0]; }
   bool hasMissiles() const { return pieces[1]; }
@@ -74,6 +73,7 @@ public:
   int angle;
   CMC cmc;
   void calculateCMC(std::vector<Piece3DObject>& pieceTiles);
+  void copyDesign(const Robot& robot);
 
   /* Animation variables: */
   int electronics_state;
