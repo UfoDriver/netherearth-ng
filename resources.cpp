@@ -148,11 +148,11 @@ void Resources::loadObjects()
   }
 
   for (Shadow3DObject& tile: buildingTiles) tile.ComputeShadow(lightposv);
-  for(int i = 0; i < N_PIECES; i++) {
-    pieceTiles[0][i].ComputeFixedShadows(lightposv);
-    pieceTiles[1][i].ComputeFixedShadows(lightposv);
+  for (int i = 0; i < N_PIECES; i++) {
+    pieceTiles[0][i].computeFixedShadows(lightposv);
+    pieceTiles[1][i].computeFixedShadows(lightposv);
   }
-  for (Piece3DObject& tile: bulletTiles) tile.ComputeFixedShadows(lightposv);
+  for (Piece3DObject& tile: bulletTiles) tile.computeFixedShadows(lightposv);
 
   constructionTiles.emplace_back("models/construction1.asc","textures/");
   constructionTiles.emplace_back("models/construction2.asc","textures/");

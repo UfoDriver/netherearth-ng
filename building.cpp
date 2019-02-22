@@ -190,7 +190,7 @@ void Building::draw(const bool shadows, const int detaillevel, const Vector& lig
       glTranslatef(0,0,0.05f);
       Resources::buildingTiles[4].DrawShadow(Color(0, 0, 0, 0.5));
       glTranslatef(float(-light.x), float(-light.y), 0);
-      Resources::pieceTiles[0][7].DrawShadow(0, light, Color(0, 0, 0, 0.5));
+      Resources::pieceTiles[0][7].drawShadow(0, light, Color(0, 0, 0, 0.5));
       glPopMatrix();
     }
     if (owner == 1) {
@@ -227,7 +227,7 @@ void Building::draw(const bool shadows, const int detaillevel, const Vector& lig
       glTranslatef(0, 0, 0.05f);
       Resources::buildingTiles[4].DrawShadow(Color(0, 0, 0, 0.5));
       glTranslatef(float(-light.x), float(-light.y), 0);
-      Resources::pieceTiles[0][6].DrawShadow(0, light, Color(0, 0, 0, 0.5));
+      Resources::pieceTiles[0][6].drawShadow(0, light, Color(0, 0, 0, 0.5));
       glPopMatrix();
     }
 
@@ -265,7 +265,7 @@ void Building::draw(const bool shadows, const int detaillevel, const Vector& lig
       glTranslatef(0, 0, 0.05f);
       Resources::buildingTiles[4].DrawShadow(Color(0, 0, 0, 0.5));
       glTranslatef(float(-light.x), float(-light.y), 0);
-      Resources::pieceTiles[0][5].DrawShadow(0, light, Color(0, 0, 0, 0.5));
+      Resources::pieceTiles[0][5].drawShadow(0, light, Color(0, 0, 0, 0.5));
       glPopMatrix();
     }
     if (owner == 1) {
@@ -302,7 +302,7 @@ void Building::draw(const bool shadows, const int detaillevel, const Vector& lig
       glTranslatef(0, 0, 0.05f);
       Resources::buildingTiles[4].DrawShadow(Color(0, 0, 0, 0.5));
       glTranslatef(float(-light.x), float(-light.y), 0);
-      Resources::pieceTiles[0][4].DrawShadow(0, light, Color(0, 0, 0, 0.5));
+      Resources::pieceTiles[0][4].drawShadow(0, light, Color(0, 0, 0, 0.5));
       glPopMatrix();
     }
     if (owner == 1) {
@@ -339,7 +339,7 @@ void Building::draw(const bool shadows, const int detaillevel, const Vector& lig
       glTranslatef(0, 0, 0.05f);
       Resources::buildingTiles[4].DrawShadow(Color(0, 0, 0, 0.5));
       glTranslatef(float(-light.x), float(-light.y), 0);
-      Resources::pieceTiles[0][3].DrawShadow(0, light, Color(0, 0, 0, 0.5));
+      Resources::pieceTiles[0][3].drawShadow(0, light, Color(0, 0, 0, 0.5));
       glPopMatrix();
     }
 
@@ -376,7 +376,7 @@ void Building::draw(const bool shadows, const int detaillevel, const Vector& lig
       glTranslatef(0, 0, 0.05f);
       Resources::buildingTiles[4].DrawShadow(Color(0, 0, 0, 0.5));
       glTranslatef(float(-light.x), float(-light.y), 0);
-      Resources::pieceTiles[0][1].DrawShadow(0, light, Color(0, 0, 0, 0.5));
+      Resources::pieceTiles[0][1].drawShadow(0, light, Color(0, 0, 0, 0.5));
       glPopMatrix();
     }
     if (owner == 1) {

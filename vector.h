@@ -6,7 +6,7 @@
 
 class Vector {
 public:
-  Vector(): x(0), y(0), z() {};
+  Vector(): x(0), y(0), z(0) {};
   Vector(double nx, double ny, double nz): x(nx), y(ny), z(nz) {};
   Vector(const Vector &v): x(v.x), y(v.y), z(v.z) {};
   explicit Vector(FILE *fp): x(0), y(0), z(0) {
