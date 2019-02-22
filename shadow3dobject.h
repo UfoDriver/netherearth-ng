@@ -13,13 +13,12 @@ public:
   Shadow3DObject(const std::string& file, const std::string& texturedir);
   ~Shadow3DObject();
 
-  void DrawShadow(const Color& color);
-  void ComputeShadow(Vector light);
+  void drawShadow(const Color& color);
+  void computeShadow(Vector light);
 
-  std::vector<Vector> shdw_puntos;
-	int shdw_nfaces;
-	int *shdw_faces;
-	CMC shdw_cmc;
+  std::vector<Vector> shadowPoints;
+  std::vector<Face> shadowFaces;
+  CMC shadowCMC;
 };
 
 #endif

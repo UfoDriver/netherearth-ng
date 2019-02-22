@@ -55,7 +55,7 @@ NETHER::NETHER(const std::string& mapname): ai(this, &map), menu(this), radar(th
   Resources::instance()->loadObjects();
 
   ship = new Ship("models/ship.asc", "textures/");
-  ship->ComputeShadow(light.asVector());
+  ship->computeShadow(light.asVector());
 
   map.loadMap(mapname);
 

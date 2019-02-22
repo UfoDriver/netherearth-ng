@@ -147,7 +147,7 @@ void Resources::loadObjects()
     lightposv.z = 5000;
   }
 
-  for (Shadow3DObject& tile: buildingTiles) tile.ComputeShadow(lightposv);
+  for (Shadow3DObject& tile: buildingTiles) tile.computeShadow(lightposv);
   for (int i = 0; i < N_PIECES; i++) {
     pieceTiles[0][i].computeFixedShadows(lightposv);
     pieceTiles[1][i].computeFixedShadows(lightposv);

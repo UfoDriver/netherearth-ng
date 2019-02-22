@@ -143,10 +143,10 @@ void Ship::draw(const bool shadows, const Vector& light, const Map& map, const R
 
     if (controlled == 0) {
       float x[2], y[2];
-      x[0] = sx + shdw_cmc.x[0];
-      x[1] = sx + shdw_cmc.x[1];
-      y[0] = sy + shdw_cmc.y[0];
-      y[1] = sy + shdw_cmc.y[1];
+      x[0] = sx + shadowCMC.x[0];
+      x[1] = sx + shadowCMC.x[1];
+      y[0] = sy + shadowCMC.y[0];
+      y[1] = sy + shadowCMC.y[1];
       minz = map.maxZ(x, y);
     } else {
       minz = controlled->pos.z;
@@ -154,7 +154,7 @@ void Ship::draw(const bool shadows, const Vector& light, const Map& map, const R
 
     glPushMatrix();
     glTranslatef(sx, sy, minz+0.05);
-    DrawShadow(Color(0, 0, 0, 0.5));
+    drawShadow(Color(0, 0, 0, 0.5));
     glPopMatrix();
   }
 }
