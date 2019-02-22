@@ -14,7 +14,7 @@ class Bullet {
 public:
   enum class TYPE {CANNONS, MISSILES, PHASERS};
   Bullet();
-  Bullet(TYPE type, Vector position, int angle, Robot *robot);
+  Bullet(TYPE type, Vector position, Robot *robot);
   explicit Bullet(std::istream& in, std::vector<Robot*> robot[2]);
   void draw(bool shadow, std::vector<Piece3DObject>& bullet_tiles, std::vector<Particle>& particles) const;
   bool checkCollision(const std::vector<Building>& buildings,
@@ -28,9 +28,9 @@ public:
   Robot *owner;	/* The robot who fired this bullet */
 
   CMC cmc;
-  void computeCMC(std::vector<Piece3DObject>& bulletTiles);
 
 private:
+  void computeCMC(std::vector<Piece3DObject>& bulletTiles);
   void drawParticles(std::vector<Particle>& particles) const;
 };
 

@@ -945,27 +945,21 @@ bool NETHER::cycle(unsigned char *keyboard)
 					if (r->op==Robot::OPERATOR::CANNONS && r->firetimer==0) {
 						Vector pos(r->pos);
 						pos.z = r->piecez(0) + 0.3f;
-						Bullet bullet(Bullet::TYPE::CANNONS, pos, r->angle, r);
-						bullet.computeCMC(Resources::bulletTiles);
-						map.bullets.push_back(bullet);
+                        map.bullets.emplace_back(Bullet::TYPE::CANNONS, pos, r);
                         sManager.playShot(ship->pos, r->pos);
 					} /* if */ 
 
 					if (r->op==Robot::OPERATOR::MISSILES && r->firetimer==0) {
 						Vector pos (r->pos);
 						pos.z = r->piecez(1) + 0.2f;
-                        Bullet bullet(Bullet::TYPE::MISSILES, pos, r->angle, r);
-						bullet.computeCMC(Resources::bulletTiles);
-						map.bullets.push_back(bullet);
+						map.bullets.emplace_back(Bullet::TYPE::MISSILES, pos, r);
                         sManager.playShot(ship->pos, r->pos);
 					} /* if */ 
 
 					if (r->op==Robot::OPERATOR::PHASERS && r->firetimer==0) {
 						Vector pos(r->pos);
 						pos.z = r->piecez(2) + 0.3f;
-						Bullet bullet(Bullet::TYPE::PHASERS, pos, r->angle, r);
-						bullet.computeCMC(Resources::bulletTiles);
-						map.bullets.push_back(bullet);
+						map.bullets.emplace_back(Bullet::TYPE::PHASERS, pos, r);
                         sManager.playShot(ship->pos, r->pos);
 					} /* if */ 
 

@@ -32,12 +32,14 @@ extern int detaillevel;
 
 Bullet::Bullet(): type(TYPE::CANNONS), step(0), angle(0), owner(0)
 {
+  computeCMC(Resources::bulletTiles);
 }
 
 
-Bullet::Bullet(TYPE type, Vector position, int angle, Robot *robot):
-  type(type), step(0), pos(position), angle(angle), owner(robot)
+Bullet::Bullet(TYPE type, Vector position, Robot *robot):
+  type(type), step(0), pos(position), angle(robot->angle), owner(robot)
 {
+  computeCMC(Resources::bulletTiles);
 }
 
 
