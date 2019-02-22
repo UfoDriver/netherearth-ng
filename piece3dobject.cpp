@@ -46,9 +46,9 @@ void Piece3DObject::drawShadow(int angle, Vector light, const Color& color)
 
   switch (angle) {
   case 0:
-    glVertexPointer(3, GL_FLOAT, 0, shdw_puntos_0.data());
+    glVertexPointer(3, GL_FLOAT, 0, shadowPoints0.data());
     glBegin(GL_TRIANGLES);
-    for (const Face& face: shdw_faces_0) {
+    for (const Face& face: shadowFaces0) {
       glArrayElement(face.a);
       glArrayElement(face.b);
       glArrayElement(face.c);
@@ -56,9 +56,9 @@ void Piece3DObject::drawShadow(int angle, Vector light, const Color& color)
     glEnd();
     break;
   case 90:
-    glVertexPointer(3, GL_FLOAT, 0, shdw_puntos_90.data());
+    glVertexPointer(3, GL_FLOAT, 0, shadowPoints90.data());
     glBegin(GL_TRIANGLES);
-    for (const Face& face: shdw_faces_90) {
+    for (const Face& face: shadowFaces90) {
       glArrayElement(face.a);
       glArrayElement(face.b);
       glArrayElement(face.c);
@@ -66,9 +66,9 @@ void Piece3DObject::drawShadow(int angle, Vector light, const Color& color)
     glEnd();
     break;
   case 180:
-    glVertexPointer(3, GL_FLOAT, 0, shdw_puntos_180.data());
+    glVertexPointer(3, GL_FLOAT, 0, shadowPoints180.data());
     glBegin(GL_TRIANGLES);
-    for (const Face& face: shdw_faces_180) {
+    for (const Face& face: shadowFaces180) {
       glArrayElement(face.a);
       glArrayElement(face.b);
       glArrayElement(face.c);
@@ -76,9 +76,9 @@ void Piece3DObject::drawShadow(int angle, Vector light, const Color& color)
     glEnd();
     break;
   case 270:
-    glVertexPointer(3, GL_FLOAT, 0, shdw_puntos_270.data());
+    glVertexPointer(3, GL_FLOAT, 0, shadowPoints270.data());
     glBegin(GL_TRIANGLES);
-    for (const Face& face: shdw_faces_270) {
+    for (const Face& face: shadowFaces270) {
       glArrayElement(face.a);
       glArrayElement(face.b);
       glArrayElement(face.c);
@@ -86,10 +86,10 @@ void Piece3DObject::drawShadow(int angle, Vector light, const Color& color)
     glEnd();
     break;
   default:
-    computeDynamicShadow(angle,light);
-    glVertexPointer(3, GL_FLOAT, 0, shdw_puntos_dynamic.data());
+    computeDynamicShadow(angle, light);
+    glVertexPointer(3, GL_FLOAT, 0, shadowPointsdynamic.data());
     glBegin(GL_TRIANGLES);
-    for (const Face& face: shdw_faces_dynamic) {
+    for (const Face& face: shadowFacesDynamic) {
       glArrayElement(face.a);
       glArrayElement(face.b);
       glArrayElement(face.c);
@@ -164,14 +164,15 @@ void Piece3DObject::computeShadow(int angle, const Vector& light, std::vector<Ve
 
 void Piece3DObject::computeDynamicShadow(int angle, Vector light)
 {
-  computeShadow(angle, light, shdw_puntos_dynamic, shdw_faces_dynamic, shdw_cmc_dynamic);
+  // @TODO: seems like it's broken
+  computeShadow(angle, light, shadowPointsdynamic, shadowFacesDynamic, shadowCMCDynamic);
 }
 
 
 void Piece3DObject::computeFixedShadows(Vector light)
 {
-  computeShadow(0, light, shdw_puntos_0, shdw_faces_0, shdw_cmc_0);
-  computeShadow(90, light, shdw_puntos_90, shdw_faces_90, shdw_cmc_90);
-  computeShadow(180, light, shdw_puntos_180, shdw_faces_180, shdw_cmc_180);
-  computeShadow(270, light, shdw_puntos_270, shdw_faces_270, shdw_cmc_270);
+  computeShadow(0, light, shadowPoints0, shadowFaces0, shadowCMC0);
+  computeShadow(90, light, shadowPoints90, shadowFaces90, shadowCMC90);
+  computeShadow(180, light, shadowPoints180, shadowFaces180, shadowCMC180);
+  computeShadow(270, light, shadowPoints270, shadowFaces270, shadowCMC270);
 }
