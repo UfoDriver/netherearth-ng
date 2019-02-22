@@ -18,7 +18,7 @@ void Map::resize(const int width, const int height)
   Width = width;
   Height = height;
   map.clear();
-  map.reserve(width * height);
+  map.resize(width * height, 0);
   explosions.clear();
   buildings.clear();
   bullets.clear();
@@ -233,7 +233,7 @@ bool Map::loadMap(const std::string& filename)
 {
   std::ifstream iFile(filename);
   iFile >> Width >> Height;
-  map.resize(Width, Height);
+  resize(Width, Height);
 
   const std::vector<std::string> tiles = {"G", "S", "S2", "M", "H1",
                                           "H2", "H3", "H4", "H5", "H6",
@@ -242,17 +242,15 @@ bool Map::loadMap(const std::string& filename)
   for (int i = 0; i < Width * Height; i++) {
     iFile >> tilestr;
     int tile = find_index(tiles, tilestr);
-    if (tile == 10) tile = 0;
-    if (tile == 11) tile = 1;
-    if (tile == 12) tile = 3;
-
-    map.push_back(tile);
+    if (tile >= 10) tile -= 10;
+    map[i] = tile;
   }
 
-  while (!iFile.eof()) {
+  do {
     const std::vector<Building>& newBuildings {Building::readMapFile(iFile)};
     std::copy(newBuildings.cbegin(), newBuildings.cend(), std::back_inserter(buildings));
-  }
+  } while (iFile.good());
+
   return true;
 }
 

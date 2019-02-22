@@ -1,13 +1,12 @@
-32
 64
-G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G
-G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G
+32
 G G G G G G G G G G H3 G G G G G G G G G G G G G G G G G G G G G
 G G G G G G G G G G H2 G G G G G G G G G G G G G G G G G G G G G
 G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G
 G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G
 G G G G G G G M M G G G G G G G G G G G G G G G G G G G G G G G
 G G G G G G G M M G G G G G G G G G G G G G G G G G G G G G G G
+
 G G G G G G G M M G G G G G G G G G G G G G G G G G G G G G G G
 G G G G G G G M M G G G G G G G G G G G G G G G G G G G G G G G
 G G G G G G G M M G G G G G G G G G G G G G G G G G G G G G G G
@@ -16,6 +15,7 @@ G G G G G G G M M G G G G G G G G G G G G G G G G G G G G G G G
 G G G G G G G M M G G G G G G G G G G G G G G G G G G G G G G G
 G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G
 G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G
+
 G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G
 G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G
 G G G G G G G G G G G G G G G G G G G G G G M M G G G G G G G G
@@ -24,6 +24,7 @@ G G G G G G G G G G G G G G G G G G G G G G M M G G G G G G G G
 G G G G G G G G G G G G G G G G G G G G G G M M G G G G G G G G
 G G G G G G G G G G G G G G G G G G G G G G M M G G G G G G G G
 G G G G G G G G G G G G G G G G G G G G G G M M G G G G G G G G
+
 G G G G G G G G G G G G G G G G G G G G G G M M G G G G G G G G
 G G G G G G G G G G G G G G G G G G G G G G M M G G G G G G G G
 H4 H4 H4 H4 H4 H4 H4 H4 H4 H4 H4 H4 H4 H4 H4 H4 H4 H4 H4 H4 H4 H4 H5 G G G G G G G G G
@@ -32,6 +33,7 @@ G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G
 G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G
 G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G
 G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G
+
 G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G
 G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G
 G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G
@@ -40,6 +42,7 @@ G G G G G G G G G G H2 G G G G G G G G G G G G G G G G G G G G G
 G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G
 G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G
 G G G G G G G M M G G G G G G G G G G G G G G G G G G G G G G G
+
 G G G G G G G M M G G G G G G G G G G G G G G G G G G G G G G G
 G G G G G G G M M G G G G G G G G G G G G G G G G G G G G G G G
 G G G G G G G M M G G G G G G G G G G G G G G G G G G G G G G G
@@ -48,6 +51,7 @@ G G G G G G G M M G G G G G G G G G G G G G G G G G G G G G G G
 G G G G G G G M M G G G G G G G G G G G G G G G G G G G G G G G
 G G G G G G G M M G G G G G G G G G G G G G G G G G G G G G G G
 G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G
+
 G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G
 G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G
 G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G
@@ -56,6 +60,7 @@ G G G G G G G G G G G G G G G G G G G G G G M M G G G G G G G G
 G G G G G G G G G G G G G G G G G G G G G G M M G G G G G G G G
 G G G G G G G G G G G G G G G G G G G G G G M M G G G G G G G G
 G G G G G G G G G G G G G G G G G G G G G G M M G G G G G G G G
+
 G G G G G G G G G G G G G G G G G G G G G G M M G G G G G G G G
 G G G G G G G G G G G G G G G G G G G G G G M M G G G G G G G G
 H4 H4 H4 H4 H4 H4 H4 H4 H4 H4 H4 H4 H4 H4 H4 H4 H4 H4 H4 H4 H4 H4 H5 G G G G G G G G G
@@ -64,6 +69,7 @@ G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G
 G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G
 G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G
 G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G
+
 G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G
 G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G
 
