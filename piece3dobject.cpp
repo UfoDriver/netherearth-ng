@@ -129,7 +129,7 @@ void Piece3DObject::computeShadow(int angle, const Vector& light, std::vector<Ve
       ppp[0] = point.x;
       ppp[1] = point.y;
       ppp[2] = point.z;
-      float plane[4] {0, 0, 0, 0};
+      float plane[4] {0, 0, 1, 0};
       PlaneLineCollision(plane, ppp, l, tmp);
       p.emplace_back(tmp[0], tmp[1], 0);
     }
