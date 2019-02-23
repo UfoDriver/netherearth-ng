@@ -30,4 +30,6 @@ const Color PLAYER2_COLOR {0.8f, 0.3f, 0.3f};
 const int WE_SEARCH_DEPTH = 12; //Search depth for robots with ELECTRONICS
 const int WOE_SEARCH_DEPTH = 4; // Search depth for robots without ELECTRONICS
 
+const float NUCLEAR_RADIUS = 2.5f;
+
 #endif // CONSTANTS_H
