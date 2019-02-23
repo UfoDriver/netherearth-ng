@@ -268,7 +268,11 @@ bool Map::cycle()
   // Bullets cycling
   // Nuclear explosion stepping/removal
   // Menu cycling
+  // Explosions cycling
+  // Particles cycling
   // Game goals checking
+
+  cycleBullets();
 
   explosions.erase(std::remove_if(explosions.begin(), explosions.end(),
                                   [](auto& exp) { return !exp.cycle(); }),
@@ -279,6 +283,58 @@ bool Map::cycle()
                   particles.end());
 
   return true;
+}
+
+
+void Map::cycleBullets()
+{
+  bullets.erase(remove_if(bullets.begin(), bullets.end(),
+                          [this](auto& bullet) {
+                            bool ret = false;
+
+                            int persistence = CANNON_PERSISTENCE;
+                            if (bullet.angle == 0) bullet.pos.x += BULLET_SPEED;
+                            if (bullet.angle == 90) bullet.pos.y += BULLET_SPEED;
+                            if (bullet.angle == 180) bullet.pos.x -= BULLET_SPEED;
+                            if (bullet.angle == 270) bullet.pos.y -= BULLET_SPEED;
+                            bullet.step++;
+
+                            if (bullet.type == Bullet::TYPE::MISSILES) persistence = MISSILE_PERSISTENCE;
+                            if (bullet.type == Bullet::TYPE::PHASERS) persistence = PHASER_PERSISTENCE;
+                            Robot* r = 0;
+                            if (bullet.step >= persistence || bullet.checkCollision(buildings, robots, &r)) {
+                              ret = true;
+                              if (bullet.step < persistence) {
+                                explosions.emplace_back(bullet.pos, 0);
+                              }
+                            }
+                            if (r != 0) {
+                              /* The bullet has collided with a robot: */
+                              if (!r->bulletHit(bullet.type)) {
+                                /* Robot destroyed: */
+                                explosions.emplace_back(r->pos,1);
+                                nether->sManager.playExplosion(nether->getShip()->pos, r->pos);
+                                nether->detachShip(r);
+                                nether->ai.killRobot(r->pos);
+                                find_and_destroy_robot(r);
+                              }
+                            }
+                            return ret;
+                          }),
+                bullets.end());
+}
+
+
+void Map::find_and_destroy_robot(Robot* robot)
+{
+  for (int i = 0; i < 2; i++) {
+    robots[i].erase(std::remove_if(robots[i].begin(), robots[i].end(),
+                                   [robot](const Robot* r) {
+                                     return r == robot;
+                                   }),
+                    robots[i].end());
+  }
+  delete robot;
 }
 
 

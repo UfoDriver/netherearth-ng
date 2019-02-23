@@ -57,9 +57,9 @@ void Radar::draw(const int width, const int height, const int split, const int s
     int starty = (int)((nether->getShip()->pos.y - 23) * 2);
     // @TODO: std::min/std::max can be used here. Or, event better, std::clamp (c++17)
     if ((starty + maxy) > (nether->map.height() * 2)) starty = (nether->map.height() * 2) - maxy;
-    if (starty < 0) starty = 0;
+    starty = std::max(starty, 0);
     if ((startx + maxx) > (nether->map.width() * 2)) startx = (nether->map.width() * 2) - maxx;
-    if (startx < 0) startx = 0;
+    startx = std::max(0, startx);
 
     glNormal3f(0, 0, 1);
     for (int y = 0; y < maxy; y++) {

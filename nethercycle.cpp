@@ -38,19 +38,6 @@ extern int level;
 extern float MINY, MAXY, MINX, MAXX;
 
 
-void find_and_destroy_robot(std::vector<Robot*> robots[], Robot* robot)
-{
-  for (int i = 0; i < 2; i++) {
-    robots[i].erase(std::remove_if(robots[i].begin(), robots[i].end(),
-                                   [robot](const Robot* r) {
-                                     return r == robot;
-                                   }),
-                    robots[i].end());
-  }
-  delete robot;
-}
-
-
 bool NETHER::cycle(unsigned char *keyboard)
 {
   camera.cycle(keyboard);
@@ -1148,48 +1135,6 @@ bool NETHER::cycle(unsigned char *keyboard)
       }
     }
   }
-
-  /* Bullets: */
-  map.bullets.erase(remove_if(map.bullets.begin(), map.bullets.end(),
-                              [this](auto& bullet) {
-                                bool ret = false;
-
-                                int persistence = CANNON_PERSISTENCE;
-                                if (bullet.angle == 0) bullet.pos.x += BULLET_SPEED;
-                                if (bullet.angle == 90) bullet.pos.y += BULLET_SPEED;
-                                if (bullet.angle == 180) bullet.pos.x -= BULLET_SPEED;
-                                if (bullet.angle == 270) bullet.pos.y -= BULLET_SPEED;
-                                bullet.step++;
-
-                                if (bullet.type == Bullet::TYPE::MISSILES) persistence = MISSILE_PERSISTENCE;
-                                if (bullet.type == Bullet::TYPE::PHASERS) persistence = PHASER_PERSISTENCE;
-                                Robot* r = 0;
-                                if (bullet.step >= persistence || bullet.checkCollision(map.buildings, map.robots, &r)) {
-                                  ret = true;
-                                  if (bullet.step < persistence) {
-                                    map.explosions.emplace_back(bullet.pos, 0);
-                                  }
-                                }
-                                if (r != 0) {
-                                  /* The bullet has collided with a robot: */
-                                  if (!r->bulletHit(bullet.type)) {
-                                    /* Robot destroyed: */
-                                    map.explosions.emplace_back(r->pos,1);
-                                    sManager.playExplosion(ship->pos, r->pos);
-                                    if (r == controlled) {
-                                      controlled->shipover = false;
-                                      controlled = 0;
-                                      menu.killmenu(Menu::TYPE::ALL);
-                                      menu.newmenu(Menu::TYPE::GENERAL);
-                                    }
-                                    ai.killRobot(r->pos);
-
-                                    find_and_destroy_robot(map.robots, r);
-                                  }
-                                }
-                                return ret;
-                              }),
-                    map.bullets.end());
 
   map.cycle();
   menu.cycle();

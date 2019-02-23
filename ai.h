@@ -2,11 +2,12 @@
 #define AI_H
 
 #include <vector>
+
+#include "map.h"
 #include "robot.h"
 #include "vector.h"
 
 class AIOperator;
-class Map;
 class NETHER;
 
 

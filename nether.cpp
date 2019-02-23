@@ -42,9 +42,9 @@ extern float MINY, MAXY, MINX, MAXX;
 extern bool show_radar;
 
 
-NETHER::NETHER(const std::string& mapname): ai(this, &map), menu(this), radar(this),
+NETHER::NETHER(const std::string& mapname): map(this), ai(this, &map), menu(this), radar(this),
                                             optionsScreen(this), constructionScreen(this),
-                                            camera(0, 0, 0, 0), controlled(NULL)
+                                            camera(0, 0, 0, 0), controlled(nullptr)
 {
   if (shadows == 1) {
     light.set(-1000, -3000, 5000, 1);
@@ -503,4 +503,15 @@ void NETHER::addNewRobot(Robot* robot, int player)
 {
   map.robots[player].push_back(robot);
   ai.newRobot(robot->pos, player);
+}
+
+
+void NETHER::detachShip(Robot* robot)
+{
+  if (robot == controlled) {
+    controlled->shipover = false;
+    controlled = nullptr;
+    menu.killmenu(Menu::TYPE::ALL);
+    menu.newmenu(Menu::TYPE::GENERAL);
+  }
 }

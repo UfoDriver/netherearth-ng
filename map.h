@@ -11,11 +11,13 @@
 #include "robot.h"
 #include "vector.h"
 
+class NETHER;
+
 
 class Map
 {
 public:
-  Map(): Width(0), Height(0) {}
+  Map(NETHER* nether): Width(0), Height(0), nether(nether) {}
 
   std::vector<int> map;
 
@@ -36,8 +38,11 @@ public:
   std::vector<Particle> particles;
   std::vector<Robot*> robots[2];
 private:
+  void cycleBullets();
+  void find_and_destroy_robot(Robot* robot);
   int Width;
   int Height;
+  NETHER* nether;
 };
 
 
