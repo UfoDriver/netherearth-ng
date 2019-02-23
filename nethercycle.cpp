@@ -53,15 +53,7 @@ void find_and_destroy_robot(std::vector<Robot*> robots[], Robot* robot)
 
 bool NETHER::cycle(unsigned char *keyboard)
 {
-  if (keyboard[SDLK_PAGEUP]) {
-    camera.zoom *= 1.1;
-    if (camera.zoom > 4) camera.zoom = 4;
-  }
-  if (keyboard[SDLK_PAGEDOWN]) {
-    camera.zoom /= 1.1;
-    if (camera.zoom < 0.5) camera.zoom = 0.5;
-  }
-
+  camera.cycle(keyboard);
   stats.recompute(map.buildings);
 
   /* ENEMY Artificial Intelligence: */

@@ -7,6 +7,7 @@ class Camera: public Vector
 {
 public:
   Camera(float x, float y, float z, float zoom): Vector(x, y, z), zoom(zoom) {}
+  void cycle(unsigned char* keyboard);
   float zoom;
 };
 
