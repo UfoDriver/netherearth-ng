@@ -1086,56 +1086,6 @@ bool NETHER::cycle(unsigned char *keyboard)
     }
   }
 
-  /* Buildings: */
-  for (Building& b: map.buildings) {
-    if (b.type == Building::TYPE::FACTORY_ELECTRONICS ||
-        b.type == Building::TYPE::FACTORY_NUCLEAR ||
-        b.type == Building::TYPE::FACTORY_PHASERS ||
-        b.type == Building::TYPE::FACTORY_MISSILES ||
-        b.type == Building::TYPE::FACTORY_CANNONS	||
-        b.type == Building::TYPE::FACTORY_CHASSIS) {
-      int robot = ai.robotHere(b.pos + Vector(1, 0, 0));
-      if (robot == 0) {
-        b.status = 0;
-      } else {
-        if (robot == T_ROBOT) b.status++;
-        if (robot == T_EROBOT) b.status--;
-
-        if (b.status >= 12 * 12 * 12) {
-          b.owner = 1;
-          b.status = 0;
-          stats.requestRecomputing();
-        }
-        if (b.status <= -12 * 12 * 12) {
-          b.owner = 2;
-          b.status = 0;
-          stats.requestRecomputing();
-        }
-      }
-    }
-
-    if (b.type == Building::TYPE::WARBASE) {
-      int robot = ai.robotHere(b.pos + Vector(2, 0, 0));
-      if (robot == 0) {
-        b.status = 0;
-      } else {
-        if (robot == T_ROBOT) b.status++;
-        if (robot == T_EROBOT) b.status--;
-        if (b.status >= 12 * 12 * 12) {
-          b.owner = 1;
-          b.status = 0;
-          stats.requestRecomputing();
-        }
-
-        if (b.status <= -12 * 12 * 12) {
-          b.owner = 2;
-          b.status = 0;
-          stats.requestRecomputing();
-        }
-      }
-    }
-  }
-
   map.cycle();
   menu.cycle();
 

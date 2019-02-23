@@ -272,6 +272,7 @@ bool Map::cycle()
   // Particles cycling
   // Game goals checking
 
+  cycleBuildings();
   cycleBullets();
 
   explosions.erase(std::remove_if(explosions.begin(), explosions.end(),
@@ -283,6 +284,59 @@ bool Map::cycle()
                   particles.end());
 
   return true;
+}
+
+
+void Map::cycleBuildings()
+{
+  for (Building& b: buildings) {
+    if (b.type == Building::TYPE::FACTORY_ELECTRONICS ||
+        b.type == Building::TYPE::FACTORY_NUCLEAR ||
+        b.type == Building::TYPE::FACTORY_PHASERS ||
+        b.type == Building::TYPE::FACTORY_MISSILES ||
+        b.type == Building::TYPE::FACTORY_CANNONS	||
+        b.type == Building::TYPE::FACTORY_CHASSIS) {
+      int robot = nether->ai.robotHere(b.pos + Vector(1, 0, 0));
+      if (robot == 0) {
+        b.status = 0;
+      } else {
+        if (robot == T_ROBOT) b.status++;
+        if (robot == T_EROBOT) b.status--;
+
+        if (b.status >= 12 * 12 * 12) {
+          b.owner = 1;
+          b.status = 0;
+          nether->requestStatsRecomputing();
+        }
+        if (b.status <= -12 * 12 * 12) {
+          b.owner = 2;
+          b.status = 0;
+          nether->requestStatsRecomputing();
+        }
+      }
+    }
+
+    if (b.type == Building::TYPE::WARBASE) {
+      int robot = nether->ai.robotHere(b.pos + Vector(2, 0, 0));
+      if (robot == 0) {
+        b.status = 0;
+      } else {
+        if (robot == T_ROBOT) b.status++;
+        if (robot == T_EROBOT) b.status--;
+        if (b.status >= 12 * 12 * 12) {
+          b.owner = 1;
+          b.status = 0;
+          nether->requestStatsRecomputing();
+        }
+
+        if (b.status <= -12 * 12 * 12) {
+          b.owner = 2;
+          b.status = 0;
+          nether->requestStatsRecomputing();
+        }
+      }
+    }
+  }
 }
 
 

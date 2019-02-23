@@ -38,6 +38,7 @@ public:
   std::vector<Particle> particles;
   std::vector<Robot*> robots[2];
 private:
+  void cycleBuildings();
   void cycleBullets();
   void find_and_destroy_robot(Robot* robot);
   int Width;
