@@ -100,7 +100,7 @@ void Map::draw(const Vector& viewp, const bool shadows, const Vector& light, con
     }
   }
 
-  for(int i = 0; i < 2; i++) {
+  for (int i = 0; i < 2; i++) {
     for (Robot* r: robots[i]) {
       if (r->pos.y >= (viewp.y + MINY) &&
           r->pos.y <= (viewp.y + MAXY) &&
@@ -121,7 +121,7 @@ void Map::draw(const Vector& viewp, const bool shadows, const Vector& light, con
         bullet.pos.x <= (viewp.x + MAXX)) {
       glPushMatrix();
       glTranslatef(bullet.pos.x, bullet.pos.y, bullet.pos.z);
-      bullet.draw(shadows, Resources::bulletTiles, particles);
+      bullet.draw(shadows, particles);
       glPopMatrix();
     }
   }

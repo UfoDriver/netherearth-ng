@@ -171,3 +171,9 @@ std::array<int, 7> Stats::normalizeCost(int player, const std::array<int, 7>& in
   }
   return normalized;
 }
+
+
+bool Stats::noWarbasesLeft()
+{
+  return !(stats[0][0] && stats[1][0]);
+}

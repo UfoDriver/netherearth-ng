@@ -238,10 +238,10 @@ bool NETHER::cycle(unsigned char *keyboard)
           /* Back to the general menu: */
           controlled->electronics_state += 6;
           controlled->shipover = false;
-          controlled = 0;
+          controlled = nullptr;
           menu.killmenu(Menu::TYPE::ROBOT);
           menu.newmenu(Menu::TYPE::GENERAL);
-          ship->op3=Ship::OPS::UP;
+          ship->op3 = Ship::OPS::UP;
           sManager.playSelect();
           break;
         }
@@ -268,7 +268,6 @@ bool NETHER::cycle(unsigned char *keyboard)
   case Menu::TYPE::COMBATMODE:
     /* Browsing through the COMBAT MENU: */
     {
-      int i;
       StatusButton::NAME buttons[6] = {StatusButton::NAME::COMBAT1,
                                        StatusButton::NAME::COMBAT2,
                                        StatusButton::NAME::COMBAT3,
@@ -290,7 +289,7 @@ bool NETHER::cycle(unsigned char *keyboard)
       }
       if (keyboard[down_key] && !old_keyboard[down_key]) {
         int j =- 1;
-        for(int i = 0; i < 6 && j == -1; i++) {
+        for (int i = 0; i < 6 && j == -1; i++) {
           if (menu.act_button == buttons[i]) {
             j = i + 1;
             if ( j >= 6) j -= 6;
@@ -379,7 +378,6 @@ bool NETHER::cycle(unsigned char *keyboard)
   case Menu::TYPE::ORDERS:
     /* Browsing through the ORDERS MENU: */
     {
-      int i;
       StatusButton::NAME buttons[5] = {StatusButton::NAME::ORDERS1,
                                        StatusButton::NAME::ORDERS2,
                                        StatusButton::NAME::ORDERS3,
@@ -501,7 +499,6 @@ bool NETHER::cycle(unsigned char *keyboard)
   case Menu::TYPE::TARGET_DESTROY:
     /* Browsing through the SELECT TARGET FOR DESTROYING MENU: */
     {
-      int i;
       StatusButton::NAME buttons[3] = {StatusButton::NAME::TARGET1,
                                        StatusButton::NAME::TARGET2,
                                        StatusButton::NAME::TARGET3};
@@ -597,7 +594,6 @@ bool NETHER::cycle(unsigned char *keyboard)
   case Menu::TYPE::TARGET_CAPTURE:
     /* Browsing through the SELECT TARGET FOR CAPTURING MENU: */
     {
-      int i;
       StatusButton::NAME buttons[3] = {StatusButton::NAME::TARGET1,
                                        StatusButton::NAME::TARGET2,
                                        StatusButton::NAME::TARGET3};
@@ -1093,7 +1089,7 @@ bool NETHER::cycle(unsigned char *keyboard)
     optionsScreen.open();
   }
 
-  if ((stats.stats[0][0] == 0 || stats.stats[1][0] == 0) && gameFinished == 0) {
+  if (stats.noWarbasesLeft() && gameFinished == 0) {
     gameFinished++;
     gameStarted = 0;
   }

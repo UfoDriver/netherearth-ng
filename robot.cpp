@@ -117,23 +117,21 @@ float Robot::piecez(int piece)
     break;
   }
 
-  // CANON:
-  if (pieces[0]) {
+  if (hasCannons()) {
     if (piece == 0) return z;
     z += 0.5;
   }
-  // MISSILES:
-  if (pieces[1]) {
+  if (hasMissiles()) {
     if (piece == 1) return z;
     z += 0.35;
   }
   // PHASER:
-  if (pieces[2]) {
+  if (hasPhasers()) {
     if (piece == 2) return z;
     z += 0.5;
   }
   // NUCLEAR:
-  if (pieces[3]) {
+  if (hasNuclear()) {
     if (piece == 3) return z;
     z += 0.8;
   }
@@ -145,15 +143,12 @@ float Robot::piecez(int piece)
 void Robot::draw(int owner, bool shadows, std::vector<Piece3DObject> piece_tiles[2], Vector lightposv)
 {
   Color colors[2] = {{0.9, 0.9, 0.9}, {0.4, 0.4, 0.4}};
-  float r[2] = {0.9, 0.4};
-  float g[2] = {0.9, 0.4};
-  float b[2] = {0.9, 0.4};
   float z = 0;
   float bipod_v = 0;
   Vector light;
 
-  light=lightposv;
-  light=light / light.z;
+  light = lightposv;
+  light = light / light.z;
 
   glPushMatrix();
   switch(traction) {
@@ -247,8 +242,10 @@ void Robot::draw(int owner, bool shadows, std::vector<Piece3DObject> piece_tiles
       glPushMatrix();
       glTranslatef(0,0,z);
       glRotatef(angle,0,0,1);
-      if (detaillevel>=3) piece_tiles[owner][3].draw(colors[owner]);
-      else piece_tiles[owner][3].draw_notexture(colors[owner]);
+      if (detaillevel>=3)
+        piece_tiles[owner][3].draw(colors[owner]);
+      else
+        piece_tiles[owner][3].draw_notexture(colors[owner]);
       glPopMatrix();
     } else {
       glPushMatrix();

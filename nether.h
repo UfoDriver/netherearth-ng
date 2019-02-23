@@ -91,6 +91,7 @@ public:
   Map map;
   AI ai;
   SoundManager sManager;
+  Stats stats;
 
   unsigned char old_keyboard[SDLK_LAST];
 
@@ -110,7 +111,6 @@ private:
   Camera camera;
   Vector viewp;
 
-  Stats stats;
 
   STATE gameState;
   float animationTimer;
@@ -119,7 +119,6 @@ private:
 
   Robot* controlled;
 
-  friend class ConstructionScreen;
   friend class AI;
 };
 

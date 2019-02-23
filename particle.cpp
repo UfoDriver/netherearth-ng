@@ -22,7 +22,8 @@ void Particle::draw() const
 {
   float val2 = float(acttime) / float(lifetime);
   float val = 1 - val2;
-  float sz = val * size1 + val2 * size2;
+  float size = val * size1 + val2 * size2;
+  float alpha = val * a1 + val2 * a2;
 
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
@@ -30,33 +31,34 @@ void Particle::draw() const
   glTranslatef(pos.x, pos.y, pos.z);
   glDepthMask(GL_FALSE);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  glEnable(GL_BLEND);
+  glEnable(GL_BLEND);\
   glNormal3f(0, 0, 1);
 
   glBegin(GL_TRIANGLES);
-  glColor4f(color.red, color.green, color.blue, val * a1 + val2* a2);
-  glVertex3f(0, 0, 0);
-  glColor4f(color.red, color.green, color.blue, 0);
-  glVertex3f(sz, 0, 0);
-  glVertex3f(0, sz, 0);
 
-  glColor4f(color.red, color.green, color.blue, val * a1+val2 * a2);
+  glColor4f(color.red, color.green, color.blue, alpha);
   glVertex3f(0, 0, 0);
   glColor4f(color.red, color.green, color.blue, 0);
-  glVertex3f(0, sz, 0);
-  glVertex3f(-sz, 0, 0);
+  glVertex3f(size, 0, 0);
+  glVertex3f(0, size, 0);
 
-  glColor4f(color.red, color.green, color.blue, val * a1 + val2 * a2);
+  glColor4f(color.red, color.green, color.blue, alpha);
   glVertex3f(0, 0, 0);
   glColor4f(color.red, color.green, color.blue, 0);
-  glVertex3f(-sz, 0, 0);
-  glVertex3f(0, -sz, 0);
+  glVertex3f(0, size, 0);
+  glVertex3f(-size, 0, 0);
 
-  glColor4f(color.red, color.green, color.blue, val * a1 + val2 * a2);
+  glColor4f(color.red, color.green, color.blue, alpha);
   glVertex3f(0, 0, 0);
   glColor4f(color.red, color.green, color.blue, 0);
-  glVertex3f(0,- sz, 0);
-  glVertex3f(sz, 0, 0);
+  glVertex3f(-size, 0, 0);
+  glVertex3f(0, -size, 0);
+
+  glColor4f(color.red, color.green, color.blue, alpha);
+  glVertex3f(0, 0, 0);
+  glColor4f(color.red, color.green, color.blue, 0);
+  glVertex3f(0, -size, 0);
+  glVertex3f(size, 0, 0);
 
   glEnd();
 

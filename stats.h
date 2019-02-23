@@ -25,6 +25,7 @@ public:
   void spendRobotResources(int player, const Robot& robot);
   std::array<int, 7> calculateCost(const Robot& robot);
   std::array<int, 7> normalizeCost(int player, const std::array<int, 7>& invoice);
+  bool noWarbasesLeft();
 
   int day;
   int hour;

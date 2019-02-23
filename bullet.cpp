@@ -91,8 +91,7 @@ void Bullet::computeCMC(std::vector<Piece3DObject>& bulletTiles)
 }
 
 
-void Bullet::draw(bool shadows, std::vector<Piece3DObject>& bullet_tiles,
-                  std::vector<Particle>& particles) const
+void Bullet::draw(bool shadows, std::vector<Particle>& particles) const
 {
   switch(type) {
   case TYPE::CANNONS:
@@ -100,9 +99,9 @@ void Bullet::draw(bool shadows, std::vector<Piece3DObject>& bullet_tiles,
       glPushMatrix();
       glRotatef(angle, 0, 0, 1);
       glTranslatef(0, 0.2, 0);
-      bullet_tiles[0].draw(Color(0.2f, 0.2f, 0.2f));
+      Resources::bulletTiles[0].draw(Color(0.2f, 0.2f, 0.2f));
       glTranslatef(0, -0.4, 0);
-      bullet_tiles[0].draw(Color(0.2f, 0.2f, 0.2f));
+      Resources::bulletTiles[0].draw(Color(0.2f, 0.2f, 0.2f));
       glPopMatrix();
     }
     break;
@@ -112,9 +111,9 @@ void Bullet::draw(bool shadows, std::vector<Piece3DObject>& bullet_tiles,
       glRotatef(angle, 0, 0, 1);
       glRotatef(180, 0, 0, 1);
       glTranslatef(0, 0.33, 0);
-      bullet_tiles[1].draw(Color(0.8f, 0.8f, 0.8f));
+      Resources::bulletTiles[1].draw(Color(0.8f, 0.8f, 0.8f));
       glTranslatef(0, -0.66, 0);
-      bullet_tiles[1].draw(Color(0.8f, 0.8f, 0.8f));
+      Resources::bulletTiles[1].draw(Color(0.8f, 0.8f, 0.8f));
       glPopMatrix();
       if (detaillevel >= 4) {
         drawParticles(particles);
@@ -128,9 +127,9 @@ void Bullet::draw(bool shadows, std::vector<Piece3DObject>& bullet_tiles,
       glRotatef(90,0,0,1);
 
       if ((rand() % 4) !=0)
-        bullet_tiles[2].draw_notexture(Color(1.0f, 0.5f, 1.0f, 0.9f));
+        Resources::bulletTiles[2].draw_notexture(Color(1.0f, 0.5f, 1.0f, 0.9f));
       else
-        bullet_tiles[2].draw_notexture(Color(1.0f, 1.0f, 1.0f, 0.5f));
+        Resources::bulletTiles[2].draw_notexture(Color(1.0f, 1.0f, 1.0f, 0.5f));
 
       glPopMatrix();
     }
@@ -156,9 +155,10 @@ void Bullet::drawParticles(std::vector<Particle>& particles) const
       pos.x -= 0.25;
       pos.y += ((rand() % 2) == 0 ? -0.33 : 0.33);
       break;
-    case 90 : sp1 = Vector(float(rand() % 9 - 4) / 200.0, -0.05, 0);
+    case 90:
+      sp1 = Vector(float(rand() % 9 - 4) / 200.0, -0.05, 0);
       pos.y -= 0.25;
-      pos.x+=((rand() % 2) == 0 ? -0.33 : 0.33);
+      pos.x += ((rand() % 2) == 0 ? -0.33 : 0.33);
       break;
     case 180:
       sp1 = Vector(0.05, float(rand() % 9 - 4) / 200.0, 0);
