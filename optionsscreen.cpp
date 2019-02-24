@@ -144,7 +144,7 @@ bool OptionsScreen::cycle(unsigned char *keyboard)
 {
   switch (nether->getGameState()) {
   case NETHER::STATE::PAUSE:
-    if (keyboard[fire_key] && !nether->old_keyboard[fire_key]) {
+    if (keyboard[fire_key] > 1) {
       switch(selectedOption) {
       case 0:
         nether->setGameState(NETHER::STATE::PLAYING);
@@ -163,19 +163,19 @@ bool OptionsScreen::cycle(unsigned char *keyboard)
       }
     }
 
-    if (keyboard[down_key] && !nether->old_keyboard[down_key]) {
+    if (keyboard[down_key] > 1) {
       selectedOption++;
       if (selectedOption >= 4) selectedOption = 0;
     }
 
-    if (keyboard[up_key] && !nether->old_keyboard[up_key]) {
+    if (keyboard[up_key] > 1) {
       selectedOption--;
       if (selectedOption < 0) selectedOption = 3;
     }
     break;
 
   case NETHER::STATE::SAVINGGAME:
-    if (keyboard[fire_key] && !nether->old_keyboard[fire_key]) {
+    if (keyboard[fire_key] > 1) {
       switch(selectedOption) {
       case 0:
         nether->setGameState(NETHER::STATE::PAUSE);
@@ -198,19 +198,19 @@ bool OptionsScreen::cycle(unsigned char *keyboard)
       }
     }
 
-    if (keyboard[down_key] && !nether->old_keyboard[down_key]) {
+    if (keyboard[down_key] > 1) {
       selectedOption++;
       if (selectedOption >= 5) selectedOption = 0;
     }
 
-    if (keyboard[up_key] && !nether->old_keyboard[up_key]) {
+    if (keyboard[up_key] > 1) {
       selectedOption--;
       if (selectedOption < 0) selectedOption = 4;
     }
     break;
 
   case NETHER::STATE::LOADINGGAME:
-    if (keyboard[fire_key] && !nether->old_keyboard[fire_key]) {
+    if (keyboard[fire_key] > 1) {
       switch (selectedOption) {
       case 0:
         nether->setGameState(NETHER::STATE::PAUSE);
@@ -234,12 +234,12 @@ bool OptionsScreen::cycle(unsigned char *keyboard)
       }
     }
 
-    if (keyboard[down_key] && !nether->old_keyboard[down_key]) {
+    if (keyboard[down_key] > 1) {
       selectedOption++;
       if (selectedOption >= 5) selectedOption=0;
     }
 
-    if (keyboard[up_key] && !nether->old_keyboard[up_key]) {
+    if (keyboard[up_key] > 1) {
       selectedOption--;
       if (selectedOption < 0) selectedOption = 4;
     }

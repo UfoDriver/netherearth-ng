@@ -93,9 +93,8 @@ public:
   SoundManager sManager;
   Stats stats;
 
-  unsigned char old_keyboard[SDLK_LAST];
-
 private:
+  unsigned char prevKeyboard[SDLK_LAST];
   bool cycle(unsigned char *keyboard);
   void draw(int w, int h);
   void drawGame(bool shadows);

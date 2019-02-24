@@ -27,31 +27,31 @@ ConstructionScreen::MENU operator--(ConstructionScreen::MENU &m, int) {
 
 bool ConstructionScreen::cycle(unsigned char *keyboard)
 {
-  if (menuPointer == MENU::START && keyboard[right_key] && !nether->old_keyboard[right_key])
+  if (menuPointer == MENU::START && keyboard[right_key] > 1)
     menuPointer = MENU::BIPOD;
-  if (menuPointer == MENU::EXIT && keyboard[right_key] && !nether->old_keyboard[right_key])
+  if (menuPointer == MENU::EXIT && keyboard[right_key] > 1)
     menuPointer = MENU::START;
-  if (menuPointer == MENU::START && keyboard[left_key] && !nether->old_keyboard[left_key])
+  if (menuPointer == MENU::START && keyboard[left_key] > 1)
     menuPointer = MENU::EXIT;
-  if (menuPointer >= MENU::BIPOD && keyboard[left_key] && !nether->old_keyboard[left_key])
+  if (menuPointer >= MENU::BIPOD && keyboard[left_key] > 1)
     menuPointer = MENU::START;
 
-  if (menuPointer >= MENU::BIPOD && menuPointer < MENU::ELECTRONICS &&
-      keyboard[up_key] && !nether->old_keyboard[up_key]) menuPointer++;
-  if (menuPointer > MENU::BIPOD && menuPointer <= MENU::ELECTRONICS &&
-      keyboard[down_key] && !nether->old_keyboard[down_key]) menuPointer--;
+  if (menuPointer >= MENU::BIPOD && menuPointer < MENU::ELECTRONICS && keyboard[up_key] > 1)
+    menuPointer++;
+  if (menuPointer > MENU::BIPOD && menuPointer <= MENU::ELECTRONICS && keyboard[down_key] > 1)
+    menuPointer--;
 
-  if (menuPointer >= MENU::BIPOD && keyboard[fire_key] && !nether->old_keyboard[fire_key]) {
+  if (menuPointer >= MENU::BIPOD && keyboard[fire_key] > 1) {
     constructRobot();
   }
 
-  if (menuPointer == MENU::EXIT && keyboard[fire_key] && !nether->old_keyboard[fire_key]) {
+  if (menuPointer == MENU::EXIT && keyboard[fire_key] > 1) {
     delete staple;
     nether->setGameState(NETHER::STATE::PLAYING);
     nether->getShip()->pos.z = 2.0;
   }
 
-  if (menuPointer == MENU::START && keyboard[fire_key] && !nether->old_keyboard[fire_key]) {
+  if (menuPointer == MENU::START && keyboard[fire_key] > 1) {
     buildRobot();
   }
 

@@ -168,7 +168,7 @@ bool NETHER::cycle(unsigned char *keyboard)
                                        StatusButton::NAME::ROBOT4};
       StatusButton *b;
 
-      if (keyboard[up_key] && !old_keyboard[up_key]) {
+      if (keyboard[up_key] > 1) {
         int j =- 1;
         for (int i = 0; i < 4 && j == -1; i++) {
           if (menu.act_button == buttons[i]) {
@@ -179,7 +179,7 @@ bool NETHER::cycle(unsigned char *keyboard)
         }
         menu.needsRedraw = 2;
       }
-      if (keyboard[down_key] && !old_keyboard[down_key]) {
+      if (keyboard[down_key] > 1) {
         int j = -1;
         for(int i = 0; i < 4 && j == -1; i++) {
           if (menu.act_button == buttons[i]) {
@@ -206,7 +206,7 @@ bool NETHER::cycle(unsigned char *keyboard)
         b->b = 1.0f;
       }
 
-      if (keyboard[fire_key] && !old_keyboard[fire_key]) {
+      if (keyboard[fire_key] > 1) {
         switch (menu.act_button) {
         case StatusButton::NAME::ROBOT1:
           {
@@ -251,7 +251,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 
   case Menu::TYPE::DIRECTCONTROL:
     /* Direct control of a robot by the user: */
-    if (keyboard[fire_key] && !old_keyboard[fire_key]) {
+    if (keyboard[fire_key] > 1) {
       menu.needsRedraw = 2;
       menu.act_menu=Menu::TYPE::ROBOT;
     }
@@ -259,7 +259,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 
   case Menu::TYPE::DIRECTCONTROL2:
     /* Direct control of a robot by the user: */
-    if (keyboard[fire_key] && !old_keyboard[fire_key]) {
+    if (keyboard[fire_key] > 1) {
       menu.needsRedraw = 2;
       menu.act_menu=Menu::TYPE::COMBATMODE;
     }
@@ -276,7 +276,7 @@ bool NETHER::cycle(unsigned char *keyboard)
                                        StatusButton::NAME::COMBAT6};
       StatusButton *b;
 
-      if (keyboard[up_key] && !old_keyboard[up_key]) {
+      if (keyboard[up_key] > 1) {
         int j=-1;
         for (int i = 0; i < 6 && j == -1; i++) {
           if (menu.act_button == buttons[i]) {
@@ -287,7 +287,7 @@ bool NETHER::cycle(unsigned char *keyboard)
         }
         menu.needsRedraw = 2;
       }
-      if (keyboard[down_key] && !old_keyboard[down_key]) {
+      if (keyboard[down_key] > 1) {
         int j =- 1;
         for (int i = 0; i < 6 && j == -1; i++) {
           if (menu.act_button == buttons[i]) {
@@ -314,7 +314,7 @@ bool NETHER::cycle(unsigned char *keyboard)
         b->b = 1.0f;
       }
 
-      if (keyboard[fire_key] && !old_keyboard[fire_key]) {
+      if (keyboard[fire_key] > 1) {
         switch(menu.act_button) {
         case StatusButton::NAME::COMBAT1:
           /* Fire Nuclear: */
@@ -385,7 +385,7 @@ bool NETHER::cycle(unsigned char *keyboard)
                                        StatusButton::NAME::ORDERS5};
       StatusButton *b;
 
-      if (keyboard[up_key] && !old_keyboard[up_key]) {
+      if (keyboard[up_key] > 1) {
         int j =- 1;
         for (int i = 0; i < 5 && j == -1; i++) {
           if (menu.act_button == buttons[i]) {
@@ -396,7 +396,7 @@ bool NETHER::cycle(unsigned char *keyboard)
         }
         menu.needsRedraw = 2;
       }
-      if (keyboard[down_key] && !old_keyboard[down_key]) {
+      if (keyboard[down_key] > 1) {
         int j = -1;
         for (int i = 0; i < 5 && j == -1; i++) {
           if (menu.act_button == buttons[i]) {
@@ -423,7 +423,7 @@ bool NETHER::cycle(unsigned char *keyboard)
         b->b = 1.0f;
       }
 
-      if (keyboard[fire_key] && !old_keyboard[fire_key]) {
+      if (keyboard[fire_key]  > 1) {
         switch (menu.act_button) {
         case StatusButton::NAME::ORDERS1:
           /* STOP & DEFEND: */
@@ -470,14 +470,14 @@ bool NETHER::cycle(unsigned char *keyboard)
 
   case Menu::TYPE::SELECTDISTANCE:
     {
-      if (keyboard[up_key] && !old_keyboard[up_key]) {
+      if (keyboard[up_key] > 1) {
         controlled->program_parameter.as_int += 10;
         if (controlled->program_parameter.as_int > 190)
           controlled->program_parameter.as_int = 190;
         controlled->program_goal = Vector(-1, -1, -1);
         menu.needsRedraw = 2;
       }
-      if (keyboard[down_key] && !old_keyboard[down_key]) {
+      if (keyboard[down_key] > 1) {
         controlled->program_parameter.as_int -= 10;
         if (controlled->program_parameter.as_int < 0)
           controlled->program_parameter.as_int = 0;
@@ -485,7 +485,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 
         menu.needsRedraw=2;
       }
-      if (keyboard[fire_key] && !old_keyboard[fire_key]) {
+      if (keyboard[fire_key] > 1) {
         if (controlled->program_parameter.as_int == 0)
           controlled->program = Robot::PROGRAM_STOPDEFEND;
         controlled->program_goal = Vector(-1, -1, -1);
@@ -504,7 +504,7 @@ bool NETHER::cycle(unsigned char *keyboard)
                                        StatusButton::NAME::TARGET3};
       StatusButton *b;
 
-      if (keyboard[up_key] && !old_keyboard[up_key]) {
+      if (keyboard[up_key] > 1) {
         int j =- 1;
         for (int i = 0; i < 3 && j == -1; i++) {
           if (menu.act_button == buttons[i]) {
@@ -515,7 +515,7 @@ bool NETHER::cycle(unsigned char *keyboard)
         }
         menu.needsRedraw = 2;
       }
-      if (keyboard[down_key] && !old_keyboard[down_key]) {
+      if (keyboard[down_key] > 1) {
         int j =- 1;
         for (int i = 0; i < 3 && j == - 1; i++) {
           if (menu.act_button == buttons[i]) {
@@ -543,7 +543,7 @@ bool NETHER::cycle(unsigned char *keyboard)
         b->b = 1.0f;
       }
 
-      if (keyboard[fire_key] && !old_keyboard[fire_key]) {
+      if (keyboard[fire_key] > 1) {
         switch(menu.act_button) {
         case StatusButton::NAME::TARGET1:
           if (controlled->pieces[0] ||
@@ -599,7 +599,7 @@ bool NETHER::cycle(unsigned char *keyboard)
                                        StatusButton::NAME::TARGET3};
       StatusButton *b;
 
-      if (keyboard[up_key] && !old_keyboard[up_key]) {
+      if (keyboard[up_key] > 1) {
         int j =- 1;
         for (int i = 0; i < 3 && j == -1; i++) {
           if (menu.act_button == buttons[i]) {
@@ -611,7 +611,7 @@ bool NETHER::cycle(unsigned char *keyboard)
         }
         menu.needsRedraw = 2;
       }
-      if (keyboard[down_key] && !old_keyboard[down_key]) {
+      if (keyboard[down_key] > 1) {
         int j = -1;
         for (int i = 0; i < 3 && j == -1; i++) {
           if (menu.act_button == buttons[i]) {
@@ -638,7 +638,7 @@ bool NETHER::cycle(unsigned char *keyboard)
         b->b = 1.0f;
       }
 
-      if (keyboard[fire_key] && !old_keyboard[fire_key]) {
+      if (keyboard[fire_key] > 1) {
         switch(menu.act_button) {
         case StatusButton::NAME::TARGET1:
           menu.replaceMenu(Menu::TYPE::TARGET_CAPTURE, Menu::TYPE::ROBOT,
@@ -796,7 +796,8 @@ bool NETHER::cycle(unsigned char *keyboard)
           /* BIPOD ANIMATION: */
           if (r->traction == 0) {
             r->chassis_state += int(speed / 0.00390625);
-            if (r->chassis_state > 64) r->chassis_state =- 63;
+            if (r->chassis_state > 64)
+              r->chassis_state =- 63;
           }
 
           /* TRACKS PARTICLES: */
@@ -1085,7 +1086,7 @@ bool NETHER::cycle(unsigned char *keyboard)
   map.cycle();
   menu.cycle();
 
-  if (gameState == NETHER::STATE::PLAYING && keyboard[pause_key] && !old_keyboard[pause_key]) {
+  if (gameState == NETHER::STATE::PLAYING && keyboard[pause_key] > 1) {
     optionsScreen.open();
   }
 

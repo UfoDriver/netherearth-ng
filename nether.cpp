@@ -95,7 +95,15 @@ bool NETHER::gamecycle()
   bool retval = true;
 
   SDL_PumpEvents();
-  unsigned char* keyboard = SDL_GetKeyState(NULL);
+  unsigned char* sdlKeyboard = SDL_GetKeyState(NULL);
+  unsigned char keyboard[SDLK_LAST];
+
+  for (int i = 0; i < SDLK_LAST; i++) {
+    keyboard[i] = sdlKeyboard[i];
+    if (sdlKeyboard[i] && !prevKeyboard[i]) {
+      keyboard[i] |= 2;
+    }
+  }
 
   switch(gameState) {
   case NETHER::STATE::PLAYING:
@@ -112,7 +120,7 @@ bool NETHER::gamecycle()
   }
 
   for (int i = 0; i < SDLK_LAST; i++)
-    old_keyboard[i] = keyboard[i];
+    prevKeyboard[i] = sdlKeyboard[i];
 
   return retval;
 }
