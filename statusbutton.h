@@ -35,11 +35,17 @@ public:
     ID(ID), x(x), y(y), sx(sx), sy(sy), text1(text1), text2(text2), r(r), g(g), b(b), status(status)
   {}
 
+  bool isInteractive()
+  {
+    return ID != NAME::TIME && ID != NAME::STATUS and ID != NAME::RESOURCE;
+  }
+
   NAME ID;
   int x, y;
   int sx, sy;
   std::string text1;
   std::string text2;
+  // @TODO: change to color class
   float r, g, b;
   int status;
 };

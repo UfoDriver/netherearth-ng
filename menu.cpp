@@ -23,6 +23,7 @@
 #include "menu.h"
 #include "nether.h"
 
+extern int up_key, down_key, left_key, right_key, fire_key, pause_key;
 
 const char* BUILDINGLABELS[] = {"%i WARBASES %i",
                                 "%i ELECTR'S %i",
@@ -404,7 +405,7 @@ void Menu::newmenu(TYPE menu)
     act_menu=TYPE::TARGET_CAPTURE;
     break;
   }
-  needsRedraw = true;
+  needsRedraw = 2;
 }
 
 
@@ -477,7 +478,7 @@ void Menu::killmenu(TYPE menu)
     killbutton(StatusButton::NAME::TARGET3);
     break;
   }
-  needsRedraw = true;
+  needsRedraw = 2;
 }
 
 
@@ -485,7 +486,7 @@ void Menu::newbutton(StatusButton::NAME ID, int x, int y, int sx, int sy,
                      const std::string& t1, const std::string& t2, float r, float g, float b)
 {
   buttons.push_back(new StatusButton(ID, x, y, sx, sy, t1, t2, r, g, b, -16));
-  needsRedraw = true;
+  needsRedraw = 2;
 }
 
 
@@ -493,7 +494,7 @@ void Menu::newbuttondelayed(StatusButton::NAME ID, int x, int y, int sx, int sy,
                             const std::string& t1, const std::string& t2, float r, float g, float b)
 {
   buttons.push_back(new StatusButton(ID, x, y, sx, sy, t1, t2, r, g, b, -32));
-  needsRedraw = true;
+  needsRedraw = 2;
 }
 
 
@@ -501,7 +502,7 @@ void Menu::killbutton(StatusButton::NAME ID)
 {
   std::for_each(std::cbegin(buttons), std::cend(buttons),
                 [ID](StatusButton* b) {if (b->ID == ID) b->status = 1; });
-  needsRedraw = true;
+  needsRedraw = 2;
 }
 
 
@@ -517,10 +518,69 @@ StatusButton* Menu::getbutton(StatusButton::NAME ID)
 }
 
 
-void Menu::replaceMenu(TYPE oldMenu, TYPE newMenu,
-                       StatusButton::NAME activeButton)
+void Menu::replaceMenu(TYPE oldMenu, TYPE newMenu, StatusButton::NAME activeButton)
 {
   killmenu(oldMenu);
   newmenu(newMenu);
   act_button = activeButton;
+}
+
+
+bool Menu::handleKeys(unsigned char* keyboard)
+{
+
+  if (keyboard[up_key] > 1 || keyboard[down_key] > 1) {
+    std::vector<StatusButton*>::iterator
+      currentButton = std::find_if(buttons.begin(), buttons.end(),
+                                   [this](StatusButton* button) {
+                                     return button->ID == act_button;
+                                   });
+    (*currentButton)->r = 0.0f;
+    (*currentButton)->g = 0.0f;
+    (*currentButton)->b = 0.8f;
+
+    // @TODO: evaluate using looped bidirectional iterator
+    if (keyboard[up_key] > 1) {
+      do {
+        if (currentButton == buttons.begin())
+          currentButton = buttons.end();
+        --currentButton;
+        if ((*currentButton)->isInteractive())
+          break;
+      } while (true);
+    }
+
+    if (keyboard[down_key] > 1) {
+      do {
+        ++currentButton;
+        if (currentButton == buttons.end())
+          currentButton = buttons.begin();
+        if ((*currentButton)->isInteractive())
+          break;
+      } while (true);
+    }
+
+    (*currentButton)->r = 0.5f;
+    (*currentButton)->g = 0.5f;
+    (*currentButton)->b = 1.0f;
+
+    act_button = (*currentButton)->ID;
+    needsRedraw = 2;
+  }
+
+  for (StatusButton* button: buttons) {
+    if (button->isInteractive()) {
+      if (button->ID == act_button) {
+        button->r = 0.5f;
+        button->g = 0.5f;
+        button->b = 1.0f;
+      } else {
+        button->r = 0.0f;
+        button->g = 0.0f;
+        button->b = 0.8f;
+      }
+    }
+  }
+
+  return keyboard[fire_key] > 1;
 }

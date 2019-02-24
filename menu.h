@@ -1,7 +1,7 @@
 #ifndef MENU_H
 #define MENU_H
 
-#include <list>
+#include <vector>
 
 #include "statusbutton.h"
 
@@ -39,6 +39,8 @@ public:
   void killbutton(StatusButton::NAME ID);
   StatusButton *getbutton(StatusButton::NAME ID);
 
+  bool handleKeys(unsigned char* keyboard);
+
   int needsRedraw;
   TYPE act_menu;
   StatusButton::NAME act_button;
@@ -47,7 +49,7 @@ private:
   void drawButtons();
   void drawStatus();
   const NETHER* nether;
-  std::list<StatusButton *> buttons;
+  std::vector<StatusButton *> buttons;
 };
 
 #endif // MENU_H

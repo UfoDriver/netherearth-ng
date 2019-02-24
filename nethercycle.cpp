@@ -162,51 +162,7 @@ bool NETHER::cycle(unsigned char *keyboard)
   case Menu::TYPE::ROBOT:
     /* Browsing through the ROBOT MENU: */
     {
-      StatusButton::NAME buttons[4] = {StatusButton::NAME::ROBOT1,
-                                       StatusButton::NAME::ROBOT2,
-                                       StatusButton::NAME::ROBOT3,
-                                       StatusButton::NAME::ROBOT4};
-      StatusButton *b;
-
-      if (keyboard[up_key] > 1) {
-        int j =- 1;
-        for (int i = 0; i < 4 && j == -1; i++) {
-          if (menu.act_button == buttons[i]) {
-            j = i - 1;
-            if (j < 0) j += 4;
-            menu.act_button = buttons[j];
-          }
-        }
-        menu.needsRedraw = 2;
-      }
-      if (keyboard[down_key] > 1) {
-        int j = -1;
-        for(int i = 0; i < 4 && j == -1; i++) {
-          if (menu.act_button == buttons[i]) {
-            j = i + 1;
-            if (j >= 4) j -= 4;
-            menu.act_button=buttons[j];
-          }
-        }
-        menu.needsRedraw = 2;
-      }
-
-      for (int i = 0; i < 4; i++) {
-        b=menu.getbutton(buttons[i]);
-        if (b != 0) {
-          b->r = 0.0f;
-          b->g = 0.0f;
-          b->b = 0.8f;
-        }
-      }
-      b=menu.getbutton(menu.act_button);
-      if (b != 0) {
-        b->r = 0.5f;
-        b->g = 0.5f;
-        b->b = 1.0f;
-      }
-
-      if (keyboard[fire_key] > 1) {
+      if (menu.handleKeys(keyboard)) {
         switch (menu.act_button) {
         case StatusButton::NAME::ROBOT1:
           {
@@ -268,53 +224,7 @@ bool NETHER::cycle(unsigned char *keyboard)
   case Menu::TYPE::COMBATMODE:
     /* Browsing through the COMBAT MENU: */
     {
-      StatusButton::NAME buttons[6] = {StatusButton::NAME::COMBAT1,
-                                       StatusButton::NAME::COMBAT2,
-                                       StatusButton::NAME::COMBAT3,
-                                       StatusButton::NAME::COMBAT4,
-                                       StatusButton::NAME::COMBAT5,
-                                       StatusButton::NAME::COMBAT6};
-      StatusButton *b;
-
-      if (keyboard[up_key] > 1) {
-        int j=-1;
-        for (int i = 0; i < 6 && j == -1; i++) {
-          if (menu.act_button == buttons[i]) {
-            j = i - 1;
-            if (j < 0) j += 6;
-            menu.act_button=buttons[j];
-          }
-        }
-        menu.needsRedraw = 2;
-      }
-      if (keyboard[down_key] > 1) {
-        int j =- 1;
-        for (int i = 0; i < 6 && j == -1; i++) {
-          if (menu.act_button == buttons[i]) {
-            j = i + 1;
-            if ( j >= 6) j -= 6;
-            menu.act_button=buttons[j];
-          }
-        }
-        menu.needsRedraw = 2;
-      }
-
-      for (int i = 0; i  < 6; i++) {
-        b = menu.getbutton(buttons[i]);
-        if (b != 0) {
-          b->r = 0.0f;
-          b->g = 0.0f;
-          b->b = 0.8f;
-        }
-      }
-      b = menu.getbutton(menu.act_button);
-      if (b != 0) {
-        b->r = 0.5f;
-        b->g = 0.5f;
-        b->b = 1.0f;
-      }
-
-      if (keyboard[fire_key] > 1) {
+      if (menu.handleKeys(keyboard)) {
         switch(menu.act_button) {
         case StatusButton::NAME::COMBAT1:
           /* Fire Nuclear: */
@@ -378,52 +288,7 @@ bool NETHER::cycle(unsigned char *keyboard)
   case Menu::TYPE::ORDERS:
     /* Browsing through the ORDERS MENU: */
     {
-      StatusButton::NAME buttons[5] = {StatusButton::NAME::ORDERS1,
-                                       StatusButton::NAME::ORDERS2,
-                                       StatusButton::NAME::ORDERS3,
-                                       StatusButton::NAME::ORDERS4,
-                                       StatusButton::NAME::ORDERS5};
-      StatusButton *b;
-
-      if (keyboard[up_key] > 1) {
-        int j =- 1;
-        for (int i = 0; i < 5 && j == -1; i++) {
-          if (menu.act_button == buttons[i]) {
-            j = i - 1;
-            if (j < 0) j += 5;
-            menu.act_button = buttons[j];
-          }
-        }
-        menu.needsRedraw = 2;
-      }
-      if (keyboard[down_key] > 1) {
-        int j = -1;
-        for (int i = 0; i < 5 && j == -1; i++) {
-          if (menu.act_button == buttons[i]) {
-            j = i + 1;
-            if (j >= 5) j -= 5;
-            menu.act_button=buttons[j];
-          }
-        }
-        menu.needsRedraw = 2;
-      }
-
-      for (int i = 0; i < 5; i++) {
-        b = menu.getbutton(buttons[i]);
-        if (b != 0) {
-          b->r = 0.0f;
-          b->g = 0.0f;
-          b->b = 0.8f;
-        }
-      }
-      b = menu.getbutton(menu.act_button);
-      if (b != 0) {
-        b->r = 0.5f;
-        b->g = 0.5f;
-        b->b = 1.0f;
-      }
-
-      if (keyboard[fire_key]  > 1) {
+      if (menu.handleKeys(keyboard)) {
         switch (menu.act_button) {
         case StatusButton::NAME::ORDERS1:
           /* STOP & DEFEND: */
@@ -499,51 +364,7 @@ bool NETHER::cycle(unsigned char *keyboard)
   case Menu::TYPE::TARGET_DESTROY:
     /* Browsing through the SELECT TARGET FOR DESTROYING MENU: */
     {
-      StatusButton::NAME buttons[3] = {StatusButton::NAME::TARGET1,
-                                       StatusButton::NAME::TARGET2,
-                                       StatusButton::NAME::TARGET3};
-      StatusButton *b;
-
-      if (keyboard[up_key] > 1) {
-        int j =- 1;
-        for (int i = 0; i < 3 && j == -1; i++) {
-          if (menu.act_button == buttons[i]) {
-            j = i - 1;
-            if (j < 0) j += 3;
-            menu.act_button = buttons[j];
-          }
-        }
-        menu.needsRedraw = 2;
-      }
-      if (keyboard[down_key] > 1) {
-        int j =- 1;
-        for (int i = 0; i < 3 && j == - 1; i++) {
-          if (menu.act_button == buttons[i]) {
-            j = i + 1;
-            if (j >= 3)
-              j -= 3;
-            menu.act_button = buttons[j];
-          }
-        }
-        menu.needsRedraw = 2;
-      }
-
-      for (int i = 0; i < 3; i++) {
-        b = menu.getbutton(buttons[i]);
-        if (b != 0) {
-          b->r = 0.0f;
-          b->g = 0.0f;
-          b->b = 0.8f;
-        }
-      }
-      b = menu.getbutton(menu.act_button);
-      if (b != 0) {
-        b->r = 0.5f;
-        b->g = 0.5f;
-        b->b = 1.0f;
-      }
-
-      if (keyboard[fire_key] > 1) {
+      if (menu.handleKeys(keyboard)) {
         switch(menu.act_button) {
         case StatusButton::NAME::TARGET1:
           if (controlled->pieces[0] ||
@@ -594,51 +415,7 @@ bool NETHER::cycle(unsigned char *keyboard)
   case Menu::TYPE::TARGET_CAPTURE:
     /* Browsing through the SELECT TARGET FOR CAPTURING MENU: */
     {
-      StatusButton::NAME buttons[3] = {StatusButton::NAME::TARGET1,
-                                       StatusButton::NAME::TARGET2,
-                                       StatusButton::NAME::TARGET3};
-      StatusButton *b;
-
-      if (keyboard[up_key] > 1) {
-        int j =- 1;
-        for (int i = 0; i < 3 && j == -1; i++) {
-          if (menu.act_button == buttons[i]) {
-            j = i - 1;
-            if (j < 0)
-              j += 3;
-            menu.act_button = buttons[j];
-          }
-        }
-        menu.needsRedraw = 2;
-      }
-      if (keyboard[down_key] > 1) {
-        int j = -1;
-        for (int i = 0; i < 3 && j == -1; i++) {
-          if (menu.act_button == buttons[i]) {
-            j = i + 1;
-            if (j >= 3) j -= 3;
-            menu.act_button = buttons[j];
-          }
-        }
-        menu.needsRedraw = 2;
-      }
-
-      for (int i = 0; i < 3; i++) {
-        b = menu.getbutton(buttons[i]);
-        if (b != 0) {
-          b->r = 0.0f;
-          b->g = 0.0f;
-          b->b = 0.8f;
-        }
-      }
-      b = menu.getbutton(menu.act_button);
-      if (b != 0) {
-        b->r = 0.5f;
-        b->g = 0.5f;
-        b->b = 1.0f;
-      }
-
-      if (keyboard[fire_key] > 1) {
+      if (menu.handleKeys(keyboard)) {
         switch(menu.act_button) {
         case StatusButton::NAME::TARGET1:
           menu.replaceMenu(Menu::TYPE::TARGET_CAPTURE, Menu::TYPE::ROBOT,
