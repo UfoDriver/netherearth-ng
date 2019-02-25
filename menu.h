@@ -33,9 +33,9 @@ public:
   void killmenu(TYPE menu);
 
   void newbutton(StatusButton::NAME ID, int x, int y, int sx, int sy,
-                 const std::string& t1, const std::string& t2, float r, float g, float b);
+                 const std::string& t1, const std::string& t2, const Color& color);
   void newbuttondelayed(StatusButton::NAME ID, int x, int y, int sx, int sy,
-                        const std::string& t1, const std::string& t2, float r, float g, float b);
+                        const std::string& t1, const std::string& t2, const Color& color);
   void killbutton(StatusButton::NAME ID);
   StatusButton *getbutton(StatusButton::NAME ID);
 

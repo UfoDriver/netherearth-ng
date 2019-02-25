@@ -2,6 +2,7 @@
 #define STATUSBUTTON_H
 
 #include <string>
+#include "color.h"
 
 
 class StatusButton {
@@ -31,8 +32,8 @@ public:
                    TARGET3};
 
   StatusButton(NAME ID, int x, int y, int sx, int sy, const std::string& text1,
-               const std::string& text2, float r, float g, float b, int status):
-    ID(ID), x(x), y(y), sx(sx), sy(sy), text1(text1), text2(text2), r(r), g(g), b(b), status(status)
+               const std::string& text2, const Color& color, int status):
+    ID(ID), x(x), y(y), sx(sx), sy(sy), text1(text1), text2(text2), color{color}, status(status)
   {}
 
   bool isInteractive()
@@ -45,8 +46,7 @@ public:
   int sx, sy;
   std::string text1;
   std::string text2;
-  // @TODO: change to color class
-  float r, g, b;
+  Color color;
   int status;
 };
 

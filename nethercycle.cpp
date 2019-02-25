@@ -168,9 +168,7 @@ bool NETHER::cycle(unsigned char *keyboard)
           {
             StatusButton *b = menu.getbutton(menu.act_button);
             if (b != 0) {
-              b->r = 1.0f;
-              b->g = 0.5f;
-              b->b = 0.5f;
+              b->color = Color(1.0f, 0.5f, 0.5f);
             }
 
             menu.act_menu = Menu::TYPE::DIRECTCONTROL;
@@ -266,9 +264,7 @@ bool NETHER::cycle(unsigned char *keyboard)
           {
             StatusButton *b = menu.getbutton(menu.act_button);
             if (b != 0) {
-              b->r = 1.0f;
-              b->g = 0.5f;
-              b->b = 0.5f;
+              b->color = Color(1.0f, 0.5f, 0.5f);
             }
 
             menu.act_menu = Menu::TYPE::DIRECTCONTROL2;
