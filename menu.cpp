@@ -2,10 +2,12 @@
 #include "windows.h"
 #endif
 
-#include "stdio.h"
-#include <iostream>
 #include <algorithm>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
 
+#include "stdio.h"
 #include "GL/gl.h"
 #include "GL/glu.h"
 #include "SDL/SDL.h"
@@ -287,12 +289,10 @@ void Menu::drawStatus()
 
 void Menu::drawButtons()
 {
-  float angle, cf;
-
   for (StatusButton* b: buttons) {
     if (b->status >= -16) {
-      angle=(float(b->status) * 90.0) / 16.0;
-      cf=float((16 - abs(b->status))) / 16.0;
+      float angle = (float(b->status) * 90.0) / 16.0;
+      float cf = float((16 - abs(b->status))) / 16.0;
       glPushMatrix();
       glTranslatef(b->x, b->y, 0);
       glRotatef(angle, 0, 1, 0);
@@ -574,4 +574,19 @@ bool Menu::handleKeys(unsigned char* keyboard)
   }
 
   return keyboard[fire_key] > 1;
+}
+
+
+void Menu::updateTime(const Stats& stats)
+{
+  StatusButton* timeb = getbutton(StatusButton::NAME::TIME);
+  if (timeb) {
+    std::ostringstream t1Formatter;
+    t1Formatter << "Day: " << stats.day;
+    timeb->text1 = t1Formatter.str();
+    std::ostringstream t2Formatter;
+    t2Formatter << "Hour: " << std::setw(2) << stats.hour << ':' << std::setw(2) << stats.minute;
+    timeb->text2 = t2Formatter.str();
+    needsRedraw = 2;
+  }
 }

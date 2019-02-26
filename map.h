@@ -26,7 +26,7 @@ public:
 
   int width() const { return Width; }
   int height() const { return Height; }
-  bool cycle();
+  bool cycle(unsigned char *keyboard);
   bool loadMap(const std::string& filename);
   float maxZ(float x[2], float y[2]) const;
   int terrain(float x, float y);
@@ -40,6 +40,7 @@ public:
 private:
   void cycleBuildings();
   void cycleBullets();
+  void cycleRobots(unsigned char *keyboard);
   void find_and_destroy_robot(Robot* robot);
   int Width;
   int Height;

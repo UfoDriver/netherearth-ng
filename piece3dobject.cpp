@@ -124,7 +124,6 @@ void Piece3DObject::computeShadow(int angle, const Vector& light, std::vector<Ve
   p.reserve(points.size());
   {
     float ppp[3], tmp[3];
-    // @TODO: use iterators
     for(const Vector& point: points) {
       ppp[0] = point.x;
       ppp[1] = point.y;

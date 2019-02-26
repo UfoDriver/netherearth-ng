@@ -7,6 +7,7 @@
 
 
 class NETHER;
+class Stats;
 
 
 class Menu
@@ -40,6 +41,7 @@ public:
   StatusButton *getbutton(StatusButton::NAME ID);
 
   bool handleKeys(unsigned char* keyboard);
+  void updateTime(const Stats& stats);
 
   int needsRedraw;
   TYPE act_menu;

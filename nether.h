@@ -83,6 +83,7 @@ public:
   float getAnimationTimer() const { return animationTimer; }
   void addNewRobot(Robot* robot, int player);
   void detachShip(Robot* robot);
+  Menu::TYPE getActiveMenu() { return menu.act_menu; }
 
   std::pair<int, int> getRobotsCount() const;
   std::array<std::pair<int, int>, 7> getBuildingStats() const;
@@ -109,7 +110,6 @@ private:
 
   Camera camera;
   Vector viewp;
-
 
   STATE gameState;
   float animationTimer;
