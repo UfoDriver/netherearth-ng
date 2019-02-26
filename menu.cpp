@@ -322,23 +322,20 @@ void Menu::drawButtons()
 
 void Menu::cycle()
 {
-  auto i = std::begin(buttons);
-  auto end = std::end(buttons);
-  while (i != end) {
-    auto b = *i;
-    if (b->status != 0) {
-      b->status++;
-      needsRedraw = 2;
-      if (b->status >= 16) {
-        delete b;
-        i = buttons.erase(i);
-      } else {
-        i++;
-      }
-    } else {
-      i++;
-    }
-  }
+  buttons.erase(std::remove_if(buttons.begin(), buttons.end(),
+                               [this](StatusButton* b) {
+                                 if (b->status) {
+                                   b->status++;
+                                   needsRedraw = 2;
+                                 }
+                                 if (b->status >= 16) {
+                                   delete b;
+                                   return true;
+                                 } else {
+                                   return false;
+                                 };
+                               }),
+    buttons.end());
 }
 
 

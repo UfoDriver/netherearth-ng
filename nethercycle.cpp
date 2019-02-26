@@ -444,8 +444,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 
   viewp.x = ship->pos.x + 0.5;
   viewp.y = ship->pos.y + 0.5;
-  viewp.z = ship->pos.z - 3 * camera.zoom;
-  if (viewp.z < 0) viewp.z = 0;
+  viewp.z = std::max(0.0f, ship->pos.z - 3 * camera.zoom);
   if (viewp.x < 3 * camera.zoom) {
     viewp.x = 3 * camera.zoom;
     if (viewp.x > map.width() - 3 * camera.zoom)
