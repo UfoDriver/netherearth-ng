@@ -160,6 +160,12 @@ void Ship::draw(const bool shadows, const Vector& light, const Map& map, const R
 }
 
 
+bool Ship::landedHere(const Vector& position) const
+{
+  return landed && pos.compare2D(position);
+}
+
+
 std::ostream& operator<<(std::ostream& out, const Ship& ship)
 {
   return out << ship.pos << ship.landed << '\n';

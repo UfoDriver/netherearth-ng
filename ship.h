@@ -24,6 +24,7 @@ public:
   Ship(const std::string& model, const std::string& texturesDir);
   bool checkCollision(const std::vector<Building>& buildings, const std::vector<Robot*> robots[2]);
   void draw(const bool shadows, const Vector& light, const Map& map, const Robot* controlled);
+  bool landedHere(const Vector& position) const;
 
   Vector pos;
   bool landed;

@@ -475,8 +475,7 @@ bool NETHER::cycle(unsigned char *keyboard)
   /* Test if the ship has landed over a Factory: */
   {
     for (const Building& b: map.buildings) {
-      if (b.type == Building::TYPE::WARBASE && b.owner == 1 &&
-          ship->pos.x == b.pos.x && ship->pos.y == b.pos.y && ship->landed) {
+      if (b.type == Building::TYPE::WARBASE && b.owner == 1 && ship->landedHere(b.pos)) {
         constructionScreen.open(b);
       }
     }
@@ -487,8 +486,7 @@ bool NETHER::cycle(unsigned char *keyboard)
       (int(ship->pos.x * 8) % 4) == 0 &&
       (int(ship->pos.y * 8) % 4) == 0) {
     for (Robot* r: map.robots[0]) {
-      if (ship->pos.x == (r->pos.x - 0.5) && ship->pos.y == (r->pos.y - 0.5) && ship->landed) {
-        /* The ship has landed over a robot: */
+      if (ship->landedHere(r->pos - Vector(0.5f, 0.5f, 0.0))) {
         r->shipover = true;
         controlled = r;
         if (controlled->op == Robot::OPERATOR::FORWARD)

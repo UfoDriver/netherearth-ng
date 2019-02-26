@@ -26,6 +26,7 @@ public:
   bool operator==(const Vector &v);
   bool operator!=(const Vector &v);
 
+  bool compare2D(const Vector& v) const;
   bool zero();
 
   double norma() const;

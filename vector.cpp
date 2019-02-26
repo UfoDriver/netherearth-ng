@@ -61,6 +61,12 @@ bool Vector::operator==(const Vector &v)
 }
 
 
+bool Vector::compare2D(const Vector& v) const
+{
+  return x == v.x && y == v.y;
+}
+
+
 bool Vector::operator!=(const Vector &v)
 {
   return x != v.x || y != v.y || z != v.z;
