@@ -46,16 +46,36 @@ CONFIG_CLEAN_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
-am_netherearth_OBJECTS = 3dobject-ase.$(OBJEXT) 3dobject.$(OBJEXT) \
+am_netherearth_OBJECTS = \
+	3dobject-ase.$(OBJEXT) \
+	3dobject.$(OBJEXT) \
+	ai.$(OBJEXT) \
 	aioperator.$(OBJEXT) \
-	bitmap.$(OBJEXT) bullet.$(OBJEXT) cmc.$(OBJEXT) \
-	construction.$(OBJEXT) enemy_ai.$(OBJEXT) glprintf.$(OBJEXT) \
-	main.$(OBJEXT) mainmenu.$(OBJEXT) map.$(OBJEXT) \
-	menu.$(OBJEXT) myglutaux.$(OBJEXT) nether.$(OBJEXT) \
-	nethercycle.$(OBJEXT) particle.$(OBJEXT) \
-	piece3dobject.$(OBJEXT) quaternion.$(OBJEXT) radar.$(OBJEXT) \
+	bitmap.$(OBJEXT) \
+	building.$(OBJEXT) \
+	bullet.$(OBJEXT) \
+	camera.$(OBJEXT) \
+	cmc.$(OBJEXT) \
+	constructionscreen.$(OBJEXT) \
+	explosion.$(OBJEXT) \
+	glprintf.$(OBJEXT) \
+	light.$(OBJEXT) \
+	main.$(OBJEXT) \
+	mainmenu.$(OBJEXT) \
+	map.$(OBJEXT) \
+	menu.$(OBJEXT) \
+	myglutaux.$(OBJEXT) \
+	nether.$(OBJEXT) \
+	optionsscreen.$(OBJEXT) \
+	particle.$(OBJEXT) \
+	piece3dobject.$(OBJEXT) \
+	ship.$(OBJEXT) \
+	stats.$(OBJEXT) \
+	quaternion.$(OBJEXT) \
+	radar.$(OBJEXT) \
+	resources.$(OBJEXT) \
 	robot.$(OBJEXT) \
-	robot_ai.$(OBJEXT) robot.$(OBJEXT) shadow3dobject.$(OBJEXT) \
+	shadow3dobject.$(OBJEXT) \
 	soundmanager.$(OBJEXT) \
 	vector.$(OBJEXT)
 netherearth_OBJECTS = $(am_netherearth_OBJECTS)
