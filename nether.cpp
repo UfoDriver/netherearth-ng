@@ -38,7 +38,6 @@ extern int shadows;
 extern bool sound;
 extern int up_key, down_key, left_key, right_key, fire_key, pause_key;
 extern int level;
-extern float MINY, MAXY, MINX, MAXX;
 extern bool show_radar;
 
 
@@ -59,12 +58,12 @@ NETHER::NETHER(const std::string& mapname): map(this), ai(this, &map), menu(this
 
   map.loadMap(mapname);
 
-  viewp.x = map.width() / 2;
-  viewp.y = 0;
   camera.x = 6;
   camera.y = -6;
   camera.z = 11;
   camera.zoom = 1;
+  camera.viewport.x = map.width() / 2;
+  camera.viewport.y = 0;
 
   gameState = NETHER::STATE::PLAYING;
   animationTimer = 0;
@@ -264,14 +263,10 @@ void NETHER::draw(int width, int height)
 
 void NETHER::drawGame(bool shadows)
 {
-  MINY =- 8 * camera.zoom;
-  MINX =- (10 + viewp.z * 4) * camera.zoom;
-  MAXY = (9 + viewp.z * 4) * camera.zoom;
-  MAXX = 8 * camera.zoom;
-
   Vector newLight(light.asVector());
   newLight = newLight / newLight.z;
-  map.draw(viewp, shadows, newLight, camera);
+  map.draw(camera, newLight, shadows);
+  camera.drawViewport();
   ship->draw(shadows, newLight, map, controlled);
 }
 
@@ -284,7 +279,7 @@ bool NETHER::saveGame(const std::string& filename)
 
   oFile << light
         << camera
-        << viewp
+        << camera.viewport
         << *ship;
 
   oFile << map.buildings.size() << '\n';
@@ -328,7 +323,7 @@ bool NETHER::loadGame(const std::string& filename)
   inFile >> map
          >> light
          >> camera
-         >> viewp
+         >> camera.viewport
          >> *ship;
 
   int length;
@@ -393,7 +388,7 @@ bool NETHER::saveDebugReport(const std::string& filename)
       << light.raw()[3] << '\n';
   log << "LIGHTPOSV: " << light.asVector();
   log << "CAMERA: " << camera;
-  log << "VIEWP: " << viewp;
+  log << "VIEWP: " << camera.viewport;
   log << "SHIPP: " << ship->pos;
   if (ship->landed)
     log << "SHIP LANDED\n";

@@ -22,7 +22,7 @@ public:
   std::vector<int> map;
 
   void resize(int const width, int const height);
-  void draw(const Vector& viewp, const bool shadows, const Vector& light, const Camera& camera);
+  void draw(const Camera& camera, const Vector& light, const bool shadows);
 
   int width() const { return Width; }
   int height() const { return Height; }

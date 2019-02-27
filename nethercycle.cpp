@@ -34,7 +34,6 @@ extern int shadows;
 extern bool sound;
 extern int up_key, down_key, left_key, right_key, fire_key, pause_key;
 extern int level;
-extern float MINY, MAXY, MINX, MAXX;
 
 
 bool NETHER::cycle(unsigned char *keyboard)
@@ -68,37 +67,32 @@ bool NETHER::cycle(unsigned char *keyboard)
       y[1] = ship->pos.y + 1.0;
       minz = map.maxZ(x, y);
 
-      if (ship->op == Ship::OPS::RIGHT)
-        if (ship->pos.x < map.width() - 1) {
+      if (ship->op == Ship::OPS::RIGHT && ship->pos.x < map.width() - 1) {
+        ship->pos.x += 0.125;
+        if (ship->timemoving >= 50 && (int(ship->pos.x * 8) % 2) == 1)
           ship->pos.x += 0.125;
-          if (ship->timemoving >= 50 && (int(ship->pos.x * 8) % 2) == 1)
-            ship->pos.x += 0.125;
-        }
-      if (ship->op == Ship::OPS::LEFT)
-        if (ship->pos.x>0) {
+      }
+      if (ship->op == Ship::OPS::LEFT && ship->pos.x > 0) {
+        ship->pos.x -= 0.125;
+        if (ship->timemoving >= 50 && (int(ship->pos.x * 8) % 2) == 1)
           ship->pos.x -= 0.125;
-          if (ship->timemoving >= 50 && (int(ship->pos.x * 8) % 2) == 1)
-            ship->pos.x -= 0.125;
-        }
-      if (ship->op2 == Ship::OPS::FORWARD)
-        if (ship->pos.y < map.height() - 1) {
+      }
+      if (ship->op2 == Ship::OPS::FORWARD && ship->pos.y < map.height() - 1) {
+        ship->pos.y += 0.125;
+        if (ship->timemoving >= 50 && (int(ship->pos.y * 8) % 2) == 1)
           ship->pos.y += 0.125;
-          if (ship->timemoving >= 50 && (int(ship->pos.y * 8) % 2) == 1)
-            ship->pos.y += 0.125;
-        }
-      if (ship->op2==Ship::OPS::BACKWARD)
-        if (ship->pos.y > 0) {
+      }
+      if (ship->op2==Ship::OPS::BACKWARD && ship->pos.y > 0) {
+        ship->pos.y -= 0.125;
+        if (ship->timemoving >= 50 && (int(ship->pos.y * 8) % 2) == 1)
           ship->pos.y -= 0.125;
-          if (ship->timemoving >= 50 && (int(ship->pos.y * 8) % 2) == 1)
-            ship->pos.y -= 0.125;
-        }
-      if (ship->op3 == Ship::OPS::UP)
-        if (ship->pos.z < 5.0)
-          ship->pos.z += 0.05;
+      }
+
+      if (ship->op3 == Ship::OPS::UP && ship->pos.z < 5.0)
+        ship->pos.z += 0.05;
       if (ship->op3 != Ship::OPS::UP && ship->pos.z > minz)
         ship->pos.z -= 0.025;
-      if (ship->pos.z < minz)
-        ship->pos.z = minz;
+      ship->pos.z = std::max(ship->pos.z, minz);
 
       if (ship->op == Ship::OPS::NONE && ship->op2 == Ship::OPS::NONE) {
         ship->timemoving = 0;
@@ -442,31 +436,7 @@ bool NETHER::cycle(unsigned char *keyboard)
     break;
   }
 
-  viewp.x = ship->pos.x + 0.5;
-  viewp.y = ship->pos.y + 0.5;
-  viewp.z = std::max(0.0f, ship->pos.z - 3 * camera.zoom);
-  if (viewp.x < 3 * camera.zoom) {
-    viewp.x = 3 * camera.zoom;
-    if (viewp.x > map.width() - 3 * camera.zoom)
-      viewp.x = map.width() / 2;
-  } else {
-    if (viewp.x > map.width() - 3 * camera.zoom) {
-      viewp.x = map.width() - 3 * camera.zoom;
-      if (viewp.x < 3 * camera.zoom)
-        viewp.x = map.width() / 2;
-    }
-  }
-  if (viewp.y < 3 * camera.zoom) {
-    viewp.y = 3 * camera.zoom;
-    if (viewp.y > map.height() - 3 * camera.zoom)
-      viewp.y = map.height() / 2;
-  } else {
-    if (viewp.y > map.height() - 3 * camera.zoom) {
-      viewp.y = map.height() - 3 * camera.zoom;
-      if (viewp.y < 3 * camera.zoom)
-        viewp.y = map.height() / 2;
-    }
-  }
+  camera.updateViewportForShip(ship->pos, map.width(), map.height());
 
   if (stats.tick(level)) {
     menu.updateTime(stats);

@@ -10,7 +10,6 @@
 #include "utils.h"
 
 extern int detaillevel;
-extern float MINY, MAXY, MINX, MAXX;
 extern int up_key, down_key, left_key, right_key, fire_key, pause_key;
 
 
@@ -30,7 +29,7 @@ void Map::resize(const int width, const int height)
 }
 
 
-void Map::draw(const Vector& viewp, const bool shadows, const Vector& light, const Camera& camera)
+void Map::draw(const Camera& camera, const Vector& light, const bool shadows)
 {
   if (explosions.size()) {
     int minstep = 128;
@@ -39,20 +38,20 @@ void Map::draw(const Vector& viewp, const bool shadows, const Vector& light, con
     }
     float r = (128 - minstep) / 256.0;
     float offs = sin(minstep) * r;
-    gluLookAt(viewp.x + camera.x * camera.zoom + offs,
-              viewp.y + camera.y * camera.zoom + offs,
-              viewp.z + camera.z * camera.zoom,
-              viewp.x + offs,
-              viewp.y + offs,
-              viewp.z,
+    gluLookAt(camera.viewport.x + camera.x * camera.zoom + offs,
+              camera.viewport.y + camera.y * camera.zoom + offs,
+              camera.viewport.z + camera.z * camera.zoom,
+              camera.viewport.x + offs,
+              camera.viewport.y + offs,
+              camera.viewport.z,
               0, 0, 1);
   } else {
-    gluLookAt(viewp.x + camera.x * camera.zoom,
-              viewp.y + camera.y * camera.zoom,
-              viewp.z + camera.z * camera.zoom,
-              viewp.x,
-              viewp.y,
-              viewp.z,
+    gluLookAt(camera.viewport.x + camera.x * camera.zoom,
+              camera.viewport.y + camera.y * camera.zoom,
+              camera.viewport.z + camera.z * camera.zoom,
+              camera.viewport.x,
+              camera.viewport.y,
+              camera.viewport.z,
               0, 0, 1);
   }
 
@@ -62,12 +61,14 @@ void Map::draw(const Vector& viewp, const bool shadows, const Vector& light, con
   if (!shadows) {
     glPushMatrix();
     for (int j = 0; j < Height; j++) {
-      if (j >= (viewp.y + MINY) &&
-          j <= (viewp.y + MAXY)) {
+      // if (j >= (camera.viewport.y + MINY) &&
+      //     j <= (camera.viewport.y + MAXY)) {
+      if (true) {
         glPushMatrix();
         for (int i = 0; i < Width; i++) {
-          if (i >= (viewp.x + MINX) &&
-              i <= (viewp.x + MAXX)) {
+          // if (i >= (camera.viewport.x + MINX) &&
+          //     i <= (camera.viewport.x + MAXX)) {
+          if (true) {
             int o = map[i + j * Width];
             if (o == 0) {
               int m[8] = {13, 15, 17, 19, 7, 23, 21, 25};
@@ -90,10 +91,11 @@ void Map::draw(const Vector& viewp, const bool shadows, const Vector& light, con
   }
 
   for (const Building& building: buildings) {
-    if (building.pos.y >= (viewp.y + MINY) &&
-        building.pos.y <= (viewp.y + MAXY) &&
-        building.pos.x >= (viewp.x + MINX) &&
-        building.pos.x <= (viewp.x + MAXX)) {
+    // if (building.pos.y >= (camera.viewport.y + MINY) &&
+    //     building.pos.y <= (camera.viewport.y + MAXY) &&
+    //     building.pos.x >= (camera.viewport.x + MINX) &&
+    //     building.pos.x <= (camera.viewport.x + MAXX)) {
+    if (camera.canSee(building.pos)) {
       glPushMatrix();
       glTranslatef(float(building.pos.x), float(building.pos.y), float(building.pos.z));
       building.draw(shadows, detaillevel, light);
@@ -103,10 +105,11 @@ void Map::draw(const Vector& viewp, const bool shadows, const Vector& light, con
 
   for (int i = 0; i < 2; i++) {
     for (Robot* r: robots[i]) {
-      if (r->pos.y >= (viewp.y + MINY) &&
-          r->pos.y <= (viewp.y + MAXY) &&
-          r->pos.x >= (viewp.x + MINX) &&
-          r->pos.x <= (viewp.x + MAXX)) {
+      // if (r->pos.y >= (camera.viewport.y + MINY) &&
+      //     r->pos.y <= (camera.viewport.y + MAXY) &&
+      //     r->pos.x >= (camera.viewport.x + MINX) &&
+      //     r->pos.x <= (camera.viewport.x + MAXX)) {
+      if (camera.canSee(r->pos)) {
         glPushMatrix();
         glTranslatef(r->pos.x, r->pos.y, r->pos.z);
         r->draw(i, shadows, Resources::pieceTiles, light);
@@ -116,10 +119,11 @@ void Map::draw(const Vector& viewp, const bool shadows, const Vector& light, con
   }
 
   for (const Bullet& bullet: bullets) {
-    if (bullet.pos.y >= (viewp.y + MINY) &&
-        bullet.pos.y <= (viewp.y + MAXY) &&
-        bullet.pos.x >= (viewp.x + MINX) &&
-        bullet.pos.x <= (viewp.x + MAXX)) {
+    // if (bullet.pos.y >= (camera.viewport.y + MINY) &&
+    //     bullet.pos.y <= (camera.viewport.y + MAXY) &&
+    //     bullet.pos.x >= (camera.viewport.x + MINX) &&
+    //     bullet.pos.x <= (camera.viewport.x + MAXX)) {
+    if (camera.canSee(bullet.pos)) {
       glPushMatrix();
       glTranslatef(bullet.pos.x, bullet.pos.y, bullet.pos.z);
       bullet.draw(shadows, particles);
@@ -162,10 +166,11 @@ void Map::draw(const Vector& viewp, const bool shadows, const Vector& light, con
 
   if (!shadows) {
     for (const Particle& particle: particles) {
-      if (particle.pos.y >= (viewp.y + MINY) &&
-          particle.pos.y <= (viewp.y + MAXY) &&
-          particle.pos.x >= (viewp.x + MINX) &&
-          particle.pos.x <= (viewp.x + MAXX))
+      // if (particle.pos.y >= (camera.viewport.y + MINY) &&
+      //     particle.pos.y <= (camera.viewport.y + MAXY) &&
+      //     particle.pos.x >= (camera.viewport.x + MINX) &&
+      //     particle.pos.x <= (camera.viewport.x + MAXX))
+      if (camera.canSee(particle.pos))
         particle.draw();
     }
   }

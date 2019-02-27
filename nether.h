@@ -109,7 +109,6 @@ private:
   Light light;
 
   Camera camera;
-  Vector viewp;
 
   STATE gameState;
   float animationTimer;

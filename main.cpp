@@ -33,9 +33,6 @@ bool show_radar = true;
 extern std::vector<std::string>::iterator mapnameIter;
 C3DObject *nethertittle = 0;
 
-/* DRAWING REGION AROUND THE SHIP: */
-float MINY = -8, MAXY = 8, MINX = -8, MAXX = 8;
-
 /* Redrawing constant: */
 const int REDRAWING_PERIOD = 20;
 
