@@ -98,12 +98,12 @@ void OptionsScreen::draw(int w, int h, const Light& light)
       glTranslatef(0, -2,0);
       char filename[80];
       sprintf(filename, "savedgame%i.txt", i);
-      FILE *fp = fopen(filename, "r");
-      if (fp == 0) {
-        scaledglprintf(0.01, 0.01, "SLOT%i - EMPTY", i + 1);
-      } else {
+
+      std::ifstream checkfile(filename);
+      if (checkfile.is_open()) {
         scaledglprintf(0.01, 0.01, "SLOT%i - GAME SAVED", i + 1);
-        fclose(fp);
+      } else {
+        scaledglprintf(0.01, 0.01, "SLOT%i - EMPTY", i + 1);
       }
     }
   }
@@ -128,12 +128,12 @@ void OptionsScreen::draw(int w, int h, const Light& light)
       glTranslatef(0, -2,0);
       char filename[80];
       sprintf(filename, "savedgame%i.txt", i);
-      FILE *fp = fopen(filename, "r");
-      if (fp == 0) {
-        scaledglprintf(0.01, 0.01, "SLOT%i - EMPTY", i + 1);
-      } else {
+
+      std::ifstream checkfile(filename);
+      if (checkfile.is_open()) {
         scaledglprintf(0.01, 0.01, "SLOT%i - GAME SAVED", i + 1);
-        fclose(fp);
+      } else {
+        scaledglprintf(0.01, 0.01, "SLOT%i - EMPTY", i + 1);
       }
     }
   }

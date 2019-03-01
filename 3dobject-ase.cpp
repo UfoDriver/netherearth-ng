@@ -135,12 +135,6 @@ bool C3DObject::loadASE(const std::string& filename, const std::string& textured
   std::ifstream iFile(filename, std::ios::binary);
   std::string buffer;
 
-  // int *facematerial=0;
-  // int **materials=0,nmaterials=0,*nsubmaterials=0;
-  // char ***material_bitmaps=0;
-  // char buffer[256];
-  // FILE *fp;
-
   if (!lookfor("MATERIAL_LIST", iFile) ||
       !lookfor("MATERIAL_COUNT", iFile)) {
     return false;
@@ -151,9 +145,7 @@ bool C3DObject::loadASE(const std::string& filename, const std::string& textured
 
   std::vector<std::vector<int>> materials;
   std::vector<int> submaterials;
-  // material_bitmaps=new char **[nmaterials];
   std::vector<std::vector<std::string>> material_bitmaps;
-  // materials=new int *[nmaterials];
   std::vector<int> nsubmaterials;
 
 
@@ -350,7 +342,6 @@ bool C3DObject::loadASE(const std::string& filename, const std::string& textured
           facematerial[i] = 0;
 
         if (materials[materialRef][facematerial[i]] == 0 &&
-            //  material_bitmaps[materialRef][facematerial[i]] != 0) {
             !material_bitmaps[materialRef][facematerial[i]].empty()) {
 
           materials[materialRef][facematerial[i]] =

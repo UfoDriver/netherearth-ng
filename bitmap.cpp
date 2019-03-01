@@ -1,52 +1,45 @@
-#include "stdio.h"
+#include <fstream>
 
 #include "bitmap.h"
 
-Bitmap::Bitmap(const std::string &file) : dx{0}, dy{0}, bitcount{24}, r{0}, g{0}, b {0}
+
+Bitmap::Bitmap(const std::string &file) : dx {0}, dy {0}, bitcount {0}, r {0}, g {0}, b {0}
 {
-  FILE *fp;
-  int i,j;
+  std::ifstream iFile(file);
+  if (iFile.bad()) return;
 
-  fp=fopen(file.c_str(),"rb");
-  if (fp==NULL) return;
+  // Tag
+  if (iFile.get() != 'B' || iFile.get() != 'M') return;
 
-  /* Tag: */
-  if (fgetc(fp)!='B' || fgetc(fp)!='M') return;
+  // Saltarse Header
+  iFile.ignore(12);
 
-  /* Saltarse Header: */
-  for(i=0;i<12;i++) fgetc(fp);
+  // Info-Header
+  iFile.ignore(4);
 
-  /* Info-Header: */
-  for(i=0;i<4;i++) fgetc(fp);
+  dx = iFile.get();
+  dx += iFile.get() << 8;
+  iFile.ignore(2);
+  dy = iFile.get();
+  dy += iFile.get() << 8;
+  iFile.ignore(2);
 
-  dx=fgetc(fp);
-  dx+=fgetc(fp)<<8;
-  fgetc(fp);
-  fgetc(fp);
-  dy=fgetc(fp);
-  dy+=fgetc(fp)<<8;
-  fgetc(fp);
-  fgetc(fp);
+  r = new unsigned char[dx * dy];
+  g = new unsigned char[dx * dy];
+  b = new unsigned char[dx * dy];
 
-  r=new unsigned char[dx*dy];
-  g=new unsigned char[dx*dy];
-  b=new unsigned char[dx*dy];
+  iFile.ignore(28);
 
-  for(i=0;i<28;i++) fgetc(fp);
-
-  for(i=dy-1;i>=0;i--) {
-    for(j=0;j<dx;j++) {
-      b[i*dx+j]=fgetc(fp);
-      g[i*dx+j]=fgetc(fp);
-      r[i*dx+j]=fgetc(fp);
+  for(int i = dy - 1; i >= 0; i--) {
+    for(int j = 0; j < dx; j++) {
+      b[i * dx + j] = iFile.get();
+      g[i * dx + j] = iFile.get();
+      r[i * dx + j] = iFile.get();
     }
-    if ((dx*3)%4!=0) {
-      for(j=0;j<(4-(dx*3)%4);j++) fgetc(fp);
+    if ((dx * 3) % 4 != 0) {
+      iFile.ignore(4 - (dx * 3) % 4);
     }
   }
-
-  fclose(fp);
-
 }
 
 

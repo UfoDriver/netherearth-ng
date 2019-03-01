@@ -122,25 +122,6 @@ bool Vector::aboutToCollide3D(const Vector& vector, float threshold) const
 }
 
 
-bool Vector::load(FILE *fp)
-{
-  float t1, t2, t3;
-
-  if (3 != fscanf(fp, "%f %f %f", &t1, &t2, &t3)) return false;
-  x = t1;
-  y = t2;
-  z = t3;
-  return true;
-}
-
-
-bool Vector::save(FILE *fp)
-{
-  fprintf(fp, "%.8f %.8f %.8f\n", float(x), float(y), float(z));
-  return true;
-}
-
-
 std::ostream& operator<<(std::ostream& out, const Vector& vector)
 {
   out << std::setw(8) << float(vector.x)

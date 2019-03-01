@@ -14,36 +14,6 @@ Quaternion::Quaternion()
 } /* Quaternion::Quaternion */ 
 
 
-Quaternion::Quaternion(FILE *fp) 
-{
-	load(fp);
-	normalize();
-} /* Quaternion::Quaternion */ 
-
-
-bool Quaternion::load(FILE *fp) 
-{
-	float t1,t2,t3,t4;
-
-	if (4!=fscanf(fp,"%f %f %f %f",&t1,&t2,&t3,&t4)) return false;
-	w=t1;
-	x=t2;
-	y=t3;
-	z=t4;
-
-
-	return true;
-} /* Quaternion::load */ 
-
-
-bool Quaternion::save(FILE *fp) 
-{
-	fprintf(fp,"%f %f %f %f\n",float(w),float(x),float(y),float(z));
-
-	return true;
-} /* Quaternion::save */ 
-
-
 void Quaternion::to_matrix(float *m) 
 {
 	m[0]=float(1-2*y*y-2*z*z);

@@ -1,16 +1,16 @@
 #ifndef __BRAIN_QUATERNION
 #define __BRAIN_QUATERNION
 
+#include "vector.h"
+
+
 class Quaternion {
 public:
 	Quaternion();
-	Quaternion(FILE *fp);
 
 	bool operator==(Quaternion &q);
 	bool operator!=(Quaternion &q);
 
-	bool load(FILE *fp);
-	bool save(FILE *fp);
 
 	void to_matrix(float *m);
 

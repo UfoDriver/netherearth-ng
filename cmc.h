@@ -1,7 +1,6 @@
 #ifndef __BRAIN_CMC
 #define __BRAIN_CMC
 
-#include <cstdio>
 #include <fstream>
 #include <vector>
 
@@ -28,9 +27,6 @@ public:
   bool collision(float *m, const CMC& other, float *m2);
 
   bool collision_simple(float *m, const CMC& other, float *m2) const;
-
-  bool load(FILE *fp);
-  bool save(FILE *fp);
 
   float x[2], y[2], z[2];
 };

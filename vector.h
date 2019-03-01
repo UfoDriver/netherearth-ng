@@ -2,16 +2,13 @@
 #define __AW_VECTOR
 
 #include <iostream>
-#include <stdio.h>
+
 
 class Vector {
 public:
-  Vector(): x(0), y(0), z(0) {};
-  Vector(double nx, double ny, double nz): x(nx), y(ny), z(nz) {};
-  Vector(const Vector &v): x(v.x), y(v.y), z(v.z) {};
-  explicit Vector(FILE *fp): x(0), y(0), z(0) {
-    load(fp);
-  }
+  Vector() : x {0}, y {0}, z {0} {};
+  Vector(double x, double y, double z) : x(x), y(y), z(z) {};
+  Vector(const Vector &v) : x{v.x}, y{v.y}, z {v.z} {};
 
   Vector operator+(const Vector &v) const;
   Vector operator-(const Vector &v) const;
@@ -26,18 +23,15 @@ public:
   bool operator==(const Vector &v);
   bool operator!=(const Vector &v);
 
-  bool compare2D(const Vector& v) const;
+  bool compare2D(const Vector &v) const;
   bool zero();
 
   double norma() const;
   double normalize();
-  Vector normal(const Vector& v) const;
+  Vector normal(const Vector &v) const;
 
-  bool aboutToCollide2D(const Vector& vector, float threshold) const;
-  bool aboutToCollide3D(const Vector& vector, float threshold) const;
-
-  bool load(FILE *fp);
-  bool save(FILE *fp);
+  bool aboutToCollide2D(const Vector &vector, float threshold) const;
+  bool aboutToCollide3D(const Vector &vector, float threshold) const;
 
   float x, y, z;
 };

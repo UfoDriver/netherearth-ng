@@ -2,20 +2,17 @@
 #include "windows.h"
 #endif
 
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/glut.h>
+
 #include <algorithm>
 #include <iomanip>
 
-#include "math.h"
-#include "stdio.h"
-#include "vector.h"
-
-#include <GL/gl.h>
-#include "GL/glu.h"
-#include "GL/glut.h"
-
-#include "myglutaux.h"
-
 #include "cmc.h"
+#include "math.h"
+#include "myglutaux.h"
+#include "vector.h"
 
 
 bool point_inside_cmc(float *cmc_p, float *p);
@@ -691,21 +688,6 @@ bool plane_collision(float *pa,float *va,float *wa,float *pb,float *vb,float *wb
 	
 	return false;
 } /* plane_collision */ 
-
-
-bool CMC::load(FILE *fp)
-{
-  if (6 != fscanf(fp, "%f %f %f %f %f %f", &(x[0]), &(x[1]), &(y[0]), &(y[1]), &(z[0]), &(z[1])))
-    return false;
-  return true;
-}
-
-
-bool CMC::save(FILE *fp)
-{
-  fprintf(fp, "%.8f %.8f\n%.8f %.8f\n%.8f %.8f\n", x[0], x[1], y[0], y[1], z[0], z[1]);
-  return true;
-}
 
 
 std::ostream& operator<<(std::ostream& out, const CMC& cmc)
