@@ -61,40 +61,30 @@ void Map::draw(const Camera& camera, const Vector& light, const bool shadows)
   if (!shadows) {
     glPushMatrix();
     for (int j = 0; j < Height; j++) {
-      // if (j >= (camera.viewport.y + MINY) &&
-      //     j <= (camera.viewport.y + MAXY)) {
-      if (true) {
-        glPushMatrix();
-        for (int i = 0; i < Width; i++) {
-          // if (i >= (camera.viewport.x + MINX) &&
-          //     i <= (camera.viewport.x + MAXX)) {
-          if (true) {
-            int o = map[i + j * Width];
-            if (o == 0) {
-              int m[8] = {13, 15, 17, 19, 7, 23, 21, 25};
-              if (((i * 3 + j * 7) % m[(i + j) % 8]) == 0) o = 10;
-              if (((i * 3 + j * 7) % m[(i + j + 1) % 8]) == 0 ) o = 11;
-            } else {
-            }
-            if (detaillevel >= 1)
-              Resources::tiles[o].draw(Resources::tiles[0].color);
-            else
-              Resources::tiles[o].draw_notexture(Resources::tiles[0].color);
+      glPushMatrix();
+      for (int i = 0; i < Width; i++) {
+        if (camera.canSee(Vector(i, j, 0.0))) {
+          int o = map[i + j * Width];
+          if (o == 0) {
+            int m[8] = {13, 15, 17, 19, 7, 23, 21, 25};
+            if (((i * 3 + j * 7) % m[(i + j) % 8]) == 0) o = 10;
+            if (((i * 3 + j * 7) % m[(i + j + 1) % 8]) == 0 ) o = 11;
+          } else {
           }
-          glTranslatef(1.0, 0.0, 0.0);
+          if (detaillevel >= 1)
+            Resources::tiles[o].draw(Resources::tiles[0].color);
+          else
+            Resources::tiles[o].draw_notexture(Resources::tiles[0].color);
         }
-        glPopMatrix();
+        glTranslatef(1.0, 0.0, 0.0);
       }
+      glPopMatrix();
       glTranslatef(0.0, 1.0, 0.0);
     }
     glPopMatrix();
   }
 
   for (const Building& building: buildings) {
-    // if (building.pos.y >= (camera.viewport.y + MINY) &&
-    //     building.pos.y <= (camera.viewport.y + MAXY) &&
-    //     building.pos.x >= (camera.viewport.x + MINX) &&
-    //     building.pos.x <= (camera.viewport.x + MAXX)) {
     if (camera.canSee(building.pos)) {
       glPushMatrix();
       glTranslatef(float(building.pos.x), float(building.pos.y), float(building.pos.z));
@@ -105,10 +95,6 @@ void Map::draw(const Camera& camera, const Vector& light, const bool shadows)
 
   for (int i = 0; i < 2; i++) {
     for (Robot* r: robots[i]) {
-      // if (r->pos.y >= (camera.viewport.y + MINY) &&
-      //     r->pos.y <= (camera.viewport.y + MAXY) &&
-      //     r->pos.x >= (camera.viewport.x + MINX) &&
-      //     r->pos.x <= (camera.viewport.x + MAXX)) {
       if (camera.canSee(r->pos)) {
         glPushMatrix();
         glTranslatef(r->pos.x, r->pos.y, r->pos.z);
@@ -119,10 +105,6 @@ void Map::draw(const Camera& camera, const Vector& light, const bool shadows)
   }
 
   for (const Bullet& bullet: bullets) {
-    // if (bullet.pos.y >= (camera.viewport.y + MINY) &&
-    //     bullet.pos.y <= (camera.viewport.y + MAXY) &&
-    //     bullet.pos.x >= (camera.viewport.x + MINX) &&
-    //     bullet.pos.x <= (camera.viewport.x + MAXX)) {
     if (camera.canSee(bullet.pos)) {
       glPushMatrix();
       glTranslatef(bullet.pos.x, bullet.pos.y, bullet.pos.z);
@@ -131,7 +113,7 @@ void Map::draw(const Camera& camera, const Vector& light, const bool shadows)
     }
   }
 
-  // ship drawing will be here
+  nether->getShip()->draw(shadows, light, *this, nether->getControlled());
 
   if (!shadows) {
     for (const Explosion& exp: explosions) {
@@ -166,10 +148,6 @@ void Map::draw(const Camera& camera, const Vector& light, const bool shadows)
 
   if (!shadows) {
     for (const Particle& particle: particles) {
-      // if (particle.pos.y >= (camera.viewport.y + MINY) &&
-      //     particle.pos.y <= (camera.viewport.y + MAXY) &&
-      //     particle.pos.x >= (camera.viewport.x + MINX) &&
-      //     particle.pos.x <= (camera.viewport.x + MAXX))
       if (camera.canSee(particle.pos))
         particle.draw();
     }

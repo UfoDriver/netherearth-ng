@@ -267,7 +267,6 @@ void NETHER::drawGame(bool shadows)
   newLight = newLight / newLight.z;
   map.draw(camera, newLight, shadows);
   camera.drawViewport();
-  ship->draw(shadows, newLight, map, controlled);
 }
 
 
