@@ -77,12 +77,9 @@ void Resources::loadObjects()
     tiles.push_back(tile);
   }
 
-  tiles[4].moveobject(Vector(0, 0, -0.05));
-  tiles[5].moveobject(Vector(0, 0, -0.05));
-  tiles[6].moveobject(Vector(0, 0, -0.05));
-  tiles[7].moveobject(Vector(0, 0, -0.05));
-  tiles[8].moveobject(Vector(0, 0, -0.05));
-  tiles[9].moveobject(Vector(0, 0, -0.05));
+  for (int i = 4; i < 10; i++) {
+    tiles[i].moveobject(Vector(0, 0, -0.05));
+  }
 
   buildingTiles.reserve(N_BUILDINGS);
   for (int i = 0; i < N_BUILDINGS; i++) {

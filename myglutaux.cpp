@@ -598,85 +598,69 @@ bool LineLineCollision(float p0[3],float v0[3],float p1[3],float v1[3],float *l1
 } /* LineLineCollision */ 
 
 
-unsigned int createTexture(char *fname)
+unsigned int createTexture(const char *fname)
 {
-	unsigned int tname=0;
-	int i,j,k,val;
-	int sz;
-	GLubyte *textura;
-	Bitmap *bmp=NULL;
+  unsigned int tname = 0;
+  Bitmap bmp(fname);
 
-	bmp=new Bitmap(fname);
- 
-	if (bmp->valid()) {
-		sz=bmp->getdx();
-		if (bmp->getdy()<sz) sz=bmp->getdy();
-		textura=new GLubyte[sz*sz*4];
-		for(j=0,k=0;j<sz;j++) {
-			for(i=0;i<sz;i++) {
-				val=i+j*bmp->getdx();
-				textura[k++]=bmp->getr(val);
-				textura[k++]=bmp->getg(val);
-				textura[k++]=bmp->getb(val);
-				textura[k++]=255;
-			} /* for */ 
-		} /* for */ 
+  if (bmp.valid()) {
+    int sz = bmp.getdx();
+    if (bmp.getdy() < sz) sz = bmp.getdy();
+    GLubyte* textura = new GLubyte[sz * sz * 4];
+    for (int j = 0, k = 0; j < sz; j++) {
+      for (int i = 0; i < sz; i++) {
+        int val = i + j * bmp.getdx();
+        textura[k++] = bmp.getr(val);
+        textura[k++] = bmp.getg(val);
+        textura[k++] = bmp.getb(val);
+        textura[k++] = 255;
+      }
+    }
 
-		glGenTextures(1,&tname);
-		glPixelStorei(GL_UNPACK_ALIGNMENT,tname);
-		glBindTexture(GL_TEXTURE_2D,tname);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,TEXTURE_APPROXIMATION);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,TEXTURE_APPROXIMATION);
-		glTexImage2D(GL_TEXTURE_2D,0,4,sz,sz,0,GL_RGBA,GL_UNSIGNED_BYTE,textura);
-		delete textura;
-	} else {
-		delete bmp;
-		return 0;
-	} /* if */ 
-
-	return tname;
-} /* createTexture */ 
+    glGenTextures(1, &tname);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, tname);
+    glBindTexture(GL_TEXTURE_2D, tname);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, TEXTURE_APPROXIMATION);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, TEXTURE_APPROXIMATION);
+    glTexImage2D(GL_TEXTURE_2D, 0, 4, sz, sz, 0, GL_RGBA, GL_UNSIGNED_BYTE, textura);
+    delete[] textura;
+    return tname;
+  } else {
+    return 0;
+  }
+}
 
 
-unsigned int createTexture(char *fname,int x,int y,int sz)
+unsigned int createTexture(char *fname, int x, int y, int sz)
 {
-	unsigned int tname=0;
-	int i,j,k,val;
-	GLubyte *textura;
-	Bitmap *bmp=NULL;
+  unsigned int tname = 0;
+  Bitmap bmp(fname);
 
-	bmp=new Bitmap(fname);
- 
-	if (bmp->valid()) {
-		textura=new GLubyte[sz*sz*4];
-		for(j=0,k=0;j<sz;j++) {
-			for(i=0;i<sz;i++) {
-				val=(x+i)+(y+j)*bmp->getdx();
-				textura[k++]=bmp->getr(val);
-				textura[k++]=bmp->getg(val);
-				textura[k++]=bmp->getb(val);
-				textura[k++]=255;
-			} /* for */ 
-		} /* for */ 
+  if (bmp.valid()) {
+    GLubyte* textura = new GLubyte[sz * sz * 4];
+    for (int j = 0, k = 0; j < sz; j++) {
+      for (int i = 0; i < sz; i++) {
+        int val = (x + i) + (y + j) * bmp.getdx();
+        textura[k++] = bmp.getr(val);
+        textura[k++] = bmp.getg(val);
+        textura[k++] = bmp.getb(val);
+        textura[k++] = 255;
+      }
+    }
 
-		glGenTextures(1,&tname);
-		glPixelStorei(GL_UNPACK_ALIGNMENT,tname);
-		glBindTexture(GL_TEXTURE_2D,tname);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,TEXTURE_APPROXIMATION);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,TEXTURE_APPROXIMATION);
-		glTexImage2D(GL_TEXTURE_2D,0,4,sz,sz,0,GL_RGBA,GL_UNSIGNED_BYTE,textura);
-		delete textura;
-		delete bmp;
-	} else {
-		delete bmp;
-		return 0;
-	} /* if */ 
-
-	return tname;
-} /* createTexture */ 
-
-
+    glGenTextures(1, &tname);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, tname);
+    glBindTexture(GL_TEXTURE_2D, tname);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, TEXTURE_APPROXIMATION);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, TEXTURE_APPROXIMATION);
+    glTexImage2D(GL_TEXTURE_2D, 0, 4, sz, sz, 0, GL_RGBA, GL_UNSIGNED_BYTE, textura);
+    delete[] textura;
+    return tname;
+  } else {
+    return 0;
+  }
+}

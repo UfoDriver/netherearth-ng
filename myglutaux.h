@@ -42,6 +42,6 @@ double det_d(double *m,int size);
 double distancia_a_recta(Vector p,Vector pr,Vector vr);
 
 unsigned int createTexture(char *fname,int x,int y,int sz);
-unsigned int createTexture(char *fname);
+unsigned int createTexture(const char *fname);
 
 #endif

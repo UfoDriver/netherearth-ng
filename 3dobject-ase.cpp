@@ -1,462 +1,367 @@
 #ifdef _WIN32
 #include "windows.h"
 #endif
-#include "GL/gl.h"
 
-#include "string.h"
-#include "stdio.h"
+#include <algorithm>
+#include <limits>
 
-#include "cmc.h"
 #include "3dobject.h"
-
-#include <iostream>
-#include "vector.h"
 #include "myglutaux.h"
+#include "vector.h"
 
 
-extern void Normal (double vector1[3],double vector2[3],double resultado[3]);
+bool nexttag(std::string& tag, std::ifstream& iFile)
+{
+  iFile.ignore(std::numeric_limits<std::streamsize>::max(), '*');
+  if (iFile.eof()) return false;
+  iFile >> tag;
+  return true;
+}
 
 
-bool lookfor(const char *tag, FILE *fp);
-int  lookfor2(const char *tag, const char *tag2, FILE *fp);
-bool lookforinside(const char *tag, FILE *fp);
-bool nexttag(const char *tag, FILE *fp);
-bool nexttaginside(const char *tag, FILE *fp);
-bool skipinfo(FILE *fp);
-bool readcomment(char *data, FILE *fp);
+bool nexttaginside(std::string& tag, std::ifstream& iFile)
+{
+  int parentheses = 0;
+  bool instring = false;
+  int c;
+
+  do {
+    c = iFile.get();
+    if (c == '\"') {
+      if (instring)
+        instring = false;
+      else
+        instring = true;
+    }
+    if (!instring && c == '{') parentheses++;
+    if (!instring && c == '}') parentheses--;
+  } while(instring || (c != '*' && !iFile.eof() && parentheses >= 0));
+  if (iFile.eof() || parentheses < 0) return false;
+
+  iFile >> tag;
+
+  return true;
+}
+
+
+bool skipinfo(std::ifstream& iFile, int parentheses)
+{
+  bool instring = false;
+  int c;
+
+  do {
+    c = iFile.get();
+    if (c == '\r') continue;
+    if (c == '\"') {
+      if (instring)
+        instring = false;
+      else
+        instring = true;
+    }
+    if (!instring && c == '{') parentheses++;
+    if (!instring && c == '}') parentheses--;
+  } while ((c != '\n' || parentheses != 0 || instring == true) && !iFile.eof());
+  if (iFile.eof()) return false;
+  return true;
+}
+
+
+bool lookfor(const std::string& tag, std::ifstream& iFile)
+{
+  std::string tagname;
+
+  for(;;) {
+    if (!nexttag(tagname, iFile)) return false;
+    if (tag == tagname) return true;
+    skipinfo(iFile, 0);
+  }
+  return false;
+}
+
+
+int lookfor2(const std::string& tag, const std::string& tag2, std::ifstream& iFile)
+{
+  std::string tagname;
+
+  for (;;) {
+    if (!nexttag(tagname, iFile)) return 0;
+    if (tag == tagname) return 1;
+    if (tag2 == tagname) return 2;
+    skipinfo(iFile, 0);
+  }
+
+  return 0;
+}
+
+
+bool lookforinside(const std::string& tag, std::ifstream& iFile)
+{
+  std::string tagname;
+
+  for (;;) {
+    if (!nexttaginside(tagname, iFile)) return false;
+    if (tag == tagname) return true;
+    skipinfo(iFile, 0);
+  }
+
+  return false;
+}
+
+
+bool readcomment(std::string& data, std::ifstream& iFile)
+{
+  iFile.ignore(std::numeric_limits<std::streamsize>::max(), '\"');
+  std::getline(iFile, data, '\"');
+  if (iFile.eof()) return false;
+  return true;
+}
+
+
+std::string convertPath(const std::string& texturedir, std::string& bmpname)
+{
+  std::replace(bmpname.begin(), bmpname.end(), '\\', '/');
+  std::string realBitmapPath {texturedir};
+  if (bmpname.rfind('/') == std::string::npos) {
+    realBitmapPath.append(bmpname);
+  } else {
+    realBitmapPath.append(bmpname.substr(bmpname.rfind('/') + 1));
+  }
+  return realBitmapPath;
+}
+
 
 bool C3DObject::loadASE(const std::string& filename, const std::string& texturedir)
 {
-	int *facematerial=0;
-	int **materials=0,nmaterials=0,*nsubmaterials=0;
-	char ***material_bitmaps=0;
-	char buffer[256];
-	FILE *fp;
+  std::ifstream iFile(filename, std::ios::binary);
+  std::string buffer;
 
-	fp=fopen(filename.c_str(),"r");
-	if (fp==NULL) return false;
+  // int *facematerial=0;
+  // int **materials=0,nmaterials=0,*nsubmaterials=0;
+  // char ***material_bitmaps=0;
+  // char buffer[256];
+  // FILE *fp;
 
-	/* Look for the materials: */ 
-	if (!lookfor("MATERIAL_LIST",fp) ||
-		!lookfor("MATERIAL_COUNT",fp)) {
-		fclose(fp);
-		return false;
-	} /* if */ 
-	
-	if (1!=fscanf(fp,"%i",&nmaterials)) {
-		fclose(fp);
-		return false;
-	} /* if */ 
+  if (!lookfor("MATERIAL_LIST", iFile) ||
+      !lookfor("MATERIAL_COUNT", iFile)) {
+    return false;
+  }
 
-	materials=new int *[nmaterials];
-	nsubmaterials=new int[nmaterials];
-	material_bitmaps=new char **[nmaterials];
+  int nmaterials;
+  iFile >> nmaterials;
 
-	for(int j = 0; j < nmaterials; j++) {
-		if (!lookfor("MATERIAL",fp) ||
-			!lookfor("MATERIAL_CLASS",fp) ||
-			!readcomment(buffer,fp)) {
-			fclose(fp);
-			return false;
-		} /* if */ 
+  std::vector<std::vector<int>> materials;
+  std::vector<int> submaterials;
+  // material_bitmaps=new char **[nmaterials];
+  std::vector<std::vector<std::string>> material_bitmaps;
+  // materials=new int *[nmaterials];
+  std::vector<int> nsubmaterials;
 
-		if (strcmp(buffer,"Standard")==0) {
-			/* Standard Material, has no Submaterials: */ 
-			nsubmaterials[j]=1;
-			materials[j]=new int[1];
-			materials[j][0]=0;
-			material_bitmaps[j]=new char *[1];
-			material_bitmaps[j][0]=0;
-			if (lookforinside("MAP_DIFFUSE",fp) &&
-				lookfor("BITMAP",fp)) {
-				char bmpname[256],bmpname2[256];
-				int k,l;
 
-				if (!readcomment(bmpname,fp)) {
-					fclose(fp);
-					return false;
-				} /* if */ 
-
-				for(l=0,k=0;bmpname[l]!=0;l++) {
-					if (bmpname[l]=='\\' || bmpname[l]=='/') {
-						k=l;
-					} /* if */ 
-				} /* for */ 
-				if (k!=0) k++;
-
-				sprintf(bmpname2,"%s/%s",texturedir.c_str(),bmpname+k);
-				material_bitmaps[j][0]=new char[strlen(bmpname2)+1];
-				strcpy(material_bitmaps[j][0],bmpname2);
-//                              materials[j][0]=createTexture(bmpname2);
-			} /* if */ 
-		} else {
-			/* Composed material, has submaterials: */ 
-			if (!lookfor("NUMSUBMTLS",fp) ||
-				1!=fscanf(fp,"%i",&(nsubmaterials[j]))) {
-				fclose(fp);
-				return false;
-			} /* if */ 
-
-			materials[j]=new int[nsubmaterials[j]];
-			for(int i = 0; i < nsubmaterials[j]; i++) materials[j][i] = 0;
-			material_bitmaps[j] = new char *[nsubmaterials[j]];
-			for(int i = 0; i < nsubmaterials[j]; i++) material_bitmaps[j][i] = 0;
-
-			for(int i = 0; i < nsubmaterials[j]; i++) {
-				if (!lookfor("SUBMATERIAL",fp)) {
-					fclose(fp);
-					return false;
-				} /* if */ 
-				if (lookforinside("MAP_DIFFUSE",fp) &&
-					lookfor("BITMAP",fp)) {
-					char bmpname[256],bmpname2[256];
-					int k,l;
-
-					if (!readcomment(bmpname,fp)) {
-						fclose(fp);
-						return false;
-					} /* if */ 
-
-					for(l=0,k=0;bmpname[l]!=0;l++) {
-						if (bmpname[l]=='\\' || bmpname[l]=='/') {
-							k=l;
-						} /* if */ 
-					} /* for */ 
-					if (k!=0) k++;
-
-					sprintf(bmpname2,"%s/%s",texturedir.c_str(),bmpname+k);
-					material_bitmaps[j][i]=new char[strlen(bmpname2)+1];
-					strcpy(material_bitmaps[j][i],bmpname2);
-//                                      materials[j][i]=createTexture(bmpname2);
-				} /* if */ 
-			} /* for */ 
-		} /* if */ 
-	} /* if */ 
-
-	if (!lookfor("GEOMOBJECT",fp) ||
-		!lookfor("MESH",fp)) {
-		fclose(fp);
-		return false;
-	} /* if */ 
-
-    int npoints;
-	if (!lookfor("MESH_NUMVERTEX",fp) ||
-		1!=fscanf(fp,"%i",&npoints)) {
-		fclose(fp);
-		return false;
-	} /* if */ 
-
-	points.reserve(npoints);
-
-    int nfaces;
-	if (!lookfor("MESH_NUMFACES",fp) ||
-		1!=fscanf(fp,"%i",&nfaces)) {
-		fclose(fp);
-		return false;
-	} /* if */ 
-
-    faces.reserve(nfaces);
-	facematerial=new int[nfaces];
-    for(int i = 0; i < nfaces; i++) {
-      faces.emplace_back(0, 0, 0, Color(0.5, 0.5, 0.5));
+  materials.resize(nmaterials);
+  material_bitmaps.resize(nmaterials);
+  for (int j = 0; j < nmaterials; j++) {
+    if (!lookfor("MATERIAL", iFile) ||
+        !lookfor("MATERIAL_CLASS", iFile) ||
+        !readcomment(buffer, iFile)) {
+      return false;
     }
 
-	if (!lookfor("MESH_VERTEX_LIST",fp)) {
-		fclose(fp);
-		return false;
-	} /* if */ 
+    if (buffer == "Standard") {
+      // Standard Material, has no Submaterials:
+      nsubmaterials.push_back(0);
+      materials[j].push_back(0);
 
-	for(int i = 0; i < npoints; i++) {
-		int p;
-		float x,y,z;
+      if (lookforinside("MAP_DIFFUSE", iFile) && lookfor("BITMAP", iFile)) {
 
-		if (!lookfor("MESH_VERTEX",fp) ||
-			4!=fscanf(fp,"%i %f %f %f",&p,&x,&y,&z)) {
-			fclose(fp);
-			return false;
-		} /* if */ 
+        std::string bmpname;
+        if (!readcomment(bmpname, iFile)) {
+          return false;
+        }
+        material_bitmaps[j].push_back(convertPath(texturedir, bmpname));
+      }
+    } else {
+      // Composed material, has submaterias:
+      if (!lookfor("NUMSUBMTLS", iFile)) {
+        return false;
+      }
+      int nsubs;
+      iFile >> nsubs;
+      nsubmaterials.push_back(nsubs);
 
-        points.emplace_back(x, y, z);
-	} /* for */ 
+      materials[j].resize(nsubs);
+      // for(int i = 0; i < nsubmaterials[j]; i++) materials[j][i] = 0;
+      material_bitmaps[j].resize(nsubmaterials[j]);
 
-	if (!lookfor("MESH_FACE_LIST",fp)) {
-		fclose(fp);
-		return false;
-	} /* if */ 
+      for(int i = 0; i < nsubmaterials[j]; i++) {
+        if (!lookfor("SUBMATERIAL", iFile)) {
+          return false;
+        }
+        if (lookforinside("MAP_DIFFUSE", iFile) && lookfor("BITMAP", iFile)) {
 
-	for(int i = 0; i < nfaces; i++) {
-		int p1,p2,p3,s,mid;
-		char buffer[32];
+          std::string bmpname;
+          if (!readcomment(bmpname, iFile)) {
+            return false;
+          }
+          material_bitmaps[j][i] = convertPath(texturedir, bmpname);
+        }
+      }
+    }
+  }
 
-		if (!lookfor("MESH_FACE",fp) ||
-			7!=fscanf(fp,"%s %s %i %s %i %s %i",buffer,buffer,&p1,buffer,&p2,buffer,&p3)) {
-			fclose(fp);
-			return false;
-		} /* if */ 
+  if (!lookfor("GEOMOBJECT", iFile) ||
+      !lookfor("MESH", iFile)) {
+    return false;
+  }
 
-        faces[i].a = p1;
-        faces[i].b = p2;
-        faces[i].c = p3;
+  int npoints;
+  if (!lookfor("MESH_NUMVERTEX", iFile))
+    return false;
+  iFile >> npoints;
 
-		if (!lookfor("MESH_SMOOTHING",fp) ||
-			1!=fscanf(fp,"%i",&s)) {
-			fclose(fp);
-			return false;
-		} /* if */ 
-		faces[i].smooth = s;
+  points.reserve(npoints);
 
-		if (!lookfor("MESH_MTLID",fp) ||
-			1!=fscanf(fp,"%i",&mid)) {
-			fclose(fp);
-			return false;
-		} /* if */ 
-		facematerial[i]=mid;
+  int nfaces;
+  if (!lookfor("MESH_NUMFACES", iFile))
+    return false;
+  iFile >> nfaces;
 
-	} /* for */ 
+  faces.reserve(nfaces);
 
-	if (nmaterials!=0) {
-		int v=lookfor2("MESH_FACEMAPLIST","MESH_NUMTVERTEX",fp);
+  std::vector<int> facematerial;
 
-		if (v==1) {
-			/* MESH_FACEMAPLIST: */ 
-			int f;
-			float x,y,z;
+  if (!lookfor("MESH_VERTEX_LIST", iFile))
+    return false;
 
-			for(int i = 0; i < nfaces; i++) {
-				if (!lookfor("MESH_FACEMAP",fp) ||
-					1!=fscanf(fp,"%i",&f)) {
-					fclose(fp);
-					return false;
-				} /* if */ 
+  for(int i = 0; i < npoints; i++) {
+    int p;
+    float x, y, z;
 
-//                              textures[f]=materials[facematerial[f]];
-				if (!lookfor("MESH_FACEMAPVERT",fp) ||
-					3!=fscanf(fp,"%f %f %f",&x,&y,&z)) {
-					fclose(fp);
-					return false;
-				} /* if */
-                textureCoord.emplace_back(x, 1 - y);
-				if (!lookfor("MESH_FACEMAPVERT",fp) ||
-					3!=fscanf(fp,"%f %f %f",&x,&y,&z)) {
-					fclose(fp);
-					return false;
-				} /* if */
-                textureCoord.emplace_back(x, 1 - y);
-				if (!lookfor("MESH_FACEMAPVERT",fp) ||
-					3!=fscanf(fp,"%f %f %f",&x,&y,&z)) {
-					fclose(fp);
-					return false;
-				} /* if */
-                textureCoord.emplace_back(x, 1 - y);
-			} /* for */   
-		} /* if */ 
-		if (v==2) {
-			/* MESH_NUMTVERTEX: */ 
-			int ntv,ntf,n,p1,p2,p3;
-			float *tv,x,y;
+    if (!lookfor("MESH_VERTEX", iFile))
+      return false;
 
-			if (1!=fscanf(fp,"%i",&ntv) ||
-				!lookfor("MESH_TVERTLIST",fp)) {
-				fclose(fp);
-				return false;
-			} /* if */ 
+    iFile >> p >> x >> y >> z;
+    points.emplace_back(x, y, z);
+  }
 
-			tv=new float[ntv*2];
-			for(int i = 0; i < ntv; i++) {
-				if (!lookfor("MESH_TVERT",fp) ||
-					3!=fscanf(fp,"%i %f %f",&n,&x,&y)) {
-					fclose(fp);
-					return false;
-				} /* if */ 
-				tv[n*2]=x;
-				tv[n*2+1]=y;
-			} /* for */ 
+  if (!lookfor("MESH_FACE_LIST", iFile))
+    return false;
 
-			if (!lookfor("MESH_NUMTVFACES",fp) ||
-				1!=fscanf(fp,"%i",&ntf) ||
-				!lookfor("MESH_TFACELIST",fp)) {
-				fclose(fp);
-				return false;
-			} /* if */ 
+  for (int i = 0; i < nfaces; i++) {
+    std::string ignored;
+    Face face(0, 0, 0, Color(0.5, 0.5, 0.5));
 
-			for(int i = 0; i < ntf; i++) {
-				if (!lookfor("MESH_TFACE",fp) ||
-					4!=fscanf(fp,"%i %i %i %i",&n,&p1,&p2,&p3)) {
-					fclose(fp);
-					return false;
-				} /* if */
-                textureCoord.emplace_back(tv[p1 * 2], 1 - tv[p1 * 2 + 1]);
-                textureCoord.emplace_back(tv[p2 * 2], 1 - tv[p2 * 2 + 1]);
-                textureCoord.emplace_back(tv[p3 * 2], 1 - tv[p3 * 2 + 1]);
-//                              textures[n]=materials[facematerial[n]];
-			} /* for */ 
+    if (!lookfor("MESH_FACE", iFile))
+      return false;
 
-			delete tv;
-		} /* if */ 
+    iFile >> ignored >> ignored >> face.a >> ignored >> face.b >> ignored >> face.c;
 
-		/* Create all the materials used by the faces: */ 
-		{
-			int mid;
+    if (!lookfor("MESH_SMOOTHING", iFile))
+      return false;
+    iFile >> face.smooth;
+    faces.push_back(face);
 
-			if (!lookfor("MATERIAL_REF",fp) ||
-				1!=fscanf(fp,"%i",&mid)) {
-				fclose(fp);
-				return false;
-			} /* if */ 
+    if (!lookfor("MESH_MTLID", iFile))
+      return false;
 
-            textured = true;
-			for(int i = 0; i < nfaces; i++) {
-				if (facematerial[i]>nsubmaterials[mid]) facematerial[i]=0;
-				if (materials[mid][facematerial[i]]==0 &&
-					material_bitmaps[mid][facematerial[i]]!=0) {
-					materials[mid][facematerial[i]]=createTexture(material_bitmaps[mid][facematerial[i]]);
-				} /* if */
-                faces[i].texture = materials[mid][facematerial[i]];
-			} /* for */ 
-		}       
-	} /* if */ 
+    int mtlId;
+    iFile >> mtlId;
+    facematerial.push_back(mtlId);
+  }
 
-	for(int j = 0; j < nmaterials; j++) {
-		delete materials[j];
-		materials[j]=0;
-		for(int i = 0; i < nsubmaterials[j]; i++) {
-			delete material_bitmaps[j][i];
-			material_bitmaps[j][i]=0;
-		} /* for */ 
-		delete material_bitmaps[j];
-		material_bitmaps[j]=0;
-	} /* for */ 
-	delete material_bitmaps;
-	delete nsubmaterials;
-	delete materials;
+  textureCoord.clear();
+  if (nmaterials != 0) {
+    int v = lookfor2("MESH_FACEMAPLIST", "MESH_NUMTVERTEX", iFile);
 
-	calculateNormales();
-	cmc.set(points);
+    if (v == 1) {
+      // MESH_FACEMAPLIST:
+      int f;
+      float x, y, z;
 
-	delete facematerial;
+      for(int i = 0; i < nfaces; i++) {
+        if (!lookfor("MESH_FACEMAP", iFile))
+          return false;
 
-	fclose(fp);
-	return true;
-} /* C3DObject::loadASE */ 
+        iFile >> f;
 
+        if (!lookfor("MESH_FACEMAPVERT", iFile))
+          return false;
 
-bool nexttag(char *tag,FILE *fp)
-{
-	int c;
+        iFile >> x >> y >> z;
+        textureCoord.emplace_back(x, 1 - y);
+        if (!lookfor("MESH_FACEMAPVERT", iFile))
+          return false;
 
-	do{
-		c=fgetc(fp);
-	}while(c!='*' && c!=EOF);
-	if (c==EOF) return false;
+        iFile >> x >> y >> z;
+        textureCoord.emplace_back(x, 1 - y);
+        if (!lookfor("MESH_FACEMAPVERT", iFile))
+          return false;
+        iFile >> x >> y >> z;
+        textureCoord.emplace_back(x, 1 - y);
+      }
+    }
 
-	if (1!=fscanf(fp,"%s",tag)) return false;
+    if (v == 2) {
+      // MESH_NUMTVERTEX:
+      int ntv, ntf, n, p1, p2, p3;
+      float x, y;
+      std::vector<float> tv;
 
-	return true;
-} /* nexttag */ 
+      iFile >> ntv;
+      if (!lookfor("MESH_TVERTLIST", iFile))
+        return false;
 
+      for (int i = 0; i < ntv; i++) {
+        if (!lookfor("MESH_TVERT", iFile))
+          return false;
 
+        iFile >> n >> x >> y;
+        tv.push_back(x);
+        tv.push_back(y);
+      }
 
-bool nexttaginside(char *tag,FILE *fp)
-{
-	int parentheses=0;
-	bool instring=false;
-	int c;
+      if (!lookfor("MESH_NUMTVFACES", iFile))
+        return false;
 
-	do{
-		c=fgetc(fp);
-		if (c=='\"') {
-			if (instring) instring=false;
-				     else instring=true;
-		} /* if */ 
-		if (!instring && c=='{') parentheses++;
-		if (!instring && c=='}') parentheses--;
-	}while(instring || (c!='*' && c!=EOF && parentheses>=0));
-	if (c==EOF || parentheses<0) return false;
+      iFile >> ntf;
+      if (!lookfor("MESH_TFACELIST", iFile))
+        return false;
 
-	if (1!=fscanf(fp,"%s",tag)) return false;
+      for(int i = 0; i < ntf; i++) {
+        if (!lookfor("MESH_TFACE", iFile))
+          return false;
+        iFile >> n >> p1 >> p2 >> p3;
+        textureCoord.emplace_back(tv[p1 * 2], 1 - tv[p1 * 2 + 1]);
+        textureCoord.emplace_back(tv[p2 * 2], 1 - tv[p2 * 2 + 1]);
+        textureCoord.emplace_back(tv[p3 * 2], 1 - tv[p3 * 2 + 1]);
+      }
+    }
 
-	return true;
-} /* nexttaginside */ 
+    /* Create all the materials used by the faces: */
+    {
+      int materialRef;
 
+      if (!lookfor("MATERIAL_REF", iFile))
+        return false;
+      iFile >> materialRef;
+      textured = true;
 
-bool skipinfo(FILE *fp,int parentheses)
-{
-	bool instring=false;
-	int c;
+      for (int i = 0; i < nfaces; i++) {
+        if (facematerial[i] > nsubmaterials[materialRef])
+          facematerial[i] = 0;
 
-	do{
-		c=fgetc(fp);
-		if (c=='\"') {
-			if (instring) instring=false;
-				     else instring=true;
-		} /* if */ 
-		if (!instring && c=='{') parentheses++;
-		if (!instring && c=='}') parentheses--;
-	}while((c!='\n' || parentheses!=0 || instring==true) && c!=EOF);
-	if (c==EOF) return false;
+        if (materials[materialRef][facematerial[i]] == 0 &&
+            //  material_bitmaps[materialRef][facematerial[i]] != 0) {
+            !material_bitmaps[materialRef][facematerial[i]].empty()) {
 
-	return true;
-} /* skipinfo */ 
+          materials[materialRef][facematerial[i]] =
+            createTexture(material_bitmaps[materialRef][facematerial[i]].c_str());
+        }
+        faces[i].texture = materials[materialRef][facematerial[i]];
+      }
+    }
+  }
 
-
-bool lookfor(const char *tag, FILE *fp)
-{
-	char tagname[256];
-
-	for(;;) {
-		if (!nexttag(tagname,fp)) return false;
-		if (strcmp(tag,tagname)==0) return true;
-		skipinfo(fp,0);
-	} /* forever */ 
-
-	return false;
-} /* lookfor */ 
-
-
-int lookfor2(const char *tag, const char *tag2, FILE *fp)
-{
-	char tagname[256];
-
-	for(;;) {
-		if (!nexttag(tagname,fp)) return 0;
-		if (strcmp(tag,tagname)==0) return 1;
-		if (strcmp(tag2,tagname)==0) return 2;
-		skipinfo(fp,0);
-	} /* forever */ 
-
-	return 0;
-} /* lookfor2 */ 
-
-
-
-bool lookforinside(const char *tag, FILE *fp)
-{
-	char tagname[256];
-
-	for(;;) {
-		if (!nexttaginside(tagname,fp)) return false;
-		if (strcmp(tag,tagname)==0) return true;
-		skipinfo(fp,0);
-	} /* forever */ 
-
-	return false;
-} /* lookforinside */ 
-
-
-bool readcomment(char *data, FILE *fp)
-{
-	int c;
-
-	while(fgetc(fp)!='\"');
-
-	do{
-		c=fgetc(fp);
-		*data=c;
-		data++;
-	}while(c!='\"' && c!=EOF);
-	if (c==EOF) return false;
-	data--;
-	*data=0;
-
-	return true;
-} /* readcomment */ 
+  calculateNormales();
+  cmc.set(points);
+  return true;
+}
