@@ -117,36 +117,20 @@ void Map::draw(const Camera& camera, const Vector& light, const bool shadows)
 
   if (!shadows) {
     for (const Explosion& exp: explosions) {
-      float a = (128.0f - exp.step) / 80.0f;
-      float r = 1.0;
-      if (exp.size == 0) {
-        r = (float(exp.step) / 512.0f) + 0.1;
-      }
-      if (exp.size == 1) {
-        r = (float(exp.step) / 96.0f) + 0.5;
-      }
-      if (exp.size == 2) {
-        r = (float(exp.step) / 48.0f) + 1.0;
-      }
-      if (a < 0) a = 0;
-      if (a > 1) a = 1;
-
       glPushMatrix();
       glTranslatef(exp.pos.x, exp.pos.y, exp.pos.z);
-      glColor4f(1.0f, 0.5f, 0.0,a);
+      glColor4f(1.0f, 0.5f, 0.0, exp.getAlpha());
       glDepthMask(GL_FALSE);
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       glEnable(GL_BLEND);
       // Somehow solid sphere dumps core
-      // glutSolidSphere(r, 8, 8);
-      glutWireSphere(r, 8, 8);
+      // glutSolidSphere(exp.getRadius(), 8, 8);
+      glutWireSphere(exp.getRadius(), 8, 8);
       glDisable(GL_BLEND);
       glDepthMask(GL_TRUE);
       glPopMatrix();
     }
-  }
 
-  if (!shadows) {
     for (const Particle& particle: particles) {
       if (camera.canSee(particle.pos))
         particle.draw();
