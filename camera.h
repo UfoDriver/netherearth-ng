@@ -11,6 +11,7 @@ public:
   float zoom;
   Vector viewport;
   void drawViewport();
+  void lookAt(float offset = 0) const;
 
   void updateViewportForShip(const Vector& shipPosition, int mapWidth, int mapHeight);
   bool canSee(const Vector& position) const;

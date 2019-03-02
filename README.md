@@ -11,9 +11,11 @@
 * Consider using engine like irrlicht
 * ~~No global hardcoded paths~~
 * ~~Crash on drawing explosions~~
-* Compiler warnings
+* ~~Compiler warnings~~
 * Debugging (with command line option)
 * Menu is broken after load (at least in combat mode)
 * Make radar semitransparent
 * ~~Provide bigger screen resolutions~~
-* "NETHER" is a God object and should be decoupled
+* ~~"NETHER" is a God object and should be decoupled~~
+* Fix collision detection
+* Fix ship to robot attachment

@@ -37,22 +37,10 @@ void Map::draw(const Camera& camera, const Vector& light, const bool shadows)
       if (explosion.size == 2 && explosion.step < minstep) minstep = explosion.step;
     }
     float r = (128 - minstep) / 256.0;
-    float offs = sin(minstep) * r;
-    gluLookAt(camera.viewport.x + camera.x * camera.zoom + offs,
-              camera.viewport.y + camera.y * camera.zoom + offs,
-              camera.viewport.z + camera.z * camera.zoom,
-              camera.viewport.x + offs,
-              camera.viewport.y + offs,
-              camera.viewport.z,
-              0, 0, 1);
+    float offset = sin(minstep) * r;
+    camera.lookAt(offset);
   } else {
-    gluLookAt(camera.viewport.x + camera.x * camera.zoom,
-              camera.viewport.y + camera.y * camera.zoom,
-              camera.viewport.z + camera.z * camera.zoom,
-              camera.viewport.x,
-              camera.viewport.y,
-              camera.viewport.z,
-              0, 0, 1);
+    camera.lookAt();
   }
 
   glMatrixMode(GL_MODELVIEW);

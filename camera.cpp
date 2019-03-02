@@ -96,3 +96,15 @@ void Camera::updateViewportForShip(const Vector& pos, int mapWidth, int mapHeigh
   minx = (10 + viewport.z * 4) * zoom;
   maxy = (9 + viewport.z * 4) * zoom;
 }
+
+
+void Camera::lookAt(float offset) const
+{
+  gluLookAt(viewport.x + x * zoom + offset,
+            viewport.y + y * zoom + offset,
+            viewport.z + z * zoom,
+            viewport.x + offset,
+            viewport.y + offset,
+            viewport.z,
+            0, 0, 1);
+}
