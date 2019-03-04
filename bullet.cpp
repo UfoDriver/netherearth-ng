@@ -78,38 +78,38 @@ Bullet* Bullet::read(std::istream& in, std::vector<Robot*> robots[2])
 
 void Bullet::drawParticles(std::vector<Particle>& particles) const
 {
-  Vector pos, sp1;
+  Vector particlePos, sp1;
 
   for(int i = 0; i < 10; i++) {
-    pos.x = pos.x + float(rand() % 10) / 100.0;
-    pos.y = pos.y + float(rand( )% 10) / 100.0;
-    pos.z = pos.z;
+    particlePos.x = pos.x + float(rand() % 10) / 100.0;
+    particlePos.y = pos.y + float(rand( )% 10) / 100.0;
+    particlePos.z = pos.z;
     Color color(0.9F + float(rand() % 21 - 10) / 100.0,
                 0.7F + float(rand() % 21 - 10) / 100.0,
                 0.5F + float(rand() % 21 - 10) / 100.0);
     switch(angle) {
     case 0:
       sp1 = Vector(-0.05, float(rand() % 9 - 4) / 200.0,0);
-      pos.x -= 0.25;
-      pos.y += ((rand() % 2) == 0 ? -0.33 : 0.33);
+      particlePos.x -= 0.25;
+      particlePos.y += ((rand() % 2) == 0 ? -0.33 : 0.33);
       break;
     case 90:
       sp1 = Vector(float(rand() % 9 - 4) / 200.0, -0.05, 0);
-      pos.y -= 0.25;
-      pos.x += ((rand() % 2) == 0 ? -0.33 : 0.33);
+      particlePos.y -= 0.25;
+      particlePos.x += ((rand() % 2) == 0 ? -0.33 : 0.33);
       break;
     case 180:
       sp1 = Vector(0.05, float(rand() % 9 - 4) / 200.0, 0);
-      pos.x += 0.25;
-      pos.y += ((rand() % 2) == 0 ? -0.33 : 0.33);
+      particlePos.x += 0.25;
+      particlePos.y += ((rand() % 2) == 0 ? -0.33 : 0.33);
       break;
     case 270:
       sp1 = Vector(float(rand() % 9 - 4) / 200.0, 0.05, 0);
-      pos.y += 0.25;
-      pos.x += ((rand() % 2) == 0 ? -0.33 : 0.33);
+      particlePos.y += 0.25;
+      particlePos.x += ((rand() % 2) == 0 ? -0.33 : 0.33);
       break;
     }
-    particles.emplace_back(pos, sp1, sp1, 0, 0.3, color, 1.0, 0.0, 10 + (rand() % 8));
+    particles.emplace_back(particlePos, sp1, sp1, 0, 0.3, color, 1.0, 0.0, 10 + (rand() % 8));
   }
 }
 
