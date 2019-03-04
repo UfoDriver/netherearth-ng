@@ -1,4 +1,5 @@
 #include <GL/gl.h>
+#include <algorithm>
 #include <cmath>
 
 #include "constants.h"
@@ -49,54 +50,22 @@ Robot::Robot(std::istream& in)
 }
 
 
-bool Robot::valid()
+bool Robot::valid() const
 {
   if (traction == -1) return false;
   return pieces[0] || pieces[1] || pieces[2] || pieces[3];
 }
 
 
-bool Robot::bulletHit(Bullet::TYPE type)
+int Robot::npieces() const
 {
-  int npieces = 0;
-  int damage;
+  return std::count(std::begin(pieces), std::end(pieces), true);
+}
 
-  if (pieces[0]) npieces++;
-  if (pieces[1]) npieces++;
-  if (pieces[2]) npieces++;
-  if (pieces[3]) npieces++;
-  if (pieces[4]) npieces++;
 
-  switch(type) {
-  case Bullet::TYPE::CANNONS:
-    damage = 24;
-    if (traction == 0) damage -= 2;
-    if (npieces == 1) damage -= 2;
-    if (npieces == 2) damage -= 4;
-    if (npieces == 3) damage -= 8;
-    if (npieces == 4) damage -= 12;
-    if (npieces == 5) damage -= 16;
-    break;
-  case Bullet::TYPE::MISSILES:
-    damage = 36;
-    if (traction == 0) damage -= 3;
-    if (npieces == 1) damage -= 3;
-    if (npieces == 2) damage -= 6;
-    if (npieces == 3) damage -= 12;
-    if (npieces == 4) damage -= 18;
-    if (npieces == 5) damage -= 24;
-    break;
-  case Bullet::TYPE::PHASERS:
-    damage = 48;
-    if (traction == 0) damage -= 4;
-    if (npieces == 1) damage -= 4;
-    if (npieces == 2) damage -= 8;
-    if (npieces == 3) damage -= 16;
-    if (npieces == 4) damage -= 24;
-    if (npieces == 5) damage -= 32;
-    break;
-  }
-
+bool Robot::bulletHit(const std::unique_ptr<Bullet>& bullet)
+{
+  int damage = bullet->getDamageForRobot(this);
   strength -= damage;
   return strength > 0;
 }

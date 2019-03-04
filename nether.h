@@ -99,6 +99,7 @@ private:
   bool cycle(unsigned char *keyboard);
   void draw(int w, int h);
   void drawGame(bool shadows);
+  std::pair<int, int> findRobotIndexAndOwner(const Robot* robot);
 
   /* Game variables: */
   Ship *ship;

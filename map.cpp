@@ -4,6 +4,9 @@
 #include <algorithm>
 #include <cmath>
 
+#include "bulletcannon.h"
+#include "bulletmissile.h"
+#include "bulletphaser.h"
 #include "map.h"
 #include "nether.h"
 #include "resources.h"
@@ -92,11 +95,11 @@ void Map::draw(const Camera& camera, const Vector& light, const bool shadows)
     }
   }
 
-  for (const Bullet& bullet: bullets) {
-    if (camera.canSee(bullet.pos)) {
+  for (const auto& bullet: bullets) {
+    if (camera.canSee(bullet->pos)) {
       glPushMatrix();
-      glTranslatef(bullet.pos.x, bullet.pos.y, bullet.pos.z);
-      bullet.draw(shadows, particles);
+      glTranslatef(bullet->pos.x, bullet->pos.y, bullet->pos.z);
+      bullet->draw(shadows, particles);
       glPopMatrix();
     }
   }
@@ -303,25 +306,24 @@ void Map::cycleBullets()
                           [this](auto& bullet) {
                             bool ret = false;
 
-                            int persistence = CANNON_PERSISTENCE;
-                            if (bullet.angle == 0) bullet.pos.x += BULLET_SPEED;
-                            if (bullet.angle == 90) bullet.pos.y += BULLET_SPEED;
-                            if (bullet.angle == 180) bullet.pos.x -= BULLET_SPEED;
-                            if (bullet.angle == 270) bullet.pos.y -= BULLET_SPEED;
-                            bullet.step++;
+                            if (bullet->angle == 0) bullet->pos.x += BULLET_SPEED;
+                            if (bullet->angle == 90) bullet->pos.y += BULLET_SPEED;
+                            if (bullet->angle == 180) bullet->pos.x -= BULLET_SPEED;
+                            if (bullet->angle == 270) bullet->pos.y -= BULLET_SPEED;
+                            bullet->step++;
 
-                            if (bullet.type == Bullet::TYPE::MISSILES) persistence = MISSILE_PERSISTENCE;
-                            if (bullet.type == Bullet::TYPE::PHASERS) persistence = PHASER_PERSISTENCE;
+
                             Robot* r = 0;
-                            if (bullet.step >= persistence || bullet.checkCollision(buildings, robots, &r)) {
+                            if (bullet->step >= bullet->getPersistence() || bullet->checkCollision(buildings, robots, &r)) {
                               ret = true;
-                              if (bullet.step < persistence) {
-                                explosions.emplace_back(bullet.pos, 0);
+                              if (bullet->step < bullet->getPersistence()) {
+                                explosions.emplace_back(bullet->pos, 0);
                               }
                             }
+
                             if (r != 0) {
                               /* The bullet has collided with a robot: */
-                              if (!r->bulletHit(bullet.type)) {
+                              if (!r->bulletHit(bullet)) {
                                 /* Robot destroyed: */
                                 explosions.emplace_back(r->pos,1);
                                 nether->sManager.playExplosion(nether->getShip()->pos, r->pos);
@@ -472,21 +474,21 @@ void Map::cycleRobots(unsigned char* keyboard)
       if (r->op == Robot::OPERATOR::CANNONS && r->firetimer == 0) {
         Vector pos(r->pos);
         pos.z = r->piecez(0) + 0.3f;
-        bullets.emplace_back(Bullet::TYPE::CANNONS, pos, r);
+        bullets.emplace_back(new BulletCannon(pos, r));
         nether->sManager.playShot(nether->getShip()->pos, r->pos);
       }
 
       if (r->op == Robot::OPERATOR::MISSILES && r->firetimer == 0) {
         Vector pos (r->pos);
         pos.z = r->piecez(1) + 0.2f;
-        bullets.emplace_back(Bullet::TYPE::MISSILES, pos, r);
+        bullets.emplace_back(new BulletMissile(pos, r));
         nether->sManager.playShot(nether->getShip()->pos, r->pos);
       }
 
       if (r->op == Robot::OPERATOR::PHASERS && r->firetimer == 0) {
         Vector pos(r->pos);
         pos.z = r->piecez(2) + 0.3f;
-        bullets.emplace_back(Bullet::TYPE::PHASERS, pos, r);
+        bullets.emplace_back(new BulletPhaser(pos, r));
         nether->sManager.playShot(nether->getShip()->pos, r->pos);
       }
 

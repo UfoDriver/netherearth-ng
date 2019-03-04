@@ -54,6 +54,9 @@ am_netherearth_OBJECTS = \
 	bitmap.$(OBJEXT) \
 	building.$(OBJEXT) \
 	bullet.$(OBJEXT) \
+	bulletcannon.$(OBJEXT) \
+	bulletmissile.$(OBJEXT) \
+	bulletphaser.$(OBJEXT) \
 	camera.$(OBJEXT) \
 	cmc.$(OBJEXT) \
 	constructionscreen.$(OBJEXT) \

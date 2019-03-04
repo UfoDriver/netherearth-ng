@@ -1,6 +1,7 @@
 #ifndef ROBOT_H
 #define ROBOT_H
 
+#include <memory>
 #include "bullet.h"
 #include "cmc.h"
 #include "vector.h"
@@ -34,9 +35,9 @@ public:
 
   Robot();
   explicit Robot(std::istream& in);
-  bool valid();
+  bool valid() const;
   float piecez(int piece);
-  bool bulletHit(Bullet::TYPE type);
+  bool bulletHit(const std::unique_ptr<Bullet>& bullet);
   void draw(int owner, bool shadows, std::vector<Piece3DObject> piece_tiles[2], Vector lightposv);
   int cost();
   bool operator==(const Robot& other) const { return id == other.id; };
@@ -53,6 +54,7 @@ public:
   float robotSpeed(int terrain) const;
   int robotRotationSpeed(int terrain) const;
   bool walkable(int terrain) const;
+  int npieces() const;
 
   int traction;
   bool pieces[5];

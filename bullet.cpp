@@ -22,6 +22,9 @@
 #include "myglutaux.h"
 #include "nether.h"
 #include "bullet.h"
+#include "bulletcannon.h"
+#include "bulletmissile.h"
+#include "bulletphaser.h"
 #include "utils.h"
 #include "resources.h"
 
@@ -30,111 +33,46 @@
 
 extern int detaillevel;
 
-Bullet::Bullet(): type(TYPE::CANNONS), step(0), angle(0), owner(0)
-{
-  computeCMC(Resources::bulletTiles);
-}
-
 
 Bullet::Bullet(TYPE type, Vector position, Robot *robot):
   type(type), step(0), pos(position), angle(robot->angle), owner(robot)
 {
-  computeCMC(Resources::bulletTiles);
 }
 
 
-Bullet::Bullet(std::istream& in, std::vector<Robot*> robots[2])
+Bullet* Bullet::read(std::istream& in, std::vector<Robot*> robots[2])
 {
   int i, j;
   int type_;
+  Vector pos;
+  int step;
+  int angle;
+  Robot* owner;
+
   in >> type_ >> step >> angle;
-  type = TYPE(type_);
   in >> pos;
   in >> j >> i;
   if (i >= 0)
     owner = robots[j][i];
   else
     owner = 0;
-  in >> cmc;
-}
 
-
-void Bullet::computeCMC(std::vector<Piece3DObject>& bulletTiles)
-{
-  float m[16] = {1, 0, 0, 0,
-                 0, 1, 0, 0,
-                 0, 0, 1, 0,
-                 0, 0, 0, 1};
-  Quaternion q;
-
-  switch(type) {
+  Bullet* bullet;
+  switch (TYPE(type_)) {
   case TYPE::CANNONS:
-    m[13] = 0.2;
-    cmc.expand(&(bulletTiles[0].cmc), m);
-    m[13] = -0.2;
-    cmc.expand(&(bulletTiles[0].cmc), m);
+    bullet = new BulletCannon(pos, owner);
     break;
   case TYPE::MISSILES:
-    q.from_axis_angle(Vector(0,0,1), 3.141592f);
-    q.to_matrix(m);
-    m[13] += 0.33;
-    cmc.expand(&(bulletTiles[1].cmc), m);
-    m[13] -= 0.66;
-    cmc.expand(&(bulletTiles[1].cmc), m);
+    bullet = new BulletMissile(pos, owner);
     break;
   case TYPE::PHASERS:
-    q.from_axis_angle(Vector(0, 0, 1), 3.141592f/2);
-    q.to_matrix(m);
-    cmc.expand(&(bulletTiles[2].cmc), m);
+    bullet = new BulletPhaser(pos, owner);
     break;
   }
-}
-
-
-void Bullet::draw(bool shadows, std::vector<Particle>& particles) const
-{
-  switch(type) {
-  case TYPE::CANNONS:
-    if (!shadows) {
-      glPushMatrix();
-      glRotatef(angle, 0, 0, 1);
-      glTranslatef(0, 0.2, 0);
-      Resources::bulletTiles[0].draw(Color(0.2f, 0.2f, 0.2f));
-      glTranslatef(0, -0.4, 0);
-      Resources::bulletTiles[0].draw(Color(0.2f, 0.2f, 0.2f));
-      glPopMatrix();
-    }
-    break;
-  case TYPE::MISSILES:
-    if (!shadows) {
-      glPushMatrix();
-      glRotatef(angle, 0, 0, 1);
-      glRotatef(180, 0, 0, 1);
-      glTranslatef(0, 0.33, 0);
-      Resources::bulletTiles[1].draw(Color(0.8f, 0.8f, 0.8f));
-      glTranslatef(0, -0.66, 0);
-      Resources::bulletTiles[1].draw(Color(0.8f, 0.8f, 0.8f));
-      glPopMatrix();
-      if (detaillevel >= 4) {
-        drawParticles(particles);
-      }
-    }
-    break;
-  case TYPE::PHASERS:
-    if (!shadows) {
-      glPushMatrix();
-      glRotatef(angle,0,0,1);
-      glRotatef(90,0,0,1);
-
-      if ((rand() % 4) !=0)
-        Resources::bulletTiles[2].draw_notexture(Color(1.0f, 0.5f, 1.0f, 0.9f));
-      else
-        Resources::bulletTiles[2].draw_notexture(Color(1.0f, 1.0f, 1.0f, 0.5f));
-
-      glPopMatrix();
-    }
-    break;
-  }
+  bullet->angle = angle;
+  bullet->step = step;
+  in >> bullet->cmc;
+  return bullet;
 }
 
 
@@ -219,18 +157,12 @@ bool Bullet::checkCollision(const std::vector<Building>& buildings,
 }
 
 
-std::ostream& operator<<(std::ostream& out, std::pair<const Bullet&, std::vector<Robot*>*>pair)
+int Bullet::getDamageForRobot(const Robot* robot) const
 {
-  out << (int)pair.first.type << ' ' << pair.first.step << ' ' << pair.first.angle << '\n';
-  out << pair.first.pos;
-
-  int i = find_index(pair.second[0], pair.first.owner);
-  if (i == -1) {
-    i = find_index(pair.second[1], pair.first.owner);
-    out << 1 << ' ' << i;
-  } else {
-    out << 0 << ' ' << i;
-  }
-
-  return out << pair.first.cmc;
+  int baseDamage = getBaseDamage();
+  int maxDamage = baseDamage * 12;
+  int multiplier[] = {1, 2, 4, 6, 8};
+  if (robot->traction == 0)
+    maxDamage -= baseDamage;
+  return maxDamage - multiplier[robot->npieces() - 1] * baseDamage;
 }

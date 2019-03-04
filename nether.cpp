@@ -294,8 +294,13 @@ bool NETHER::saveGame(const std::string& filename)
   }
 
   oFile << map.bullets.size() << '\n';
-  for (Bullet& bullet: map.bullets) {
-    oFile << std::make_pair(bullet, map.robots);
+  for (const std::unique_ptr<Bullet>& bullet: map.bullets) {
+    std::pair<int, int> pair = findRobotIndexAndOwner(bullet->owner);
+
+    oFile << (int)bullet->type << ' ' << bullet->step << ' ' << bullet->angle << '\n';
+    oFile << bullet->pos;
+    oFile << pair.first << ' ' << pair.second;
+    oFile << bullet->cmc;
   }
 
   oFile << map.explosions.size() << '\n';
@@ -340,7 +345,7 @@ bool NETHER::loadGame(const std::string& filename)
 
   inFile >> length;
   for (int k = 0; k < length; k++) {
-    map.bullets.emplace_back(inFile, map.robots);
+    map.bullets.emplace_back(Bullet::read(inFile, map.robots));
   }
 
   inFile >> length;
@@ -437,21 +442,21 @@ bool NETHER::saveDebugReport(const std::string& filename)
   }
 
   log << "\n# BULLETS: " << map.bullets.size() << '\n';
-  for (Bullet& bullet: map.bullets) {
-    log << " BULLET:\n TYPE: " << int(bullet.type)
-        << "\n STEP: " << bullet.step
-        << "\n ANGLE: " << bullet.angle << '\n';
+  for (auto& bullet: map.bullets) {
+    log << " BULLET:\n TYPE: " << int(bullet->type)
+        << "\n STEP: " << bullet->step
+        << "\n ANGLE: " << bullet->angle << '\n';
     log << " POSITION: ";
-    log << bullet.pos;
+    log << bullet->pos;
 
-    if (std::count(map.robots[0].cbegin(), map.robots[0].cend(), bullet.owner)) {
-      log << " OWNER: PLAYER 0 ROBOT " << bullet.owner->getId() << '\n';
-    } else if (std::count(map.robots[1].cbegin(), map.robots[1].cend(), bullet.owner)) {
-      log << " OWNER: PLAYER 1 ROBOT " << bullet.owner->getId() << '\n';
+    if (std::count(map.robots[0].cbegin(), map.robots[0].cend(), bullet->owner)) {
+      log << " OWNER: PLAYER 0 ROBOT " << bullet->owner->getId() << '\n';
+    } else if (std::count(map.robots[1].cbegin(), map.robots[1].cend(), bullet->owner)) {
+      log << " OWNER: PLAYER 1 ROBOT " << bullet->owner->getId() << '\n';
     }
 
     log << " MINIMUM CONTAINER BOX: \n";
-    log << bullet.cmc << '\n';
+    log << bullet->cmc << '\n';
   }
 
   log << "# EXPLOSIONS " << map.explosions.size() << '\n';
@@ -968,4 +973,16 @@ bool NETHER::cycle(unsigned char *keyboard)
   if (gameStarted > 0) gameStarted--;
 
   return true;
+}
+
+
+std::pair<int, int> NETHER::findRobotIndexAndOwner(const Robot* robot)
+{
+  for (int owner = 0; owner < 2; owner++) {
+    int index = find_index(map.robots[owner], robot);
+    if (index != -1) {
+      return std::make_pair(owner, index);
+    }
+  }
+  return std::make_pair(-1, -1);
 }

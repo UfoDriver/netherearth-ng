@@ -1,6 +1,7 @@
 #ifndef MAP_H
 #define MAP_H
 
+#include <memory>
 #include <vector>
 
 #include "building.h"
@@ -17,7 +18,7 @@ class NETHER;
 class Map
 {
 public:
-  Map(NETHER* nether): Width(0), Height(0), nether(nether) {}
+  explicit Map(NETHER* nether): Width(0), Height(0), nether(nether) {}
 
   std::vector<int> map;
 
@@ -33,7 +34,7 @@ public:
   int worseTerrain(float x[2], float y[2]);
 
   std::vector<Building> buildings;
-  std::vector<Bullet> bullets;
+  std::vector<std::unique_ptr<Bullet>> bullets;
   std::vector<Explosion> explosions;
   std::vector<Particle> particles;
   std::vector<Robot*> robots[2];
