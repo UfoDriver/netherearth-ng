@@ -393,75 +393,7 @@ bool Robot::checkCollision(const std::vector<Building>& buildings,
       m2[12] = b.pos.x;
       m2[13] = b.pos.y;
       m2[14] = b.pos.z;
-
-      switch(b.type) {
-      case Building::TYPE::FENCE:
-        if (cmc.collision_simple(m1, Resources::buildingTiles[5].cmc, m2)) return true;
-        break;
-      case Building::TYPE::WALL1:
-        if (cmc.collision_simple(m1, Resources::buildingTiles[0].cmc, m2)) return true;
-        break;
-      case Building::TYPE::WALL2:
-        if (cmc.collision_simple(m1, Resources::buildingTiles[1].cmc, m2)) return true;
-        break;
-      case Building::TYPE::WALL3:
-        if (cmc.collision_simple(m1, Resources::buildingTiles[2].cmc, m2)) return true;
-        break;
-      case Building::TYPE::WALL4:
-        if (cmc.collision_simple(m1, Resources::buildingTiles[3].cmc, m2)) return true;
-        break;
-      case Building::TYPE::WALL5:
-        if (cmc.collision_simple(m1, Resources::buildingTiles[4].cmc, m2)) return true;
-        break;
-      case Building::TYPE::WALL6:
-        if (cmc.collision_simple(m1, Resources::buildingTiles[7].cmc, m2)) return true;
-        break;
-      case Building::TYPE::WARBASE:
-        if (cmc.collision_simple(m1, Resources::buildingTiles[8].cmc, m2)) return true;
-        break;
-      case Building::TYPE::FACTORY_ELECTRONICS:
-        if (cmc.collision_simple(m1, Resources::buildingTiles[4].cmc, m2)) return true;
-        m2[12] = b.pos.x + 0.5;
-        m2[13] = b.pos.y + 0.5;
-        m2[14] = b.pos.z + 1;
-        if (cmc.collision_simple(m1, Resources::pieceTiles[0][7].cmc, m2)) return true;
-        break;
-      case Building::TYPE::FACTORY_NUCLEAR:
-        if (cmc.collision_simple(m1, Resources::buildingTiles[4].cmc, m2)) return true;
-        m2[12] = b.pos.x + 0.5;
-        m2[13] = b.pos.y + 0.5;
-        m2[14] = b.pos.z + 1;
-        if (cmc.collision_simple(m1, Resources::pieceTiles[0][6].cmc, m2)) return true;
-        break;
-      case Building::TYPE::FACTORY_PHASERS:
-        if (cmc.collision_simple(m1, Resources::buildingTiles[4].cmc, m2)) return true;
-        m2[12] = b.pos.x + 0.5;
-        m2[13] = b.pos.y + 0.5;
-        m2[14] = b.pos.z + 1;
-        if (cmc.collision_simple(m1, Resources::pieceTiles[0][5].cmc, m2)) return true;
-        break;
-      case Building::TYPE::FACTORY_MISSILES:
-        if (cmc.collision_simple(m1, Resources::buildingTiles[4].cmc, m2)) return true;
-        m2[12] = b.pos.x + 0.5;
-        m2[13] = b.pos.y + 0.5;
-        m2[14] = b.pos.z + 1;
-        if (cmc.collision_simple(m1, Resources::pieceTiles[0][4].cmc, m2)) return true;
-        break;
-      case Building::TYPE::FACTORY_CANNONS:
-        if (cmc.collision_simple(m1, Resources::buildingTiles[4].cmc, m2)) return true;
-        m2[12] = b.pos.x + 0.5;
-        m2[13] = b.pos.y + 0.5;
-        m2[14] = b.pos.z + 1;
-        if (cmc.collision_simple(m1, Resources::pieceTiles[0][3].cmc, m2)) return true;
-        break;
-      case Building::TYPE::FACTORY_CHASSIS:
-        if (cmc.collision_simple(m1, Resources::buildingTiles[4].cmc, m2)) return true;
-        m2[12] = b.pos.x + 0.5;
-        m2[13] = b.pos.y + 0.5;
-        m2[14] = b.pos.z + 1;
-        if (cmc.collision_simple(m1, Resources::pieceTiles[0][1].cmc, m2)) return true;
-        break;
-      }
+      if (cmc.collision_simple(m1, b.getCMC(), m2)) return true;
     }
   }
 
@@ -480,7 +412,6 @@ bool Robot::checkCollision(const std::vector<Building>& buildings,
 
   return false;
 }
-
 
 
 void Robot::calculateCMC(std::vector<Piece3DObject>& pieceTiles)

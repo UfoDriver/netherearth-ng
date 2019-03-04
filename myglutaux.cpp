@@ -223,14 +223,14 @@ float ObtainYAngle(Vector *v)
 } /* ObtainYAngle */ 
 
 
-void ApplyMatrix(float v[4],float matrix[16],float out[4])
+void ApplyMatrix(float v[4], float matrix[16], float out[4])
 {
-	out[0]=v[0]*matrix[0]+v[1]*matrix[4]+v[2]*matrix[8]+v[3]*matrix[12];
-	out[1]=v[0]*matrix[1]+v[1]*matrix[5]+v[2]*matrix[9]+v[3]*matrix[13];
-	out[2]=v[0]*matrix[2]+v[1]*matrix[6]+v[2]*matrix[10]+v[3]*matrix[14];
-	out[3]=v[0]*matrix[3]+v[1]*matrix[7]+v[2]*matrix[11]+v[3]*matrix[15];
+  out[0] = v[0] * matrix[0] + v[1] * matrix[4] + v[2] * matrix[8] + v[3] * matrix[12];
+  out[1] = v[0] * matrix[1] + v[1] * matrix[5] + v[2] * matrix[9] + v[3] * matrix[13];
+  out[2] = v[0] * matrix[2] + v[1] * matrix[6] + v[2] * matrix[10] + v[3] * matrix[14];
+  out[3] = v[0] * matrix[3] + v[1] * matrix[7] + v[2] * matrix[11] + v[3] * matrix[15];
 
-} /* ApplyMatrix */ 
+}
 
 
 void ApplyMatrix2(float v[4],float matrix[16],float out[4])

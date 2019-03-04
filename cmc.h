@@ -21,7 +21,7 @@ public:
   void set(const std::vector<Vector>& p);
   void set(float *x, float *y, float *z, int np);
 
-  void expand(CMC *o2, float *m);
+  void expand(CMC* anotherObject, float* matrix);
 
   bool collision(const CMC &other);
   bool collision(float *m, const CMC& other, float *m2);

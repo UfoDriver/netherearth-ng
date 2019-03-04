@@ -3,6 +3,8 @@
 
 #include <iostream>
 #include <vector>
+
+#include "cmc.h"
 #include "vector.h"
 
 
@@ -29,6 +31,10 @@ public:
 
   void draw(const bool shadows, const int detaillevel, const Vector& light) const;
   static const std::vector<Building> readMapFile(std::istream& inFile);
+
+  CMC getCMC() const;
+  CMC getExtraCMC() const;
+  bool collidesWith(const Vector& position, const CMC& cmc) const;
 
   Vector pos;
   TYPE type;

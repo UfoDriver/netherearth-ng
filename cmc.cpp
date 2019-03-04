@@ -115,16 +115,16 @@ void CMC::set(float *px, float *py, float *pz, int np)
 }
 
 
-void CMC::expand(CMC *o2, float *m)
+void CMC::expand(CMC *object, float *matrix)
 {
   float v[4], out[4];
 
   for (int i = 0; i < 8; i++) {
-    v[0] = ((i & 1) == 0 ? o2->x[0] : o2->x[1]);
-    v[1] = ((i & 2) == 0 ? o2->y[0] : o2->y[1]);
-    v[2] = ((i & 4) == 0 ? o2->z[0] : o2->z[1]);
+    v[0] = ((i & 1) == 0 ? object->x[0] : object->x[1]);
+    v[1] = ((i & 2) == 0 ? object->y[0] : object->y[1]);
+    v[2] = ((i & 4) == 0 ? object->z[0] : object->z[1]);
     v[3] = 1;
-    ApplyMatrix(v, m, out);
+    ApplyMatrix(v, matrix, out);
     x[0] = std::min(x[0], out[0]);
     x[1] = std::max(x[0], out[0]);
     y[0] = std::min(y[0], out[1]);
@@ -345,38 +345,32 @@ bool CMC::collision_simple(float* m, const CMC& other, float* m2) const
   float b_points[24];
 
   /* Calcular las coordenadas "mundo" de los vértices de las cmcs: */
-  {
-    float v[4],out[4];
-    int i;
-		for(i=0;i<8;i++) {
-			v[0]=((i&1)==0 ? x[0]:x[1]);
-			v[1]=((i&2)==0 ? y[0]:y[1]);
-			v[2]=((i&4)==0 ? z[0]:z[1]);
-			v[3]=1;
-			ApplyMatrix(v,m,out);
-			a_points[i*3]=out[0];
-			a_points[i*3+1]=out[1];
-			a_points[i*3+2]=out[2];
+  float v[4], out[4];
+  for (int i= 0 ; i < 8; i++) {
+    v[0] = ((i & 1) == 0 ? x[0] : x[1]);
+    v[1] = ((i & 2) == 0 ? y[0] : y[1]);
+    v[2] = ((i & 4) == 0 ? z[0] : z[1]);
+    v[3] = 1;
+    ApplyMatrix(v, m, out);
+    a_points[i * 3] = out[0];
+    a_points[i * 3 + 1] = out[1];
+    a_points[i * 3 + 2] = out[2];
 
-			v[0]=((i&1)==0 ? other.x[0]:other.x[1]);
-			v[1]=((i&2)==0 ? other.y[0]:other.y[1]);
-			v[2]=((i&4)==0 ? other.z[0]:other.z[1]);
-			v[3]=1;
-			ApplyMatrix(v,m2,out);
-			b_points[i*3]=out[0];
-			b_points[i*3+1]=out[1];
-			b_points[i*3+2]=out[2];
-		} /* for */ 
-	}
+    v[0] = ((i & 1) == 0 ? other.x[0] : other.x[1]);
+    v[1] = ((i & 2) == 0 ? other.y[0] : other.y[1]);
+    v[2] = ((i & 4) == 0 ? other.z[0] : other.z[1]);
+    v[3] = 1;
+    ApplyMatrix(v, m2, out);
+    b_points[i * 3] = out[0];
+    b_points[i * 3 + 1] = out[1];
+    b_points[i * 3 + 2] = out[2];
+  }
 
-	/* Hacer una primera precolisión: */
-	CMC a_cmc(a_points,8);
-	CMC b_cmc(b_points,8);
-	if (!a_cmc.collision(b_cmc)) return false;
-
-	return true;
-} /* collision_simple */ 
-
+  /* Hacer una primera precolisión: */
+  CMC a_cmc(a_points, 8);
+  CMC b_cmc(b_points, 8);
+  return a_cmc.collision(b_cmc);
+}
 
 
 bool point_inside_cmc(float *cmc_p,float *p)
