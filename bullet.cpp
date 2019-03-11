@@ -139,15 +139,13 @@ bool Bullet::checkCollision(const std::vector<Building>& buildings,
 
   for (int i = 0; i < 2; i++) {
     for (Robot* rt: robots[i]) {
-      if (rt->pos.aboutToCollide3D(pos, COLISION_TEST_THRESHOLD)) {
-        if (rt != owner) {
-          m2[12] = rt->pos.x;
-          m2[13] = rt->pos.y;
-          m2[14] = rt->pos.z;
-          if (cmc.collision_simple(m1, rt->cmc, m2)) {
-            *r = rt;
-            return true;
-          }
+      if ((rt != owner) && rt->pos.aboutToCollide3D(pos, COLISION_TEST_THRESHOLD)) {
+        m2[12] = rt->pos.x;
+        m2[13] = rt->pos.y;
+        m2[14] = rt->pos.z;
+        if (cmc.collision_simple(m1, rt->cmc, m2)) {
+          *r = rt;
+          return true;
         }
       }
     }

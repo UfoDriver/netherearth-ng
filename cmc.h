@@ -26,7 +26,7 @@ public:
   bool collision(const CMC &other);
   bool collision(float *m, const CMC& other, float *m2);
 
-  bool collision_simple(float *m, const CMC& other, float *m2) const;
+  bool collision_simple(float* m, const CMC& other, float* m2) const;
 
   float x[2], y[2], z[2];
 };
