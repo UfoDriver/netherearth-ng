@@ -50,6 +50,7 @@ target_sources (${PROJECT_NAME}
   PUBLIC ship
   PUBLIC soundmanager
   PUBLIC stats
+  PUBLIC statusbutton
   PUBLIC vector
 )
 target_link_libraries (

@@ -38,8 +38,10 @@ public:
 
   bool isInteractive()
   {
-    return ID != NAME::TIME && ID != NAME::STATUS and ID != NAME::RESOURCE;
+    return ID != NAME::TIME and ID != NAME::STATUS and ID != NAME::RESOURCE;
   }
+
+  void draw();
 
   NAME ID;
   int x, y;

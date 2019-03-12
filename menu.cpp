@@ -61,7 +61,10 @@ void Menu::draw(int width, int height)
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    drawButtons();
+    for (auto& b: buttons) {
+      b->draw();
+    }
+
     drawStatus();
   }
 }
@@ -71,7 +74,7 @@ void Menu::drawStatus()
 {
   glPushMatrix();
   switch (act_menu) {
-  case Menu::TYPE::GENERAL:
+  case TYPE::GENERAL:
     {
       StatusButton* b = getbutton(StatusButton::NAME::STATUS);
       if (b != 0 && b->status == 0) {
@@ -99,8 +102,8 @@ void Menu::drawStatus()
       }
     }
     break;
-  case Menu::TYPE::ROBOT:
-  case Menu::TYPE::DIRECTCONTROL:
+  case TYPE::ROBOT:
+  case TYPE::DIRECTCONTROL:
     {
       StatusButton* b = getbutton(StatusButton::NAME::ROBOT1);
       if (b!=0 && b->status==0) {
@@ -205,8 +208,8 @@ void Menu::drawStatus()
     }
     break;
 
-  case Menu::TYPE::COMBATMODE:
-  case Menu::TYPE::DIRECTCONTROL2:
+  case TYPE::COMBATMODE:
+  case TYPE::DIRECTCONTROL2:
     glTranslatef(70,40,0);
     glColor3f(1.0f,1.0f,0.0);
     scaledglprintf(0.1f,0.1f,"STRENGTH");
@@ -215,7 +218,7 @@ void Menu::drawStatus()
     scaledglprintf(0.1f,0.1f,"%.3i%c",nether->getControlled()->strength,'%');
     break;
 
-  case Menu::TYPE::ORDERS:
+  case TYPE::ORDERS:
       {
         StatusButton* b =getbutton(StatusButton::NAME::ORDERS1);
         if (b!=0 && b->status==0) {
@@ -235,7 +238,7 @@ void Menu::drawStatus()
       }
       break;
 
-  case Menu::TYPE::SELECTDISTANCE:
+  case TYPE::SELECTDISTANCE:
     {
       StatusButton* b = getbutton(StatusButton::NAME::ORDERS);
       if (b!=0 && b->status==0) {
@@ -259,8 +262,8 @@ void Menu::drawStatus()
     }
     break;
 
-  case Menu::TYPE::TARGET_DESTROY:
-  case Menu::TYPE::TARGET_CAPTURE:
+  case TYPE::TARGET_DESTROY:
+  case TYPE::TARGET_CAPTURE:
     {
       StatusButton* b = getbutton(StatusButton::NAME::ORDERS);
       if (b!=0 && b->status==0) {
@@ -285,53 +288,15 @@ void Menu::drawStatus()
 }
 
 
-void Menu::drawButtons()
-{
-  for (StatusButton* b: buttons) {
-    if (b->status >= -16) {
-      float angle = (float(b->status) * 90.0) / 16.0;
-      float cf = float((16 - abs(b->status))) / 16.0;
-      glPushMatrix();
-      glTranslatef(b->x, b->y, 0);
-      glRotatef(angle, 0, 1, 0);
-
-      /* Draw button: */
-      glColor3f(b->color.red * cf, b->color.green * cf, b->color.blue * cf);
-      glutSolidBox(b->sx / 2, b->sy / 2, 10.0);
-      glTranslatef(0, 0, 11);
-
-      glColor3f(1.0, 1.0, 1.0);
-      if (!b->text1.empty()) {
-        if (!b->text2.empty()) {
-          glTranslatef(0, -12, 0);
-          scaledglprintf(0.1f, 0.1f, b->text2.c_str());
-          glTranslatef(0, 17, 0);
-          scaledglprintf(0.1f, 0.1f, b->text1.c_str());
-        } else {
-          glTranslatef(0, -3, 0);
-          scaledglprintf(0.1f, 0.1f, b->text1.c_str());
-        }
-      }
-      glPopMatrix();
-    }
-  }
-}
-
-
 void Menu::cycle()
 {
   buttons.erase(std::remove_if(buttons.begin(), buttons.end(),
-                               [this](StatusButton* b) {
+                               [this](auto& b) {
                                  if (b->status) {
                                    b->status++;
                                    needsRedraw = 2;
                                  }
-                                 if (b->status >= 16) {
-                                   delete b;
-                                   return true;
-                                 } else {
-                                   return false;
-                                 };
+                                 return (b->status >= 16);
                                }),
     buttons.end());
 }
@@ -480,7 +445,7 @@ void Menu::killmenu(TYPE menu)
 void Menu::newbutton(StatusButton::NAME ID, int x, int y, int sx, int sy,
                      const std::string& t1, const std::string& t2, const Color& color)
 {
-  buttons.push_back(new StatusButton(ID, x, y, sx, sy, t1, t2, color, -16));
+  buttons.push_back(std::make_unique<StatusButton>(ID, x, y, sx, sy, t1, t2, color, -16));
   needsRedraw = 2;
 }
 
@@ -488,15 +453,17 @@ void Menu::newbutton(StatusButton::NAME ID, int x, int y, int sx, int sy,
 void Menu::newbuttondelayed(StatusButton::NAME ID, int x, int y, int sx, int sy,
                             const std::string& t1, const std::string& t2, const Color& color)
 {
-  buttons.push_back(new StatusButton(ID, x, y, sx, sy, t1, t2, color, -32));
+  buttons.push_back(std::make_unique<StatusButton>(ID, x, y, sx, sy, t1, t2, color, -32));
   needsRedraw = 2;
 }
 
 
 void Menu::killbutton(StatusButton::NAME ID)
 {
-  std::for_each(std::cbegin(buttons), std::cend(buttons),
-                [ID](StatusButton* b) {if (b->ID == ID) b->status = 1; });
+  for (auto& b : buttons) {
+    if (b->ID == ID)
+      b->status = 1;;
+  }
   needsRedraw = 2;
 }
 
@@ -504,9 +471,9 @@ void Menu::killbutton(StatusButton::NAME ID)
 StatusButton* Menu::getbutton(StatusButton::NAME ID)
 {
   auto result = find_if(std::cbegin(buttons), std::cend(buttons),
-                        [ID](StatusButton* b) {return b->ID == ID;});
+                        [ID](auto& b) {return b->ID == ID;});
   if (result != end(buttons)) {
-    return *result;
+    return result->get();
   } else {
     return 0;
   }
@@ -525,11 +492,10 @@ bool Menu::handleKeys(unsigned char* keyboard)
 {
 
   if (keyboard[up_key] > 1 || keyboard[down_key] > 1) {
-    std::vector<StatusButton*>::iterator
-      currentButton = std::find_if(buttons.begin(), buttons.end(),
-                                   [this](StatusButton* button) {
-                                     return button->ID == act_button;
-                                   });
+    auto currentButton = std::find_if(buttons.begin(), buttons.end(),
+                                      [this](auto& button) {
+                                        return button->ID == act_button;
+                                      });
     (*currentButton)->color = Color(0, 0, 0.8f);
     // @TODO: evaluate using looped bidirectional iterator
     if (keyboard[up_key] > 1) {
@@ -558,7 +524,7 @@ bool Menu::handleKeys(unsigned char* keyboard)
     needsRedraw = 2;
   }
 
-  for (StatusButton* button: buttons) {
+  for (auto& button: buttons) {
     if (button->isInteractive()) {
       if (button->ID == act_button) {
         button->color = Color(0.5f, 0.5f, 1.0f);

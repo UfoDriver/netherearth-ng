@@ -7,8 +7,8 @@
 class Light
 {
 public:
-  Light(): pos{0, 0, 0, 0} {}
-  Light(float x, float y, float z, float type): pos{x, y, z, type} {}
+  Light() = default;
+  Light(float x, float y, float z, float type): pos {x, y, z, type} {}
   void set(float x, float y, float z, float type) {
     pos[0] = x;
     pos[1] = y;
@@ -19,7 +19,7 @@ public:
 
 private:
   friend std::istream& operator>>(std::istream& in, Light& light);
-  float pos[4];
+  float pos[4] = {0, 0, 0, 0};
 };
 
 std::ostream& operator<<(std::ostream& out, const Light& light);

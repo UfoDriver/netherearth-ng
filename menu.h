@@ -1,6 +1,7 @@
 #ifndef MENU_H
 #define MENU_H
 
+#include <memory>
 #include <vector>
 
 #include "statusbutton.h"
@@ -48,10 +49,9 @@ public:
   StatusButton::NAME act_button;
 
 private:
-  void drawButtons();
   void drawStatus();
   const NETHER* nether;
-  std::vector<StatusButton *> buttons;
+  std::vector<std::unique_ptr<StatusButton>> buttons;
 };
 
 #endif // MENU_H
