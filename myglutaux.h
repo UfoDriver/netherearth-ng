@@ -3,8 +3,10 @@
 
 #include "vector.h"
 
+class Color;
 
-float draw3Dtext(char *text,float dx,float dy,float dz,float r,float g,float b);
+
+float draw3Dtext(const std::string& text, float dx, float dy, float dz, const Color& color);
 
 void glutSolidBox(float dx,float dy,float dz);
 

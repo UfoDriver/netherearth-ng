@@ -6,29 +6,25 @@
 #include <dirent.h>
 #endif
 
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/glut.h>
+#include <SDL/SDL.h>
+#include <SDL/SDL_mixer.h>
+
 #include <algorithm>
+#include <cmath>
 #include <fstream>
 #include <iostream>
 
-#include "string.h"
-#include "stdio.h"
-#include "math.h"
-#include "ctype.h"
-
-#include "GL/gl.h"
-#include "GL/glu.h"
-#include "GL/glut.h"
-#include "SDL/SDL.h"
-#include "SDL/SDL_mixer.h"
-
-#include "vector.h"
-#include "cmc.h"
 #include "3dobject.h"
-#include "shadow3dobject.h"
-#include "piece3dobject.h"
-#include "myglutaux.h"
-
+#include "cmc.h"
 #include "glprintf.h"
+#include "myglutaux.h"
+#include "piece3dobject.h"
+#include "shadow3dobject.h"
+#include "vector.h"
+
 
 #ifndef __WINDOWS__
 char *strupr(char *in)

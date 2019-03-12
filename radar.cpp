@@ -2,27 +2,22 @@
 #include "windows.h"
 #endif
 
-#include "radar.h"
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/glut.h>
+#include <SDL/SDL.h>
+#include <SDL/SDL_mixer.h>
 
-#include "string.h"
-#include "stdio.h"
-#include "math.h"
-
-#include "GL/gl.h"
-#include "GL/glu.h"
-#include "GL/glut.h"
-#include "SDL/SDL.h"
-#include "SDL/SDL_mixer.h"
-
-#include "vector.h"
-#include "cmc.h"
 #include "3dobject.h"
-#include "shadow3dobject.h"
-#include "piece3dobject.h"
+#include "cmc.h"
+#include "glprintf.h"
 #include "myglutaux.h"
 #include "nether.h"
+#include "piece3dobject.h"
+#include "radar.h"
+#include "shadow3dobject.h"
+#include "vector.h"
 
-#include "glprintf.h"
 
 extern bool show_radar;
 

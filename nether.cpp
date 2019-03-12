@@ -2,35 +2,28 @@
 #include "windows.h"
 #endif
 
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/glut.h>
+#include <SDL/SDL.h>
+#include <SDL/SDL_mixer.h>
 #include <algorithm>
 #include <iomanip>
 #include <iostream>
 #include <string>
 
-#include "string.h"
-#include "stdio.h"
-#include "stdlib.h"
-#include "math.h"
-
-#include "GL/gl.h"
-#include "GL/glu.h"
-#include "GL/glut.h"
-#include "SDL/SDL.h"
-#include "SDL/SDL_mixer.h"
-
-#include "vector.h"
-#include "cmc.h"
 #include "3dobject.h"
-#include "shadow3dobject.h"
-#include "piece3dobject.h"
-#include "myglutaux.h"
 #include "building.h"
+#include "cmc.h"
 #include "explosion.h"
-#include "nether.h"
 #include "menu.h"
+#include "myglutaux.h"
+#include "nether.h"
+#include "piece3dobject.h"
+#include "shadow3dobject.h"
 #include "utils.h"
+#include "vector.h"
 
-#include "glprintf.h"
 
 extern int frames_per_sec;
 extern bool fullscreen;

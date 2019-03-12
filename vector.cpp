@@ -1,7 +1,6 @@
+#include <cmath>
 #include <iomanip>
 
-#include "math.h"
-#include "stdio.h"
 #include "vector.h"
 
 

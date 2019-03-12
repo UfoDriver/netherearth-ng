@@ -2,18 +2,16 @@
 #include "windows.h"
 #endif
 
+#include <GL/gl.h>
 #include <cmath>
 
-#include "stdio.h"
-
-#include "GL/gl.h"
-#include "vector.h"
-#include "quaternion.h"
-#include "cmc.h"
 #include "3dobject.h"
-#include "piece3dobject.h"
-
+#include "cmc.h"
 #include "myglutaux.h"
+#include "piece3dobject.h"
+#include "quaternion.h"
+#include "vector.h"
+
 
 Piece3DObject::Piece3DObject() : C3DObject()
 {

@@ -2,15 +2,12 @@
 #include "windows.h"
 #endif
 
-#include "stdio.h"
-
-#include "GL/gl.h"
-#include "vector.h"
-#include "cmc.h"
+#include <GL/gl.h>
 #include "3dobject.h"
-#include "shadow3dobject.h"
-
+#include "cmc.h"
 #include "myglutaux.h"
+#include "shadow3dobject.h"
+#include "vector.h"
 
 
 Shadow3DObject::Shadow3DObject() : C3DObject()

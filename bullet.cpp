@@ -2,33 +2,27 @@
 #include "windows.h"
 #endif
 
-#include "string.h"
-#include "stdio.h"
-#include "stdlib.h"
-#include "math.h"
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/glut.h>
+#include <SDL/SDL.h>
+#include <SDL/SDL_mixer.h>
 
-#include "GL/gl.h"
-#include "GL/glu.h"
-#include "GL/glut.h"
-#include "SDL/SDL.h"
-#include "SDL/SDL_mixer.h"
-
-#include "vector.h"
-#include "quaternion.h"
-#include "cmc.h"
 #include "3dobject.h"
-#include "shadow3dobject.h"
-#include "piece3dobject.h"
-#include "myglutaux.h"
-#include "nether.h"
 #include "bullet.h"
 #include "bulletcannon.h"
 #include "bulletmissile.h"
 #include "bulletphaser.h"
-#include "utils.h"
-#include "resources.h"
-
+#include "cmc.h"
 #include "glprintf.h"
+#include "myglutaux.h"
+#include "nether.h"
+#include "piece3dobject.h"
+#include "quaternion.h"
+#include "resources.h"
+#include "shadow3dobject.h"
+#include "vector.h"
+#include "utils.h"
 
 
 extern int detaillevel;

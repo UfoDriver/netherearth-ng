@@ -2,28 +2,26 @@
 #include "windows.h"
 #endif
 
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <SDL/SDL.h>
+#include <SDL/SDL_mixer.h>
 #include <algorithm>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
 
-#include "stdio.h"
-#include "GL/gl.h"
-#include "GL/glu.h"
-#include "SDL/SDL.h"
-#include "SDL/SDL_mixer.h"
-#include "myglutaux.h"
-#include "glprintf.h"
-
-#include "vector.h"
-#include "cmc.h"
 #include "3dobject.h"
-#include "shadow3dobject.h"
-#include "piece3dobject.h"
-#include "nether.h"
-#include "statusbutton.h"
+#include "cmc.h"
+#include "glprintf.h"
 #include "menu.h"
+#include "myglutaux.h"
 #include "nether.h"
+#include "piece3dobject.h"
+#include "shadow3dobject.h"
+#include "statusbutton.h"
+#include "vector.h"
+
 
 extern int up_key, down_key, left_key, right_key, fire_key, pause_key;
 

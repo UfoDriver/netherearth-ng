@@ -1,6 +1,6 @@
-#include "particle.h"
-
 #include "GL/gl.h"
+
+#include "particle.h"
 
 
 Particle::Particle():

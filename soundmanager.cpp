@@ -1,6 +1,7 @@
+#include <SDL/SDL_mixer.h>
+
 #include "soundmanager.h"
 
-#include "SDL/SDL_mixer.h"
 
 extern bool sound;
 

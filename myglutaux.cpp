@@ -3,20 +3,14 @@
 #endif
 
 #include <GL/gl.h>
-#include "GL/glut.h"
-
-#include "stdio.h"
-#include "string.h"
-#include "stdlib.h"
-#include "math.h"
-#include "vector.h"
-#include "cmc.h"
+#include <GL/glut.h>
+#include <cmath>
+#include <string>
 #include "3dobject.h"
-
 #include "bitmap.h"
-
+#include "cmc.h"
 #include "myglutaux.h"
-
+#include "vector.h"
 
 
 C3DObject *characters[256]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -40,9 +34,9 @@ C3DObject *characters[256]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 int TEXTURE_APPROXIMATION=GL_LINEAR;
 
 
-float draw3Dtext(char *text,float dx,float dy,float dz, const Color& color)
+float draw3Dtext(const std::string& text, float dx, float dy, float dz, const Color& color)
 {
-	int len=strlen(text);
+  int len = text.length();
 	float ancho=(float(len-1)*1.8F);
 
 	glMatrixMode(GL_MODELVIEW);

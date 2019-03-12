@@ -1,9 +1,6 @@
-#include "math.h"
-#include "stdio.h"
-#include "vector.h"
+#include <cmath>
 
 #include "myglutaux.h"
-
 #include "quaternion.h"
 
 
