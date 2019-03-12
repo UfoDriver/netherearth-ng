@@ -24,8 +24,8 @@ public:
                    TARGET_DESTROY,
                    TARGET_CAPTURE,
                    ALL};
-  explicit Menu(const NETHER* nether): needsRedraw(0), act_menu(TYPE::GENERAL),
-                                       act_button(StatusButton::NAME::COMBAT1),
+  explicit Menu(const NETHER* nether): act_menu(TYPE::GENERAL),
+                                       act_button(StatusButton::NAME::COMBAT1), needsRedraw(0),
                                        nether(nether) {};
   void draw(int width, int height);
   void requestRedraw() { needsRedraw = 2; }
@@ -44,11 +44,11 @@ public:
   bool handleKeys(unsigned char* keyboard);
   void updateTime(const Stats& stats);
 
-  int needsRedraw;
   TYPE act_menu;
   StatusButton::NAME act_button;
 
 private:
+  int needsRedraw;
   void drawStatus();
   const NETHER* nether;
   std::vector<std::unique_ptr<StatusButton>> buttons;

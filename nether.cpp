@@ -65,7 +65,7 @@ NETHER::NETHER(const std::string& mapname): map(this), ai(this, &map), menu(this
   gameStarted = INTRO_TIME;
 
   menu.newmenu(Menu::TYPE::GENERAL);
-  menu.needsRedraw = 2;
+  menu.requestRedraw();
   radar.needsRedraw = 1;
 
   ai.makePrecomputations();
@@ -646,7 +646,7 @@ bool NETHER::cycle(unsigned char *keyboard)
             }
 
             menu.act_menu = Menu::TYPE::DIRECTCONTROL;
-            menu.needsRedraw=2;
+            menu.requestRedraw();
             sManager.playSelect();
           }
           break;
@@ -680,7 +680,7 @@ bool NETHER::cycle(unsigned char *keyboard)
   case Menu::TYPE::DIRECTCONTROL:
     /* Direct control of a robot by the user: */
     if (keyboard[fire_key] > 1) {
-      menu.needsRedraw = 2;
+      menu.requestRedraw();
       menu.act_menu=Menu::TYPE::ROBOT;
     }
     break;
@@ -688,7 +688,7 @@ bool NETHER::cycle(unsigned char *keyboard)
   case Menu::TYPE::DIRECTCONTROL2:
     /* Direct control of a robot by the user: */
     if (keyboard[fire_key] > 1) {
-      menu.needsRedraw = 2;
+      menu.requestRedraw();
       menu.act_menu=Menu::TYPE::COMBATMODE;
     }
     break;
@@ -742,7 +742,7 @@ bool NETHER::cycle(unsigned char *keyboard)
             }
 
             menu.act_menu = Menu::TYPE::DIRECTCONTROL2;
-            menu.needsRedraw = 2;
+            menu.requestRedraw();
             sManager.playSelect();
           }
           break;
@@ -810,7 +810,7 @@ bool NETHER::cycle(unsigned char *keyboard)
         if (controlled->program_parameter.as_int > 190)
           controlled->program_parameter.as_int = 190;
         controlled->program_goal = Vector(-1, -1, -1);
-        menu.needsRedraw = 2;
+        menu.requestRedraw();
       }
       if (keyboard[down_key] > 1) {
         controlled->program_parameter.as_int -= 10;
@@ -818,7 +818,7 @@ bool NETHER::cycle(unsigned char *keyboard)
           controlled->program_parameter.as_int = 0;
         controlled->program_goal = Vector(-1, -1, -1);
 
-        menu.needsRedraw=2;
+        menu.requestRedraw();
       }
       if (keyboard[fire_key] > 1) {
         if (controlled->program_parameter.as_int == 0)
