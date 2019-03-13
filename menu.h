@@ -26,11 +26,11 @@ public:
                    TARGET_CAPTURE,
                    ALL};
 
-  explicit Menu(const NETHER* nether): nether(nether) {};
+  explicit Menu(NETHER* nether): nether(nether) {};
 
   void draw(int width, int height);
   void requestRedraw() { needsRedraw = 2; }
-  void cycle();
+  void cycle(unsigned char* keyboard);
   void activateMenu(TYPE newMenu, StatusButton::NAME activeButton);
   void setActiveButtonColor(const Color& color);
   bool handleKeys(unsigned char* keyboard);
@@ -54,7 +54,7 @@ private:
   TYPE activeMenu {TYPE::GENERAL};
   StatusButton::NAME activeButton {StatusButton::NAME::COMBAT1};
   int needsRedraw {0};
-  const NETHER* nether;
+  NETHER* nether;
   std::vector<std::unique_ptr<StatusButton>> buttons;
 
   friend std::ostream& operator<<(std::ostream& out, const Menu& menu);

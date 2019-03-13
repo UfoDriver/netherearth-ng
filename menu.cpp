@@ -288,8 +288,386 @@ void Menu::drawStatus()
 }
 
 
-void Menu::cycle()
+void Menu::cycle(unsigned char* keyboard)
 {
+  switch (activeMenu) {
+  case Menu::TYPE::GENERAL:
+    /* Free movement of the ship through the map: */
+    {
+      float x[2], y[2];
+      float minz;
+      Vector old_shipp;
+      Ship* ship = nether->getShip();
+
+      ship->pos.x = (int(ship->pos.x * 8.0)) / 8.0;
+      ship->pos.y = (int(ship->pos.y * 8.0)) / 8.0;
+      old_shipp = ship->pos;
+      x[0] = ship->pos.x;
+      x[1] = ship->pos.x + 1.0;
+      y[0] = ship->pos.y;
+      y[1] = ship->pos.y + 1.0;
+      minz = nether->map.maxZ(x, y);
+
+      if (ship->op == Ship::OPS::RIGHT && ship->pos.x < nether->map.width() - 1) {
+        ship->pos.x += 0.125;
+        if (ship->timemoving >= 50 && (int(ship->pos.x * 8) % 2) == 1)
+          ship->pos.x += 0.125;
+      }
+      if (ship->op == Ship::OPS::LEFT && ship->pos.x > 0) {
+        ship->pos.x -= 0.125;
+        if (ship->timemoving >= 50 && (int(ship->pos.x * 8) % 2) == 1)
+          ship->pos.x -= 0.125;
+      }
+      if (ship->op2 == Ship::OPS::FORWARD && ship->pos.y < nether->map.height() - 1) {
+        ship->pos.y += 0.125;
+        if (ship->timemoving >= 50 && (int(ship->pos.y * 8) % 2) == 1)
+          ship->pos.y += 0.125;
+      }
+      if (ship->op2==Ship::OPS::BACKWARD && ship->pos.y > 0) {
+        ship->pos.y -= 0.125;
+        if (ship->timemoving >= 50 && (int(ship->pos.y * 8) % 2) == 1)
+          ship->pos.y -= 0.125;
+      }
+
+      if (ship->op3 == Ship::OPS::UP && ship->pos.z < 5.0)
+        ship->pos.z += 0.05;
+      if (ship->op3 != Ship::OPS::UP && ship->pos.z > minz)
+        ship->pos.z -= 0.025;
+      ship->pos.z = std::max(ship->pos.z, minz);
+
+      if (ship->op == Ship::OPS::NONE && ship->op2 == Ship::OPS::NONE) {
+        ship->timemoving = 0;
+      } else {
+        ship->timemoving++;
+      }
+
+      if (ship->pos != old_shipp) {
+        if (ship->checkCollision(nether->map.buildings, nether->map.robots)) {
+          ship->timemoving = 0;
+          Vector p = ship->pos;
+          ship->pos.x = old_shipp.x;
+          ship->pos.y = old_shipp.y;
+          if (p.z != old_shipp.z && ship->checkCollision(nether->map.buildings, nether->map.robots)) {
+            ship->pos.z = old_shipp.z;
+            ship->landed = true;
+          } else {
+            ship->pos.z = p.z;
+          }
+          ship->pos.x = p.x;
+          if (p.x != old_shipp.x && ship->checkCollision(nether->map.buildings, nether->map.robots)) {
+            ship->pos.x = old_shipp.x;
+          } else {
+            ship->pos.x = p.x;
+          }
+          ship->pos.y = p.y;
+          if (p.y != old_shipp.y && ship->checkCollision(nether->map.buildings, nether->map.robots)) {
+            ship->pos.y = old_shipp.y;
+          } else {
+            ship->pos.y = p.y;
+          }
+        }
+      }
+
+      if ((int(ship->pos.x * 8) % 4) == 0)
+        ship->op = Ship::OPS::NONE;
+      if ((int(ship->pos.y * 8) % 4) == 0)
+        ship->op2 = Ship::OPS::NONE;
+      if ((int(ship->pos.z * 8) % 4) == 0)
+        ship->op3 = Ship::OPS::NONE;
+
+      if (keyboard[left_key]) {
+        ship->op = Ship::OPS::LEFT;
+      }
+      if (keyboard[right_key]) {
+        ship->op = Ship::OPS::RIGHT;
+      }
+      if (keyboard[up_key]) {
+        ship->op2 = Ship::OPS::FORWARD;
+      }
+      if (keyboard[down_key]) {
+        ship->op2 = Ship::OPS::BACKWARD;
+      }
+      if (keyboard[fire_key]) {
+        ship->op3 = Ship::OPS::UP;
+      }
+    }
+    break;
+
+  case Menu::TYPE::ROBOT:
+    /* Browsing through the ROBOT MENU: */
+    {
+      if (handleKeys(keyboard)) {
+        switch (getActiveButton()) {
+        case StatusButton::NAME::ROBOT1:
+          {
+            setActiveButtonColor({1.0f, 0.5f, 0.5f});
+            setActiveMenu(Menu::TYPE::DIRECTCONTROL);
+            requestRedraw();
+            nether->sManager.playSelect();
+          }
+          break;
+        case StatusButton::NAME::ROBOT2:
+          {
+            activateMenu(Menu::TYPE::ORDERS, StatusButton::NAME::ORDERS1);
+            nether->sManager.playSelect();
+          }
+          break;
+        case StatusButton::NAME::ROBOT3:
+          {
+            activateMenu(Menu::TYPE::COMBATMODE, StatusButton::NAME::COMBAT6);
+            nether->sManager.playSelect();
+          }
+          break;
+        case StatusButton::NAME::ROBOT4:
+          /* Back to the general menu: */
+          nether->detachShip(nether->getControlled());
+          nether->getShip()->op3 = Ship::OPS::UP;
+          nether->sManager.playSelect();
+          break;
+        }
+      }
+    }
+    break;
+
+  case Menu::TYPE::DIRECTCONTROL:
+    /* Direct control of a robot by the user: */
+    if (keyboard[fire_key] > 1) {
+      requestRedraw();
+      setActiveMenu(Menu::TYPE::ROBOT);
+    }
+    break;
+
+  case Menu::TYPE::DIRECTCONTROL2:
+    /* Direct control of a robot by the user: */
+    if (keyboard[fire_key] > 1) {
+      requestRedraw();
+      setActiveMenu(Menu::TYPE::COMBATMODE);
+    }
+    break;
+
+  case Menu::TYPE::COMBATMODE:
+    /* Browsing through the COMBAT MENU: */
+    {
+      if (handleKeys(keyboard)) {
+        switch(getActiveButton()) {
+        case StatusButton::NAME::COMBAT1:
+          /* Fire Nuclear: */
+          if ((nether->getControlled()->angle == 0 || nether->getControlled()->angle == 90 ||
+               nether->getControlled()->angle == 180 || nether->getControlled()->angle == 270) &&
+              nether->getControlled()->hasNuclear() &&
+              nether->getControlled()->firetimer == 0) {
+            nether->getControlled()->op=Robot::OPERATOR::NUCLEAR;
+          }
+          break;
+        case StatusButton::NAME::COMBAT2:
+          /* Fire Phasers: */
+          if ((nether->getControlled()->angle == 0 || nether->getControlled()->angle == 90 ||
+               nether->getControlled()->angle == 180 || nether->getControlled()->angle == 270) &&
+              nether->getControlled()->hasPhasers() &&
+              nether->getControlled()->op == Robot::OPERATOR::NONE) {
+            nether->getControlled()->op = Robot::OPERATOR::PHASERS;
+          }
+          break;
+        case StatusButton::NAME::COMBAT3:
+          /* Fire Missiles: */
+          if ((nether->getControlled()->angle == 0 || nether->getControlled()->angle == 90 ||
+               nether->getControlled()->angle == 180 || nether->getControlled()->angle == 270) &&
+              nether->getControlled()->hasMissiles() &&
+              nether->getControlled()->op == Robot::OPERATOR::NONE) {
+            nether->getControlled()->op = Robot::OPERATOR::MISSILES;
+          }
+          break;
+        case StatusButton::NAME::COMBAT4:
+          /* Fire Canons: */
+          if ((nether->getControlled()->angle == 0 || nether->getControlled()->angle == 90 ||
+               nether->getControlled()->angle == 180 || nether->getControlled()->angle == 270) &&
+              nether->getControlled()->hasCannons() &&
+              nether->getControlled()->op == Robot::OPERATOR::NONE) {
+            nether->getControlled()->op = Robot::OPERATOR::CANNONS;
+          }
+          break;
+        case StatusButton::NAME::COMBAT5:
+          {
+            setActiveButtonColor({1.0f, 0.5f, 0.5f});
+            setActiveMenu(Menu::TYPE::DIRECTCONTROL2);
+            requestRedraw();
+            nether->sManager.playSelect();
+          }
+          break;
+        case StatusButton::NAME::COMBAT6:
+          /* Back to the robot menu: */
+          activateMenu(Menu::TYPE::ROBOT, StatusButton::NAME::ROBOT3);
+          nether->sManager.playSelect();
+          break;
+        }
+      }
+    }
+    break;
+  case Menu::TYPE::ORDERS:
+    /* Browsing through the ORDERS MENU: */
+    {
+      if (handleKeys(keyboard)) {
+        switch (getActiveButton()) {
+        case StatusButton::NAME::ORDERS1:
+          /* STOP & DEFEND: */
+          nether->getControlled()->program = Robot::PROGRAM_STOPDEFEND;
+          nether->getControlled()->program_goal = Vector(-1, -1, -1);
+          activateMenu(Menu::TYPE::ROBOT, StatusButton::NAME::ROBOT2);
+          nether->sManager.playSelect();
+          break;
+        case StatusButton::NAME::ORDERS2:
+          /* ADVANCE ?? MILES: */
+          nether->getControlled()->program = Robot::PROGRAM_ADVANCE;
+          nether->getControlled()->program_parameter.as_int = 0;
+          nether->getControlled()->program_goal = Vector(-1, -1, -1);
+
+          activateMenu(Menu::TYPE::SELECTDISTANCE, StatusButton::NAME::NONE);
+          nether->sManager.playSelect();
+          break;
+        case StatusButton::NAME::ORDERS3:
+          /* RETREAT ?? MILES: */
+          nether->getControlled()->program = Robot::PROGRAM_RETREAT;
+          nether->getControlled()->program_parameter.as_int = 0;
+          nether->getControlled()->program_goal = Vector(-1, -1, -1);
+
+          activateMenu(Menu::TYPE::SELECTDISTANCE, StatusButton::NAME::NONE);
+          nether->sManager.playSelect();
+          break;
+        case StatusButton::NAME::ORDERS4:
+          /* SEARCH AND DESTROY: */
+          activateMenu(Menu::TYPE::TARGET_DESTROY, StatusButton::NAME::TARGET1);
+          nether->sManager.playSelect();
+          break;
+        case StatusButton::NAME::ORDERS5:
+          activateMenu(Menu::TYPE::TARGET_CAPTURE, StatusButton::NAME::TARGET1);
+          nether->sManager.playSelect();
+          break;
+        }
+      }
+    }
+    break;
+
+  case Menu::TYPE::SELECTDISTANCE:
+    {
+      if (keyboard[up_key] > 1) {
+        nether->getControlled()->program_parameter.as_int += 10;
+        if (nether->getControlled()->program_parameter.as_int > 190)
+          nether->getControlled()->program_parameter.as_int = 190;
+        nether->getControlled()->program_goal = Vector(-1, -1, -1);
+        requestRedraw();
+      }
+      if (keyboard[down_key] > 1) {
+        nether->getControlled()->program_parameter.as_int -= 10;
+        if (nether->getControlled()->program_parameter.as_int < 0)
+          nether->getControlled()->program_parameter.as_int = 0;
+        nether->getControlled()->program_goal = Vector(-1, -1, -1);
+
+        requestRedraw();
+      }
+      if (keyboard[fire_key] > 1) {
+        if (nether->getControlled()->program_parameter.as_int == 0)
+          nether->getControlled()->program = Robot::PROGRAM_STOPDEFEND;
+        nether->getControlled()->program_goal = Vector(-1, -1, -1);
+
+        activateMenu(Menu::TYPE::ROBOT, StatusButton::NAME::ROBOT2);
+        nether->sManager.playSelect();
+      }
+    }
+    break;
+
+  case Menu::TYPE::TARGET_DESTROY:
+    /* Browsing through the SELECT TARGET FOR DESTROYING MENU: */
+    {
+      if (handleKeys(keyboard)) {
+        switch (getActiveButton()) {
+        case StatusButton::NAME::TARGET1:
+          if (nether->getControlled()->pieces[0] ||
+              nether->getControlled()->pieces[1] ||
+              nether->getControlled()->pieces[2]) {
+            activateMenu(Menu::TYPE::ROBOT, StatusButton::NAME::ROBOT2);
+            nether->getControlled()->program = Robot::PROGRAM_DESTROY;
+            nether->getControlled()->program_parameter.param = Robot::P_PARAM_ROBOTS;
+            nether->getControlled()->program_goal = Vector(-1, -1, -1);
+            nether->sManager.playSelect();
+          } else {
+            /* The robot has no standard WEAPONS!: */
+            nether->sManager.playWrong();
+          }
+          break;
+        case StatusButton::NAME::TARGET2:
+          if (nether->getControlled()->pieces[3]) {
+            activateMenu(Menu::TYPE::ROBOT, StatusButton::NAME::ROBOT2);
+            nether->getControlled()->program = Robot::PROGRAM_DESTROY;
+            nether->getControlled()->program_parameter.param = Robot::P_PARAM_EFACTORIES;
+            nether->getControlled()->program_goal = Vector(-1, -1, -1);
+            nether->sManager.playSelect();
+          } else {
+            /* The robot has no NUCLEAR weapons: */
+            nether->sManager.playWrong();
+          }
+          break;
+        case StatusButton::NAME::TARGET3:
+          if (nether->getControlled()->pieces[3]) {
+            activateMenu(Menu::TYPE::ROBOT, StatusButton::NAME::ROBOT2);
+            nether->getControlled()->program = Robot::PROGRAM_DESTROY;
+            nether->getControlled()->program_parameter.param = Robot::P_PARAM_WARBASES;
+            nether->getControlled()->program_goal = Vector(-1, -1, -1);
+            nether->sManager.playSelect();
+          } else {
+            /* The robot has no NUCLEAR weapons: */
+            nether->sManager.playWrong();
+          }
+          break;
+        }
+      }
+    }
+    break;
+
+  case Menu::TYPE::TARGET_CAPTURE:
+    /* Browsing through the SELECT TARGET FOR CAPTURING MENU: */
+    {
+      if (handleKeys(keyboard)) {
+        switch (getActiveButton()) {
+        case StatusButton::NAME::TARGET1:
+          activateMenu(Menu::TYPE::ROBOT, StatusButton::NAME::ROBOT2);
+          nether->getControlled()->program = Robot::PROGRAM_CAPTURE;
+          nether->getControlled()->program_parameter.param = Robot::P_PARAM_NFACTORIES;
+          nether->getControlled()->program_goal = Vector(-1, -1, -1);
+          nether->sManager.playSelect();
+          break;
+        case StatusButton::NAME::TARGET2:
+          activateMenu(Menu::TYPE::ROBOT, StatusButton::NAME::ROBOT2);
+          nether->getControlled()->program = Robot::PROGRAM_CAPTURE;
+          nether->getControlled()->program_parameter.param = Robot::P_PARAM_EFACTORIES;
+          nether->getControlled()->program_goal = Vector(-1, -1, -1);
+          nether->sManager.playSelect();
+          break;
+        case StatusButton::NAME::TARGET3:
+          activateMenu(Menu::TYPE::ROBOT, StatusButton::NAME::ROBOT2);
+          nether->getControlled()->program = Robot::PROGRAM_CAPTURE;
+          nether->getControlled()->program_parameter.param = Robot::P_PARAM_WARBASES;
+          nether->getControlled()->program_goal = Vector(-1,-1,-1);
+          nether->sManager.playSelect();
+          break;
+        }
+      }
+    }
+    break;
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
   for (auto& b : buttons) {
     if (b->status) {
       b->status++;
