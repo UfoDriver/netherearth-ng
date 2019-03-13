@@ -563,3 +563,19 @@ void Menu::setActiveButtonColor(const Color& color)
       b->color = color;
   }
 }
+
+
+std::ostream& operator<<(std::ostream& out, const Menu& menu)
+{
+  return out << int(menu.activeMenu) << ' ' << int(menu.activeButton);
+}
+
+
+std::istream& operator>>(std::istream& in, Menu& menu)
+{
+  int actMenu_, actButton_;
+  in >> actMenu_ >> actButton_;
+  menu.activeButton = StatusButton::NAME(actButton_);
+  menu.replaceMenu(Menu::TYPE(actMenu_), StatusButton::NAME(actButton_));
+  return in;
+}

@@ -64,7 +64,7 @@ NETHER::NETHER(const std::string& mapname): map(this), ai(this, &map), menu(this
   gameFinished = 0;
   gameStarted = INTRO_TIME;
 
-  menu.newmenu(Menu::TYPE::GENERAL);
+  menu.replaceMenu(Menu::TYPE::GENERAL, StatusButton::NAME::NONE);
   menu.requestRedraw();
   radar.needsRedraw = 1;
 
@@ -304,7 +304,7 @@ bool NETHER::saveGame(const std::string& filename)
   oFile << stats;
 
   oFile << find_index(map.robots[0], controlled) << '\n';
-  oFile << int(menu.getActiveMenu()) << ' ' << int(menu.getActiveButton()) << std::endl;
+  oFile << menu << std::endl;
 
   return true;
 }
@@ -355,13 +355,9 @@ bool NETHER::loadGame(const std::string& filename)
   else
     controlled = 0;
 
-  int actMenu_, actButton_;
-  inFile >> actMenu_ >> actButton_;
-  menu.setActiveMenu(Menu::TYPE(actMenu_));
-  menu.setActiveButton(StatusButton::NAME(actButton_));
+  inFile >> menu;
 
   ai.makePrecomputations();
-  menu.newmenu(menu.getActiveMenu());
   return true;
 }
 
