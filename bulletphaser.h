@@ -9,7 +9,7 @@ class BulletPhaser : public Bullet {
 public:
   BulletPhaser(Vector& position, Robot* owner);
   void draw(bool shadow, std::vector<Particle>& particles) const override;
-  int getPersistence() const override { return MISSILE_PERSISTENCE; }
+  int getPersistence() const override { return PHASER_PERSISTENCE; }
 
 private:
   void computeCMC(std::vector<Piece3DObject>& bulletTiles) override;

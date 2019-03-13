@@ -452,8 +452,7 @@ void Menu::cycle(unsigned char* keyboard)
         switch (activeButton) {
         case StatusButton::NAME::COMBAT1:
           /* Fire Nuclear: */
-          if ((nether->getControlled()->angle == 0 || nether->getControlled()->angle == 90 ||
-               nether->getControlled()->angle == 180 || nether->getControlled()->angle == 270) &&
+          if ((nether->getControlled()->angle % 90 == 0) &&
               nether->getControlled()->hasNuclear() &&
               nether->getControlled()->firetimer == 0) {
             nether->getControlled()->op=Robot::OPERATOR::NUCLEAR;
@@ -461,8 +460,7 @@ void Menu::cycle(unsigned char* keyboard)
           break;
         case StatusButton::NAME::COMBAT2:
           /* Fire Phasers: */
-          if ((nether->getControlled()->angle == 0 || nether->getControlled()->angle == 90 ||
-               nether->getControlled()->angle == 180 || nether->getControlled()->angle == 270) &&
+          if ((nether->getControlled()->angle % 90 == 0) &&
               nether->getControlled()->hasPhasers() &&
               nether->getControlled()->op == Robot::OPERATOR::NONE) {
             nether->getControlled()->op = Robot::OPERATOR::PHASERS;
@@ -470,8 +468,7 @@ void Menu::cycle(unsigned char* keyboard)
           break;
         case StatusButton::NAME::COMBAT3:
           /* Fire Missiles: */
-          if ((nether->getControlled()->angle == 0 || nether->getControlled()->angle == 90 ||
-               nether->getControlled()->angle == 180 || nether->getControlled()->angle == 270) &&
+          if ((nether->getControlled()->angle % 90 == 0) &&
               nether->getControlled()->hasMissiles() &&
               nether->getControlled()->op == Robot::OPERATOR::NONE) {
             nether->getControlled()->op = Robot::OPERATOR::MISSILES;
@@ -479,8 +476,7 @@ void Menu::cycle(unsigned char* keyboard)
           break;
         case StatusButton::NAME::COMBAT4:
           /* Fire Canons: */
-          if ((nether->getControlled()->angle == 0 || nether->getControlled()->angle == 90 ||
-               nether->getControlled()->angle == 180 || nether->getControlled()->angle == 270) &&
+          if ((nether->getControlled()->angle % 90 == 0) &&
               nether->getControlled()->hasCannons() &&
               nether->getControlled()->op == Robot::OPERATOR::NONE) {
             nether->getControlled()->op = Robot::OPERATOR::CANNONS;
@@ -817,8 +813,8 @@ bool Menu::handleKeys(unsigned char* keyboard)
     }
     buttons[index].color = Color(0, 0, 0.8f);
     if (keyboard[up_key] > 1) {
-      index = (index - 1) % buttons.size();
       do {
+        index = (index - 1) % buttons.size();
         if (buttons[index].isInteractive())
           break;
       } while (true);
