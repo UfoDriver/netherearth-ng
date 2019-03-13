@@ -31,7 +31,7 @@ public:
   void draw(int width, int height);
   void requestRedraw() { needsRedraw = 2; }
   void cycle();
-  void replaceMenu(TYPE newMenu, StatusButton::NAME activeButton);
+  void activateMenu(TYPE newMenu, StatusButton::NAME activeButton);
   void setActiveButtonColor(const Color& color);
   bool handleKeys(unsigned char* keyboard);
   void updateTime(const Stats& stats);

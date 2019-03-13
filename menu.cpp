@@ -483,7 +483,7 @@ StatusButton* Menu::getbutton(StatusButton::NAME ID)
 }
 
 
-void Menu::replaceMenu(TYPE newMenu, StatusButton::NAME newActiveButton)
+void Menu::activateMenu(TYPE newMenu, StatusButton::NAME newActiveButton)
 {
   killmenu(activeMenu);
   newmenu(newMenu);
@@ -576,6 +576,6 @@ std::istream& operator>>(std::istream& in, Menu& menu)
   int actMenu_, actButton_;
   in >> actMenu_ >> actButton_;
   menu.activeButton = StatusButton::NAME(actButton_);
-  menu.replaceMenu(Menu::TYPE(actMenu_), StatusButton::NAME(actButton_));
+  menu.activateMenu(Menu::TYPE(actMenu_), StatusButton::NAME(actButton_));
   return in;
 }
