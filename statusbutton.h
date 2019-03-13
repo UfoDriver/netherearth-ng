@@ -31,14 +31,14 @@ public:
                    TARGET2,
                    TARGET3};
 
-  StatusButton(NAME ID, int x, int y, int sx, int sy, const std::string& text1,
-               const std::string& text2, const Color& color, int status):
-    ID(ID), x(x), y(y), sx(sx), sy(sy), text1(text1), text2(text2), color{color}, status(status)
-  {}
+  StatusButton(NAME ID, int x, int y, int sx, int sy, const std::string &text1,
+               const std::string &text2, const Color &color, int status = -100)
+    : ID {ID}, x {x}, y {y}, sx {sx}, sy {sy}, text1 {text1}, text2 {text2}, color {color},
+      status {status} {}
 
   bool isInteractive()
   {
-    return ID != NAME::TIME and ID != NAME::STATUS and ID != NAME::RESOURCE;
+    return ID != NAME::TIME and ID != NAME::STATUS and ID != NAME::RESOURCE and status >= -32;
   }
 
   void draw();

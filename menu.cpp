@@ -62,7 +62,7 @@ void Menu::draw(int width, int height)
     glLoadIdentity();
 
     for (auto& b: buttons) {
-      b->draw();
+      b.draw();
     }
 
     drawStatus();
@@ -76,8 +76,8 @@ void Menu::drawStatus()
   switch (activeMenu) {
   case TYPE::GENERAL:
     {
-      StatusButton* b = getbutton(StatusButton::NAME::STATUS);
-      if (b != 0 && b->status == 0) {
+      StatusButton& b = findButton(StatusButton::NAME::STATUS);
+      if (b.status == 0) {
         glColor3f(0.5f, 0.5f, 1.0f);
         glTranslatef(70, 356, 0);
 
@@ -105,8 +105,8 @@ void Menu::drawStatus()
   case TYPE::ROBOT:
   case TYPE::DIRECTCONTROL:
     {
-      StatusButton* b = getbutton(StatusButton::NAME::ROBOT1);
-      if (b!=0 && b->status==0) {
+      StatusButton& b = findButton(StatusButton::NAME::ROBOT1);
+      if (b.status == 0) {
         glTranslatef(70,140,0);
         glColor3f(1.0f,1.0f,0.0);
         scaledglprintf(0.1f,0.1f,"-ORDERS-");
@@ -220,8 +220,8 @@ void Menu::drawStatus()
 
   case TYPE::ORDERS:
       {
-        StatusButton* b =getbutton(StatusButton::NAME::ORDERS1);
-        if (b!=0 && b->status==0) {
+        StatusButton& b = findButton(StatusButton::NAME::ORDERS1);
+        if (b.status == 0) {
           glTranslatef(70,400,0);
           glColor3f(1.0f,1.0f,1.0f);
           scaledglprintf(0.1f,0.1f,"SELECT");
@@ -240,8 +240,8 @@ void Menu::drawStatus()
 
   case TYPE::SELECTDISTANCE:
     {
-      StatusButton* b = getbutton(StatusButton::NAME::ORDERS);
-      if (b!=0 && b->status==0) {
+      StatusButton& b = findButton(StatusButton::NAME::ORDERS);
+      if (b.status == 0) {
         glTranslatef(70,300,0);
         glColor3f(0.5f,0.5f,1.0f);
         scaledglprintf(0.1f,0.1f,"SELECT");
@@ -265,8 +265,8 @@ void Menu::drawStatus()
   case TYPE::TARGET_DESTROY:
   case TYPE::TARGET_CAPTURE:
     {
-      StatusButton* b = getbutton(StatusButton::NAME::ORDERS);
-      if (b!=0 && b->status==0) {
+      StatusButton& b = findButton(StatusButton::NAME::ORDERS);
+      if (b.status == 0) {
         glTranslatef(70,350,0);
         glColor3f(0.5f,0.5f,1.0f);
         scaledglprintf(0.1f,0.1f,"SELECT");
@@ -397,11 +397,11 @@ void Menu::cycle(unsigned char* keyboard)
     /* Browsing through the ROBOT MENU: */
     {
       if (handleKeys(keyboard)) {
-        switch (getActiveButton()) {
+        switch (activeButton) {
         case StatusButton::NAME::ROBOT1:
           {
             setActiveButtonColor({1.0f, 0.5f, 0.5f});
-            setActiveMenu(Menu::TYPE::DIRECTCONTROL);
+            activeMenu = Menu::TYPE::DIRECTCONTROL;
             requestRedraw();
             nether->sManager.playSelect();
           }
@@ -433,7 +433,7 @@ void Menu::cycle(unsigned char* keyboard)
     /* Direct control of a robot by the user: */
     if (keyboard[fire_key] > 1) {
       requestRedraw();
-      setActiveMenu(Menu::TYPE::ROBOT);
+      activeMenu = Menu::TYPE::ROBOT;
     }
     break;
 
@@ -441,7 +441,7 @@ void Menu::cycle(unsigned char* keyboard)
     /* Direct control of a robot by the user: */
     if (keyboard[fire_key] > 1) {
       requestRedraw();
-      setActiveMenu(Menu::TYPE::COMBATMODE);
+      activeMenu = Menu::TYPE::COMBATMODE;
     }
     break;
 
@@ -449,7 +449,7 @@ void Menu::cycle(unsigned char* keyboard)
     /* Browsing through the COMBAT MENU: */
     {
       if (handleKeys(keyboard)) {
-        switch(getActiveButton()) {
+        switch(activeButton) {
         case StatusButton::NAME::COMBAT1:
           /* Fire Nuclear: */
           if ((nether->getControlled()->angle == 0 || nether->getControlled()->angle == 90 ||
@@ -489,7 +489,7 @@ void Menu::cycle(unsigned char* keyboard)
         case StatusButton::NAME::COMBAT5:
           {
             setActiveButtonColor({1.0f, 0.5f, 0.5f});
-            setActiveMenu(Menu::TYPE::DIRECTCONTROL2);
+            activeMenu = Menu::TYPE::DIRECTCONTROL2;
             requestRedraw();
             nether->sManager.playSelect();
           }
@@ -507,7 +507,7 @@ void Menu::cycle(unsigned char* keyboard)
     /* Browsing through the ORDERS MENU: */
     {
       if (handleKeys(keyboard)) {
-        switch (getActiveButton()) {
+        switch (activeButton) {
         case StatusButton::NAME::ORDERS1:
           /* STOP & DEFEND: */
           nether->getControlled()->program = Robot::PROGRAM_STOPDEFEND;
@@ -579,7 +579,7 @@ void Menu::cycle(unsigned char* keyboard)
     /* Browsing through the SELECT TARGET FOR DESTROYING MENU: */
     {
       if (handleKeys(keyboard)) {
-        switch (getActiveButton()) {
+        switch (activeButton) {
         case StatusButton::NAME::TARGET1:
           if (nether->getControlled()->pieces[0] ||
               nether->getControlled()->pieces[1] ||
@@ -627,7 +627,7 @@ void Menu::cycle(unsigned char* keyboard)
     /* Browsing through the SELECT TARGET FOR CAPTURING MENU: */
     {
       if (handleKeys(keyboard)) {
-        switch (getActiveButton()) {
+        switch (activeButton) {
         case StatusButton::NAME::TARGET1:
           activateMenu(Menu::TYPE::ROBOT, StatusButton::NAME::ROBOT2);
           nether->getControlled()->program = Robot::PROGRAM_CAPTURE;
@@ -655,31 +655,21 @@ void Menu::cycle(unsigned char* keyboard)
     break;
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-  
   for (auto& b : buttons) {
-    if (b->status) {
-      b->status++;
+    if (b.status >= -32 && b.status != 0) {
+      b.status++;
       needsRedraw = 2;
+    }
+    if (b.status >= 16) {
+      b.status = -100;
     }
   }
 
-  buttons.erase(std::remove_if(buttons.begin(), buttons.end(),
-                               [](auto& b) {
-                                 return b->status >= 16;
-                               }),
-    buttons.end());
+  // buttons.erase(std::remove_if(buttons.begin(), buttons.end(),
+  //                              [](auto& b) {
+  //                                return b.status >= 16;
+  //                              }),
+  //   buttons.end());
 }
 
 
@@ -687,183 +677,136 @@ void Menu::newmenu(TYPE menu)
 {
   switch(menu) {
   case TYPE::GENERAL:
-    if (getbutton(StatusButton::NAME::TIME)==0) {
-      newbutton(StatusButton::NAME::TIME,70,455,130,40,"Day: 0","Time: 00:00", Color(0.8f, 0, 0));
-    }
-    newbuttondelayed(StatusButton::NAME::STATUS,70,400,130,50,"STATUS","INSG  HUMN", Color(0.0, 0, 0));
-    newbuttondelayed(StatusButton::NAME::RESOURCE,70,200,130,30,"RESOURCES", "", Color(0.0, 0, 0));
-    activeMenu=TYPE::GENERAL;
+    showButtons({StatusButton::NAME::TIME, StatusButton::NAME::STATUS,
+                 StatusButton::NAME::RESOURCE});
+    activeMenu = TYPE::GENERAL;
     break;
 
   case TYPE::ROBOT:
-    newbuttondelayed(StatusButton::NAME::ROBOT1,70,350,130,40,"DIRECT   ","  CONTROL", Color(0, 0, 0.8f));
-    newbuttondelayed(StatusButton::NAME::ROBOT2,70,300,130,40,"GIVE     ","   ORDERS", Color(0, 0, 0.8f));
-    newbuttondelayed(StatusButton::NAME::ROBOT3,70,250,130,40,"COMBAT   ","     MODE", Color(0, 0, 0.8f));
-    newbuttondelayed(StatusButton::NAME::ROBOT4,70,200,130,40,"LEAVE    ","    ROBOT", Color(0, 0, 0.8f));
-    activeMenu=TYPE::ROBOT;
+    showButtons({StatusButton::NAME::ROBOT1, StatusButton::NAME::ROBOT2,
+                 StatusButton::NAME::ROBOT3, StatusButton::NAME::ROBOT4});
+    activeMenu = TYPE::ROBOT;
     break;
 
   case TYPE::COMBATMODE:
-    newbuttondelayed(StatusButton::NAME::COMBAT1,70,350,130,40,"NUCLEAR  ","     BOMB", Color(0, 0, 0.8f));
-    newbuttondelayed(StatusButton::NAME::COMBAT2,70,300,130,40,"FIRE     ","  PHASERS", Color(0, 0, 0.8f));
-    newbuttondelayed(StatusButton::NAME::COMBAT3,70,250,130,40,"FIRE     "," MISSILES", Color(0, 0, 0.8f));
-    newbuttondelayed(StatusButton::NAME::COMBAT4,70,200,130,40,"FIRE     ","   CANNON", Color(0, 0, 0.8f));
-    newbuttondelayed(StatusButton::NAME::COMBAT5,70,150,130,40,"MOVE     ","    ROBOT", Color(0, 0, 0.8f));
-    newbuttondelayed(StatusButton::NAME::COMBAT6,70,100,130,40,"STOP     ","   COMBAT", Color(0, 0, 0.8f));
-    activeMenu=TYPE::COMBATMODE;
+    showButtons({StatusButton::NAME::COMBAT1, StatusButton::NAME::COMBAT2,
+                 StatusButton::NAME::COMBAT3, StatusButton::NAME::COMBAT4,
+                 StatusButton::NAME::COMBAT5, StatusButton::NAME::COMBAT6});
+    activeMenu = TYPE::COMBATMODE;
     break;
 
   case TYPE::ORDERS:
-    newbuttondelayed(StatusButton::NAME::ORDERS1,70,350,130,40,"STOP AND ","   DEFEND", Color(0, 0, 0.8f));
-    newbuttondelayed(StatusButton::NAME::ORDERS2,70,300,130,40,"ADVANCE  "," ?? MILES", Color(0, 0, 0.8f));
-    newbuttondelayed(StatusButton::NAME::ORDERS3,70,250,130,40,"RETREAT  "," ?? MILES", Color(0, 0, 0.8f));
-    newbuttondelayed(StatusButton::NAME::ORDERS4,70,200,130,40,"SEARCH & ","  DESTROY", Color(0, 0, 0.8f));
-    newbuttondelayed(StatusButton::NAME::ORDERS5,70,150,130,40,"SEARCH & ","  CAPTURE", Color(0, 0, 0.8f));
-    activeMenu=TYPE::ORDERS;
+    showButtons({StatusButton::NAME::ORDERS1, StatusButton::NAME::ORDERS2,
+                 StatusButton::NAME::ORDERS3, StatusButton::NAME::ORDERS4,
+                 StatusButton::NAME::ORDERS5});
+    activeMenu = TYPE::ORDERS;
     break;
 
   case TYPE::SELECTDISTANCE:
-    if (nether->getControlled()->program==Robot::PROGRAM_ADVANCE)
-      newbuttondelayed(StatusButton::NAME::ORDERS,70,400,130,40,"ADVANCE  "," ?? MILES", Color(0, 0, 0.8f));
-    if (nether->getControlled()->program==Robot::PROGRAM_RETREAT)
-      newbuttondelayed(StatusButton::NAME::ORDERS,70,400,130,40,"RETREAT  "," ?? MILES", Color(0, 0, 0.8f));
-    activeMenu=TYPE::SELECTDISTANCE;
+    if (nether->getControlled()->program == Robot::PROGRAM_ADVANCE)
+      showButtons({StatusButton::NAME::ORDERS});
+    if (nether->getControlled()->program == Robot::PROGRAM_RETREAT)
+      showButtons({StatusButton::NAME::ORDERS});
+    activeMenu = TYPE::SELECTDISTANCE;
     break;
 
   case TYPE::TARGET_DESTROY:
-    newbuttondelayed(StatusButton::NAME::ORDERS,70,400,130,40,"SEARCH & ","  DESTROY", Color(0, 0, 0.8f));
-    newbuttondelayed(StatusButton::NAME::TARGET1,70,300,130,40,"ENEMY    ","   ROBOTS", Color(0, 0, 0.8f));
-    newbuttondelayed(StatusButton::NAME::TARGET2,70,250,130,40,"ENEMY    ","FACTORIES", Color(0, 0, 0.8f));
-    newbuttondelayed(StatusButton::NAME::TARGET3,70,200,130,40,"ENEMY    "," WARBASES", Color(0, 0, 0.8f));
-    activeMenu=TYPE::TARGET_DESTROY;
+    showButtons({StatusButton::NAME::ORDERS, StatusButton::NAME::TARGET1,
+                 StatusButton::NAME::TARGET2, StatusButton::NAME::TARGET3});
+    activeMenu = TYPE::TARGET_DESTROY;
     break;
 
   case TYPE::TARGET_CAPTURE:
-    newbuttondelayed(StatusButton::NAME::ORDERS,70,400,130,40,"SEARCH & ","  CAPTURE", Color(0, 0, 0.8f));
-    newbuttondelayed(StatusButton::NAME::TARGET1,70,300,130,40,"NEUTRAL  ","FACTORIES", Color(0, 0, 0.8f));
-    newbuttondelayed(StatusButton::NAME::TARGET2,70,250,130,40,"ENEMY    ","FACTORIES", Color(0, 0, 0.8f));
-    newbuttondelayed(StatusButton::NAME::TARGET3,70,200,130,40,"ENEMY    "," WARBASES", Color(0, 0, 0.8f));
-    activeMenu=TYPE::TARGET_CAPTURE;
+    showButtons({StatusButton::NAME::ORDERS, StatusButton::NAME::TARGET1,
+                 StatusButton::NAME::TARGET2, StatusButton::NAME::TARGET3});
+    activeMenu = TYPE::TARGET_CAPTURE;
     break;
   }
   needsRedraw = 2;
 }
 
 
-void Menu::killmenu(TYPE menu)
+void Menu::killmenu()
 {
-  switch(menu) {
+  switch (activeMenu) {
   case TYPE::GENERAL:
-    killbutton(StatusButton::NAME::STATUS);
-    killbutton(StatusButton::NAME::RESOURCE);
+    hideButtons({StatusButton::NAME::STATUS, StatusButton::NAME::RESOURCE});
     break;
 
   case TYPE::ROBOT:
-    killbutton(StatusButton::NAME::ROBOT1);
-    killbutton(StatusButton::NAME::ROBOT2);
-    killbutton(StatusButton::NAME::ROBOT3);
-    killbutton(StatusButton::NAME::ROBOT4);
+    hideButtons({StatusButton::NAME::ROBOT1, StatusButton::NAME::ROBOT2,
+                 StatusButton::NAME::ROBOT3, StatusButton::NAME::ROBOT4});
     break;
 
   case TYPE::COMBATMODE:
-    killbutton(StatusButton::NAME::COMBAT1);
-    killbutton(StatusButton::NAME::COMBAT2);
-    killbutton(StatusButton::NAME::COMBAT3);
-    killbutton(StatusButton::NAME::COMBAT4);
-    killbutton(StatusButton::NAME::COMBAT5);
-    killbutton(StatusButton::NAME::COMBAT6);
+    hideButtons({StatusButton::NAME::COMBAT1, StatusButton::NAME::COMBAT2,
+                 StatusButton::NAME::COMBAT3, StatusButton::NAME::COMBAT4,
+                 StatusButton::NAME::COMBAT5, StatusButton::NAME::COMBAT6});
     break;
 
   case TYPE::ORDERS:
-    killbutton(StatusButton::NAME::ORDERS1);
-    killbutton(StatusButton::NAME::ORDERS2);
-    killbutton(StatusButton::NAME::ORDERS3);
-    killbutton(StatusButton::NAME::ORDERS4);
-    killbutton(StatusButton::NAME::ORDERS5);
+    hideButtons({StatusButton::NAME::ORDERS1, StatusButton::NAME::ORDERS2,
+                 StatusButton::NAME::ORDERS3, StatusButton::NAME::ORDERS4,
+                 StatusButton::NAME::ORDERS5});
     break;
 
   case TYPE::SELECTDISTANCE:
-    killbutton(StatusButton::NAME::ORDERS);
+    hideButtons({StatusButton::NAME::ORDERS});
     break;
 
   case TYPE::TARGET_DESTROY:
   case TYPE::TARGET_CAPTURE:
-    killbutton(StatusButton::NAME::ORDERS);
-    killbutton(StatusButton::NAME::TARGET1);
-    killbutton(StatusButton::NAME::TARGET2);
-    killbutton(StatusButton::NAME::TARGET3);
+    hideButtons({StatusButton::NAME::ORDERS, StatusButton::NAME::TARGET1,
+                 StatusButton::NAME::TARGET2, StatusButton::NAME::TARGET3});
     break;
 
   case TYPE::ALL:
-    killbutton(StatusButton::NAME::STATUS);
-    killbutton(StatusButton::NAME::RESOURCE);
-    killbutton(StatusButton::NAME::ROBOT1);
-    killbutton(StatusButton::NAME::ROBOT2);
-    killbutton(StatusButton::NAME::ROBOT3);
-    killbutton(StatusButton::NAME::ROBOT4);
-    killbutton(StatusButton::NAME::COMBAT1);
-    killbutton(StatusButton::NAME::COMBAT2);
-    killbutton(StatusButton::NAME::COMBAT3);
-    killbutton(StatusButton::NAME::COMBAT4);
-    killbutton(StatusButton::NAME::COMBAT5);
-    killbutton(StatusButton::NAME::COMBAT6);
-    killbutton(StatusButton::NAME::ORDERS1);
-    killbutton(StatusButton::NAME::ORDERS2);
-    killbutton(StatusButton::NAME::ORDERS3);
-    killbutton(StatusButton::NAME::ORDERS4);
-    killbutton(StatusButton::NAME::ORDERS5);
-    killbutton(StatusButton::NAME::ORDERS);
-    killbutton(StatusButton::NAME::ORDERS);
-    killbutton(StatusButton::NAME::TARGET1);
-    killbutton(StatusButton::NAME::TARGET2);
-    killbutton(StatusButton::NAME::TARGET3);
+    hideButtons({StatusButton::NAME::STATUS, StatusButton::NAME::RESOURCE,
+                 StatusButton::NAME::ROBOT1, StatusButton::NAME::ROBOT2,
+                 StatusButton::NAME::ROBOT3, StatusButton::NAME::ROBOT4,
+                 StatusButton::NAME::COMBAT1, StatusButton::NAME::COMBAT2,
+                 StatusButton::NAME::COMBAT3, StatusButton::NAME::COMBAT4,
+                 StatusButton::NAME::COMBAT5, StatusButton::NAME::COMBAT6,
+                 StatusButton::NAME::ORDERS1, StatusButton::NAME::ORDERS2,
+                 StatusButton::NAME::ORDERS3, StatusButton::NAME::ORDERS4,
+                 StatusButton::NAME::ORDERS5, StatusButton::NAME::ORDERS,
+                 StatusButton::NAME::ORDERS, StatusButton::NAME::TARGET1,
+                 StatusButton::NAME::TARGET2, StatusButton::NAME::TARGET3});
     break;
   }
   needsRedraw = 2;
 }
 
 
-void Menu::newbutton(StatusButton::NAME ID, int x, int y, int sx, int sy,
-                     const std::string& t1, const std::string& t2, const Color& color)
-{
-  buttons.push_back(std::make_unique<StatusButton>(ID, x, y, sx, sy, t1, t2, color, -16));
-  needsRedraw = 2;
-}
-
-
-void Menu::newbuttondelayed(StatusButton::NAME ID, int x, int y, int sx, int sy,
-                            const std::string& t1, const std::string& t2, const Color& color)
-{
-  buttons.push_back(std::make_unique<StatusButton>(ID, x, y, sx, sy, t1, t2, color, -32));
-  needsRedraw = 2;
-}
-
-
-void Menu::killbutton(StatusButton::NAME ID)
+void Menu::hideButtons(const std::unordered_set<StatusButton::NAME>& ids)
 {
   for (auto& b : buttons) {
-    if (b->ID == ID)
-      b->status = 1;
+    if (ids.count(b.ID)) {
+      b.status = 1;
+    }
   }
   needsRedraw = 2;
 }
 
 
-StatusButton* Menu::getbutton(StatusButton::NAME ID)
+void Menu::showButtons(const std::unordered_set<StatusButton::NAME>& ids)
 {
-  auto result = find_if(std::cbegin(buttons), std::cend(buttons),
-                        [ID](auto& b) {return b->ID == ID;});
-  if (result != end(buttons)) {
-    return result->get();
-  } else {
-    return 0;
+  for (auto& b : buttons) {
+    if (ids.count(b.ID)) {
+      if (b.ID == StatusButton::NAME::TIME) {
+        b.status = 0;
+      } else {
+        b.status = -32;
+      }
+    }
   }
+  needsRedraw = 2;
 }
 
 
 void Menu::activateMenu(TYPE newMenu, StatusButton::NAME newActiveButton)
 {
-  killmenu(activeMenu);
+  killmenu();
   newmenu(newMenu);
   activeButton = newActiveButton;
 }
@@ -871,46 +814,42 @@ void Menu::activateMenu(TYPE newMenu, StatusButton::NAME newActiveButton)
 
 bool Menu::handleKeys(unsigned char* keyboard)
 {
-
   if (keyboard[up_key] > 1 || keyboard[down_key] > 1) {
-    auto currentButton = std::find_if(buttons.begin(), buttons.end(),
-                                      [this](auto& button) {
-                                        return button->ID == activeButton;
-                                      });
-    (*currentButton)->color = Color(0, 0, 0.8f);
-    // @TODO: evaluate using looped bidirectional iterator
+    int index = 0;
+    for (auto &b : buttons) {
+      if (b.ID == activeButton)
+        break;
+      index++;
+    }
+    buttons[index].color = Color(0, 0, 0.8f);
     if (keyboard[up_key] > 1) {
+      index = (index - 1) % buttons.size();
       do {
-        if (currentButton == buttons.begin())
-          currentButton = buttons.end();
-        --currentButton;
-        if ((*currentButton)->isInteractive())
+        if (buttons[index].isInteractive())
           break;
       } while (true);
     }
 
     if (keyboard[down_key] > 1) {
       do {
-        ++currentButton;
-        if (currentButton == buttons.end())
-          currentButton = buttons.begin();
-        if ((*currentButton)->isInteractive())
+        index = (index + 1) % buttons.size();
+        if (buttons[index].isInteractive())
           break;
       } while (true);
     }
 
-    (*currentButton)->color = Color(0.5f, 0.5f, 1.0f);
+    buttons[index].color = Color(0.5f, 0.5f, 1.0f);
 
-    activeButton = (*currentButton)->ID;
+    activeButton = buttons[index].ID;
     needsRedraw = 2;
   }
 
   for (auto& button: buttons) {
-    if (button->isInteractive()) {
-      if (button->ID == activeButton) {
-        button->color = Color(0.5f, 0.5f, 1.0f);
+    if (button.isInteractive()) {
+      if (button.ID == activeButton) {
+        button.color = Color(0.5f, 0.5f, 1.0f);
       } else {
-        button->color = Color(0.0f, 0.0f, 0.8f);
+        button.color = Color(0.0f, 0.0f, 0.8f);
       }
     }
   }
@@ -921,14 +860,14 @@ bool Menu::handleKeys(unsigned char* keyboard)
 
 void Menu::updateTime(const Stats& stats)
 {
-  StatusButton* timeb = getbutton(StatusButton::NAME::TIME);
-  if (timeb) {
+  StatusButton& timeb = findButton(StatusButton::NAME::TIME);
+  if (timeb.status == 0) {
     std::ostringstream t1Formatter;
     t1Formatter << "Day: " << stats.day;
-    timeb->text1 = t1Formatter.str();
+    timeb.text1 = t1Formatter.str();
     std::ostringstream t2Formatter;
     t2Formatter << "Hour: " << std::setw(2) << stats.hour << ':' << std::setw(2) << stats.minute;
-    timeb->text2 = t2Formatter.str();
+    timeb.text2 = t2Formatter.str();
     needsRedraw = 2;
   }
 }
@@ -936,10 +875,7 @@ void Menu::updateTime(const Stats& stats)
 
 void Menu::setActiveButtonColor(const Color& color)
 {
-  for (auto& b : buttons) {
-    if (b->ID == activeButton)
-      b->color = color;
-  }
+  findButton(activeButton).color = color;
 }
 
 
@@ -956,4 +892,15 @@ std::istream& operator>>(std::istream& in, Menu& menu)
   menu.activeButton = StatusButton::NAME(actButton_);
   menu.activateMenu(Menu::TYPE(actMenu_), StatusButton::NAME(actButton_));
   return in;
+}
+
+
+StatusButton& Menu::findButton(StatusButton::NAME id)
+{
+  for (auto& b : buttons) {
+    if (b.ID == id) {
+      return b;
+    }
+  }
+  return buttons[0];
 }
