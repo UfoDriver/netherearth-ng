@@ -45,6 +45,9 @@ public:
     return status == 0;
   }
   void draw();
+  void toggle() {
+    color = {1.0f, 0.5f, 0.5f};
+  }
 
   NAME ID;
   int x, y;

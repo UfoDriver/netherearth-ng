@@ -12,48 +12,8 @@
 class NETHER;
 class Stats;
 
-
-class Menu
-{
-public:
-  enum class TYPE {GENERAL,
-                   ROBOT,
-                   DIRECTCONTROL,
-                   COMBATMODE,
-                   DIRECTCONTROL2,
-                   ORDERS,
-                   SELECTDISTANCE,
-                   TARGET_DESTROY,
-                   TARGET_CAPTURE,
-                   ALL};
-
-  explicit Menu(NETHER *nether) : nether{nether} {};
-
-  void draw(int width, int height);
-  void requestRedraw() { needsRedraw = 2; }
-  void cycle(unsigned char *keyboard);
-  void activateMenu(TYPE newMenu, StatusButton::NAME activeButton);
-  void setActiveButtonColor(const Color &color);
-  bool handleKeys(unsigned char *keyboard);
-  void updateTime(const Stats &stats);
-
-  StatusButton::NAME getActiveButton() const { return activeButton; }
-  TYPE getActiveMenu() const { return activeMenu; }
-
-private:
-  void drawStatus();
-  void newmenu(TYPE menu);
-  void killmenu();
-  void hideButtons(const std::unordered_set<StatusButton::NAME>& ids);
-  void showButtons(const std::unordered_set<StatusButton::NAME>& ids);
-  StatusButton& findButton(StatusButton::NAME id);
-
-  TYPE activeMenu {TYPE::GENERAL};
-  StatusButton::NAME activeButton {StatusButton::NAME::COMBAT1};
-  int needsRedraw{0};
-  NETHER *nether;
-  std::vector<StatusButton> buttons
-    {
+const std::initializer_list<StatusButton> MENU
+  {
      {StatusButton::NAME::TIME,     70, 455, 130, 40, "Day: 0",    "Time: 00:00", Color(0.8f, 0, 0)},
      {StatusButton::NAME::STATUS,   70, 400, 130, 50, "STATUS",    "INSG  HUMN",  Color(0, 0, 0.0f)},
      {StatusButton::NAME::RESOURCE, 70, 200, 130, 30, "RESOURCES", "",            Color(0, 0, 0.0f)},
@@ -83,6 +43,47 @@ private:
      {StatusButton::NAME::TARGET2,  70, 250, 130, 40, "ENEMY    ", "FACTORIES",   Color(0, 0, 0.8f)},
      {StatusButton::NAME::TARGET3,  70, 200, 130, 40, "ENEMY    ", " WARBASES",   Color(0, 0, 0.8f)}
   };
+
+
+class Menu
+{
+public:
+  enum class TYPE {GENERAL,
+                   ROBOT,
+                   DIRECTCONTROL,
+                   COMBATMODE,
+                   DIRECTCONTROL2,
+                   ORDERS,
+                   SELECTDISTANCE,
+                   TARGET_DESTROY,
+                   TARGET_CAPTURE,
+                   ALL};
+
+  explicit Menu(NETHER *nether) : nether{nether} {};
+
+  void draw(int width, int height);
+  void requestRedraw() { needsRedraw = 2; }
+  void cycle(unsigned char *keyboard);
+  void activateMenu(TYPE newMenu, StatusButton::NAME activeButton);
+  bool handleKeys(unsigned char *keyboard);
+  void updateTime(const Stats &stats);
+
+  StatusButton::NAME getActiveButton() const { return activeButton; }
+  TYPE getActiveMenu() const { return activeMenu; }
+
+private:
+  void drawStatus();
+  void newmenu(TYPE menu);
+  void killmenu();
+  void hideButtons(const std::unordered_set<StatusButton::NAME>& ids);
+  void showButtons(const std::unordered_set<StatusButton::NAME>& ids);
+  StatusButton& findButton(StatusButton::NAME id);
+
+  TYPE activeMenu {TYPE::GENERAL};
+  StatusButton::NAME activeButton {StatusButton::NAME::COMBAT1};
+  int needsRedraw{0};
+  NETHER *nether;
+  std::vector<StatusButton> buttons {MENU};
 
   friend std::ostream &operator<<(std::ostream &out, const Menu &menu);
   friend std::istream &operator>>(std::istream &in, Menu &menu);

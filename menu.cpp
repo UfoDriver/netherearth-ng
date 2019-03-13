@@ -400,7 +400,7 @@ void Menu::cycle(unsigned char* keyboard)
         switch (activeButton) {
         case StatusButton::NAME::ROBOT1:
           {
-            setActiveButtonColor({1.0f, 0.5f, 0.5f});
+            findButton(activeButton).toggle();
             activeMenu = Menu::TYPE::DIRECTCONTROL;
             requestRedraw();
             nether->sManager.playSelect();
@@ -449,7 +449,7 @@ void Menu::cycle(unsigned char* keyboard)
     /* Browsing through the COMBAT MENU: */
     {
       if (handleKeys(keyboard)) {
-        switch(activeButton) {
+        switch (activeButton) {
         case StatusButton::NAME::COMBAT1:
           /* Fire Nuclear: */
           if ((nether->getControlled()->angle == 0 || nether->getControlled()->angle == 90 ||
@@ -488,7 +488,7 @@ void Menu::cycle(unsigned char* keyboard)
           break;
         case StatusButton::NAME::COMBAT5:
           {
-            setActiveButtonColor({1.0f, 0.5f, 0.5f});
+            findButton(activeButton).toggle();
             activeMenu = Menu::TYPE::DIRECTCONTROL2;
             requestRedraw();
             nether->sManager.playSelect();
@@ -664,12 +664,6 @@ void Menu::cycle(unsigned char* keyboard)
       b.status = -100;
     }
   }
-
-  // buttons.erase(std::remove_if(buttons.begin(), buttons.end(),
-  //                              [](auto& b) {
-  //                                return b.status >= 16;
-  //                              }),
-  //   buttons.end());
 }
 
 
@@ -870,12 +864,6 @@ void Menu::updateTime(const Stats& stats)
     timeb.text2 = t2Formatter.str();
     needsRedraw = 2;
   }
-}
-
-
-void Menu::setActiveButtonColor(const Color& color)
-{
-  findButton(activeButton).color = color;
 }
 
 
