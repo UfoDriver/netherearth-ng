@@ -28,7 +28,7 @@ public:
   void draw(int width, int height);
   void requestRedraw() { needsRedraw = 2; }
   void cycle();
-  void replaceMenu(TYPE oldMenu, TYPE newMenu, StatusButton::NAME activeButton);
+  void replaceMenu(TYPE newMenu, StatusButton::NAME activeButton);
   void newmenu(TYPE menu);
   void killmenu(TYPE menu);
   void setActiveButtonColor(const Color& color);

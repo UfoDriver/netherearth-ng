@@ -483,9 +483,9 @@ StatusButton* Menu::getbutton(StatusButton::NAME ID)
 }
 
 
-void Menu::replaceMenu(TYPE oldMenu, TYPE newMenu, StatusButton::NAME newActiveButton)
+void Menu::replaceMenu(TYPE newMenu, StatusButton::NAME newActiveButton)
 {
-  killmenu(oldMenu);
+  killmenu(activeMenu);
   newmenu(newMenu);
   activeButton = newActiveButton;
 }

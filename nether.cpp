@@ -312,7 +312,7 @@ bool NETHER::saveGame(const std::string& filename)
 
 bool NETHER::loadGame(const std::string& filename)
 {
-  menu.killmenu(menu.getActiveMenu());
+  menu.replaceMenu(Menu::TYPE::GENERAL, StatusButton::NAME::NONE);
   std::ifstream inFile(filename);
 
   ai.deletePrecomputations();
@@ -511,8 +511,7 @@ void NETHER::detachShip(Robot* robot)
   if (robot == controlled) {
     controlled->shipover = false;
     controlled = nullptr;
-    menu.killmenu(Menu::TYPE::ALL);
-    menu.newmenu(Menu::TYPE::GENERAL);
+    menu.replaceMenu(Menu::TYPE::GENERAL, StatusButton::NAME::NONE);
   }
 }
 
@@ -648,13 +647,13 @@ bool NETHER::cycle(unsigned char *keyboard)
           break;
         case StatusButton::NAME::ROBOT2:
           {
-            menu.replaceMenu(Menu::TYPE::ROBOT, Menu::TYPE::ORDERS, StatusButton::NAME::ORDERS1);
+            menu.replaceMenu(Menu::TYPE::ORDERS, StatusButton::NAME::ORDERS1);
             sManager.playSelect();
           }
           break;
         case StatusButton::NAME::ROBOT3:
           {
-            menu.replaceMenu(Menu::TYPE::ROBOT, Menu::TYPE::COMBATMODE, StatusButton::NAME::COMBAT6);
+            menu.replaceMenu(Menu::TYPE::COMBATMODE, StatusButton::NAME::COMBAT6);
             sManager.playSelect();
           }
           break;
@@ -663,8 +662,7 @@ bool NETHER::cycle(unsigned char *keyboard)
           controlled->electronics_state += 6;
           controlled->shipover = false;
           controlled = nullptr;
-          menu.killmenu(Menu::TYPE::ROBOT);
-          menu.newmenu(Menu::TYPE::GENERAL);
+          menu.replaceMenu(Menu::TYPE::GENERAL, StatusButton::NAME::NONE);
           ship->op3 = Ship::OPS::UP;
           sManager.playSelect();
           break;
@@ -740,7 +738,7 @@ bool NETHER::cycle(unsigned char *keyboard)
           break;
         case StatusButton::NAME::COMBAT6:
           /* Back to the robot menu: */
-          menu.replaceMenu(Menu::TYPE::COMBATMODE, Menu::TYPE::ROBOT, StatusButton::NAME::ROBOT3);
+          menu.replaceMenu(Menu::TYPE::ROBOT, StatusButton::NAME::ROBOT3);
           sManager.playSelect();
           break;
         }
@@ -756,7 +754,7 @@ bool NETHER::cycle(unsigned char *keyboard)
           /* STOP & DEFEND: */
           controlled->program = Robot::PROGRAM_STOPDEFEND;
           controlled->program_goal = Vector(-1, -1, -1);
-          menu.replaceMenu(Menu::TYPE::ORDERS, Menu::TYPE::ROBOT, StatusButton::NAME::ROBOT2);
+          menu.replaceMenu(Menu::TYPE::ROBOT, StatusButton::NAME::ROBOT2);
           sManager.playSelect();
           break;
         case StatusButton::NAME::ORDERS2:
@@ -765,8 +763,7 @@ bool NETHER::cycle(unsigned char *keyboard)
           controlled->program_parameter.as_int = 0;
           controlled->program_goal = Vector(-1, -1, -1);
 
-          menu.killmenu(Menu::TYPE::ORDERS);
-          menu.newmenu(Menu::TYPE::SELECTDISTANCE);
+          menu.replaceMenu(Menu::TYPE::SELECTDISTANCE, StatusButton::NAME::NONE);
           sManager.playSelect();
           break;
         case StatusButton::NAME::ORDERS3:
@@ -775,19 +772,16 @@ bool NETHER::cycle(unsigned char *keyboard)
           controlled->program_parameter.as_int = 0;
           controlled->program_goal = Vector(-1, -1, -1);
 
-          menu.killmenu(Menu::TYPE::ORDERS);
-          menu.newmenu(Menu::TYPE::SELECTDISTANCE);
+          menu.replaceMenu(Menu::TYPE::SELECTDISTANCE, StatusButton::NAME::NONE);
           sManager.playSelect();
           break;
         case StatusButton::NAME::ORDERS4:
           /* SEARCH AND DESTROY: */
-          menu.replaceMenu(Menu::TYPE::ORDERS, Menu::TYPE::TARGET_DESTROY,
-                           StatusButton::NAME::TARGET1);
+          menu.replaceMenu(Menu::TYPE::TARGET_DESTROY, StatusButton::NAME::TARGET1);
           sManager.playSelect();
           break;
         case StatusButton::NAME::ORDERS5:
-          menu.replaceMenu(Menu::TYPE::ORDERS, Menu::TYPE::TARGET_CAPTURE,
-                           StatusButton::NAME::TARGET1);
+          menu.replaceMenu(Menu::TYPE::TARGET_CAPTURE, StatusButton::NAME::TARGET1);
           sManager.playSelect();
           break;
         }
@@ -817,7 +811,7 @@ bool NETHER::cycle(unsigned char *keyboard)
           controlled->program = Robot::PROGRAM_STOPDEFEND;
         controlled->program_goal = Vector(-1, -1, -1);
 
-        menu.replaceMenu(Menu::TYPE::SELECTDISTANCE, Menu::TYPE::ROBOT, StatusButton::NAME::ROBOT2);
+        menu.replaceMenu(Menu::TYPE::ROBOT, StatusButton::NAME::ROBOT2);
         sManager.playSelect();
       }
     }
@@ -832,8 +826,7 @@ bool NETHER::cycle(unsigned char *keyboard)
           if (controlled->pieces[0] ||
               controlled->pieces[1] ||
               controlled->pieces[2]) {
-            menu.replaceMenu(Menu::TYPE::TARGET_DESTROY, Menu::TYPE::ROBOT,
-                             StatusButton::NAME::ROBOT2);
+            menu.replaceMenu(Menu::TYPE::ROBOT, StatusButton::NAME::ROBOT2);
             controlled->program = Robot::PROGRAM_DESTROY;
             controlled->program_parameter.param = Robot::P_PARAM_ROBOTS;
             controlled->program_goal = Vector(-1, -1, -1);
@@ -845,8 +838,7 @@ bool NETHER::cycle(unsigned char *keyboard)
           break;
         case StatusButton::NAME::TARGET2:
           if (controlled->pieces[3]) {
-            menu.replaceMenu(Menu::TYPE::TARGET_DESTROY, Menu::TYPE::ROBOT,
-                             StatusButton::NAME::ROBOT2);
+            menu.replaceMenu(Menu::TYPE::ROBOT, StatusButton::NAME::ROBOT2);
             controlled->program = Robot::PROGRAM_DESTROY;
             controlled->program_parameter.param = Robot::P_PARAM_EFACTORIES;
             controlled->program_goal = Vector(-1, -1, -1);
@@ -858,8 +850,7 @@ bool NETHER::cycle(unsigned char *keyboard)
           break;
         case StatusButton::NAME::TARGET3:
           if (controlled->pieces[3]) {
-            menu.replaceMenu(Menu::TYPE::TARGET_DESTROY, Menu::TYPE::ROBOT,
-                             StatusButton::NAME::ROBOT2);
+            menu.replaceMenu(Menu::TYPE::ROBOT, StatusButton::NAME::ROBOT2);
             controlled->program = Robot::PROGRAM_DESTROY;
             controlled->program_parameter.param = Robot::P_PARAM_WARBASES;
             controlled->program_goal = Vector(-1, -1, -1);
@@ -880,24 +871,21 @@ bool NETHER::cycle(unsigned char *keyboard)
       if (menu.handleKeys(keyboard)) {
         switch(menu.getActiveButton()) {
         case StatusButton::NAME::TARGET1:
-          menu.replaceMenu(Menu::TYPE::TARGET_CAPTURE, Menu::TYPE::ROBOT,
-                           StatusButton::NAME::ROBOT2);
+          menu.replaceMenu(Menu::TYPE::ROBOT, StatusButton::NAME::ROBOT2);
           controlled->program = Robot::PROGRAM_CAPTURE;
           controlled->program_parameter.param = Robot::P_PARAM_NFACTORIES;
           controlled->program_goal = Vector(-1, -1, -1);
           sManager.playSelect();
           break;
         case StatusButton::NAME::TARGET2:
-          menu.replaceMenu(Menu::TYPE::TARGET_CAPTURE, Menu::TYPE::ROBOT,
-                           StatusButton::NAME::ROBOT2);
+          menu.replaceMenu(Menu::TYPE::ROBOT, StatusButton::NAME::ROBOT2);
           controlled->program = Robot::PROGRAM_CAPTURE;
           controlled->program_parameter.param = Robot::P_PARAM_EFACTORIES;
           controlled->program_goal = Vector(-1, -1, -1);
           sManager.playSelect();
           break;
         case StatusButton::NAME::TARGET3:
-          menu.replaceMenu(Menu::TYPE::TARGET_CAPTURE, Menu::TYPE::ROBOT,
-                           StatusButton::NAME::ROBOT2);
+          menu.replaceMenu(Menu::TYPE::ROBOT, StatusButton::NAME::ROBOT2);
           controlled->program = Robot::PROGRAM_CAPTURE;
           controlled->program_parameter.param = Robot::P_PARAM_WARBASES;
           controlled->program_goal = Vector(-1,-1,-1);
@@ -936,7 +924,7 @@ bool NETHER::cycle(unsigned char *keyboard)
           controlled->op = Robot::OPERATOR::NONE;
         if (controlled->program == Robot::PROGRAM_FORWARD)
           controlled->program=Robot::PROGRAM_STOPDEFEND;
-        menu.replaceMenu(Menu::TYPE::GENERAL, Menu::TYPE::ROBOT, StatusButton::NAME::ROBOT4);
+        menu.replaceMenu(Menu::TYPE::ROBOT, StatusButton::NAME::ROBOT4);
       }
     }
   }
