@@ -304,7 +304,7 @@ bool NETHER::saveGame(const std::string& filename)
   oFile << stats;
 
   oFile << find_index(map.robots[0], controlled) << '\n';
-  oFile << int(menu.act_menu) << ' ' << int(menu.act_button) << std::endl;
+  oFile << int(menu.act_menu) << ' ' << int(menu.getActiveButton()) << std::endl;
 
   return true;
 }
@@ -358,7 +358,7 @@ bool NETHER::loadGame(const std::string& filename)
   int actMenu_, actButton_;
   inFile >> actMenu_ >> actButton_;
   menu.act_menu = Menu::TYPE(actMenu_);
-  menu.act_button = StatusButton::NAME(actButton_);
+  menu.setActiveButton(StatusButton::NAME(actButton_));
 
   ai.makePrecomputations();
   menu.newmenu(menu.act_menu);
@@ -475,7 +475,7 @@ bool NETHER::saveDebugReport(const std::string& filename)
     log << controlled->getId() << '\n';
   else
     log << "None\n";
-  log << "\nMENU " << int(menu.act_menu) << "\nACT BUTTON: " << int(menu.act_button) << '\n';
+  log << "\nMENU " << int(menu.act_menu) << "\nACT BUTTON: " << int(menu.getActiveButton()) << '\n';
 
   return true;
 }
@@ -637,14 +637,10 @@ bool NETHER::cycle(unsigned char *keyboard)
     /* Browsing through the ROBOT MENU: */
     {
       if (menu.handleKeys(keyboard)) {
-        switch (menu.act_button) {
+        switch (menu.getActiveButton()) {
         case StatusButton::NAME::ROBOT1:
           {
-            StatusButton *b = menu.getbutton(menu.act_button);
-            if (b != 0) {
-              b->color = Color(1.0f, 0.5f, 0.5f);
-            }
-
+            menu.setActiveButtonColor({1.0f, 0.5f, 0.5f});
             menu.act_menu = Menu::TYPE::DIRECTCONTROL;
             menu.requestRedraw();
             sManager.playSelect();
@@ -697,7 +693,7 @@ bool NETHER::cycle(unsigned char *keyboard)
     /* Browsing through the COMBAT MENU: */
     {
       if (menu.handleKeys(keyboard)) {
-        switch(menu.act_button) {
+        switch(menu.getActiveButton()) {
         case StatusButton::NAME::COMBAT1:
           /* Fire Nuclear: */
           if ((controlled->angle == 0 || controlled->angle == 90 ||
@@ -736,11 +732,7 @@ bool NETHER::cycle(unsigned char *keyboard)
           break;
         case StatusButton::NAME::COMBAT5:
           {
-            StatusButton *b = menu.getbutton(menu.act_button);
-            if (b != 0) {
-              b->color = Color(1.0f, 0.5f, 0.5f);
-            }
-
+            menu.setActiveButtonColor({1.0f, 0.5f, 0.5f});
             menu.act_menu = Menu::TYPE::DIRECTCONTROL2;
             menu.requestRedraw();
             sManager.playSelect();
@@ -759,7 +751,7 @@ bool NETHER::cycle(unsigned char *keyboard)
     /* Browsing through the ORDERS MENU: */
     {
       if (menu.handleKeys(keyboard)) {
-        switch (menu.act_button) {
+        switch (menu.getActiveButton()) {
         case StatusButton::NAME::ORDERS1:
           /* STOP & DEFEND: */
           controlled->program = Robot::PROGRAM_STOPDEFEND;
@@ -835,7 +827,7 @@ bool NETHER::cycle(unsigned char *keyboard)
     /* Browsing through the SELECT TARGET FOR DESTROYING MENU: */
     {
       if (menu.handleKeys(keyboard)) {
-        switch(menu.act_button) {
+        switch(menu.getActiveButton()) {
         case StatusButton::NAME::TARGET1:
           if (controlled->pieces[0] ||
               controlled->pieces[1] ||
@@ -886,7 +878,7 @@ bool NETHER::cycle(unsigned char *keyboard)
     /* Browsing through the SELECT TARGET FOR CAPTURING MENU: */
     {
       if (menu.handleKeys(keyboard)) {
-        switch(menu.act_button) {
+        switch(menu.getActiveButton()) {
         case StatusButton::NAME::TARGET1:
           menu.replaceMenu(Menu::TYPE::TARGET_CAPTURE, Menu::TYPE::ROBOT,
                            StatusButton::NAME::ROBOT2);

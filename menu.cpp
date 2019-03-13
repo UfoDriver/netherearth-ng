@@ -48,16 +48,16 @@ void Menu::draw(int width, int height)
     float lightpos2[4] = {0, 0, 1000, 0};
     int split = int((width * 25.0F) / 32.0F);
 
-    glLightfv(GL_LIGHT0,GL_POSITION, lightpos2);
+    glLightfv(GL_LIGHT0, GL_POSITION, lightpos2);
     glClearColor(0, 0, 0.2, 0);
-    glViewport(split,0,width-split,height);
-    glMatrixMode( GL_PROJECTION );
-    glLoadIdentity( );
-    glOrtho(0,float(width-split),0,height,-100,100);
-    glScissor(split,0,width-split,height);
-    glScalef(width/640.0,height/480.0,1);
+    glViewport(split, 0, width - split, height);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0, float(width - split), 0, height, -100, 100);
+    glScissor(split, 0, width - split, height);
+    glScalef(width / 640.0, height / 480.0,1);
 
-    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
@@ -290,13 +290,16 @@ void Menu::drawStatus()
 
 void Menu::cycle()
 {
+  for (auto& b : buttons) {
+    if (b->status) {
+      b->status++;
+      needsRedraw = 2;
+    }
+  }
+
   buttons.erase(std::remove_if(buttons.begin(), buttons.end(),
-                               [this](auto& b) {
-                                 if (b->status) {
-                                   b->status++;
-                                   needsRedraw = 2;
-                                 }
-                                 return (b->status >= 16);
+                               [](auto& b) {
+                                 return b->status >= 16;
                                }),
     buttons.end());
 }
@@ -462,7 +465,7 @@ void Menu::killbutton(StatusButton::NAME ID)
 {
   for (auto& b : buttons) {
     if (b->ID == ID)
-      b->status = 1;;
+      b->status = 1;
   }
   needsRedraw = 2;
 }
@@ -480,11 +483,11 @@ StatusButton* Menu::getbutton(StatusButton::NAME ID)
 }
 
 
-void Menu::replaceMenu(TYPE oldMenu, TYPE newMenu, StatusButton::NAME activeButton)
+void Menu::replaceMenu(TYPE oldMenu, TYPE newMenu, StatusButton::NAME newActiveButton)
 {
   killmenu(oldMenu);
   newmenu(newMenu);
-  act_button = activeButton;
+  activeButton = newActiveButton;
 }
 
 
@@ -494,7 +497,7 @@ bool Menu::handleKeys(unsigned char* keyboard)
   if (keyboard[up_key] > 1 || keyboard[down_key] > 1) {
     auto currentButton = std::find_if(buttons.begin(), buttons.end(),
                                       [this](auto& button) {
-                                        return button->ID == act_button;
+                                        return button->ID == activeButton;
                                       });
     (*currentButton)->color = Color(0, 0, 0.8f);
     // @TODO: evaluate using looped bidirectional iterator
@@ -520,13 +523,13 @@ bool Menu::handleKeys(unsigned char* keyboard)
 
     (*currentButton)->color = Color(0.5f, 0.5f, 1.0f);
 
-    act_button = (*currentButton)->ID;
+    activeButton = (*currentButton)->ID;
     needsRedraw = 2;
   }
 
   for (auto& button: buttons) {
     if (button->isInteractive()) {
-      if (button->ID == act_button) {
+      if (button->ID == activeButton) {
         button->color = Color(0.5f, 0.5f, 1.0f);
       } else {
         button->color = Color(0.0f, 0.0f, 0.8f);
@@ -549,5 +552,14 @@ void Menu::updateTime(const Stats& stats)
     t2Formatter << "Hour: " << std::setw(2) << stats.hour << ':' << std::setw(2) << stats.minute;
     timeb->text2 = t2Formatter.str();
     needsRedraw = 2;
+  }
+}
+
+
+void Menu::setActiveButtonColor(const Color& color)
+{
+  for (auto& b : buttons) {
+    if (b->ID == activeButton)
+      b->color = color;
   }
 }
