@@ -40,7 +40,10 @@ public:
   {
     return ID != NAME::TIME and ID != NAME::STATUS and ID != NAME::RESOURCE and status >= -32;
   }
-
+  bool visible()
+  {
+    return status == 0;
+  }
   void draw();
 
   NAME ID;

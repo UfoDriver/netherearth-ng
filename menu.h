@@ -54,7 +54,7 @@ private:
   NETHER *nether;
   std::vector<StatusButton> buttons
     {
-     {StatusButton::NAME::TIME,     70, 455, 130, 40, "Day: 0",    "Time: 00:00", Color(0, 0, 0.0f)},
+     {StatusButton::NAME::TIME,     70, 455, 130, 40, "Day: 0",    "Time: 00:00", Color(0.8f, 0, 0)},
      {StatusButton::NAME::STATUS,   70, 400, 130, 50, "STATUS",    "INSG  HUMN",  Color(0, 0, 0.0f)},
      {StatusButton::NAME::RESOURCE, 70, 200, 130, 30, "RESOURCES", "",            Color(0, 0, 0.0f)},
      {StatusButton::NAME::ROBOT1,   70, 350, 130, 40, "DIRECT   ", "  CONTROL",   Color(0, 0, 0.8f)},

@@ -77,7 +77,7 @@ void Menu::drawStatus()
   case TYPE::GENERAL:
     {
       StatusButton& b = findButton(StatusButton::NAME::STATUS);
-      if (b.status == 0) {
+      if (b.visible()) {
         glColor3f(0.5f, 0.5f, 1.0f);
         glTranslatef(70, 356, 0);
 
@@ -106,7 +106,7 @@ void Menu::drawStatus()
   case TYPE::DIRECTCONTROL:
     {
       StatusButton& b = findButton(StatusButton::NAME::ROBOT1);
-      if (b.status == 0) {
+      if (b.visible()) {
         glTranslatef(70,140,0);
         glColor3f(1.0f,1.0f,0.0);
         scaledglprintf(0.1f,0.1f,"-ORDERS-");
@@ -221,7 +221,7 @@ void Menu::drawStatus()
   case TYPE::ORDERS:
       {
         StatusButton& b = findButton(StatusButton::NAME::ORDERS1);
-        if (b.status == 0) {
+        if (b.visible()) {
           glTranslatef(70,400,0);
           glColor3f(1.0f,1.0f,1.0f);
           scaledglprintf(0.1f,0.1f,"SELECT");
@@ -241,7 +241,7 @@ void Menu::drawStatus()
   case TYPE::SELECTDISTANCE:
     {
       StatusButton& b = findButton(StatusButton::NAME::ORDERS);
-      if (b.status == 0) {
+      if (b.visible()) {
         glTranslatef(70,300,0);
         glColor3f(0.5f,0.5f,1.0f);
         scaledglprintf(0.1f,0.1f,"SELECT");
@@ -266,7 +266,7 @@ void Menu::drawStatus()
   case TYPE::TARGET_CAPTURE:
     {
       StatusButton& b = findButton(StatusButton::NAME::ORDERS);
-      if (b.status == 0) {
+      if (b.visible()) {
         glTranslatef(70,350,0);
         glColor3f(0.5f,0.5f,1.0f);
         scaledglprintf(0.1f,0.1f,"SELECT");
@@ -861,7 +861,7 @@ bool Menu::handleKeys(unsigned char* keyboard)
 void Menu::updateTime(const Stats& stats)
 {
   StatusButton& timeb = findButton(StatusButton::NAME::TIME);
-  if (timeb.status == 0) {
+  if (timeb.visible()) {
     std::ostringstream t1Formatter;
     t1Formatter << "Day: " << stats.day;
     timeb.text1 = t1Formatter.str();
