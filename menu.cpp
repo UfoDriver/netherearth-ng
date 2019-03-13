@@ -73,7 +73,7 @@ void Menu::draw(int width, int height)
 void Menu::drawStatus()
 {
   glPushMatrix();
-  switch (act_menu) {
+  switch (activeMenu) {
   case TYPE::GENERAL:
     {
       StatusButton* b = getbutton(StatusButton::NAME::STATUS);
@@ -314,7 +314,7 @@ void Menu::newmenu(TYPE menu)
     }
     newbuttondelayed(StatusButton::NAME::STATUS,70,400,130,50,"STATUS","INSG  HUMN", Color(0.0, 0, 0));
     newbuttondelayed(StatusButton::NAME::RESOURCE,70,200,130,30,"RESOURCES", "", Color(0.0, 0, 0));
-    act_menu=TYPE::GENERAL;
+    activeMenu=TYPE::GENERAL;
     break;
 
   case TYPE::ROBOT:
@@ -322,7 +322,7 @@ void Menu::newmenu(TYPE menu)
     newbuttondelayed(StatusButton::NAME::ROBOT2,70,300,130,40,"GIVE     ","   ORDERS", Color(0, 0, 0.8f));
     newbuttondelayed(StatusButton::NAME::ROBOT3,70,250,130,40,"COMBAT   ","     MODE", Color(0, 0, 0.8f));
     newbuttondelayed(StatusButton::NAME::ROBOT4,70,200,130,40,"LEAVE    ","    ROBOT", Color(0, 0, 0.8f));
-    act_menu=TYPE::ROBOT;
+    activeMenu=TYPE::ROBOT;
     break;
 
   case TYPE::COMBATMODE:
@@ -332,7 +332,7 @@ void Menu::newmenu(TYPE menu)
     newbuttondelayed(StatusButton::NAME::COMBAT4,70,200,130,40,"FIRE     ","   CANNON", Color(0, 0, 0.8f));
     newbuttondelayed(StatusButton::NAME::COMBAT5,70,150,130,40,"MOVE     ","    ROBOT", Color(0, 0, 0.8f));
     newbuttondelayed(StatusButton::NAME::COMBAT6,70,100,130,40,"STOP     ","   COMBAT", Color(0, 0, 0.8f));
-    act_menu=TYPE::COMBATMODE;
+    activeMenu=TYPE::COMBATMODE;
     break;
 
   case TYPE::ORDERS:
@@ -341,7 +341,7 @@ void Menu::newmenu(TYPE menu)
     newbuttondelayed(StatusButton::NAME::ORDERS3,70,250,130,40,"RETREAT  "," ?? MILES", Color(0, 0, 0.8f));
     newbuttondelayed(StatusButton::NAME::ORDERS4,70,200,130,40,"SEARCH & ","  DESTROY", Color(0, 0, 0.8f));
     newbuttondelayed(StatusButton::NAME::ORDERS5,70,150,130,40,"SEARCH & ","  CAPTURE", Color(0, 0, 0.8f));
-    act_menu=TYPE::ORDERS;
+    activeMenu=TYPE::ORDERS;
     break;
 
   case TYPE::SELECTDISTANCE:
@@ -349,7 +349,7 @@ void Menu::newmenu(TYPE menu)
       newbuttondelayed(StatusButton::NAME::ORDERS,70,400,130,40,"ADVANCE  "," ?? MILES", Color(0, 0, 0.8f));
     if (nether->getControlled()->program==Robot::PROGRAM_RETREAT)
       newbuttondelayed(StatusButton::NAME::ORDERS,70,400,130,40,"RETREAT  "," ?? MILES", Color(0, 0, 0.8f));
-    act_menu=TYPE::SELECTDISTANCE;
+    activeMenu=TYPE::SELECTDISTANCE;
     break;
 
   case TYPE::TARGET_DESTROY:
@@ -357,7 +357,7 @@ void Menu::newmenu(TYPE menu)
     newbuttondelayed(StatusButton::NAME::TARGET1,70,300,130,40,"ENEMY    ","   ROBOTS", Color(0, 0, 0.8f));
     newbuttondelayed(StatusButton::NAME::TARGET2,70,250,130,40,"ENEMY    ","FACTORIES", Color(0, 0, 0.8f));
     newbuttondelayed(StatusButton::NAME::TARGET3,70,200,130,40,"ENEMY    "," WARBASES", Color(0, 0, 0.8f));
-    act_menu=TYPE::TARGET_DESTROY;
+    activeMenu=TYPE::TARGET_DESTROY;
     break;
 
   case TYPE::TARGET_CAPTURE:
@@ -365,7 +365,7 @@ void Menu::newmenu(TYPE menu)
     newbuttondelayed(StatusButton::NAME::TARGET1,70,300,130,40,"NEUTRAL  ","FACTORIES", Color(0, 0, 0.8f));
     newbuttondelayed(StatusButton::NAME::TARGET2,70,250,130,40,"ENEMY    ","FACTORIES", Color(0, 0, 0.8f));
     newbuttondelayed(StatusButton::NAME::TARGET3,70,200,130,40,"ENEMY    "," WARBASES", Color(0, 0, 0.8f));
-    act_menu=TYPE::TARGET_CAPTURE;
+    activeMenu=TYPE::TARGET_CAPTURE;
     break;
   }
   needsRedraw = 2;

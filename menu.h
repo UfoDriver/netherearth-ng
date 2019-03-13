@@ -32,25 +32,27 @@ public:
   void newmenu(TYPE menu);
   void killmenu(TYPE menu);
   void setActiveButtonColor(const Color& color);
+  bool handleKeys(unsigned char* keyboard);
+  void updateTime(const Stats& stats);
 
+  StatusButton::NAME getActiveButton() { return activeButton; }
+  void setActiveButton(StatusButton::NAME button) { activeButton = button; }
+  TYPE getActiveMenu() { return activeMenu; }
+  void setActiveMenu(TYPE newActiveMenu) { activeMenu = newActiveMenu; }
+
+private:
+  StatusButton *getbutton(StatusButton::NAME ID);
+  void drawStatus();
   void newbutton(StatusButton::NAME ID, int x, int y, int sx, int sy,
                  const std::string& t1, const std::string& t2, const Color& color);
   void newbuttondelayed(StatusButton::NAME ID, int x, int y, int sx, int sy,
                         const std::string& t1, const std::string& t2, const Color& color);
   void killbutton(StatusButton::NAME ID);
 
-  bool handleKeys(unsigned char* keyboard);
-  void updateTime(const Stats& stats);
 
-  StatusButton::NAME getActiveButton() { return activeButton; }
-  void setActiveButton(StatusButton::NAME button) { activeButton = button; }
-
-  TYPE act_menu {TYPE::GENERAL};
-private:
+  TYPE activeMenu {TYPE::GENERAL};
   StatusButton::NAME activeButton {StatusButton::NAME::COMBAT1};
-  StatusButton *getbutton(StatusButton::NAME ID);
   int needsRedraw {0};
-  void drawStatus();
   const NETHER* nether;
   std::vector<std::unique_ptr<StatusButton>> buttons;
 };

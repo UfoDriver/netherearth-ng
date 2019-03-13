@@ -304,7 +304,7 @@ bool NETHER::saveGame(const std::string& filename)
   oFile << stats;
 
   oFile << find_index(map.robots[0], controlled) << '\n';
-  oFile << int(menu.act_menu) << ' ' << int(menu.getActiveButton()) << std::endl;
+  oFile << int(menu.getActiveMenu()) << ' ' << int(menu.getActiveButton()) << std::endl;
 
   return true;
 }
@@ -312,7 +312,7 @@ bool NETHER::saveGame(const std::string& filename)
 
 bool NETHER::loadGame(const std::string& filename)
 {
-  menu.killmenu(menu.act_menu);
+  menu.killmenu(menu.getActiveMenu());
   std::ifstream inFile(filename);
 
   ai.deletePrecomputations();
@@ -357,11 +357,11 @@ bool NETHER::loadGame(const std::string& filename)
 
   int actMenu_, actButton_;
   inFile >> actMenu_ >> actButton_;
-  menu.act_menu = Menu::TYPE(actMenu_);
+  menu.setActiveMenu(Menu::TYPE(actMenu_));
   menu.setActiveButton(StatusButton::NAME(actButton_));
 
   ai.makePrecomputations();
-  menu.newmenu(menu.act_menu);
+  menu.newmenu(menu.getActiveMenu());
   return true;
 }
 
@@ -475,7 +475,7 @@ bool NETHER::saveDebugReport(const std::string& filename)
     log << controlled->getId() << '\n';
   else
     log << "None\n";
-  log << "\nMENU " << int(menu.act_menu) << "\nACT BUTTON: " << int(menu.getActiveButton()) << '\n';
+  log << "\nMENU " << int(menu.getActiveMenu()) << "\nACT BUTTON: " << int(menu.getActiveButton()) << '\n';
 
   return true;
 }
@@ -531,7 +531,7 @@ bool NETHER::cycle(unsigned char *keyboard)
 
   /* GAME Cycle: */
   ship->landed = false;
-  switch(menu.act_menu) {
+  switch(menu.getActiveMenu()) {
   case Menu::TYPE::GENERAL:
     /* Free movement of the ship through the map: */
     {
@@ -641,7 +641,7 @@ bool NETHER::cycle(unsigned char *keyboard)
         case StatusButton::NAME::ROBOT1:
           {
             menu.setActiveButtonColor({1.0f, 0.5f, 0.5f});
-            menu.act_menu = Menu::TYPE::DIRECTCONTROL;
+            menu.setActiveMenu(Menu::TYPE::DIRECTCONTROL);
             menu.requestRedraw();
             sManager.playSelect();
           }
@@ -677,7 +677,7 @@ bool NETHER::cycle(unsigned char *keyboard)
     /* Direct control of a robot by the user: */
     if (keyboard[fire_key] > 1) {
       menu.requestRedraw();
-      menu.act_menu=Menu::TYPE::ROBOT;
+      menu.setActiveMenu(Menu::TYPE::ROBOT);
     }
     break;
 
@@ -685,7 +685,7 @@ bool NETHER::cycle(unsigned char *keyboard)
     /* Direct control of a robot by the user: */
     if (keyboard[fire_key] > 1) {
       menu.requestRedraw();
-      menu.act_menu=Menu::TYPE::COMBATMODE;
+      menu.setActiveMenu(Menu::TYPE::COMBATMODE);
     }
     break;
 
@@ -733,7 +733,7 @@ bool NETHER::cycle(unsigned char *keyboard)
         case StatusButton::NAME::COMBAT5:
           {
             menu.setActiveButtonColor({1.0f, 0.5f, 0.5f});
-            menu.act_menu = Menu::TYPE::DIRECTCONTROL2;
+            menu.setActiveMenu(Menu::TYPE::DIRECTCONTROL2);
             menu.requestRedraw();
             sManager.playSelect();
           }
@@ -925,7 +925,7 @@ bool NETHER::cycle(unsigned char *keyboard)
   }
 
   /* Test if the ship has landed over a robot: */
-  if (menu.act_menu == Menu::TYPE::GENERAL &&
+  if (menu.getActiveMenu() == Menu::TYPE::GENERAL &&
       (int(ship->pos.x * 8) % 4) == 0 &&
       (int(ship->pos.y * 8) % 4) == 0) {
     for (Robot* r: map.robots[0]) {
