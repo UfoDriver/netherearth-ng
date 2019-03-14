@@ -31,14 +31,14 @@ public:
                    TARGET2,
                    TARGET3};
 
-  StatusButton(NAME ID, int x, int y, int sx, int sy, const std::string &text1,
+  StatusButton(NAME id, int x, int y, int sx, int sy, const std::string &text1,
                const std::string &text2, const Color &color, int status = -100)
-    : ID {ID}, x {x}, y {y}, sx {sx}, sy {sy}, text1 {text1}, text2 {text2}, color {color},
+    : id {id}, x {x}, y {y}, sx {sx}, sy {sy}, text1 {text1}, text2 {text2}, color {color},
       status {status} {}
 
   bool isInteractive()
   {
-    return ID != NAME::TIME and ID != NAME::STATUS and ID != NAME::RESOURCE and status >= -32;
+    return id != NAME::TIME and id != NAME::STATUS and id != NAME::RESOURCE and status >= -32;
   }
   bool visible()
   {
@@ -49,7 +49,7 @@ public:
     color = {1.0f, 0.5f, 0.5f};
   }
 
-  NAME ID;
+  NAME id;
   int x, y;
   int sx, sy;
   std::string text1;

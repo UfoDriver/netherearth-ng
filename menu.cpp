@@ -550,6 +550,8 @@ void Menu::cycle(unsigned char* keyboard)
       }
     }
     break;
+  default:
+    break;
   }
 
   for (auto& b : buttons) {
@@ -672,7 +674,7 @@ void Menu::killmenu()
 void Menu::hideButtons(const std::unordered_set<StatusButton::NAME>& ids)
 {
   for (auto& b : buttons) {
-    if (ids.count(b.ID)) {
+    if (ids.count(b.id)) {
       b.status = 1;
     }
   }
@@ -683,8 +685,8 @@ void Menu::hideButtons(const std::unordered_set<StatusButton::NAME>& ids)
 void Menu::showButtons(const std::unordered_set<StatusButton::NAME>& ids)
 {
   for (auto& b : buttons) {
-    if (ids.count(b.ID)) {
-      if (b.ID == StatusButton::NAME::TIME) {
+    if (ids.count(b.id)) {
+      if (b.id == StatusButton::NAME::TIME) {
         b.status = 0;
       } else {
         b.status = -32;
@@ -697,8 +699,10 @@ void Menu::showButtons(const std::unordered_set<StatusButton::NAME>& ids)
 
 void Menu::activateMenu(TYPE newMenu, StatusButton::NAME newActiveButton)
 {
-  killmenu();
-  newmenu(newMenu);
+  if (activeMenu != newMenu) {
+    killmenu();
+    newmenu(newMenu);
+  }
   activeButton = newActiveButton;
 }
 
@@ -708,7 +712,7 @@ bool Menu::handleKeys(unsigned char* keyboard)
   if (keyboard[up_key] > 1 || keyboard[down_key] > 1) {
     int index = 0;
     for (auto &b : buttons) {
-      if (b.ID == activeButton)
+      if (b.id == activeButton)
         break;
       index++;
     }
@@ -731,13 +735,13 @@ bool Menu::handleKeys(unsigned char* keyboard)
 
     buttons[index].color = Color(0.5f, 0.5f, 1.0f);
 
-    activeButton = buttons[index].ID;
+    activeButton = buttons[index].id;
     needsRedraw = 2;
   }
 
   for (auto& button: buttons) {
     if (button.isInteractive()) {
-      if (button.ID == activeButton) {
+      if (button.id == activeButton) {
         button.color = Color(0.5f, 0.5f, 1.0f);
       } else {
         button.color = Color(0.0f, 0.0f, 0.8f);
@@ -774,7 +778,6 @@ std::istream& operator>>(std::istream& in, Menu& menu)
 {
   int actMenu_, actButton_;
   in >> actMenu_ >> actButton_;
-  menu.activeButton = StatusButton::NAME(actButton_);
   menu.activateMenu(Menu::TYPE(actMenu_), StatusButton::NAME(actButton_));
   return in;
 }
@@ -783,7 +786,7 @@ std::istream& operator>>(std::istream& in, Menu& menu)
 StatusButton& Menu::findButton(StatusButton::NAME id)
 {
   for (auto& b : buttons) {
-    if (b.ID == id) {
+    if (b.id == id) {
       return b;
     }
   }

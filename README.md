@@ -8,12 +8,14 @@
 
 * Guile integration?
 * Robot health bar above (only players'?)
+* Robot program above (only players? with program arguments?)
 * Consider using engine like irrlicht
 * ~~No global hardcoded paths~~
 * ~~Crash on drawing explosions~~
 * ~~Compiler warnings~~
 * Debugging (with command line option)
 * Menu is broken after load (at least in combat mode)
+* Menu flickering when load/save screen present
 * Make radar semitransparent
 * ~~Provide bigger screen resolutions~~
 * ~~"NETHER" is a God object and should be decoupled~~
