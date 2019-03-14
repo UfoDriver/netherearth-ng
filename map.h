@@ -27,7 +27,7 @@ public:
 
   int width() const { return Width; }
   int height() const { return Height; }
-  bool cycle(unsigned char *keyboard);
+  bool cycle(unsigned char* keyboard);
   bool loadMap(const std::string& filename);
   float maxZ(float x[2], float y[2]) const;
   int terrain(float x, float y);

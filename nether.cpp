@@ -46,7 +46,7 @@ NETHER::NETHER(const std::string& mapname): map(this), ai(this, &map), menu(this
 
   Resources::instance()->loadObjects();
 
-  ship = new Ship("models/ship.asc", "textures/");
+  ship = new Ship("models/ship.asc", "textures/", this);
   ship->computeShadow(light.asVector());
 
   map.loadMap(mapname);
@@ -527,6 +527,8 @@ bool NETHER::cycle(unsigned char *keyboard)
 
   /* GAME Cycle: */
   ship->landed = false;
+  if (menu.getActiveMenu() == Menu::TYPE::GENERAL)
+    ship->cycle(keyboard);
   menu.cycle(keyboard);
   camera.updateViewportForShip(ship->pos, map.width(), map.height());
   if (stats.tick(level)) {

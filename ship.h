@@ -9,6 +9,7 @@
 
 class Building;
 class Map;
+class NETHER;
 class Robot;
 
 
@@ -21,15 +22,17 @@ public:
             FORWARD,
             BACKWARD,
             UP};
-  Ship(const std::string& model, const std::string& texturesDir);
+  Ship(const std::string& model, const std::string& texturesDir, NETHER* nether);
   bool checkCollision(const std::vector<Building>& buildings, const std::vector<Robot*> robots[2]);
   void draw(const bool shadows, const Vector& light, const Map& map, const Robot* controlled);
   bool landedHere(const Vector& position) const;
+  void cycle(unsigned char* keyboard);
 
-  Vector pos;
-  bool landed;
-  int op, op2, op3;
-  int timemoving;
+  Vector pos {4.0, 2.0, 3.0};
+  bool landed {false};
+  int op {OPS::NONE}, op2 {OPS::NONE}, op3 {OPS::NONE};
+  int timemoving {0};
+  NETHER* nether;
 };
 
 
