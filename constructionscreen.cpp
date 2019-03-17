@@ -55,7 +55,6 @@ bool ConstructionScreen::cycle(unsigned char *keyboard)
     buildRobot();
   }
 
-  nether->redrawMenu();
   nether->redrawRadar();
   return true;
 }

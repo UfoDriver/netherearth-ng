@@ -65,7 +65,6 @@ NETHER::NETHER(const std::string& mapname): map(this), ai(this, &map), menu(this
   gameStarted = INTRO_TIME;
 
   menu.activateMenu(Menu::TYPE::GENERAL, StatusButton::NAME::NONE);
-  menu.requestRedraw();
   radar.needsRedraw = 1;
 
   ai.makePrecomputations();
@@ -118,7 +117,7 @@ bool NETHER::gamecycle()
 }
 
 
-void NETHER::gameredraw(int w,int h)
+void NETHER::gameredraw(int w, int h)
 {
   switch(gameState) {
   case NETHER::STATE::PLAYING:
@@ -141,9 +140,9 @@ void NETHER::gameredraw(int w,int h)
 
 void NETHER::draw(int width, int height)
 {
-  float tmpls[4] = {1.0F, 1.0F, 1.0F, 1.0};
-  float tmpld[4] = {0.6F, 0.6F, 0.6F, 1.0};
-  float tmpla[4] = {0.2F, 0.2F, 0.2F, 1.0};
+  float lightSpecular[4] = {1.0F, 1.0F, 1.0F, 1.0};
+  float lightDiffuse[4] = {0.6F, 0.6F, 0.6F, 1.0};
+  float lightAmbient[4] = {0.2F, 0.2F, 0.2F, 1.0};
   int split = int((width * 25.0F) / 32.0F);
   int splity = 0;
 
@@ -155,9 +154,9 @@ void NETHER::draw(int width, int height)
   /* Enable Lights, etc.: */
   glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);	// Really Nice Perspective Calculations
   glEnable(GL_LIGHT0);
-  glLightfv(GL_LIGHT0, GL_AMBIENT, tmpla);
-  glLightfv(GL_LIGHT0, GL_DIFFUSE, tmpld);
-  glLightfv(GL_LIGHT0, GL_SPECULAR, tmpls);
+  glLightfv(GL_LIGHT0, GL_AMBIENT, lightAmbient);
+  glLightfv(GL_LIGHT0, GL_DIFFUSE, lightDiffuse);
+  glLightfv(GL_LIGHT0, GL_SPECULAR, lightSpecular);
   glEnable(GL_LIGHTING);
   glEnable(GL_COLOR_MATERIAL);
   glShadeModel(GL_SMOOTH);

@@ -32,16 +32,16 @@ const std::initializer_list<StatusButton> MENU
      {StatusButton::NAME::ORDERS3,  70, 250, 130, 40, "RETREAT  ", " ?? MILES",   Color(0, 0, 0.8f)},
      {StatusButton::NAME::ORDERS4,  70, 200, 130, 40, "SEARCH & ", "  DESTROY",   Color(0, 0, 0.8f)},
      {StatusButton::NAME::ORDERS5,  70, 150, 130, 40, "SEARCH & ", "  CAPTURE",   Color(0, 0, 0.8f)},
-     {StatusButton::NAME::ORDERS,   70, 400, 130, 40, "ADVANCE  ", " ?? MILES",   Color(0, 0, 0.8f)},
-     {StatusButton::NAME::ORDERS,   70, 400, 130, 40, "RETREAT  ", " ?? MILES",   Color(0, 0, 0.8f)},
-     {StatusButton::NAME::ORDERS,   70, 400, 130, 40, "SEARCH & ", "  DESTROY",   Color(0, 0, 0.8f)},
+     {StatusButton::NAME::ORDERS,   70, 400, 130, 40, "SEARCH & ", "  CAPTURE",   Color(0, 0, 0.8f)},
+     {StatusButton::NAME::ORDERS11, 70, 400, 130, 40, "ADVANCE  ", " ?? MILES",   Color(0, 0, 0.8f)},
+     {StatusButton::NAME::ORDERS12, 70, 400, 130, 40, "RETREAT  ", " ?? MILES",   Color(0, 0, 0.8f)},
+     {StatusButton::NAME::ORDERS13, 70, 400, 130, 40, "SEARCH & ", "  DESTROY",   Color(0, 0, 0.8f)},
      {StatusButton::NAME::TARGET1,  70, 300, 130, 40, "ENEMY    ", "   ROBOTS",   Color(0, 0, 0.8f)},
      {StatusButton::NAME::TARGET2,  70, 250, 130, 40, "ENEMY    ", "FACTORIES",   Color(0, 0, 0.8f)},
      {StatusButton::NAME::TARGET3,  70, 200, 130, 40, "ENEMY    ", " WARBASES",   Color(0, 0, 0.8f)},
-     {StatusButton::NAME::ORDERS,   70, 400, 130, 40, "SEARCH & ", "  CAPTURE",   Color(0, 0, 0.8f)},
-     {StatusButton::NAME::TARGET1,  70, 300, 130, 40, "NEUTRAL  ", "FACTORIES",   Color(0, 0, 0.8f)},
-     {StatusButton::NAME::TARGET2,  70, 250, 130, 40, "ENEMY    ", "FACTORIES",   Color(0, 0, 0.8f)},
-     {StatusButton::NAME::TARGET3,  70, 200, 130, 40, "ENEMY    ", " WARBASES",   Color(0, 0, 0.8f)}
+     {StatusButton::NAME::TARGET11, 70, 300, 130, 40, "NEUTRAL  ", "FACTORIES",   Color(0, 0, 0.8f)},
+     {StatusButton::NAME::TARGET21, 70, 250, 130, 40, "ENEMY    ", "FACTORIES",   Color(0, 0, 0.8f)},
+     {StatusButton::NAME::TARGET31, 70, 200, 130, 40, "ENEMY    ", " WARBASES",   Color(0, 0, 0.8f)}
   };
 
 
@@ -62,26 +62,24 @@ public:
   explicit Menu(NETHER *nether) : nether{nether} {};
 
   void draw(int width, int height);
-  void requestRedraw() { needsRedraw = 2; }
   void cycle(unsigned char *keyboard);
-  void activateMenu(TYPE newMenu, StatusButton::NAME activeButton);
   bool handleKeys(unsigned char *keyboard);
   void updateTime(const Stats &stats);
 
+  void activateMenu(TYPE newMenu, StatusButton::NAME activeButton);
   StatusButton::NAME getActiveButton() const { return activeButton; }
   TYPE getActiveMenu() const { return activeMenu; }
 
 private:
   void drawStatus();
-  void newmenu(TYPE menu);
-  void killmenu();
+  void showMenu(TYPE menu);
+  void hideMenu();
   void hideButtons(const std::unordered_set<StatusButton::NAME>& ids);
   void showButtons(const std::unordered_set<StatusButton::NAME>& ids);
   StatusButton& findButton(StatusButton::NAME id);
 
   TYPE activeMenu {TYPE::GENERAL};
   StatusButton::NAME activeButton {StatusButton::NAME::COMBAT1};
-  int needsRedraw{0};
   NETHER *nether;
   std::vector<StatusButton> buttons {MENU};
 

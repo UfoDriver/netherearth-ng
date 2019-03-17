@@ -27,9 +27,15 @@ public:
                    ORDERS4,
                    ORDERS5,
                    ORDERS,
+                   ORDERS11,
+                   ORDERS12,
+                   ORDERS13,
                    TARGET1,
                    TARGET2,
-                   TARGET3};
+                   TARGET3,
+                   TARGET11,
+                   TARGET21,
+                   TARGET31};
 
   StatusButton(NAME id, int x, int y, int sx, int sy, const std::string &text1,
                const std::string &text2, const Color &color, int status = -100)
@@ -38,15 +44,20 @@ public:
 
   bool isInteractive()
   {
-    return id != NAME::TIME and id != NAME::STATUS and id != NAME::RESOURCE and status >= -32;
+    return id != NAME::TIME and id != NAME::STATUS and id != NAME::RESOURCE and id != NAME::ORDERS
+      and id != NAME::ORDERS13 and status >= -32;
   }
   bool visible()
   {
     return status == 0;
   }
   void draw();
+  void cycle();
   void toggle() {
     color = {1.0f, 0.5f, 0.5f};
+  }
+  void untoggle() {
+    color = {0.5f, 0.5f, 1.0f};
   }
 
   NAME id;

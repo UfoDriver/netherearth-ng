@@ -69,7 +69,6 @@ public:
   bool loadGame(const std::string& filename);
   bool saveDebugReport(const std::string& filename);
 
-  void redrawMenu() { menu.requestRedraw(); }
   void redrawRadar() { radar.requestRedraw(); }
   void requestStatsRecomputing() { stats.requestRecomputing(); }
 

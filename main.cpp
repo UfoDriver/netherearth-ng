@@ -167,10 +167,7 @@ int main(int argc, char** argv)
             }
             if (nethertittle != 0) nethertittle->refresh_display_lists();
             if (game != 0) Resources::instance()->deleteObjects();
-            if (fullscreen)
-              fullscreen = false;
-            else
-              fullscreen = true;
+            fullscreen = !fullscreen;
             SDL_QuitSubSystem(SDL_INIT_VIDEO);
             SDL_InitSubSystem(SDL_INIT_VIDEO);
             if (SDL_WasInit(SDL_INIT_VIDEO)) {

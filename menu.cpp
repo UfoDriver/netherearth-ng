@@ -43,30 +43,27 @@ const char* RESOURCELABELS[] = {"GENERAL %.2i",
 
 void Menu::draw(int width, int height)
 {
-  if (needsRedraw != 0) {
-    needsRedraw--;
-    float lightpos2[4] = {0, 0, 1000, 0};
-    int split = int((width * 25.0F) / 32.0F);
+  float lightpos2[4] = {0, 0, 1000, 0};
+  int split = int((width * 25.0F) / 32.0F);
 
-    glLightfv(GL_LIGHT0, GL_POSITION, lightpos2);
-    glClearColor(0, 0, 0.2, 0);
-    glViewport(split, 0, width - split, height);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(0, float(width - split), 0, height, -100, 100);
-    glScissor(split, 0, width - split, height);
-    glScalef(width / 640.0, height / 480.0,1);
+  glLightfv(GL_LIGHT0, GL_POSITION, lightpos2);
 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
+  glClearColor(0, 0, 0.2, 0);
+  glViewport(split, 0, width - split, height);
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(0, float(width - split), 0, height, -100, 100);
+  glScissor(split, 0, width - split, height);
+  glScalef(width / 640.0, height / 480.0,1);
 
-    for (auto& b: buttons) {
-      b.draw();
-    }
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
 
-    drawStatus();
+  for (auto& b: buttons) {
+    b.draw();
   }
+  drawStatus();
 }
 
 
@@ -240,46 +237,40 @@ void Menu::drawStatus()
 
   case TYPE::SELECTDISTANCE:
     {
-      StatusButton& b = findButton(StatusButton::NAME::ORDERS);
-      if (b.visible()) {
-        glTranslatef(70,300,0);
-        glColor3f(0.5f,0.5f,1.0f);
-        scaledglprintf(0.1f,0.1f,"SELECT");
-        glTranslatef(0,-20,0);
-        scaledglprintf(0.1f,0.1f,"DISTANCE");
+      glTranslatef(70,300,0);
+      glColor3f(0.5f,0.5f,1.0f);
+      scaledglprintf(0.1f,0.1f,"SELECT");
+      glTranslatef(0,-20,0);
+      scaledglprintf(0.1f,0.1f,"DISTANCE");
 
-        glColor3f(1.0f,1.0f,0.0);
-        glTranslatef(0,-40,0);
-        scaledglprintf(0.1f,0.1f,"%.2i MILES", nether->getControlled()->program_parameter.as_int / 2);
+      glColor3f(1.0f,1.0f,0.0);
+      glTranslatef(0,-40,0);
+      scaledglprintf(0.1f,0.1f,"%.2i MILES", nether->getControlled()->program_parameter.as_int / 2);
 
-        glTranslatef(0,-200,0);
-        glColor3f(1.0f,1.0f,0.0);
-        scaledglprintf(0.1f,0.1f,"STRENGTH");
-        glTranslatef(0,-18,0);
-        glColor3f(1.0f,1.0f,1.0f);
-        scaledglprintf(0.1f,0.1f,"%.3i%c", nether->getControlled()->strength,'%');
-      }
+      glTranslatef(0,-200,0);
+      glColor3f(1.0f,1.0f,0.0);
+      scaledglprintf(0.1f,0.1f,"STRENGTH");
+      glTranslatef(0,-18,0);
+      glColor3f(1.0f,1.0f,1.0f);
+      scaledglprintf(0.1f,0.1f,"%.3i%c", nether->getControlled()->strength,'%');
     }
     break;
 
   case TYPE::TARGET_DESTROY:
   case TYPE::TARGET_CAPTURE:
     {
-      StatusButton& b = findButton(StatusButton::NAME::ORDERS);
-      if (b.visible()) {
-        glTranslatef(70,350,0);
-        glColor3f(0.5f,0.5f,1.0f);
-        scaledglprintf(0.1f,0.1f,"SELECT");
-        glTranslatef(0,-20,0);
-        scaledglprintf(0.1f,0.1f,"TARGET");
+      glTranslatef(70,350,0);
+      glColor3f(0.5f,0.5f,1.0f);
+      scaledglprintf(0.1f,0.1f,"SELECT");
+      glTranslatef(0,-20,0);
+      scaledglprintf(0.1f,0.1f,"TARGET");
 
-        glTranslatef(0,-290,0);
-        glColor3f(1.0f,1.0f,0.0);
-        scaledglprintf(0.1f,0.1f,"STRENGTH");
-        glTranslatef(0,-18,0);
-        glColor3f(1.0f,1.0f,1.0f);
-        scaledglprintf(0.1f,0.1f,"%.3i%c", nether->getControlled()->strength,'%');
-      }
+      glTranslatef(0,-290,0);
+      glColor3f(1.0f,1.0f,0.0);
+      scaledglprintf(0.1f,0.1f,"STRENGTH");
+      glTranslatef(0,-18,0);
+      glColor3f(1.0f,1.0f,1.0f);
+      scaledglprintf(0.1f,0.1f,"%.3i%c", nether->getControlled()->strength,'%');
     }
     break;
 
@@ -303,7 +294,6 @@ void Menu::cycle(unsigned char* keyboard)
           {
             findButton(activeButton).toggle();
             activeMenu = Menu::TYPE::DIRECTCONTROL;
-            requestRedraw();
             nether->sManager.playSelect();
           }
           break;
@@ -333,7 +323,7 @@ void Menu::cycle(unsigned char* keyboard)
   case Menu::TYPE::DIRECTCONTROL:
     /* Direct control of a robot by the user: */
     if (keyboard[fire_key] > 1) {
-      requestRedraw();
+      findButton(activeButton).untoggle();
       activeMenu = Menu::TYPE::ROBOT;
     }
     break;
@@ -341,7 +331,7 @@ void Menu::cycle(unsigned char* keyboard)
   case Menu::TYPE::DIRECTCONTROL2:
     /* Direct control of a robot by the user: */
     if (keyboard[fire_key] > 1) {
-      requestRedraw();
+      findButton(activeButton).untoggle();
       activeMenu = Menu::TYPE::COMBATMODE;
     }
     break;
@@ -387,7 +377,6 @@ void Menu::cycle(unsigned char* keyboard)
           {
             findButton(activeButton).toggle();
             activeMenu = Menu::TYPE::DIRECTCONTROL2;
-            requestRedraw();
             nether->sManager.playSelect();
           }
           break;
@@ -447,19 +436,14 @@ void Menu::cycle(unsigned char* keyboard)
   case Menu::TYPE::SELECTDISTANCE:
     {
       if (keyboard[up_key] > 1) {
-        nether->getControlled()->program_parameter.as_int += 10;
-        if (nether->getControlled()->program_parameter.as_int > 190)
-          nether->getControlled()->program_parameter.as_int = 190;
+        nether->getControlled()->program_parameter.as_int =
+          std::min(190, nether->getControlled()->program_parameter.as_int + 10);
         nether->getControlled()->program_goal = Vector(-1, -1, -1);
-        requestRedraw();
       }
       if (keyboard[down_key] > 1) {
-        nether->getControlled()->program_parameter.as_int -= 10;
-        if (nether->getControlled()->program_parameter.as_int < 0)
-          nether->getControlled()->program_parameter.as_int = 0;
+        nether->getControlled()->program_parameter.as_int =
+          std::max(0, nether->getControlled()->program_parameter.as_int - 10);
         nether->getControlled()->program_goal = Vector(-1, -1, -1);
-
-        requestRedraw();
       }
       if (keyboard[fire_key] > 1) {
         if (nether->getControlled()->program_parameter.as_int == 0)
@@ -525,21 +509,21 @@ void Menu::cycle(unsigned char* keyboard)
     {
       if (handleKeys(keyboard)) {
         switch (activeButton) {
-        case StatusButton::NAME::TARGET1:
+        case StatusButton::NAME::TARGET11:
           activateMenu(Menu::TYPE::ROBOT, StatusButton::NAME::ROBOT2);
           nether->getControlled()->program = Robot::PROGRAM_CAPTURE;
           nether->getControlled()->program_parameter.param = Robot::P_PARAM_NFACTORIES;
           nether->getControlled()->program_goal = Vector(-1, -1, -1);
           nether->sManager.playSelect();
           break;
-        case StatusButton::NAME::TARGET2:
+        case StatusButton::NAME::TARGET21:
           activateMenu(Menu::TYPE::ROBOT, StatusButton::NAME::ROBOT2);
           nether->getControlled()->program = Robot::PROGRAM_CAPTURE;
           nether->getControlled()->program_parameter.param = Robot::P_PARAM_EFACTORIES;
           nether->getControlled()->program_goal = Vector(-1, -1, -1);
           nether->sManager.playSelect();
           break;
-        case StatusButton::NAME::TARGET3:
+        case StatusButton::NAME::TARGET31:
           activateMenu(Menu::TYPE::ROBOT, StatusButton::NAME::ROBOT2);
           nether->getControlled()->program = Robot::PROGRAM_CAPTURE;
           nether->getControlled()->program_parameter.param = Robot::P_PARAM_WARBASES;
@@ -555,18 +539,12 @@ void Menu::cycle(unsigned char* keyboard)
   }
 
   for (auto& b : buttons) {
-    if (b.status >= -32 && b.status != 0) {
-      b.status++;
-      needsRedraw = 2;
-    }
-    if (b.status >= 16) {
-      b.status = -100;
-    }
+    b.cycle();
   }
 }
 
 
-void Menu::newmenu(TYPE menu)
+void Menu::showMenu(TYPE menu)
 {
   switch(menu) {
   case TYPE::GENERAL:
@@ -597,29 +575,28 @@ void Menu::newmenu(TYPE menu)
 
   case TYPE::SELECTDISTANCE:
     if (nether->getControlled()->program == Robot::PROGRAM_ADVANCE)
-      showButtons({StatusButton::NAME::ORDERS});
+      showButtons({StatusButton::NAME::ORDERS11});
     if (nether->getControlled()->program == Robot::PROGRAM_RETREAT)
-      showButtons({StatusButton::NAME::ORDERS});
+      showButtons({StatusButton::NAME::ORDERS12});
     activeMenu = TYPE::SELECTDISTANCE;
     break;
 
   case TYPE::TARGET_DESTROY:
-    showButtons({StatusButton::NAME::ORDERS, StatusButton::NAME::TARGET1,
+    showButtons({StatusButton::NAME::ORDERS13, StatusButton::NAME::TARGET1,
                  StatusButton::NAME::TARGET2, StatusButton::NAME::TARGET3});
     activeMenu = TYPE::TARGET_DESTROY;
     break;
 
   case TYPE::TARGET_CAPTURE:
-    showButtons({StatusButton::NAME::ORDERS, StatusButton::NAME::TARGET1,
-                 StatusButton::NAME::TARGET2, StatusButton::NAME::TARGET3});
+    showButtons({StatusButton::NAME::ORDERS, StatusButton::NAME::TARGET11,
+                 StatusButton::NAME::TARGET21, StatusButton::NAME::TARGET31});
     activeMenu = TYPE::TARGET_CAPTURE;
     break;
   }
-  needsRedraw = 2;
 }
 
 
-void Menu::killmenu()
+void Menu::hideMenu()
 {
   switch (activeMenu) {
   case TYPE::GENERAL:
@@ -644,13 +621,17 @@ void Menu::killmenu()
     break;
 
   case TYPE::SELECTDISTANCE:
-    hideButtons({StatusButton::NAME::ORDERS});
+    hideButtons({StatusButton::NAME::ORDERS11, StatusButton::NAME::ORDERS12});
     break;
 
   case TYPE::TARGET_DESTROY:
-  case TYPE::TARGET_CAPTURE:
-    hideButtons({StatusButton::NAME::ORDERS, StatusButton::NAME::TARGET1,
+    hideButtons({StatusButton::NAME::ORDERS13, StatusButton::NAME::TARGET1,
                  StatusButton::NAME::TARGET2, StatusButton::NAME::TARGET3});
+    break;
+
+  case TYPE::TARGET_CAPTURE:
+    hideButtons({StatusButton::NAME::ORDERS, StatusButton::NAME::TARGET11,
+                 StatusButton::NAME::TARGET21, StatusButton::NAME::TARGET31});
     break;
 
   case TYPE::ALL:
@@ -667,7 +648,6 @@ void Menu::killmenu()
                  StatusButton::NAME::TARGET2, StatusButton::NAME::TARGET3});
     break;
   }
-  needsRedraw = 2;
 }
 
 
@@ -678,7 +658,6 @@ void Menu::hideButtons(const std::unordered_set<StatusButton::NAME>& ids)
       b.status = 1;
     }
   }
-  needsRedraw = 2;
 }
 
 
@@ -693,17 +672,16 @@ void Menu::showButtons(const std::unordered_set<StatusButton::NAME>& ids)
       }
     }
   }
-  needsRedraw = 2;
 }
 
 
 void Menu::activateMenu(TYPE newMenu, StatusButton::NAME newActiveButton)
 {
-  if (activeMenu != newMenu) {
-    killmenu();
-    newmenu(newMenu);
-  }
+  hideMenu();
+  showMenu(newMenu);
   activeButton = newActiveButton;
+  if (findButton(activeButton).isInteractive())
+    findButton(activeButton).color = Color(0.5f, 0.5f, 1.0f);
 }
 
 
@@ -711,40 +689,32 @@ bool Menu::handleKeys(unsigned char* keyboard)
 {
   if (keyboard[up_key] > 1 || keyboard[down_key] > 1) {
     int index = 0;
-    for (auto &b : buttons) {
+    for (auto& b : buttons) {
       if (b.id == activeButton)
         break;
       index++;
     }
-    buttons[index].color = Color(0, 0, 0.8f);
     if (keyboard[up_key] > 1) {
-      do {
-        index = (index - 1) % buttons.size();
-        if (buttons[index].isInteractive())
-          break;
-      } while (true);
+      for (index = (index - 1 + buttons.size()) % buttons.size();
+           !buttons[index].isInteractive();
+           index = (index - 1 + buttons.size()) % buttons.size());
     }
 
     if (keyboard[down_key] > 1) {
-      do {
-        index = (index + 1) % buttons.size();
-        if (buttons[index].isInteractive())
-          break;
-      } while (true);
+      for (index = ++index % buttons.size();
+           !buttons[index].isInteractive();
+           index = ++index % buttons.size());
     }
 
-    buttons[index].color = Color(0.5f, 0.5f, 1.0f);
-
     activeButton = buttons[index].id;
-    needsRedraw = 2;
-  }
 
-  for (auto& button: buttons) {
-    if (button.isInteractive()) {
-      if (button.id == activeButton) {
-        button.color = Color(0.5f, 0.5f, 1.0f);
-      } else {
-        button.color = Color(0.0f, 0.0f, 0.8f);
+    for (auto& button: buttons) {
+      if (button.isInteractive()) {
+        if (button.id == activeButton) {
+          button.color = Color(0.5f, 0.5f, 1.0f);
+        } else {
+          button.color = Color(0.0f, 0.0f, 0.8f);
+        }
       }
     }
   }
@@ -761,9 +731,8 @@ void Menu::updateTime(const Stats& stats)
     t1Formatter << "Day: " << stats.day;
     timeb.text1 = t1Formatter.str();
     std::ostringstream t2Formatter;
-    t2Formatter << "Hour: " << std::setw(2) << stats.hour << ':' << std::setw(2) << stats.minute;
+    t2Formatter << "Hour: " << std::setw(2) << stats.hour << ':' << std::setw(2) << std::setfill('0') << stats.minute;
     timeb.text2 = t2Formatter.str();
-    needsRedraw = 2;
   }
 }
 
