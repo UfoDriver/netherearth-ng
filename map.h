@@ -37,6 +37,7 @@ public:
   std::vector<std::unique_ptr<Bullet>> bullets;
   std::vector<Explosion> explosions;
   std::vector<Particle> particles;
+  // @TODO std::unique_ptr
   std::vector<Robot*> robots[2];
 private:
   void cycleBuildings();

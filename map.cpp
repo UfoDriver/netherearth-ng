@@ -93,7 +93,7 @@ void Map::draw(const Camera& camera, const Vector& light, const bool shadows)
       if (camera.canSee(r->pos)) {
         glPushMatrix();
         glTranslatef(r->pos.x, r->pos.y, r->pos.z);
-        r->draw(i, shadows, Resources::pieceTiles, light);
+        r->draw(light, shadows);
         glPopMatrix();
       }
     }

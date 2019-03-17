@@ -282,7 +282,7 @@ void ConstructionScreen::draw(int width, int height, const Light& light)
     glRotatef(30, 1, 0, 0);
     glRotatef(nether->getAnimationTimer() * 32, 0, 1, 0);
     glRotatef(-90, 1, 0, 0);
-    staple->draw(0, false, Resources::pieceTiles, light.asVector());
+    staple->draw(light.asVector(), false);
     glPopMatrix();
   }
 
@@ -336,6 +336,6 @@ void ConstructionScreen::open(const Building& factory)
 {
   nether->setGameState(NETHER::STATE::CONSTRUCTION);
   menuPointer = MENU::EXIT;
-  staple = new Robot;
+  staple = new Robot(0);
   staple->pos = factory.pos + Vector(2.5, 0.5, 0);
 }

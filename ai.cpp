@@ -196,7 +196,7 @@ void AI::enemy()
 
 	Robot *tmpr;	// To test is the entrance to Warbases is free
 
-	tmpr=new Robot();
+	tmpr=new Robot(1);
 	tmpr->traction=0;
 	tmpr->pieces[0]=true;
 	tmpr->pieces[1]=false;
@@ -571,7 +571,7 @@ Robot* AI::enemyNewRobot(const STATE state, const Vector& pos)
 
 	/* Build the robot: */ 
 	{
-		Robot *r = new Robot();
+		Robot *r = new Robot(1);
 		r->traction=traction;
 		r->pieces[0]=pieces[0];
 		r->pieces[1]=pieces[1];

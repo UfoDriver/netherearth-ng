@@ -33,13 +33,13 @@ public:
                        PHASERS,
                        NUCLEAR};
 
-  Robot();
+  Robot(unsigned short owner);
   explicit Robot(std::istream& in);
   bool valid() const;
   float piecez(int piece);
   bool bulletHit(const std::unique_ptr<Bullet>& bullet);
-  void draw(int owner, bool shadows, std::vector<Piece3DObject> piece_tiles[2], Vector lightposv);
-  int cost();
+  void draw(Vector lightposv, bool shadows) const;
+  int cost() const;
   bool operator==(const Robot& other) const { return id == other.id; };
   bool hasCannons() const { return pieces[0]; }
   bool hasMissiles() const { return pieces[1]; }
@@ -56,8 +56,8 @@ public:
   bool walkable(int terrain) const;
   int npieces() const;
 
-  int traction;
-  bool pieces[5];
+  int traction {-1};
+  bool pieces[5] = {};
 
   // @TODO: program setter along with program param
   ROBOT_PROGRAMS program;
@@ -70,8 +70,8 @@ public:
 
   OPERATOR op;
   bool shipover;
-  int firetimer;
-  int strength;
+  int firetimer {0};
+  int strength {100};
 
   Vector pos;
   int angle;
@@ -80,10 +80,12 @@ public:
   void copyDesign(const Robot& robot);
 
   /* Animation variables: */
-  int electronics_state;
-  int chassis_state;
+  int electronics_state {0};
+  int chassis_state {0};
+
 private:
-  int id;
+  int id {Robot::counter++};
+  unsigned short owner;
   static int counter;
   static const float MS[4][3];
   static const int RS[4][3];

@@ -4,6 +4,7 @@
 
 #include "constants.h"
 #include "piece3dobject.h"
+#include "resources.h"
 #include "robot.h"
 #include "ship.h"
 #include "utils.h"
@@ -22,8 +23,7 @@ const int Robot::RS[4][3]={{2, 3, 5},
 int Robot::counter = 0;
 
 
-Robot::Robot() : traction(-1), pieces{}, firetimer(0), strength(100),
-                 electronics_state(0), chassis_state(0), id(Robot::counter++)
+Robot::Robot(unsigned short owner) : owner {owner}
 {
 }
 
@@ -109,7 +109,7 @@ float Robot::piecez(int piece)
 }
 
 
-void Robot::draw(int owner, bool shadows, std::vector<Piece3DObject> piece_tiles[2], Vector lightposv)
+void Robot::draw(Vector lightposv, bool shadows) const
 {
   Color colors[2] = {{0.9, 0.9, 0.9}, {0.4, 0.4, 0.4}};
   float z = 0;
@@ -139,17 +139,22 @@ void Robot::draw(int owner, bool shadows, std::vector<Piece3DObject> piece_tiles
       glPushMatrix();
       glRotatef(angle, 0, 0, 1);
       if (detaillevel >= 3)
-        piece_tiles[owner][8].draw(colors[owner]);
-      else piece_tiles[owner][8].draw_notexture(colors[owner]);
+        Resources::pieceTiles[owner][8].draw(colors[owner]);
+      else
+        Resources::pieceTiles[owner][8].draw_notexture(colors[owner]);
       glPushMatrix();
       glTranslatef(bipod_v,0,0);
-      if (detaillevel>=3) piece_tiles[owner][9].draw(colors[owner]);
-      else piece_tiles[owner][9].draw_notexture(colors[owner]);
+      if (detaillevel>=3)
+        Resources::pieceTiles[owner][9].draw(colors[owner]);
+      else
+        Resources::pieceTiles[owner][9].draw_notexture(colors[owner]);
       glPopMatrix();
       glPushMatrix();
       glTranslatef(-bipod_v,0,0);
-      if (detaillevel>=3) piece_tiles[owner][10].draw(colors[owner]);
-      else piece_tiles[owner][10].draw_notexture(colors[owner]);
+      if (detaillevel>=3)
+        Resources::pieceTiles[owner][10].draw(colors[owner]);
+      else
+        Resources::pieceTiles[owner][10].draw_notexture(colors[owner]);
       glPopMatrix();
       //			piece_tile[owner][0]->draw(r[owner],g[owner],b[owner]);
       glPopMatrix();
@@ -157,14 +162,14 @@ void Robot::draw(int owner, bool shadows, std::vector<Piece3DObject> piece_tiles
       glPushMatrix();
       glTranslatef(-z*light.x,-z*light.y,0.05);
       glRotatef(angle,0,0,1);
-      piece_tiles[owner][8].drawShadow(angle, lightposv, Color(0, 0, 0, 0.5));
+      Resources::pieceTiles[owner][8].drawShadow(angle, lightposv, Color(0, 0, 0, 0.5));
       glPushMatrix();
       glTranslatef(bipod_v,0,0);
-      piece_tiles[owner][9].drawShadow(angle, lightposv, Color(0, 0, 0, 0.5));
+      Resources::pieceTiles[owner][9].drawShadow(angle, lightposv, Color(0, 0, 0, 0.5));
       glPopMatrix();
       glPushMatrix();
       glTranslatef(-bipod_v,0,0);
-      piece_tiles[owner][10].drawShadow(angle, lightposv, Color(0, 0, 0, 0.5));
+      Resources::pieceTiles[owner][10].drawShadow(angle, lightposv, Color(0, 0, 0, 0.5));
       glPopMatrix();
       //			piece_tile[owner][0]->drawShadow(angle,lightposv,0,0,0,0.5);
       glPopMatrix();
@@ -175,14 +180,16 @@ void Robot::draw(int owner, bool shadows, std::vector<Piece3DObject> piece_tiles
     if (!shadows) {
       glPushMatrix();
       glRotatef(angle,0,0,1);
-      if (detaillevel>=3) piece_tiles[owner][1].draw(colors[owner]);
-      else piece_tiles[owner][1].draw_notexture(colors[owner]);
+      if (detaillevel>=3)
+        Resources::pieceTiles[owner][1].draw(colors[owner]);
+      else
+        Resources::pieceTiles[owner][1].draw_notexture(colors[owner]);
       glPopMatrix();
     } else {
       glPushMatrix();
       glTranslatef(-z*light.x,-z*light.y,0.05);
       glRotatef(angle,0,0,1);
-      piece_tiles[owner][1].drawShadow(angle, lightposv, Color(0, 0, 0, 0.5));
+      Resources::pieceTiles[owner][1].drawShadow(angle, lightposv, Color(0, 0, 0, 0.5));
       glPopMatrix();
     } /* if */
     z+=0.35;
@@ -193,14 +200,16 @@ void Robot::draw(int owner, bool shadows, std::vector<Piece3DObject> piece_tiles
       glPushMatrix();
       glTranslatef(0,0,z);
       glRotatef(angle,0,0,1);
-      if (detaillevel>=3) piece_tiles[owner][2].draw(colors[owner]);
-      else piece_tiles[owner][2].draw_notexture(colors[owner]);
+      if (detaillevel>=3)
+        Resources::pieceTiles[owner][2].draw(colors[owner]);
+      else
+        Resources::pieceTiles[owner][2].draw_notexture(colors[owner]);
       glPopMatrix();
     } else {
       glPushMatrix();
       glTranslatef(-z*light.x,-z*light.y,0.05);
       glRotatef(angle,0,0,1);
-      piece_tiles[owner][2].drawShadow(angle, lightposv, Color(0, 0, 0, 0.5));
+      Resources::pieceTiles[owner][2].drawShadow(angle, lightposv, Color(0, 0, 0, 0.5));
       glPopMatrix();
     } /* if */
     z+=0.45;
@@ -212,15 +221,15 @@ void Robot::draw(int owner, bool shadows, std::vector<Piece3DObject> piece_tiles
       glTranslatef(0,0,z);
       glRotatef(angle,0,0,1);
       if (detaillevel>=3)
-        piece_tiles[owner][3].draw(colors[owner]);
+        Resources::pieceTiles[owner][3].draw(colors[owner]);
       else
-        piece_tiles[owner][3].draw_notexture(colors[owner]);
+        Resources::pieceTiles[owner][3].draw_notexture(colors[owner]);
       glPopMatrix();
     } else {
       glPushMatrix();
       glTranslatef(-z*light.x,-z*light.y,0.05);
       glRotatef(angle,0,0,1);
-      piece_tiles[owner][3].drawShadow(angle, lightposv, Color(0, 0, 0, 0.5));
+      Resources::pieceTiles[owner][3].drawShadow(angle, lightposv, Color(0, 0, 0, 0.5));
       glPopMatrix();
     } /* if */
     z+=0.5;
@@ -230,14 +239,16 @@ void Robot::draw(int owner, bool shadows, std::vector<Piece3DObject> piece_tiles
       glPushMatrix();
       glTranslatef(0,0,z);
       glRotatef(angle,0,0,1);
-      if (detaillevel>=3) piece_tiles[owner][4].draw(colors[owner]);
-      else piece_tiles[owner][4].draw_notexture(colors[owner]);
+      if (detaillevel>=3)
+        Resources::pieceTiles[owner][4].draw(colors[owner]);
+      else
+        Resources::pieceTiles[owner][4].draw_notexture(colors[owner]);
       glPopMatrix();
     } else {
       glPushMatrix();
       glTranslatef(-z*light.x,-z*light.y,0.05);
       glRotatef(angle,0,0,1);
-      piece_tiles[owner][4].drawShadow(angle, lightposv, Color(0, 0, 0, 0.5));
+      Resources::pieceTiles[owner][4].drawShadow(angle, lightposv, Color(0, 0, 0, 0.5));
       glPopMatrix();
     }
     z+=0.35;
@@ -247,14 +258,16 @@ void Robot::draw(int owner, bool shadows, std::vector<Piece3DObject> piece_tiles
       glPushMatrix();
       glTranslatef(0,0,z);
       glRotatef(angle,0,0,1);
-      if (detaillevel>=3) piece_tiles[owner][5].draw(colors[owner]);
-      else piece_tiles[owner][5].draw_notexture(colors[owner]);
+      if (detaillevel>=3)
+        Resources::pieceTiles[owner][5].draw(colors[owner]);
+      else
+        Resources::pieceTiles[owner][5].draw_notexture(colors[owner]);
       glPopMatrix();
     } else {
       glPushMatrix();
       glTranslatef(-z*light.x,-z*light.y,0.05);
       glRotatef(angle,0,0,1);
-      piece_tiles[owner][5].drawShadow(angle, lightposv, Color(0, 0, 0, 0.5));
+      Resources::pieceTiles[owner][5].drawShadow(angle, lightposv, Color(0, 0, 0, 0.5));
       glPopMatrix();
     } /* if */
     z+=0.5;
@@ -264,14 +277,16 @@ void Robot::draw(int owner, bool shadows, std::vector<Piece3DObject> piece_tiles
       glPushMatrix();
       glTranslatef(0,0,z);
       glRotatef(angle,0,0,1);
-      if (detaillevel>=3) piece_tiles[owner][6].draw(colors[owner]);
-      else piece_tiles[owner][6].draw_notexture(colors[owner]);
+      if (detaillevel>=3)
+        Resources::pieceTiles[owner][6].draw(colors[owner]);
+      else
+        Resources::pieceTiles[owner][6].draw_notexture(colors[owner]);
       glPopMatrix();
     } else {
       glPushMatrix();
       glTranslatef(-z*light.x,-z*light.y,0.05);
       glRotatef(angle,0,0,1);
-      piece_tiles[owner][6].drawShadow(angle, lightposv, Color(0, 0, 0, 0.5));
+      Resources::pieceTiles[owner][6].drawShadow(angle, lightposv, Color(0, 0, 0, 0.5));
       glPopMatrix();
     } /* if */
     z+=0.8;
@@ -283,14 +298,16 @@ void Robot::draw(int owner, bool shadows, std::vector<Piece3DObject> piece_tiles
       glRotatef(angle,0,0,1);
       if (!pieces[3]) glTranslatef(-0.2,0,0);
       glRotatef(electronics_state,0,0,1);
-      if (detaillevel >= 3) piece_tiles[owner][7].draw(colors[owner]);
-      else piece_tiles[owner][7].draw_notexture(colors[owner]);
+      if (detaillevel >= 3)
+        Resources::pieceTiles[owner][7].draw(colors[owner]);
+      else
+        Resources::pieceTiles[owner][7].draw_notexture(colors[owner]);
       glPopMatrix();
     } else {
       glPushMatrix();
       glTranslatef(-z*light.x,-z*light.y,0.05);
       glRotatef(angle+electronics_state,0,0,1);
-      piece_tiles[owner][7].drawShadow(angle+electronics_state, lightposv, Color(0, 0, 0, 0.5));
+      Resources::pieceTiles[owner][7].drawShadow(angle+electronics_state, lightposv, Color(0, 0, 0, 0.5));
       glPopMatrix();
     } /* if */
   } /* if */
@@ -298,7 +315,7 @@ void Robot::draw(int owner, bool shadows, std::vector<Piece3DObject> piece_tiles
 }
 
 
-int Robot::cost()
+int Robot::cost() const
 {
   int total = 0;
   int cost[5] = {2, 4, 4, 20, 3};
