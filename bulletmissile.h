@@ -12,7 +12,7 @@ public:
   int getPersistence() const override { return MISSILE_PERSISTENCE; }
 
 private:
-  void computeCMC(std::vector<Piece3DObject>& bulletTiles) override;
+  void computeCMC(const Piece3DObject& bulletTile) override;
   int getBaseDamage() const override { return 3; }
 };
 

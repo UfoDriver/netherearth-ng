@@ -24,7 +24,7 @@ const int N_BULLETS = 3;
 const int N_OBJECTS = 12;
 const int N_PIECES = 11;
 
-const Color PLAYER1_COLOR = {0.3f, 0.3f, 0.8f};
+const Color PLAYER1_COLOR {0.3f, 0.3f, 0.8f};
 const Color PLAYER2_COLOR {0.8f, 0.3f, 0.3f};
 
 const int WE_SEARCH_DEPTH = 12; //Search depth for robots with ELECTRONICS

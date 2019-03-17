@@ -438,7 +438,7 @@ void C3DObject::draw(const Color& color)
       glEnd();
     }
   }
-  // drawcmc(color);
+  // drawcmc({1, 0, 0});
 }
 
 
@@ -470,7 +470,7 @@ void C3DObject::draw_notexture(const Color& color)
 
 void C3DObject::drawcmc(const Color& color)
 {
-  cmc.draw(color.red, color.green, color.blue);
+  cmc.draw(color);
 }
 
 

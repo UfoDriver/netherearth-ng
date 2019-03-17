@@ -10,7 +10,7 @@ extern int detaillevel;
 BulletMissile::BulletMissile(Vector& position, Robot* owner):
   Bullet(TYPE::MISSILES, position, owner)
 {
-  computeCMC(Resources::bulletTiles);
+  computeCMC(Resources::bulletTiles[1]);
 }
 
 
@@ -32,7 +32,7 @@ void BulletMissile::draw(bool shadow, std::vector<Particle>& particles) const
 }
 
 
-void BulletMissile::computeCMC(std::vector<Piece3DObject>& bulletTiles)
+void BulletMissile::computeCMC(const Piece3DObject& bulletTile)
 {
   Quaternion q;
   float m[16] = {1, 0, 0, 0,
@@ -42,8 +42,8 @@ void BulletMissile::computeCMC(std::vector<Piece3DObject>& bulletTiles)
 
   q.from_axis_angle(Vector(0,0,1), 3.141592f);
   q.to_matrix(m);
-  m[13] += 0.33;
-  cmc.expand(&(bulletTiles[1].cmc), m);
-  m[13] -= 0.66;
-  cmc.expand(&(bulletTiles[1].cmc), m);
+  m[13] = 0.33f;
+  cmc.expand(bulletTile.cmc, m);
+  m[13] = -0.33f;
+  cmc.expand(bulletTile.cmc, m);
 }

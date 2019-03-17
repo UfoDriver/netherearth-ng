@@ -8,7 +8,7 @@
 BulletCannon::BulletCannon(Vector& position, Robot* owner):
   Bullet(TYPE::CANNONS, position, owner)
 {
-  computeCMC(Resources::bulletTiles);
+  computeCMC(Resources::bulletTiles[0]);
 }
 
 
@@ -26,15 +26,15 @@ void BulletCannon::draw(bool shadow, std::vector<Particle>&) const
 }
 
 
-void BulletCannon::computeCMC(std::vector<Piece3DObject>& bulletTiles)
+void BulletCannon::computeCMC(const Piece3DObject& bulletTile)
 {
   float m[16] = {1, 0, 0, 0,
                  0, 1, 0, 0,
                  0, 0, 1, 0,
                  0, 0, 0, 1};
 
-  m[13] = 0.2;
-  cmc.expand(&(bulletTiles[0].cmc), m);
-  m[13] = -0.2;
-  cmc.expand(&(bulletTiles[0].cmc), m);
+  m[13] = 0.2f;
+  cmc.expand(bulletTile.cmc, m);
+  m[13] = -0.2f;
+  cmc.expand(bulletTile.cmc, m);
 }

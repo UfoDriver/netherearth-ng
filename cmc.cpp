@@ -10,6 +10,7 @@
 #include <iomanip>
 
 #include "cmc.h"
+#include "color.h"
 #include "math.h"
 #include "myglutaux.h"
 #include "vector.h"
@@ -27,10 +28,7 @@ int faces[24] = {0, 1, 4, 5,
                  2, 3, 0, 1};
 
 
-CMC::CMC() : x {0, 0}, y {0, 0}, z {0, 0} {}
-
-
-CMC::CMC(float *p, int np)
+CMC::CMC(float* p, int np)
 {
   if (np > 0) {
     x[0] = x[1] = p[0];
@@ -40,7 +38,7 @@ CMC::CMC(float *p, int np)
 
   for (int i = 1, offs = 3; i < np; i++, offs += 3) {
     x[0] = std::min(x[0], p[offs]);
-    x[1] = std::max(x[0], p[offs]);
+    x[1] = std::max(x[1], p[offs]);
     y[0] = std::min(y[0], p[offs + 1]);
     y[1] = std::max(y[1], p[offs + 1]);
     z[0] = std::min(z[0], p[offs + 2]);
@@ -49,7 +47,7 @@ CMC::CMC(float *p, int np)
 }
 
 
-CMC::CMC(float *px, float *py, float *pz, int np)
+CMC::CMC(float* px, float* py, float* pz, int np)
 {
   if (np > 0) {
     x[0] = x[1] = px[0];
@@ -76,7 +74,7 @@ void CMC::reset(void)
 }
 
 
-void CMC::set(const std::vector<Vector> &p)
+void CMC::set(const std::vector<Vector>& p)
 {
   if (p.size() > 0) {
     x[0] = x[1] = p[0].x;
@@ -115,27 +113,27 @@ void CMC::set(float *px, float *py, float *pz, int np)
 }
 
 
-void CMC::expand(CMC *object, float *matrix)
+void CMC::expand(const CMC& object, float* matrix)
 {
   float v[4], out[4];
 
   for (int i = 0; i < 8; i++) {
-    v[0] = ((i & 1) == 0 ? object->x[0] : object->x[1]);
-    v[1] = ((i & 2) == 0 ? object->y[0] : object->y[1]);
-    v[2] = ((i & 4) == 0 ? object->z[0] : object->z[1]);
+    v[0] = ((i & 1) == 0 ? object.x[0] : object.x[1]);
+    v[1] = ((i & 2) == 0 ? object.y[0] : object.y[1]);
+    v[2] = ((i & 4) == 0 ? object.z[0] : object.z[1]);
     v[3] = 1;
     ApplyMatrix(v, matrix, out);
     x[0] = std::min(x[0], out[0]);
-    x[1] = std::max(x[0], out[0]);
+    x[1] = std::max(x[1], out[0]);
     y[0] = std::min(y[0], out[1]);
-    y[1] = std::max(y[0], out[1]);
+    y[1] = std::max(y[1], out[1]);
     z[0] = std::min(z[0], out[2]);
-    z[1] = std::max(z[0], out[2]);
+    z[1] = std::max(z[1], out[2]);
   }
 }
 
 
-void CMC::drawabsolute(float r, float g, float b)
+void CMC::drawabsolute(const Color& color) const
 {
   glMatrixMode(GL_PROJECTION);
   glPushMatrix();
@@ -144,7 +142,7 @@ void CMC::drawabsolute(float r, float g, float b)
   glPushMatrix();
   glLoadIdentity();
 
-  draw(r, g, b);
+  draw(color);
 
   glPopMatrix();
   glMatrixMode(GL_PROJECTION);
@@ -152,12 +150,12 @@ void CMC::drawabsolute(float r, float g, float b)
 }
 
 
-void CMC::draw(float r, float g, float b)
+void CMC::draw(const Color& color) const
 {
   float c[4];
 
   glGetFloatv(GL_CURRENT_COLOR, c);
-  glColor3f(r, g, b);
+  glColor3f(color.red, color.green, color.blue);
   glBegin(GL_LINES);
   glVertex3f(x[0], y[0], z[0]);
   glVertex3f(x[1], y[0], z[0]);
@@ -199,7 +197,7 @@ void CMC::draw(float r, float g, float b)
 }
 
 
-bool CMC::collision(const CMC &other)
+bool CMC::collision(const CMC& other) const
 {
   if (other.x[0] == other.x[1] || x[0] == x[1]) {
     if (other.x[0] > x[1] || other.x[1] < x[0]) return false;
@@ -221,8 +219,7 @@ bool CMC::collision(const CMC &other)
 }
 
 
-
-bool CMC::collision(float *m, const CMC& other, float *m2)
+bool CMC::collision(float* m, const CMC& other, float* m2) const
 {
   float a_points[24];
   float b_points[24];
@@ -256,8 +253,8 @@ bool CMC::collision(float *m, const CMC& other, float *m2)
   CMC b_cmc(b_points, 8);
   if (!a_cmc.collision(b_cmc)) return false;
 
-  //	a_cmc->drawabsolute(1,1,1);
-  //	b_cmc->drawabsolute(1,1,1);
+  // a_cmc.drawabsolute(1,1,1);
+  // b_cmc.drawabsolute(1,1,1);
 
   /* Colisión detallada: */
   /* PARTE 1: Colisión de caras */
@@ -346,7 +343,7 @@ bool CMC::collision_simple(float* m, const CMC& other, float* m2) const
 
   /* Calcular las coordenadas "mundo" de los vértices de las cmcs: */
   float v[4], out[4];
-  for (int i= 0 ; i < 8; i++) {
+  for (int i = 0 ; i < 8; i++) {
     v[0] = ((i & 1) == 0 ? x[0] : x[1]);
     v[1] = ((i & 2) == 0 ? y[0] : y[1]);
     v[2] = ((i & 4) == 0 ? z[0] : z[1]);
@@ -425,10 +422,7 @@ bool point_inside_cmc(float *cmc_p,float *p)
 
 bool plane_collision(float *pa,float *va,float *wa,float *pb,float *vb,float *wb)
 {
-	int i;
 	float m[9],mat[9];
-	float det,t_det;
-	int lambda;
 	float range_a[2],range_b[2];
 
 	/* Determinar cual de las 4 lambdas será el parámetro l[par]: */ 
@@ -436,17 +430,19 @@ bool plane_collision(float *pa,float *va,float *wa,float *pb,float *vb,float *wb
 	m[0]=va[0];	m[1]=wa[0];	m[2]=-vb[0];
 	m[3]=va[1];	m[4]=wa[1];	m[5]=-vb[1];
 	m[6]=va[2];	m[7]=wa[2];	m[8]=-vb[2];
-	det=determinante_f(m);
-	lambda=4;
-	for(i=0;i<9;i++) mat[i]=m[i];
+	float det = determinante_f(m);
+	int lambda = 4;
+    std::copy(std::begin(m), std::end(m), std::begin(mat));
+	// for(int i = 0; i < 9; i++) mat[i] = m[i];
 
 	/* lambda = l3 */ 
 	m[0]=va[0];	m[1]=wa[0];	m[2]=-wb[0];
 	m[3]=va[1];	m[4]=wa[1];	m[5]=-wb[1];
 	m[6]=va[2];	m[7]=wa[2];	m[8]=-wb[2];
-	t_det=determinante_f(m);
+	float t_det=determinante_f(m);
 	if (fabs(t_det)>det) {
-		for(i=0;i<9;i++) mat[i]=m[i];
+		// for(int i = 0; i < 9; i++) mat[i] = m[i];
+        std::copy(std::begin(m), std::end(m), std::begin(mat));
 		det=t_det;
 		lambda=3;
 	} /* if */ 
@@ -457,7 +453,8 @@ bool plane_collision(float *pa,float *va,float *wa,float *pb,float *vb,float *wb
 	m[6]=va[2];	m[7]=-vb[2];	m[8]=-wb[2];
 	t_det=determinante_f(m);
 	if (fabs(t_det)>det) {
-		for(i=0;i<9;i++) mat[i]=m[i];
+      // for(int i = 0; i < 9; i++) mat[i] = m[i];
+        std::copy(std::begin(m), std::end(m), std::begin(mat));
 		det=t_det;
 		lambda=2;
 	} /* if */ 
@@ -468,7 +465,8 @@ bool plane_collision(float *pa,float *va,float *wa,float *pb,float *vb,float *wb
 	m[6]=wa[2];	m[7]=-vb[2];	m[8]=-wb[2];
 	t_det=determinante_f(m);
 	if (fabs(t_det)>det) {
-		for(i=0;i<9;i++) mat[i]=m[i];
+      //for(int i = 0; i < 9; i++) mat[i] = m[i];
+        std::copy(std::begin(m), std::end(m), std::begin(mat));
 		det=t_det;
 		lambda=1;
 	} /* if */ 

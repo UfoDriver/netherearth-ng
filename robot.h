@@ -59,7 +59,9 @@ public:
   int traction;
   bool pieces[5];
 
+  // @TODO: program setter along with program param
   ROBOT_PROGRAMS program;
+  // @TODO: program param as variant instead of union
   union {
     PROGRAM_PARAM param;
     int as_int;

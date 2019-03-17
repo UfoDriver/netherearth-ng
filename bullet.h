@@ -38,7 +38,7 @@ protected:
 
 private:
   virtual int getBaseDamage() const = 0;
-  virtual void computeCMC(std::vector<Piece3DObject>& bulletTiles) = 0;
+  virtual void computeCMC(const Piece3DObject& bulletTile) = 0;
 };
 
 #endif // BULLET_H

@@ -3,6 +3,7 @@
 #include <GL/glut.h>
 #include <algorithm>
 #include <cmath>
+#include <numeric>
 
 #include "bulletcannon.h"
 #include "bulletmissile.h"
@@ -35,10 +36,13 @@ void Map::resize(const int width, const int height)
 void Map::draw(const Camera& camera, const Vector& light, const bool shadows)
 {
   if (explosions.size()) {
-    int minstep = 128;
-    for (const Explosion& explosion: explosions) {
-      if (explosion.size == 2 && explosion.step < minstep) minstep = explosion.step;
-    }
+    int minstep = std::accumulate(explosions.cbegin(), explosions.cend(), 128,
+                                  [](const int acc, const auto& e) {
+                                    if (e.size == 2 && e.step < acc)
+                                      return e.step;
+                                    else
+                                      return acc;
+                                  });
     float r = (128 - minstep) / 256.0;
     float offset = sin(minstep) * r;
     camera.lookAt(offset);

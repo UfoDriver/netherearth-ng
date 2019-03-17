@@ -406,23 +406,23 @@ void Robot::calculateCMC(std::vector<Piece3DObject>& pieceTiles)
   }
 
   if (pieces[0]) {
-    cmc.expand(&(pieceTiles[3].cmc), m);
+    cmc.expand(pieceTiles[3].cmc, m);
     m[14] += 0.5;
   }
   if (pieces[1]) {
-    cmc.expand(&(pieceTiles[4].cmc), m);
+    cmc.expand(pieceTiles[4].cmc, m);
     m[14] += 0.35;
   }
   if (pieces[2]) {
-    cmc.expand(&(pieceTiles[5].cmc), m);
+    cmc.expand(pieceTiles[5].cmc, m);
     m[14] += 0.5;
   }
   if (pieces[3]) {
-    cmc.expand(&(pieceTiles[6].cmc), m);
+    cmc.expand(pieceTiles[6].cmc, m);
     m[14] += 0.8;
   }
   if (pieces[4]) {
-    cmc.expand(&(pieceTiles[7].cmc), m);
+    cmc.expand(pieceTiles[7].cmc, m);
   }
 }
 

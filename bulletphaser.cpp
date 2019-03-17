@@ -8,7 +8,7 @@
 BulletPhaser::BulletPhaser(Vector& position, Robot* owner):
   Bullet(TYPE::PHASERS, position, owner)
 {
-  computeCMC(Resources::bulletTiles);
+  computeCMC(Resources::bulletTiles[2]);
 }
 
 
@@ -16,8 +16,8 @@ void BulletPhaser::draw(bool shadow, std::vector<Particle>&) const
 {
   if (!shadow) {
     glPushMatrix();
-    glRotatef(angle,0,0,1);
-    glRotatef(90,0,0,1);
+    glRotatef(angle, 0, 0, 1);
+    glRotatef(90, 0, 0, 1);
 
     if ((rand() % 4) !=0)
       Resources::bulletTiles[2].draw_notexture(Color(1.0f, 0.5f, 1.0f, 0.9f));
@@ -29,7 +29,7 @@ void BulletPhaser::draw(bool shadow, std::vector<Particle>&) const
 }
 
 
-void BulletPhaser::computeCMC(std::vector<Piece3DObject>& bulletTiles)
+void BulletPhaser::computeCMC(const Piece3DObject& bulletTile)
 {
   Quaternion q;
   float m[16] = {1, 0, 0, 0,
@@ -37,7 +37,7 @@ void BulletPhaser::computeCMC(std::vector<Piece3DObject>& bulletTiles)
                  0, 0, 1, 0,
                  0, 0, 0, 1};
 
-  q.from_axis_angle(Vector(0, 0, 1), 3.141592f/2);
+  q.from_axis_angle(Vector(0, 0, 1), 3.141592f / 2);
   q.to_matrix(m);
-  cmc.expand(&(bulletTiles[2].cmc), m);
+  cmc.expand(bulletTile.cmc, m);
 }
