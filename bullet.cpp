@@ -34,7 +34,7 @@ Bullet::Bullet(TYPE type, Vector position, Robot *robot):
 }
 
 
-Bullet* Bullet::read(std::istream& in, std::vector<Robot*> robots[2])
+Bullet* Bullet::read(std::istream& in, const std::vector<Robot*>& robots)
 {
   int i, j;
   int type_;
@@ -46,8 +46,9 @@ Bullet* Bullet::read(std::istream& in, std::vector<Robot*> robots[2])
   in >> type_ >> step >> angle;
   in >> pos;
   in >> j >> i;
+
   if (i >= 0)
-    owner = robots[j][i];
+    owner = robots[i];
   else
     owner = 0;
 
@@ -109,7 +110,7 @@ void Bullet::drawParticles(std::vector<Particle>& particles) const
 
 
 bool Bullet::checkCollision(const std::vector<Building>& buildings,
-                            const std::vector<Robot*> robots[2], Robot** r)
+                            const std::vector<Robot*>& robots, Robot** r)
 {
   float m1[16] = {1, 0, 0, 0,
                   0, 1, 0, 0,
@@ -131,16 +132,14 @@ bool Bullet::checkCollision(const std::vector<Building>& buildings,
     }
   }
 
-  for (int i = 0; i < 2; i++) {
-    for (Robot* rt: robots[i]) {
-      if ((rt != owner) && rt->pos.aboutToCollide3D(pos, COLISION_TEST_THRESHOLD)) {
-        m2[12] = rt->pos.x;
-        m2[13] = rt->pos.y;
-        m2[14] = rt->pos.z;
-        if (cmc.collision_simple(m1, rt->cmc, m2)) {
-          *r = rt;
-          return true;
-        }
+  for (Robot* rt: robots) {
+    if ((rt != owner) && rt->pos.aboutToCollide3D(pos, COLISION_TEST_THRESHOLD)) {
+      m2[12] = rt->pos.x;
+      m2[13] = rt->pos.y;
+      m2[14] = rt->pos.z;
+      if (cmc.collision_simple(m1, rt->cmc, m2)) {
+        *r = rt;
+        return true;
       }
     }
   }

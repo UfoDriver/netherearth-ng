@@ -27,8 +27,7 @@ Robot::Robot(unsigned short owner) : owner {owner}
 {
 }
 
-
-Robot::Robot(std::istream& in)
+Robot::Robot(unsigned short owner, std::istream &in) : owner {owner}
 {
   in >> traction;
   for (int j = 0; j < 5; j++) {
@@ -48,7 +47,6 @@ Robot::Robot(std::istream& in)
   in >> electronics_state >> chassis_state;
   op = Robot::OPERATOR(op_);
 }
-
 
 bool Robot::valid() const
 {
@@ -354,7 +352,7 @@ bool Robot::walkable(int terrain) const {
 }
 
 bool Robot::checkCollision(const std::vector<Building>& buildings,
-                           const std::vector<Robot*> robots[2], bool complete, Ship* ship)
+                           const std::vector<Robot*>& robots, bool complete, Ship* ship)
 {
   float m1[16] = {1, 0, 0, 0,
                   0, 1, 0, 0,
@@ -383,15 +381,13 @@ bool Robot::checkCollision(const std::vector<Building>& buildings,
     }
   }
 
-  for (int i = 0; i < 2; i++) {
-    for(Robot* rt: robots[i]) {
-      if (rt->pos.aboutToCollide3D(pos, COLISION_TEST_THRESHOLD)) {
-        if (rt != this) {
-          m2[12] = rt->pos.x;
-          m2[13] = rt->pos.y;
-          m2[14] = rt->pos.z;
-          if (cmc.collision_simple(m1, rt->cmc, m2)) return true;
-        }
+  for(Robot* rt: robots) {
+    if (rt->pos.aboutToCollide3D(pos, COLISION_TEST_THRESHOLD)) {
+      if (rt != this) {
+        m2[12] = rt->pos.x;
+        m2[13] = rt->pos.y;
+        m2[14] = rt->pos.z;
+        if (cmc.collision_simple(m1, rt->cmc, m2)) return true;
       }
     }
   }

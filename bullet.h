@@ -18,11 +18,11 @@ public:
   Bullet(TYPE type, Vector position, Robot *robot);
   virtual void draw(bool shadow, std::vector<Particle>& particles) const = 0;
   bool checkCollision(const std::vector<Building>& buildings,
-                      const std::vector<Robot*> robots[2], Robot** r);
+                      const std::vector<Robot*>& robots, Robot** r);
   virtual int getPersistence() const = 0;
   int getDamageForRobot(const Robot* robot) const;
 
-  static Bullet* read(std::istream& in, std::vector<Robot*> robot[2]);
+  static Bullet* read(std::istream& in, const std::vector<Robot*>& robot);
 
   TYPE type;
   int step;

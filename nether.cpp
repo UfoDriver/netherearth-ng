@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <iomanip>
 #include <iostream>
+#include <numeric>
 #include <string>
 
 #include "3dobject.h"
@@ -278,20 +279,26 @@ bool NETHER::saveGame(const std::string& filename)
     oFile << b;
   }
 
-  for (int i = 0; i < 2; i++) {
-    oFile << map.robots[i].size() << '\n';
-    for (Robot* r: map.robots[i]) {
+  std::pair<int, int> robotsCount = getRobotsCount();
+  oFile << robotsCount.first << '\n';
+  for (Robot* r: map.robots) {
+    if (r->getOwner() == 0)
       oFile << *r;
-    }
   }
+  oFile << robotsCount.second << '\n';
+  for (Robot* r: map.robots) {
+    if (r->getOwner() == 1)
+      oFile << *r;
+  }
+
 
   oFile << map.bullets.size() << '\n';
   for (const std::unique_ptr<Bullet>& bullet: map.bullets) {
-    std::pair<int, int> pair = findRobotIndexAndOwner(bullet->owner);
+    int index = findRobotIndex(bullet->owner);
 
     oFile << (int)bullet->type << ' ' << bullet->step << ' ' << bullet->angle << '\n';
     oFile << bullet->pos;
-    oFile << pair.first << ' ' << pair.second;
+    oFile << map.robots[index]->getOwner() << ' ' << index;
     oFile << bullet->cmc;
   }
 
@@ -302,7 +309,7 @@ bool NETHER::saveGame(const std::string& filename)
 
   oFile << stats;
 
-  oFile << find_index(map.robots[0], controlled) << '\n';
+  oFile << find_index(map.robots, controlled) << '\n';
   oFile << menu << std::endl;
 
   return true;
@@ -331,7 +338,7 @@ bool NETHER::loadGame(const std::string& filename)
   for (int i = 0; i < 2; i++) {
     inFile >> length;
     for (int k = 0; k < length; k++) {
-      map.robots[i].push_back(new Robot(inFile));
+      map.robots.push_back(new Robot(i, inFile));
     }
   }
 
@@ -350,7 +357,7 @@ bool NETHER::loadGame(const std::string& filename)
   int i;
   inFile >> i;
   if (i >= 0)
-    controlled = map.robots[0][i];
+    controlled = map.robots[i];
   else
     controlled = 0;
 
@@ -396,12 +403,18 @@ bool NETHER::saveDebugReport(const std::string& filename)
         << b.pos;
   }
 
+  std::pair<int, int> counters = getRobotsCount();
   for (int i = 0; i < 2; i++) {
-    log << "\n# OF ROBOTS PLAYER " << i << ": " << map.robots[i].size() << '\n';
+    if (i == 0) {
+      log << "\n# OF ROBOTS PLAYER " << i << ": " << counters.first << '\n';
+    } else {
+      log << "\n# OF ROBOTS PLAYER " << i << ": " << counters.second << '\n';
+    }
 
     const char* tractions[3] = {"BIPOD", "TRACKS", "ANTIGRAV"};
     const char* pieces[5] = {"CANNONS", "MISSILES", "PHASERS", "NUCLEAR", "ELECTRONICS"};
-    for (Robot* r: map.robots[i]) {
+    for (Robot* r: map.robots) {
+      if (r->getOwner() != i) continue;
       log << "ROBOT:\n";
       log << ' ' << tractions[r->traction] << '\n';
       for (int j = 0; j < 5; j++) {
@@ -437,11 +450,8 @@ bool NETHER::saveDebugReport(const std::string& filename)
     log << " POSITION: ";
     log << bullet->pos;
 
-    if (std::count(map.robots[0].cbegin(), map.robots[0].cend(), bullet->owner)) {
-      log << " OWNER: PLAYER 0 ROBOT " << bullet->owner->getId() << '\n';
-    } else if (std::count(map.robots[1].cbegin(), map.robots[1].cend(), bullet->owner)) {
-      log << " OWNER: PLAYER 1 ROBOT " << bullet->owner->getId() << '\n';
-    }
+    log << " OWNER: PLAYER " << bullet->owner->getOwner()
+        << " ROBOT " << bullet->owner->getId() << '\n';
 
     log << " MINIMUM CONTAINER BOX: \n";
     log << bullet->cmc << '\n';
@@ -478,7 +488,16 @@ bool NETHER::saveDebugReport(const std::string& filename)
 
 std::pair<int, int> NETHER::getRobotsCount() const
 {
-  return std::make_pair(map.robots[0].size(), map.robots[1].size());
+  return std::accumulate(map.robots.cbegin(), map.robots.cend(),
+                         std::make_pair(0, 0),
+                         [](std::pair<int, int>& acc, auto r) {
+                           if (r->getOwner() == 0) {
+                             acc.first++;
+                           } else {
+                             acc.second++;
+                           }
+                           return acc;
+                         });
 }
 
 
@@ -496,7 +515,7 @@ std::array<std::pair<int, int>, 7> NETHER::getResourceStats() const
 
 void NETHER::addNewRobot(Robot* robot, int player)
 {
-  map.robots[player].push_back(robot);
+  map.robots.push_back(robot);
   ai.newRobot(robot->pos, player);
 }
 
@@ -545,8 +564,8 @@ bool NETHER::cycle(unsigned char *keyboard)
   if (menu.getActiveMenu() == Menu::TYPE::GENERAL &&
       (int(ship->pos.x * 8) % 4) == 0 &&
       (int(ship->pos.y * 8) % 4) == 0) {
-    for (Robot* r: map.robots[0]) {
-      if (ship->landedHere(r->pos - Vector(0.5f, 0.5f, 0.0))) {
+    for (Robot* r: map.robots) {
+      if (r->getOwner() == 0 && ship->landedHere(r->pos - Vector(0.5f, 0.5f, 0.0))) {
         r->shipover = true;
         controlled = r;
         if (controlled->op == Robot::OPERATOR::FORWARD)
@@ -577,13 +596,11 @@ bool NETHER::cycle(unsigned char *keyboard)
 }
 
 
-std::pair<int, int> NETHER::findRobotIndexAndOwner(const Robot* robot)
+int NETHER::findRobotIndex(const Robot* robot)
 {
-  for (int owner = 0; owner < 2; owner++) {
-    int index = find_index(map.robots[owner], robot);
-    if (index != -1) {
-      return std::make_pair(owner, index);
-    }
+  int index = find_index(map.robots, robot);
+  if (index != -1) {
+    return index;
   }
-  return std::make_pair(-1, -1);
+  return -1;
 }

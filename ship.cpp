@@ -17,7 +17,7 @@ Ship::Ship(const std::string &model, const std::string &texturesDir, NETHER *net
 
 
 bool Ship::checkCollision(const std::vector<Building>& buildings,
-                          const std::vector<Robot*> robots[2])
+                          const std::vector<Robot*>& robots)
 {
   float m1[16] = {1, 0, 0, 0,
                   0, 1, 0, 0,
@@ -36,15 +36,13 @@ bool Ship::checkCollision(const std::vector<Building>& buildings,
   }
 
   /* Collision with the robots: */
-  for(int i = 0; i < 2; i++) {
-    for (Robot* r: robots[i]) {
-      if (r->pos.aboutToCollide2D(pos, COLISION_TEST_THRESHOLD)) {
-          m2[12] = r->pos.x;
-          m2[13] = r->pos.y;
-          m2[14] = r->pos.z;
-          if (cmc.collision_simple(m1, r->cmc, m2)) return true;
-        }
-      }
+  for (Robot* r: robots) {
+    if (r->pos.aboutToCollide2D(pos, COLISION_TEST_THRESHOLD)) {
+      m2[12] = r->pos.x;
+      m2[13] = r->pos.y;
+      m2[14] = r->pos.z;
+      if (cmc.collision_simple(m1, r->cmc, m2)) return true;
+    }
   }
 
   return false;

@@ -23,7 +23,7 @@ public:
             BACKWARD,
             UP};
   Ship(const std::string& model, const std::string& texturesDir, NETHER* nether);
-  bool checkCollision(const std::vector<Building>& buildings, const std::vector<Robot*> robots[2]);
+  bool checkCollision(const std::vector<Building>& buildings, const std::vector<Robot*>& robots);
   void draw(const bool shadows, const Vector& light, const Map& map, const Robot* controlled);
   bool landedHere(const Vector& position) const;
   void cycle(unsigned char* keyboard);

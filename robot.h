@@ -33,8 +33,8 @@ public:
                        PHASERS,
                        NUCLEAR};
 
-  Robot(unsigned short owner);
-  explicit Robot(std::istream& in);
+  explicit Robot(unsigned short owner);
+  Robot(unsigned short owner, std::istream& in);
   bool valid() const;
   float piecez(int piece);
   bool bulletHit(const std::unique_ptr<Bullet>& bullet);
@@ -47,7 +47,7 @@ public:
   bool hasNuclear() const { return pieces[3]; }
   bool hasElectronics() const { return pieces[4]; }
   bool checkCollision(const std::vector<Building>& buildings,
-                      const std::vector<Robot*> robots[2], bool complete, Ship* ship);
+                      const std::vector<Robot*>& robots, bool complete, Ship* ship);
 
   int getId() const { return id; }
 
@@ -55,6 +55,7 @@ public:
   int robotRotationSpeed(int terrain) const;
   bool walkable(int terrain) const;
   int npieces() const;
+  unsigned short getOwner() { return owner; }
 
   int traction {-1};
   bool pieces[5] = {};

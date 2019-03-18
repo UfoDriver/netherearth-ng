@@ -211,8 +211,6 @@ void AI::enemy()
 
 
     {
-      int forces[2]={0,0};
-
       mean_factory_position=Vector(0,0,0);
       for (const Building& b: map->buildings) {
         if (b.type==Building::TYPE::FACTORY_ELECTRONICS ||
@@ -229,8 +227,6 @@ void AI::enemy()
       for (Building& b: map->buildings) {
         if (b.type==Building::TYPE::WARBASE &&
             b.owner==2) {
-          forces[0]=0;
-          forces[1]=0;
 
           tmpr->pos=b.pos+Vector(2.5,0.5,0);
           if (!tmpr->checkCollision(map->buildings, map->robots, true, nether->getShip())) {
@@ -249,25 +245,25 @@ void AI::enemy()
             } /* if */ 
           } /* if */ 
 
-          /* Test for WARBASEs in danger: */ 
-          for(int i = 0; i < 2; i++) {
-            for (Robot* r: map->robots[i]) {
-              if ((r->pos-b.pos).norma() < 10.0) {
-                /* Robot near: */ 
-                forces[i]+= r->cost();
+          int forces[2] = {0,0};
 
-                if (i==1) {
-                  if (forces[0]>forces[1] && 
-                      (r->program!=Robot::PROGRAM_DESTROY ||
-                       r->program_parameter.param != Robot::P_PARAM_ROBOTS)) {
-                    r->program=Robot::PROGRAM_DESTROY;
-                    r->program_parameter.param = Robot::P_PARAM_ROBOTS;
-                    return;
-                  } /* if */ 
+          /* Test for WARBASEs in danger: */ 
+          for (Robot* r: map->robots) {
+            if ((r->pos-b.pos).norma() < 10.0) {
+              /* Robot near: */
+              forces[r->getOwner()] += r->cost();
+
+              if (r->getOwner() == 1) {
+                if (forces[0]>forces[1] &&
+                    (r->program!=Robot::PROGRAM_DESTROY ||
+                     r->program_parameter.param != Robot::P_PARAM_ROBOTS)) {
+                  r->program=Robot::PROGRAM_DESTROY;
+                  r->program_parameter.param = Robot::P_PARAM_ROBOTS;
+                  return;
                 } /* if */ 
               } /* if */ 
-            } /* while */ 
-          } /* for */
+            } /* if */ 
+          } /* while */ 
 
           if (forces[0]>forces[1]) {
             state = STATE::DEFENDING;
@@ -293,10 +289,12 @@ void AI::enemy()
 
 
 	/* Count the number of robots: */ 
-    for (Robot* r: map->robots[1]) {
-      if (r->program==Robot::PROGRAM_CAPTURE) nrobots[0]++;
-      if (r->program==Robot::PROGRAM_DESTROY) nrobots[1]++;
-      if (r->program==Robot::PROGRAM_STOPDEFEND) nrobots[2]++;
+    for (Robot* r: map->robots) {
+      if (r->getOwner() == 1) {
+        if (r->program==Robot::PROGRAM_CAPTURE) nrobots[0]++;
+        if (r->program==Robot::PROGRAM_DESTROY) nrobots[1]++;
+        if (r->program==Robot::PROGRAM_STOPDEFEND) nrobots[2]++;
+      }
     }
 
 	if (in_danger_warbase!=0 &&
@@ -317,42 +315,53 @@ void AI::enemy()
           r->program_parameter.param = Robot::P_PARAM_ROBOTS;
 		} /* if */ 
 	} else {
+      int map_robots_0_size =
+        std::count_if(map->robots.cbegin(), map->robots.cend(),
+                      [](const auto r) {return r->getOwner() == 0;});
 		if (nrobots[2]>0 &&
 			(level>=2 ||
 			(level==1 && (rand()%2)==0) ||
 			(level==0 && (rand()%4)==0))) {
-			/* There are too many robots in STOP & DEFEND: */ 
-          for (Robot* r: map->robots[1]) {
-            if (r->program==Robot::PROGRAM_STOPDEFEND) {
-              if (nrobots[0]<6 && factories[2]<(factories[1]+factories[0]) && 
-                  (map->robots[0].size()*2)<=nrobots[1]) {
-                /* Convert the robot to a conquering one: */ 
-                if (factories[1]>factories[0]) {
-                  r->program=Robot::PROGRAM_CAPTURE;
-                  r->program_parameter.param = Robot::P_PARAM_EFACTORIES;
-                  return;
+          /* There are too many robots in STOP & DEFEND: */
+          for (Robot *r : map->robots) {
+            if (r->getOwner() == 1) {
+              if (r->program == Robot::PROGRAM_STOPDEFEND) {
+                if (nrobots[0] < 6 &&
+                    factories[2] <
+                    (factories[1] + factories[0]) &&
+                    (map_robots_0_size * 2) <= nrobots[1]) {
+                  /* Convert the robot to a conquering one: */
+                  if (factories[1] > factories[0]) {
+                    r->program = Robot::PROGRAM_CAPTURE;
+                    r->program_parameter.param =
+                                 Robot::P_PARAM_EFACTORIES;
+                    return;
+                  } else {
+                    r->program = Robot::PROGRAM_CAPTURE;
+                    r->program_parameter.param =
+                      Robot::P_PARAM_NFACTORIES;
+                    return;
+                  } /* if */
                 } else {
-                  r->program=Robot::PROGRAM_CAPTURE;
-                  r->program_parameter.param = Robot::P_PARAM_NFACTORIES;
-                  return;
-                } /* if */ 
-              } else {
-                if ((map->robots[0].size()*2)>nrobots[1]) {
-                  r->program=Robot::PROGRAM_DESTROY;
-                  r->program_parameter.param =Robot::P_PARAM_ROBOTS;
-                  return;
-                } else {
-                  r->program=Robot::PROGRAM_CAPTURE;
-                  r->program_parameter.param = Robot::P_PARAM_WARBASES;
-                  return;
-                } /* if */ 
-              } /* if */ 
-            } /* if */ 
+                  if ((map_robots_0_size * 2) > nrobots[1]) {
+                    r->program = Robot::PROGRAM_DESTROY;
+                    r->program_parameter.param =
+                      Robot::P_PARAM_ROBOTS;
+                    return;
+                  } else {
+                    r->program = Robot::PROGRAM_CAPTURE;
+                    r->program_parameter.param =
+                      Robot::P_PARAM_WARBASES;
+                    return;
+                  } /* if */
+                }   /* if */
+              }     /* if */
+            }
           }
-		} /* if */ 
+        } /* if */ 
 		/* Test for near FACTORIES and CAPTURING ROBOTS: */ 
 		if (nrobots[0]<6 && factories[2]<(factories[1]+factories[0]) &&
-			(map->robots[0].size()*2)<=nrobots[1]) {
+			(map_robots_0_size*2)<=nrobots[1]) {
 			/* I need more conquering robots: */ 
 
 			/* Try to make better robots as time passes: */ 
@@ -593,7 +602,7 @@ Robot* AI::enemyNewRobot(const STATE state, const Vector& pos)
 		r->shipover=false;
 
 		if (!r->checkCollision(map->buildings, map->robots, true, nether->ship)) {
-			map->robots[1].push_back(r);
+			map->robots.push_back(r);
 			newRobot(r->pos,0);
 
             nether->stats.spendRobotResources(1, *r);
@@ -1081,59 +1090,64 @@ Robot::OPERATOR AI::programStopDefend(const Robot& robot, Vector *program_goal, 
     std::fill(attackmap.begin(), attackmap.end(), 0);
 
     /* Find the nearest FIRE position: */
-    for (Robot* r: map->robots[2 - player]) {
-      robotZone(r->pos, &x, &y, &dx, &dy);
-      for (int i = 0; i < dx; i++) {
-        for (int j = 0; j < dy; j++) {
-          collided = false;
-          for (int k = 1; !collided && k < int((persistence * BULLET_SPEED) / 0.5); k++) {
-            if (x + i + k < 0 || x + i + k >= map->width() * 2 ||
-                y + j < 0 || y + j >= map->height() * 2 ||
-                discreetmap[(y + j) * (map->width() * 2) + (x + i + k)] > 3) {
-              collided = true;
-            } else {
-              attackmap[(y + j) * (map->width() * 2) + (x + i + k)] |= 4;
+    for (Robot* r: map->robots) {
+      if (r->getOwner() == 2 - player) {
+        robotZone(r->pos, &x, &y, &dx, &dy);
+        for (int i = 0; i < dx; i++) {
+          for (int j = 0; j < dy; j++) {
+            collided = false;
+            for (int k = 1; !collided && k < int((persistence * BULLET_SPEED) / 0.5); k++) {
+              if (x + i + k < 0 || x + i + k >= map->width() * 2 ||
+                  y + j < 0 || y + j >= map->height() * 2 ||
+                  discreetmap[(y + j) * (map->width() * 2) + (x + i + k)] > 3) {
+                collided = true;
+              } else {
+                attackmap[(y + j) * (map->width() * 2) + (x + i + k)] |= 4;
+              }
             }
-          }
 
-          collided = false;
-          for (int k = 1; !collided && k < int((persistence * BULLET_SPEED) / 0.5); k++) {
-            if (x + i - k < 0 || x + i - k >= map->width() * 2 ||
-                y + j < 0 || y + j >= map->height() * 2 ||
-                discreetmap[(y + j) * (map->width() * 2) + (x + i - k)] >3) {
-              collided = true;
-            } else {
-              attackmap[(y + j) * (map->width() * 2) + (x + i - k)] |= 1;
+            collided = false;
+            for (int k = 1; !collided && k < int((persistence * BULLET_SPEED) / 0.5); k++) {
+              if (x + i - k < 0 || x + i - k >= map->width() * 2 ||
+                  y + j < 0 || y + j >= map->height() * 2 ||
+                  discreetmap[(y + j) * (map->width() * 2) + (x + i - k)] >3) {
+                collided = true;
+              } else {
+                attackmap[(y + j) * (map->width() * 2) + (x + i - k)] |= 1;
+              }
             }
-          }
 
-          collided = false;
-          for (int k = 1; !collided && k < int((persistence * BULLET_SPEED) / 0.5); k++) {
-            if (x + i < 0 || x + i >= map->width() * 2 ||
-                y + j + k < 0 || y + j + k >= map->height() * 2 ||
-                discreetmap[(y + j + k) * (map->width() * 2) + (x + i)] >3) {
-              collided = true;
-            } else {
-              attackmap[(y + j + k) * (map->width() * 2) + (x + i)] |= 8;
+            collided = false;
+            for (int k = 1; !collided && k < int((persistence * BULLET_SPEED) / 0.5); k++) {
+              if (x + i < 0 || x + i >= map->width() * 2 ||
+                  y + j + k < 0 || y + j + k >= map->height() * 2 ||
+                  discreetmap[(y + j + k) * (map->width() * 2) + (x + i)] >3) {
+                collided = true;
+              } else {
+                attackmap[(y + j + k) * (map->width() * 2) + (x + i)] |= 8;
+              }
             }
-          }
 
-          collided = false;
-          for (int k = 1; !collided && k < int((persistence * BULLET_SPEED) / 0.5); k++) {
-            if (x + i < 0 || x + i >= map->width() * 2 ||
-                y + j - k < 0 || y + j - k >= map->height() * 2 ||
-                discreetmap[(y + j - k) * (map->width() * 2) + (x + i)] > 3) {
-              collided = true;
-            } else {
-              attackmap[(y + j - k) * (map->width() * 2) + (x + i)] |= 2;
+            collided = false;
+            for (int k = 1; !collided && k < int((persistence * BULLET_SPEED) / 0.5); k++) {
+              if (x + i < 0 || x + i >= map->width() * 2 ||
+                  y + j - k < 0 || y + j - k >= map->height() * 2 ||
+                  discreetmap[(y + j - k) * (map->width() * 2) + (x + i)] > 3) {
+                collided = true;
+              } else {
+                attackmap[(y + j - k) * (map->width() * 2) + (x + i)] |= 2;
+              }
             }
           }
         }
       }
     }
 
-
-    if (map->robots[2 - player].size()) {
+    bool hasEnemies = std::any_of(map->robots.cbegin(), map->robots.cend(),
+                                  [player](auto r) {
+                                    return r->getOwner() == 2 - player;
+                                  });
+    if (hasEnemies) {
       robotZone(robot.pos, &x, &y, &dx, &dy);
       if ((attackmap[y * (map->width() * 2) + x] != 0 ||
            attackmap[(y + 1) * (map->width() * 2) + x] != 0 ||
@@ -1182,7 +1196,8 @@ Robot::OPERATOR AI::programStopDefend(const Robot& robot, Vector *program_goal, 
         /* There are no enemy robots at sight: */
         op = Robot::OPERATOR::NONE;
       }
-    } else {
+    }
+    else {
       /* There are no enemy robots: */
       op = Robot::OPERATOR::NONE;
     }
@@ -1367,7 +1382,8 @@ Robot::OPERATOR AI::programDestroy(const Robot& robot, Vector *program_goal, con
       std::fill(attackmap.begin(), attackmap.end(), 0);
 
       /* Find the nearest FIRE position: */
-      for (Robot* r: map->robots[2 - player]) {
+      for (Robot* r: map->robots) {
+        if (r->getOwner() != 2 - player) continue;
         if (first ||
             (*program_goal - robot.pos).norma() < distance) {
           first = false;
