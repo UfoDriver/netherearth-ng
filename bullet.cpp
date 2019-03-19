@@ -109,7 +109,7 @@ void Bullet::drawParticles(std::vector<Particle>& particles) const
 
 
 bool Bullet::checkCollision(const std::vector<Building>& buildings,
-                            const std::vector<Robot*>& robots, Robot** r)
+                            const Robots& robots, Robot** r)
 {
   float m1[16] = {1, 0, 0, 0,
                   0, 1, 0, 0,

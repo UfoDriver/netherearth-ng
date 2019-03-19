@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <cmath>
 
+#include "bullet.h"
 #include "building.h"
 #include "constants.h"
 #include "piece3dobject.h"
@@ -71,18 +72,8 @@ bool Robot::bulletHit(const std::unique_ptr<Bullet>& bullet)
 
 float Robot::piecez(int piece)
 {
-  float z = 0;
-  switch (traction) {
-  case 0:
-    z += 1.0;
-    break;
-  case 1:
-    z += 0.35;
-    break;
-  case 2:
-    z += 0.25;
-    break;
-  }
+  const float tractions[] {1.0, 0.35, 0.25};
+  float z = tractions[traction];
 
   if (hasCannons()) {
     if (piece == 0) return z;
@@ -92,12 +83,10 @@ float Robot::piecez(int piece)
     if (piece == 1) return z;
     z += 0.35;
   }
-  // PHASER:
   if (hasPhasers()) {
     if (piece == 2) return z;
     z += 0.5;
   }
-  // NUCLEAR:
   if (hasNuclear()) {
     if (piece == 3) return z;
     z += 0.8;
@@ -154,7 +143,6 @@ void Robot::draw(Vector lightposv, bool shadows) const
       else
         Resources::pieceTiles[owner][10].draw_notexture(colors[owner]);
       glPopMatrix();
-      //			piece_tile[owner][0]->draw(r[owner],g[owner],b[owner]);
       glPopMatrix();
     } else {
       glPushMatrix();
@@ -169,9 +157,8 @@ void Robot::draw(Vector lightposv, bool shadows) const
       glTranslatef(-bipod_v,0,0);
       Resources::pieceTiles[owner][10].drawShadow(angle, lightposv, Color(0, 0, 0, 0.5));
       glPopMatrix();
-      //			piece_tile[owner][0]->drawShadow(angle,lightposv,0,0,0,0.5);
       glPopMatrix();
-    } /* if */ 
+    } /* if */
     z+=1.0;
     break;
   case 1:
@@ -352,7 +339,7 @@ bool Robot::walkable(int terrain) const {
 }
 
 bool Robot::checkCollision(const std::vector<Building>& buildings,
-                           const std::vector<Robot*>& robots, bool complete, Ship* ship)
+                           const Robots& robots, bool complete, Ship* ship)
 {
   float m1[16] = {1, 0, 0, 0,
                   0, 1, 0, 0,
@@ -462,4 +449,16 @@ void Robot::copyDesign(const Robot& robot)
 {
   traction = robot.traction;
   std::copy(std::begin(robot.pieces), std::end(robot.pieces), std::begin(pieces));
+}
+
+
+void Robot::cycle()
+{
+  if (electronics_state != 0) {
+    electronics_state = electronics_state + 6 % 360;
+  }
+
+  if (traction == 2) {
+    chassis_state++;
+  }
 }

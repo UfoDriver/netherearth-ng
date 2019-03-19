@@ -2,10 +2,13 @@
 #define ROBOT_H
 
 #include <memory>
-#include "bullet.h"
 #include "cmc.h"
+#include "piece3dobject.h"
+#include "robots.h"
 #include "vector.h"
 
+class Building;
+class Bullet;
 class Ship;
 
 
@@ -47,8 +50,9 @@ public:
   bool hasNuclear() const { return pieces[3]; }
   bool hasElectronics() const { return pieces[4]; }
   bool checkCollision(const std::vector<Building>& buildings,
-                      const std::vector<Robot*>& robots, bool complete, Ship* ship);
+                      const Robots& robots, bool complete, Ship* ship);
 
+  void cycle();
   int getId() const { return id; }
 
   float robotSpeed(int terrain) const;

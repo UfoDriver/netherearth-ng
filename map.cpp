@@ -330,7 +330,7 @@ void Map::cycleBullets()
                                 nether->sManager.playExplosion(nether->getShip()->pos, r->pos);
                                 nether->detachShip(r);
                                 nether->ai.killRobot(r->pos);
-                                find_and_destroy_robot(r);
+                                robots.findAndDestroy(r);
                               }
                             }
                             return ret;
@@ -341,31 +341,22 @@ void Map::cycleBullets()
 
 void Map::cycleRobots(unsigned char* keyboard)
 {
-  float x[2], y[2], minz;
-  Vector old_pos;
-  int old_chassis_state;
-  int terrain;
-
+  // @TODO: decompose
   for (Robot* r: robots) {
     /* Robot cycle: */
     /* Animations: */
-    if (r->electronics_state != 0) {
-      r->electronics_state += 6;
-      if (r->electronics_state >= 360)
-        r->electronics_state = 0;
-    }
+    r->cycle();
     /* Apply ROBOT operator: */
-    old_pos = r->pos;
-    old_chassis_state = r->chassis_state;
-    if (r->traction == 2) {
-      r->chassis_state++;
-    }
+
+    Vector old_pos {r->pos};
+    int old_chassis_state = r->chassis_state;
+    float x[2], y[2];
     x[0] = r->pos.x - 0.5;
     x[1] = r->pos.x + 0.5;
     y[0] = r->pos.y - 0.5;
     y[1] = r->pos.y + 0.5;
-    minz = maxZ(x, y);
-    terrain = worseTerrain(x, y);
+    float minz = maxZ(x, y);
+    int terrain = worseTerrain(x, y);
 
     /* Avoid that a Robot can walk agains another and they both get stuck: */
     if (r->op == Robot::OPERATOR::FORWARD &&
@@ -674,17 +665,6 @@ void Map::cycleRobots(unsigned char* keyboard)
       }
     }
   }
-}
-
-
-void Map::find_and_destroy_robot(Robot* robot)
-{
-  robots.erase(std::remove_if(robots.begin(), robots.end(),
-                              [robot](const Robot* r) {
-                                return r == robot;
-                              }),
-               robots.end());
-  delete robot;
 }
 
 

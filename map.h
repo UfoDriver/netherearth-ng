@@ -43,7 +43,6 @@ private:
   void cycleBuildings();
   void cycleBullets();
   void cycleRobots(unsigned char *keyboard);
-  void find_and_destroy_robot(Robot* robot);
   int Width;
   int Height;
   NETHER* nether;
