@@ -2,12 +2,12 @@
 #include <algorithm>
 #include <cmath>
 
+#include "building.h"
 #include "constants.h"
 #include "piece3dobject.h"
 #include "resources.h"
 #include "robot.h"
 #include "ship.h"
-#include "utils.h"
 
 extern int detaillevel;
 

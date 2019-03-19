@@ -9,10 +9,11 @@
 #include "camera.h"
 #include "explosion.h"
 #include "particle.h"
-#include "robot.h"
+#include "robots.h"
 #include "vector.h"
 
 class NETHER;
+class Robot;
 
 
 class Map
@@ -37,8 +38,7 @@ public:
   std::vector<std::unique_ptr<Bullet>> bullets;
   std::vector<Explosion> explosions;
   std::vector<Particle> particles;
-  // @TODO std::unique_ptr
-  std::vector<Robot*> robots;
+  Robots robots;
 private:
   void cycleBuildings();
   void cycleBullets();

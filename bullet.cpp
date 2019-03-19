@@ -22,7 +22,6 @@
 #include "resources.h"
 #include "shadow3dobject.h"
 #include "vector.h"
-#include "utils.h"
 
 
 extern int detaillevel;

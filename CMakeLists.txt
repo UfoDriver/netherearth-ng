@@ -46,6 +46,7 @@ target_sources (${PROJECT_NAME}
   PUBLIC radar
   PUBLIC resources
   PUBLIC robot
+  PUBLIC robots
   PUBLIC shadow3dobject
   PUBLIC ship
   PUBLIC soundmanager

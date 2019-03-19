@@ -86,8 +86,9 @@ void Menu::drawStatus()
           glTranslatef(0, -18, 0);
         }
 
-        std::pair<int, int> robots = nether->getRobotsCount();
-        scaledglprintf(0.1f,0.1f,"%.2i ROBOTS %.2i",robots.second, robots.first);
+        scaledglprintf(0.1f,0.1f,"%.2i ROBOTS %.2i",
+                       nether->map.robots.getRobotCount(1),
+                       nether->map.robots.getRobotCount(0));
         glColor3f(0.0f,0.8f,0.0f);
         glTranslatef(0,-65,0);
 

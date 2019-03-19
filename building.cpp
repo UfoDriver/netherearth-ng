@@ -3,7 +3,6 @@
 #include "building.h"
 #include "constants.h"
 #include "resources.h"
-#include "utils.h"
 
 
 Building::Building(std::istream& in)

@@ -1,33 +1,34 @@
 #ifndef NETHER_HEADER
 #define NETHER_HEADER
 
+#include <SDL/SDL.h>
 #include <array>
 #include <cstring>
 #include <string>
-#include "vector.h"
-#include "cmc.h"
+
 #include "3dobject.h"
-#include "shadow3dobject.h"
-#include "piece3dobject.h"
-#include "building.h"
-#include "statusbutton.h"
-#include "robot.h"
-#include "bullet.h"
 #include "ai.h"
-#include "explosion.h"
-#include "particle.h"
-#include "ship.h"
-#include "camera.h"
-#include "map.h"
-#include "light.h"
 #include "ai_operator.h"
-#include "menu.h"
-#include "radar.h"
-#include "stats.h"
-#include "optionsscreen.h"
+#include "building.h"
+#include "bullet.h"
+#include "camera.h"
+#include "cmc.h"
 #include "constructionscreen.h"
+#include "explosion.h"
+#include "light.h"
+#include "map.h"
+#include "menu.h"
+#include "optionsscreen.h"
+#include "particle.h"
+#include "piece3dobject.h"
+#include "radar.h"
+#include "robot.h"
+#include "shadow3dobject.h"
 #include "soundmanager.h"
-#include "SDL/SDL.h"
+#include "ship.h"
+#include "stats.h"
+#include "statusbutton.h"
+#include "vector.h"
 
 
 /* GAME STATES: */
@@ -82,9 +83,9 @@ public:
   float getAnimationTimer() const { return animationTimer; }
   void addNewRobot(Robot* robot, int player);
   void detachShip(Robot* robot);
+  void debug();
   Menu::TYPE getActiveMenu() { return menu.getActiveMenu(); }
 
-  std::pair<int, int> getRobotsCount() const;
   std::array<std::pair<int, int>, 7> getBuildingStats() const;
   std::array<std::pair<int, int>, 7> getResourceStats() const;
 
@@ -98,7 +99,6 @@ private:
   bool cycle(unsigned char *keyboard);
   void draw(int w, int h);
   void drawGame(bool shadows);
-  int findRobotIndex(const Robot* robot);
 
   /* Game variables: */
   Ship *ship;

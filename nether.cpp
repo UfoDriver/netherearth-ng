@@ -22,8 +22,6 @@
 #include "nether.h"
 #include "piece3dobject.h"
 #include "shadow3dobject.h"
-#include "utils.h"
-#include "vector.h"
 
 
 extern int frames_per_sec;
@@ -87,8 +85,10 @@ bool NETHER::gamecycle()
   bool retval = true;
 
   SDL_PumpEvents();
+  SDLMod modifiers = SDL_GetModState();
   unsigned char* sdlKeyboard = SDL_GetKeyState(NULL);
   unsigned char keyboard[SDLK_LAST];
+  if (modifiers & KMOD_CTRL) debug();
 
   for (int i = 0; i < SDLK_LAST; i++) {
     keyboard[i] = sdlKeyboard[i];
@@ -279,22 +279,17 @@ bool NETHER::saveGame(const std::string& filename)
     oFile << b;
   }
 
-  std::pair<int, int> robotsCount = getRobotsCount();
-  oFile << robotsCount.first << '\n';
-  for (Robot* r: map.robots) {
-    if (r->getOwner() == 0)
-      oFile << *r;
+  for (int i = 0; i < 2; i++) {
+    oFile << map.robots.getRobotCount(i) << '\n';
+    for (Robot* r: map.robots) {
+      if (r->getOwner() == i)
+        oFile << *r;
+    }
   }
-  oFile << robotsCount.second << '\n';
-  for (Robot* r: map.robots) {
-    if (r->getOwner() == 1)
-      oFile << *r;
-  }
-
 
   oFile << map.bullets.size() << '\n';
   for (const std::unique_ptr<Bullet>& bullet: map.bullets) {
-    int index = findRobotIndex(bullet->owner);
+    int index = map.robots.findIndex(bullet->owner);
 
     oFile << (int)bullet->type << ' ' << bullet->step << ' ' << bullet->angle << '\n';
     oFile << bullet->pos;
@@ -309,7 +304,7 @@ bool NETHER::saveGame(const std::string& filename)
 
   oFile << stats;
 
-  oFile << find_index(map.robots, controlled) << '\n';
+  oFile << map.robots.findIndex(controlled) << '\n';
   oFile << menu << std::endl;
 
   return true;
@@ -403,13 +398,8 @@ bool NETHER::saveDebugReport(const std::string& filename)
         << b.pos;
   }
 
-  std::pair<int, int> counters = getRobotsCount();
   for (int i = 0; i < 2; i++) {
-    if (i == 0) {
-      log << "\n# OF ROBOTS PLAYER " << i << ": " << counters.first << '\n';
-    } else {
-      log << "\n# OF ROBOTS PLAYER " << i << ": " << counters.second << '\n';
-    }
+    log << "\n# OF ROBOTS PLAYER " << i << ": " << map.robots.getRobotCount(i) << '\n';
 
     const char* tractions[3] = {"BIPOD", "TRACKS", "ANTIGRAV"};
     const char* pieces[5] = {"CANNONS", "MISSILES", "PHASERS", "NUCLEAR", "ELECTRONICS"};
@@ -483,21 +473,6 @@ bool NETHER::saveDebugReport(const std::string& filename)
   log << "\nMENU " << int(menu.getActiveMenu()) << "\nACT BUTTON: " << int(menu.getActiveButton()) << '\n';
 
   return true;
-}
-
-
-std::pair<int, int> NETHER::getRobotsCount() const
-{
-  return std::accumulate(map.robots.cbegin(), map.robots.cend(),
-                         std::make_pair(0, 0),
-                         [](std::pair<int, int>& acc, auto r) {
-                           if (r->getOwner() == 0) {
-                             acc.first++;
-                           } else {
-                             acc.second++;
-                           }
-                           return acc;
-                         });
 }
 
 
@@ -596,11 +571,6 @@ bool NETHER::cycle(unsigned char *keyboard)
 }
 
 
-int NETHER::findRobotIndex(const Robot* robot)
+void NETHER::debug()
 {
-  int index = find_index(map.robots, robot);
-  if (index != -1) {
-    return index;
-  }
-  return -1;
 }

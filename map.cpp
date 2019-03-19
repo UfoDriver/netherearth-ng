@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cmath>
 #include <numeric>
+#include <unordered_map>
 
 #include "bulletcannon.h"
 #include "bulletmissile.h"
@@ -11,7 +12,6 @@
 #include "map.h"
 #include "nether.h"
 #include "resources.h"
-#include "utils.h"
 
 extern int detaillevel;
 extern int up_key, down_key, left_key, right_key, fire_key, pause_key;
@@ -194,13 +194,14 @@ bool Map::loadMap(const std::string& filename)
   iFile >> Width >> Height;
   resize(Width, Height);
 
-  const std::vector<std::string> tiles = {"G", "S", "S2", "M", "H1",
-                                          "H2", "H3", "H4", "H5", "H6",
-                                          "GG", "SS", "MM", "?"};
+  const std::unordered_map<std::string, int> tiles = {
+      {"G", 0},   {"S", 1},   {"S2", 2},  {"M", 3},  {"H1", 4},
+      {"H2", 5},  {"H3", 6},  {"H4", 7},  {"H5", 8}, {"H6", 9},
+      {"GG", 10}, {"SS", 11}, {"MM", 12}, {"?", 13}};
   std::string tilestr;
   for (int i = 0; i < Width * Height; i++) {
     iFile >> tilestr;
-    int tile = find_index(tiles, tilestr);
+    int tile = tiles.at(tilestr);
     if (tile >= 10) tile -= 10;
     map[i] = tile;
   }
