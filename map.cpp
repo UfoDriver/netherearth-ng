@@ -343,13 +343,11 @@ void Map::cycleRobots(unsigned char* keyboard)
 {
   // @TODO: decompose
   for (Robot* r: robots) {
-    /* Robot cycle: */
-    /* Animations: */
     r->cycle();
     /* Apply ROBOT operator: */
 
     Vector old_pos {r->pos};
-    int old_chassis_state = r->chassis_state;
+    int old_chassis_state {r->chassisState};
     float x[2], y[2];
     x[0] = r->pos.x - 0.5;
     x[1] = r->pos.x + 0.5;
@@ -386,9 +384,9 @@ void Map::cycleRobots(unsigned char* keyboard)
       float speed = r->robotSpeed(terrain);
       /* BIPOD ANIMATION: */
       if (r->traction == 0) {
-        r->chassis_state += int(speed / 0.00390625);
-        if (r->chassis_state > 64)
-          r->chassis_state =- 63;
+        r->chassisState += int(speed / 0.00390625);
+        if (r->chassisState > 64)
+          r->chassisState =- 63;
       }
 
       /* TRACKS PARTICLES: */
@@ -450,7 +448,7 @@ void Map::cycleRobots(unsigned char* keyboard)
       }
     } else {
       if (r->traction == 0)
-        r->chassis_state = 0;
+        r->chassisState = 0;
     }
 
     if (r->op == Robot::OPERATOR::LEFT)
@@ -545,7 +543,7 @@ void Map::cycleRobots(unsigned char* keyboard)
       if (r->checkCollision(buildings, robots, false, nether->getShip()) || !r->walkable(terrain)) {
         r->pos = old_pos;
         if (r->traction == 0)
-          r->chassis_state = old_chassis_state;
+          r->chassisState = old_chassis_state;
         if (r->shipover) {
           nether->getShip()->pos.x = r->pos.x - 0.5;
           nether->getShip()->pos.y = r->pos.y - 0.5;

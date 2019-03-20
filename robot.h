@@ -83,17 +83,22 @@ public:
   CMC cmc;
   void calculateCMC(std::vector<Piece3DObject>& pieceTiles);
   void copyDesign(const Robot& robot);
+  void shipDetached() { electronicsState = 6; }
+  int getElectronicsState() { return electronicsState; }
 
   /* Animation variables: */
-  int electronics_state {0};
-  int chassis_state {0};
+  int chassisState {0};
 
 private:
   int id {Robot::counter++};
   unsigned short owner;
+  int electronicsState {0};
+
   static int counter;
   static const float MS[4][3];
   static const int RS[4][3];
+
+  friend std::ostream& operator<<(std::ostream& out, const Robot& robot);
 };
 
 std::ostream& operator<<(std::ostream& out, const Robot& robot);

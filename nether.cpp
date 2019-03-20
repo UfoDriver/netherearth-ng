@@ -426,8 +426,8 @@ bool NETHER::saveDebugReport(const std::string& filename)
       log << " ANGLE: " << r->angle << '\n';
       log << " MINIMUM CONTAINER BOX:\n";
       log << r->cmc;
-      log << " ELECTRONICS STATE: " << r->electronics_state
-          <<"\n CHASSIS STATE: " << r->chassis_state;
+      log << " ELECTRONICS STATE: " << r->getElectronicsState()
+          <<"\n CHASSIS STATE: " << r->chassisState;
       log << "\n\n";
     }
   }
@@ -498,7 +498,7 @@ void NETHER::addNewRobot(Robot* robot, int player)
 void NETHER::detachShip(Robot* robot)
 {
   if (robot == controlled) {
-    controlled->electronics_state += 6;
+    controlled->shipDetached();
     controlled->shipover = false;
     controlled = nullptr;
     menu.activateMenu(Menu::TYPE::GENERAL, StatusButton::NAME::NONE);

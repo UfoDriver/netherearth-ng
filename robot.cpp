@@ -45,7 +45,7 @@ Robot::Robot(unsigned short owner, std::istream &in) : owner {owner}
   in >> pos;
   in >> angle;
   in >> cmc;
-  in >> electronics_state >> chassis_state;
+  in >> electronicsState >> chassisState;
   op = Robot::OPERATOR(op_);
 }
 
@@ -109,17 +109,17 @@ void Robot::draw(Vector lightposv, bool shadows) const
   glPushMatrix();
   switch(traction) {
   case 0:
-    if (chassis_state >= 0) {
-      if (chassis_state < 32) {
-        bipod_v = chassis_state * 0.00390625;
+    if (chassisState >= 0) {
+      if (chassisState < 32) {
+        bipod_v = chassisState * 0.00390625;
       } else {
-        bipod_v = (64 - chassis_state) * 0.00390625;
+        bipod_v = (64 - chassisState) * 0.00390625;
       }
     } else {
-      if (chassis_state >- 31) {
-        bipod_v = chassis_state * 0.00390625;
+      if (chassisState > -31) {
+        bipod_v = chassisState * 0.00390625;
       } else {
-        bipod_v = (-63 - chassis_state) * 0.00390625;
+        bipod_v = (-63 - chassisState) * 0.00390625;
       }
     }
     if (!shadows) {
@@ -180,7 +180,7 @@ void Robot::draw(Vector lightposv, bool shadows) const
     z+=0.35;
     break;
   case 2:
-    z+=(cos(chassis_state/15.0)*0.1)-0.1;
+    z+=(cos(chassisState/15.0)*0.1)-0.1;
     if (!shadows) {
       glPushMatrix();
       glTranslatef(0,0,z);
@@ -282,7 +282,7 @@ void Robot::draw(Vector lightposv, bool shadows) const
       glTranslatef(0,0,z);
       glRotatef(angle,0,0,1);
       if (!pieces[3]) glTranslatef(-0.2,0,0);
-      glRotatef(electronics_state,0,0,1);
+      glRotatef(electronicsState,0,0,1);
       if (detaillevel >= 3)
         Resources::pieceTiles[owner][7].draw(colors[owner]);
       else
@@ -291,8 +291,8 @@ void Robot::draw(Vector lightposv, bool shadows) const
     } else {
       glPushMatrix();
       glTranslatef(-z*light.x,-z*light.y,0.05);
-      glRotatef(angle+electronics_state,0,0,1);
-      Resources::pieceTiles[owner][7].drawShadow(angle+electronics_state, lightposv, Color(0, 0, 0, 0.5));
+      glRotatef(angle+electronicsState,0,0,1);
+      Resources::pieceTiles[owner][7].drawShadow(angle+electronicsState, lightposv, Color(0, 0, 0, 0.5));
       glPopMatrix();
     } /* if */
   } /* if */
@@ -441,7 +441,7 @@ std::ostream& operator<<(std::ostream& out, const Robot& robot)
              << robot.pos
              << robot.angle << '\n'
              << robot.cmc
-             << robot.electronics_state << ' ' << robot.chassis_state << '\n';
+             << robot.electronicsState << ' ' << robot.chassisState << '\n';
 }
 
 
@@ -454,11 +454,11 @@ void Robot::copyDesign(const Robot& robot)
 
 void Robot::cycle()
 {
-  if (electronics_state != 0) {
-    electronics_state = electronics_state + 6 % 360;
+  if (electronicsState) {
+    electronicsState = (electronicsState + 6) % 360;
   }
 
   if (traction == 2) {
-    chassis_state++;
+    chassisState++;
   }
 }
