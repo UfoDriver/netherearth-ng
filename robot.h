@@ -53,15 +53,15 @@ public:
   bool checkCollision(const std::vector<Building>& buildings,
                       const Robots& robots, bool complete, Ship* ship);
 
-  void cycle();
+  void cycle(NETHER* nether);
   int getId() const { return id; }
 
-  float robotSpeed(int terrain) const;
-  int robotRotationSpeed(int terrain) const;
+  float movingSpeed(int terrain) const;
+  int rotationSpeed(int terrain) const;
   bool walkable(int terrain) const;
   int npieces() const;
   unsigned short getOwner() { return owner; }
-  void processOperator(NETHER* nether, unsigned char* keyboard);
+  void dispatchOperator(NETHER* nether, unsigned char* keyboard);
 
   int traction {-1};
   bool pieces[5] = {};
@@ -99,6 +99,15 @@ private:
   static int counter;
   static const float MS[4][3];
   static const int RS[4][3];
+
+  void processOperatorForward(NETHER* nether, unsigned char* keyboard);
+  void processOperatorLeft(NETHER* nether, unsigned char* keyboard);
+  void processOperatorRight(NETHER* nether, unsigned char* keyboard);
+  void processOperatorCannons(NETHER* nether, unsigned char* keyboard);
+  void processOperatorMissiles(NETHER* nether, unsigned char* keyboard);
+  void processOperatorPhasers(NETHER* nether, unsigned char* keyboard);
+  void processOperatorNuclear(NETHER* nether, unsigned char* keyboard);
+  void processOperatorNone(NETHER* nether, unsigned char* keyboard);
 
   friend std::ostream& operator<<(std::ostream& out, const Robot& robot);
 };

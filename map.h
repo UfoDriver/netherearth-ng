@@ -31,8 +31,10 @@ public:
   bool cycle(unsigned char* keyboard);
   bool loadMap(const std::string& filename);
   float maxZ(float x[2], float y[2]) const;
+  float maxZ(const Vector& position) const;
   int terrain(float x, float y);
-  int worseTerrain(float x[2], float y[2]);
+  int worseTerrain(const Vector& position);
+  void nuclearExplosionAt(Robot* robot, const Vector& position);
 
   std::vector<Building> buildings;
   std::vector<std::unique_ptr<Bullet>> bullets;

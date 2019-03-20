@@ -149,6 +149,30 @@ float Map::maxZ(float x[2], float y[2]) const
 }
 
 
+float Map::maxZ(const Vector& position) const
+{
+  float z = 0;
+  float x[2], y[2];
+  x[0] = position.x - 0.5;
+  x[1] = position.x + 0.5;
+  y[0] = position.y - 0.5;
+  y[1] = position.y + 0.5;
+  int o;
+
+  for (int i = int(x[0]); float(i) < x[1]; i++) {
+    for (int j = int(y[0]); float(j) < y[1]; j++) {
+      if (i >= 0 && i < Width &&
+          j >= 0 && j < Height) {
+        o = map[i + j * Width];
+        z = std::max(Resources::tiles[o].cmc.z[0], z);
+        z = std::max(Resources::tiles[o].cmc.z[1], z);
+      }
+    }
+  }
+  return z;
+}
+
+
 int Map::terrain(float x, float y)
 {
   switch (map[int(x) + int(y) * Width]) {
@@ -169,8 +193,14 @@ int Map::terrain(float x, float y)
 }
 
 
-int Map::worseTerrain(float x[2], float y[2])
+int Map::worseTerrain(const Vector& pos)
 {
+  float x[2], y[2];
+  x[0] = pos.x - 0.5;
+  x[1] = pos.x + 0.5;
+  y[0] = pos.y - 0.5;
+  y[1] = pos.y + 0.5;
+
   int t = terrain(x[0] + 0.001f, y[0] + 0.001f);
   int t2 = terrain(x[1] - 0.001f, y[0] + 0.001f);
   if (t2 == T_HOLE || t == T_HOLE) return T_HOLE;
@@ -316,10 +346,9 @@ void Map::cycleBullets()
 
 void Map::cycleRobots(unsigned char* keyboard)
 {
-  // @TODO: decompose
   for (Robot* r: robots) {
-    r->cycle();
-    r->processOperator(this->nether, keyboard);
+    r->cycle(nether);
+    r->dispatchOperator(this->nether, keyboard);
   }
 }
 
@@ -352,4 +381,43 @@ std::istream& operator>>(std::istream& in, Map& map)
     }
   }
   return in;
+}
+
+
+void Map::nuclearExplosionAt(Robot* robot, const Vector& position)
+{
+  Explosion exp(position, 2);
+  explosions.emplace_back(exp);
+
+  /* Robot destroyed: */
+  nether->detachShip(robot);
+
+  /* Find Robots to destroy: */
+  // Ops, modifying container while iterating
+  robots.erase(std::remove_if(robots.begin(), robots.end(),
+                              [exp, this] (auto& r) {
+                                float distance=(r->pos - exp.pos).norma();
+                                if (distance <= NUCLEAR_RADIUS) {
+                                  nether->ai.killRobot(r->pos);
+                                  return true;
+                                } else {
+                                  return false;
+                                }
+                              }),
+               robots.end());
+
+  /* Find buildings to destroy: */
+  buildings.erase(std::remove_if(buildings.begin(), buildings.end(),
+                                 [exp, this](auto& b) {
+                                   float distance = (b.pos - (exp.pos - Vector(0.5, 0.5, 0.5))).norma();
+                                   if (distance <= NUCLEAR_RADIUS) {
+                                     nether->ai.removeBuilding(b.pos);
+                                     return true;
+                                   } else {
+                                     return false;
+                                   }
+                                 }),
+                  buildings.end());
+  nether->sManager.playExplosion(nether->getShip()->pos, position);
+  nether->stats.requestRecomputing();
 }

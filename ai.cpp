@@ -633,11 +633,11 @@ void AI::availableOperators(const Robot& robot, std::vector<AIOperator>& l)
       int n_turns = 0;
       if (dif == 90 || dif == 270) n_turns=1;
       if (dif == 180) n_turns = 2;
-      int cost = n_turns * int(90.f / robot.robotRotationSpeed(terrain));
+      int cost = n_turns * int(90.f / robot.rotationSpeed(terrain));
 
       /* Displacement cost: */
       terrain = worseMapTerrain(x + xd[i], y + yd[i], 2, 2);
-      cost += int(0.5 / robot.robotSpeed(terrain));
+      cost += int(0.5 / robot.movingSpeed(terrain));
 
       /* Build a new AI_operator: */
       AIOperator op;
@@ -681,10 +681,10 @@ bool AI::expandOperators(const int x, const int y, const int angle, const Robot&
 				if (dif==180) n_turns=2;
 
 				terrain2=worseMapTerrain(x,y,2,2);
-				cost+=n_turns*int(90/float(robot.robotRotationSpeed(terrain2)));
+				cost+=n_turns*int(90/float(robot.rotationSpeed(terrain2)));
 
 				/* Displacement cost: */ 
-				cost+=int(0.5/robot.robotSpeed(terrain));
+				cost+=int(0.5/robot.movingSpeed(terrain));
 
 				/* Replace the an old operator by a new one: */ 
 				if (!searchmap[newpos].used ||
