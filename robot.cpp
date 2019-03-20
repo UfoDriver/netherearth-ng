@@ -3,14 +3,20 @@
 #include <cmath>
 
 #include "bullet.h"
+#include "bulletcannon.h"
+#include "bulletmissile.h"
+#include "bulletphaser.h"
 #include "building.h"
 #include "constants.h"
+#include "nether.h"
 #include "piece3dobject.h"
 #include "resources.h"
 #include "robot.h"
 #include "ship.h"
 
 extern int detaillevel;
+extern int up_key, down_key, left_key, right_key, fire_key, pause_key;
+
 
 const float Robot::MS[4][3]={{0.0078125, 0.015625, 0.03125},
                              {0.00390625, 0.0078125, 0.03125},
@@ -460,5 +466,329 @@ void Robot::cycle()
 
   if (traction == 2) {
     chassisState++;
+  }
+}
+
+
+void Robot::processOperator(NETHER* nether, unsigned char* keyboard)
+{
+  /* Apply ROBOT operator: */
+  Vector old_pos {pos};
+  int old_chassis_state {chassisState};
+  float x[2], y[2];
+  x[0] = pos.x - 0.5;
+  x[1] = pos.x + 0.5;
+  y[0] = pos.y - 0.5;
+  y[1] = pos.y + 0.5;
+  float minz = nether->map.maxZ(x, y);
+  int terrain = nether->map.worseTerrain(x, y);
+
+  /* Avoid that a Robot can walk agains another and they both get stuck: */
+  if (op == Robot::OPERATOR::FORWARD &&
+      (int(pos.x * 256) % 128) == 0 &&
+      (int(pos.y * 256) % 128) == 0) {
+    switch(angle) {
+    case 0:
+      if (nether->ai.worseMapTerrain(int((pos.x + 0.5) / 0.5), int((pos.y - 0.5) / 0.5), 1, 2) > T_HOLE)
+        op = Robot::OPERATOR::NONE;
+      break;
+    case 90:
+      if (nether->ai.worseMapTerrain(int((pos.x - 0.5) / 0.5), int((pos.y + 0.5) / 0.5), 2, 1) > T_HOLE)
+        op = Robot::OPERATOR::NONE;
+      break;
+    case 180:
+      if (nether->ai.worseMapTerrain(int((pos.x - 1.0) / 0.5), int((pos.y - 0.5) / 0.5), 1, 2) > T_HOLE)
+        op = Robot::OPERATOR::NONE;
+      break;
+    case 270:
+      if (nether->ai.worseMapTerrain(int((pos.x - 0.5) / 0.5), int((pos.y - 1.0) / 0.5), 2, 1) > T_HOLE)
+        op = Robot::OPERATOR::NONE;
+      break;
+    }
+  }
+
+  if (op == Robot::OPERATOR::FORWARD) {
+    float speed = robotSpeed(terrain);
+    /* BIPOD ANIMATION: */
+    if (traction == 0) {
+      chassisState += int(speed / 0.00390625);
+      if (chassisState > 64)
+        chassisState =- 63;
+    }
+
+    /* TRACKS PARTICLES: */
+    if (traction == 1) {
+      if (detaillevel >= 4) {
+        Vector pos, sp1;
+
+        for (int i= 0; i < 2; i++) {
+          pos.x = pos.x + float(rand() % 10) / 100.0;
+          pos.y = pos.y + float(rand() % 10) / 100.0;
+          pos.z = 0;
+          Color color(0.9F + float(rand() % 21 - 10) / 100.0,
+                      0.7F + float(rand() % 21 - 10) / 100.0,
+                      0.5F + float(rand() % 21 - 10) / 100.0);
+          switch (angle) {
+          case 0:
+            sp1 = Vector(-0.05, float(rand() % 9 - 4) / 200.0, 0);
+            pos.x -= 0.25;
+            pos.y += ((rand() % 2) == 0 ? -0.5 : 0.5);
+            break;
+          case 90:
+            sp1 = Vector(float(rand() % 9 - 4) / 200.0, -0.05, 0);
+            pos.y -= 0.25;
+            pos.x += ((rand() % 2) == 0 ? -0.5 : 0.5);
+            break;
+          case 180:
+            sp1 = Vector(0.05, float(rand() % 9 - 4) / 200.0, 0);
+            pos.x += 0.25;
+            pos.y += ((rand() % 2) == 0 ? -0.5 : 0.5);
+            break;
+          case 270:
+            sp1 = Vector(float(rand() % 9 - 4) / 200.0, 0.05, 0);
+            pos.y += 0.25;
+            pos.x += ((rand() % 2) == 0 ? -0.5 : 0.5);
+            break;
+          }
+          nether->map.particles.emplace_back(pos, sp1, Vector(0, 0, 0.05), 0, 0.3, color, 1.0, 0.0, 20 + (rand() % 10));
+        }
+      }
+    }
+
+    switch (angle) {
+    case 0:
+      if (pos.x < nether->map.width() - 0.5)
+        pos.x += speed;
+      break;
+    case 90:
+      if (pos.y > 0.5)
+        pos.y += speed;
+      break;
+    case 180:
+      if (pos.x > 0.5)
+        pos.x -= speed;
+      break;
+    case 270:
+      if (pos.y < nether->map.height() - 0.5)
+        pos.y -= speed;
+      break;
+    }
+  } else {
+    if (traction == 0)
+      chassisState = 0;
+  }
+
+  if (op == Robot::OPERATOR::LEFT)
+    angle -= robotRotationSpeed(terrain);
+  if (op == Robot::OPERATOR::RIGHT)
+    angle += robotRotationSpeed(terrain);
+  if (angle >= 360)
+    angle -= 360;
+  if (angle < 0)
+    angle += 360;
+
+  if (op == Robot::OPERATOR::CANNONS && firetimer == 0) {
+    Vector pos(pos);
+    pos.z = piecez(0) + 0.3f;
+    nether->map.bullets.emplace_back(new BulletCannon(pos, this));
+    nether->sManager.playShot(nether->getShip()->pos, pos);
+  }
+
+  if (op == Robot::OPERATOR::MISSILES && firetimer == 0) {
+    Vector pos (pos);
+    pos.z = piecez(1) + 0.2f;
+    nether->map.bullets.emplace_back(new BulletMissile(pos, this));
+    nether->sManager.playShot(nether->getShip()->pos, pos);
+  }
+
+  if (op == Robot::OPERATOR::PHASERS && firetimer == 0) {
+    Vector pos(pos);
+    pos.z = piecez(2) + 0.3f;
+    nether->map.bullets.emplace_back(new BulletPhaser(pos, this));
+    nether->sManager.playShot(nether->getShip()->pos, pos);
+  }
+
+  if (op == Robot::OPERATOR::CANNONS ||
+      op == Robot::OPERATOR::MISSILES ||
+      op == Robot::OPERATOR::PHASERS)
+    firetimer++;
+
+  if (op == Robot::OPERATOR::NUCLEAR) {
+    Explosion exp(pos, 2);
+
+    nether->map.explosions.emplace_back(exp);
+
+    /* Robot destroyed: */
+    nether->detachShip(this);
+
+    /* Find Robots to destroy: */
+    // Ops, modifying container while iterating
+    // @TODO: map should handle nuclear explosion
+    nether->map.robots.erase(std::remove_if(nether->map.robots.begin(), nether->map.robots.end(),
+                                            [exp, nether] (auto& r) {
+                                              float distance=(r->pos - exp.pos).norma();
+                                              if (distance <= NUCLEAR_RADIUS) {
+                                                nether->ai.killRobot(r->pos);
+                                                return true;
+                                              } else {
+                                                return false;
+                                              }
+                                            }),
+                             nether->map.robots.end());
+
+    /* Find buildings to destroy: */
+    nether->map.buildings.erase(std::remove_if(nether->map.buildings.begin(), nether->map.buildings.end(),
+                                               [exp, nether](auto& b) {
+                                                 float distance = (b.pos - (exp.pos - Vector(0.5, 0.5, 0.5))).norma();
+                                                 if (distance <= NUCLEAR_RADIUS) {
+                                                   nether->ai.removeBuilding(b.pos);
+                                                   return true;
+                                                 } else {
+                                                   return false;
+                                                 }
+                                               }),
+                                nether->map.buildings.end());
+    nether->sManager.playExplosion(nether->getShip()->pos, pos);
+    nether->stats.requestRecomputing();
+  }
+
+  {
+    x[0] = pos.x - 0.5;
+    x[1] = pos.x + 0.5;
+    y[0] = pos.y - 0.5;
+    y[1] = pos.y + 0.5;
+    minz = nether->map.maxZ(x, y);
+    terrain = nether->map.worseTerrain(x, y);
+    pos.z = minz;
+
+    if (shipover) {
+      nether->getShip()->pos.x = pos.x - 0.5;
+      nether->getShip()->pos.y = pos.y - 0.5;
+      nether->getShip()->pos.z = pos.z + cmc.z[1];
+    }
+
+    /* Collision: */
+    if (checkCollision(nether->map.buildings, nether->map.robots, false, nether->getShip()) ||
+        !walkable(terrain)) {
+      pos = old_pos;
+      if (traction == 0)
+        chassisState = old_chassis_state;
+      if (shipover) {
+        nether->getShip()->pos.x = pos.x - 0.5;
+        nether->getShip()->pos.y = pos.y - 0.5;
+        nether->getShip()->pos.z = pos.z + cmc.z[1];
+      }
+    } else {
+      nether->ai.moveRobot(old_pos, pos, getOwner());
+    }
+
+    if (op == Robot::OPERATOR::FORWARD &&
+        (angle == 0 || angle == 180) &&
+        (int(pos.x * 256) % 128) == 0)
+      op = Robot::OPERATOR::NONE;
+    if (op == Robot::OPERATOR::FORWARD &&
+        (angle == 90 || angle == 270) &&
+        (int(pos.y * 256) % 128) == 0)
+      op = Robot::OPERATOR::NONE;
+    if (op == Robot::OPERATOR::LEFT &&(angle % 90) == 0)
+      op = Robot::OPERATOR::NONE;
+    if (op == Robot::OPERATOR::RIGHT && (angle % 90) == 0)
+      op = Robot::OPERATOR::NONE;
+    if (op == Robot::OPERATOR::CANNONS && firetimer >= 64) {
+      op = Robot::OPERATOR::NONE;
+      firetimer = 0;
+    }
+    if (op == Robot::OPERATOR::MISSILES && firetimer >= 64) {
+      op = Robot::OPERATOR::NONE;
+      firetimer = 0;
+    }
+    if (op == Robot::OPERATOR::PHASERS && firetimer >= 64) {
+      op = Robot::OPERATOR::NONE;
+      firetimer = 0;
+    }
+
+    /* Follow ROBOT program: */
+    if (op == Robot::OPERATOR::NONE && !shipover) {
+      switch (program) {
+      case Robot::PROGRAM_NONE:
+        break;
+      case Robot::PROGRAM_FORWARD:
+        op = Robot::OPERATOR::FORWARD;
+        break;
+      case Robot::PROGRAM_STOPDEFEND:
+        op = nether->ai.programStopDefend(*this, &(program_goal), owner + 1);
+        break;
+      case Robot::PROGRAM_ADVANCE:
+        op = nether->ai.programAdvance(*this, getOwner() + 1);
+        if (op == Robot::OPERATOR::FORWARD && angle == 90)
+          program_parameter.as_int--;
+        if (op == Robot::OPERATOR::FORWARD && angle == 270)
+          program_parameter.as_int++;
+        if (program_parameter.as_int == 0)
+          program = Robot::PROGRAM_STOPDEFEND;
+        break;
+      case Robot::PROGRAM_RETREAT:
+        op = nether->ai.programRetreat(*this, owner + 1);
+        if (op == Robot::OPERATOR::FORWARD && angle == 270)
+          program_parameter.as_int--;
+        if (op == Robot::OPERATOR::FORWARD && angle == 90)
+          program_parameter.as_int++;
+        if (program_parameter.as_int == 0)
+          program = Robot::PROGRAM_STOPDEFEND;
+        break;
+      case Robot::PROGRAM_DESTROY:
+        op = nether->ai.programDestroy(*this, &(program_goal), owner + 1);
+        break;
+      case Robot::PROGRAM_CAPTURE:
+        op = nether->ai.programCapture(*this, &(program_goal), owner + 1);
+        break;
+      }
+    }
+
+    /* Follow USER's command: */
+    if (op == Robot::OPERATOR::NONE && shipover &&
+        (nether->getActiveMenu() == Menu::TYPE::DIRECTCONTROL ||
+         nether->getActiveMenu() == Menu::TYPE::DIRECTCONTROL2)) {
+      if (keyboard[right_key]) {
+        if (angle == 0) {
+          op = Robot::OPERATOR::FORWARD;
+        } else {
+          if (angle == 270)
+            op = Robot::OPERATOR::RIGHT;
+          else
+            op = Robot::OPERATOR::LEFT;
+        }
+      }
+      if (keyboard[left_key]) {
+        if (angle == 180) {
+          op = Robot::OPERATOR::FORWARD;
+        } else {
+          if (angle == 90)
+            op = Robot::OPERATOR::RIGHT;
+          else
+            op = Robot::OPERATOR::LEFT;
+        }
+      }
+      if (keyboard[up_key]) {
+        if (angle == 90) {
+          op = Robot::OPERATOR::FORWARD;
+        } else {
+          if (angle == 0)
+            op = Robot::OPERATOR::RIGHT;
+          else
+            op = Robot::OPERATOR::LEFT;
+        }
+      }
+      if (keyboard[down_key]) {
+        if (angle == 270) {
+          op = Robot::OPERATOR::FORWARD;
+        } else {
+          if (angle == 180)
+            op = Robot::OPERATOR::RIGHT;
+          else
+            op = Robot::OPERATOR::LEFT;
+        }
+      }
+    }
   }
 }

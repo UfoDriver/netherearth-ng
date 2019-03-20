@@ -9,6 +9,7 @@
 
 class Building;
 class Bullet;
+class NETHER;
 class Ship;
 
 
@@ -60,6 +61,7 @@ public:
   bool walkable(int terrain) const;
   int npieces() const;
   unsigned short getOwner() { return owner; }
+  void processOperator(NETHER* nether, unsigned char* keyboard);
 
   int traction {-1};
   bool pieces[5] = {};
