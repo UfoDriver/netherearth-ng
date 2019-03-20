@@ -507,3 +507,26 @@ CMC Building::getExtraCMC() const
     return CMC();
   }
 }
+
+
+Vector Building::getCapturePoint()
+{
+  if (type == Building::TYPE::WARBASE) {
+    return pos + Vector(2, 0, 0);
+  } else {
+    return pos + Vector(1, 0, 0);
+  }
+}
+
+
+bool Building::isCapturable()
+{
+  return
+    type == Building::TYPE::FACTORY_ELECTRONICS ||
+    type == Building::TYPE::FACTORY_NUCLEAR ||
+    type == Building::TYPE::FACTORY_PHASERS ||
+    type == Building::TYPE::FACTORY_MISSILES ||
+    type == Building::TYPE::FACTORY_CANNONS ||
+    type == Building::TYPE::FACTORY_CHASSIS ||
+    type == Building::TYPE::WARBASE;
+}

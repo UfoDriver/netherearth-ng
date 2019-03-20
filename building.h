@@ -35,6 +35,8 @@ public:
   CMC getCMC() const;
   CMC getExtraCMC() const;
   bool collidesWith(const Vector& position, const CMC& cmc) const;
+  Vector getCapturePoint();
+  bool isCapturable();
 
   Vector pos;
   TYPE type;

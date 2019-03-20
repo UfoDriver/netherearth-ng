@@ -32,4 +32,6 @@ const int WOE_SEARCH_DEPTH = 4; // Search depth for robots without ELECTRONICS
 
 const float NUCLEAR_RADIUS = 2.5f;
 
+const int CAPTURE_TIME = 1728; // 12 * 12 * 12
+
 #endif // CONSTANTS_H

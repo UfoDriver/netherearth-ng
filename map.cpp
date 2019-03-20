@@ -251,46 +251,21 @@ bool Map::cycle(unsigned char *keyboard)
 void Map::cycleBuildings()
 {
   for (Building& b: buildings) {
-    if (b.type == Building::TYPE::FACTORY_ELECTRONICS ||
-        b.type == Building::TYPE::FACTORY_NUCLEAR ||
-        b.type == Building::TYPE::FACTORY_PHASERS ||
-        b.type == Building::TYPE::FACTORY_MISSILES ||
-        b.type == Building::TYPE::FACTORY_CANNONS	||
-        b.type == Building::TYPE::FACTORY_CHASSIS) {
-      int robot = nether->ai.robotHere(b.pos + Vector(1, 0, 0));
+    if (b.isCapturable()) {
+      int robot = nether->ai.robotHere(b.getCapturePoint());
+
       if (robot == 0) {
         b.status = 0;
       } else {
         if (robot == T_ROBOT) b.status++;
         if (robot == T_EROBOT) b.status--;
 
-        if (b.status >= 12 * 12 * 12) {
+        if (b.status >= CAPTURE_TIME) {
           b.owner = 1;
           b.status = 0;
           nether->requestStatsRecomputing();
         }
-        if (b.status <= -12 * 12 * 12) {
-          b.owner = 2;
-          b.status = 0;
-          nether->requestStatsRecomputing();
-        }
-      }
-    }
-
-    if (b.type == Building::TYPE::WARBASE) {
-      int robot = nether->ai.robotHere(b.pos + Vector(2, 0, 0));
-      if (robot == 0) {
-        b.status = 0;
-      } else {
-        if (robot == T_ROBOT) b.status++;
-        if (robot == T_EROBOT) b.status--;
-        if (b.status >= 12 * 12 * 12) {
-          b.owner = 1;
-          b.status = 0;
-          nether->requestStatsRecomputing();
-        }
-
-        if (b.status <= -12 * 12 * 12) {
+        if (b.status <= -CAPTURE_TIME) {
           b.owner = 2;
           b.status = 0;
           nether->requestStatsRecomputing();
@@ -423,7 +398,7 @@ void Map::cycleRobots(unsigned char* keyboard)
               pos.x += ((rand() % 2) == 0 ? -0.5 : 0.5);
               break;
             }
-            particles.emplace_back(pos, sp1, Vector(0, 0, 0.05), 0, 0.3, color, 1.0, 0.0, 20+ (rand() % 10));
+            particles.emplace_back(pos, sp1, Vector(0, 0, 0.05), 0, 0.3, color, 1.0, 0.0, 20 + (rand() % 10));
           }
         }
       }

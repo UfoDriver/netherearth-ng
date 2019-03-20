@@ -9,6 +9,7 @@
 * Guile integration?
 * Robot health bar above (only players'?)
 * Robot program above (only players? with program arguments?)
+* Factory/warbase capturing progress bar
 * Consider using engine like irrlicht
 * ~~No global hardcoded paths~~
 * ~~Crash on drawing explosions~~
