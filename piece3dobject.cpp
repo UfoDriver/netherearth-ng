@@ -85,7 +85,7 @@ void Piece3DObject::drawShadow(int angle, Vector light, const Color& color)
     break;
   default:
     computeDynamicShadow(angle, light);
-    glVertexPointer(3, GL_FLOAT, 0, shadowPointsdynamic.data());
+    glVertexPointer(3, GL_FLOAT, 0, shadowPointsDynamic.data());
     glBegin(GL_TRIANGLES);
     for (const Face& face: shadowFacesDynamic) {
       glArrayElement(face.a);
@@ -159,10 +159,10 @@ void Piece3DObject::computeShadow(int angle, const Vector& light, std::vector<Ve
 }
 
 
-void Piece3DObject::computeDynamicShadow(int angle, Vector light)
+void Piece3DObject::computeDynamicShadow(int angle, const Vector& light)
 {
   // @TODO: seems like it's broken
-  computeShadow(angle, light, shadowPointsdynamic, shadowFacesDynamic, shadowCMCDynamic);
+  computeShadow(angle, light, shadowPointsDynamic, shadowFacesDynamic, shadowCMCDynamic);
 }
 
 
