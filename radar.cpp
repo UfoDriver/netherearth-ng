@@ -24,7 +24,7 @@ extern bool show_radar;
 
 void Radar::draw(const int width, const int height, const int split, const int splity)
 {
-  if (show_radar && needsRedraw <= 1) {
+  if (show_radar) {
     float lightpos2[4] = {0, 0, 1000, 0};
     glLightfv(GL_LIGHT0, GL_POSITION, lightpos2);
     glClearColor(0.0, 0.0, 0,0);
@@ -109,6 +109,4 @@ void Radar::draw(const int width, const int height, const int split, const int s
     glVertex3f(30 + y, maxx - x, 2);
     glEnd();
   }
-  needsRedraw--;
-  if (needsRedraw < 0) needsRedraw = 3;
 }

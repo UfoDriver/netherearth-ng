@@ -63,7 +63,6 @@ NETHER::NETHER(const std::string& mapname): map(this), ai(this, &map), menu(this
   gameStarted = INTRO_TIME;
 
   menu.activateMenu(Menu::TYPE::GENERAL, StatusButton::NAME::NONE);
-  radar.needsRedraw = 1;
 
   ai.makePrecomputations();
 }

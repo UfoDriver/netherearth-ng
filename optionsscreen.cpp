@@ -192,7 +192,6 @@ bool OptionsScreen::cycle(unsigned char *keyboard)
           nether->saveDebugReport("debugreport.txt");
           nether->setGameState(NETHER::STATE::PAUSE);
           selectedOption = 2;
-          nether->redrawRadar();
         }
       }
     }

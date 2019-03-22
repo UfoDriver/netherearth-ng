@@ -54,8 +54,6 @@ bool ConstructionScreen::cycle(unsigned char *keyboard)
   if (menuPointer == MENU::START && keyboard[fire_key] > 1) {
     buildRobot();
   }
-
-  nether->redrawRadar();
   return true;
 }
 

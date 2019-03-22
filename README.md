@@ -20,5 +20,5 @@
 * Make radar semitransparent
 * ~~Provide bigger screen resolutions~~
 * ~~"NETHER" is a God object and should be decoupled~~
-* Fix collision detection
-* Fix ship to robot attachment
+* ~~Fix collision detection~~
+* ~~Fix ship to robot attachment~~

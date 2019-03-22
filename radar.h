@@ -6,10 +6,8 @@ class NETHER;
 
 class Radar {
 public:
-  explicit Radar(const NETHER* nether): needsRedraw(1), nether(nether) {};
+  explicit Radar(const NETHER *nether) : nether {nether} {};
   void draw(const int width, const int height, const int split, const int splity);
-  int needsRedraw;
-  void requestRedraw() { needsRedraw = 2; }
 
 private:
   const NETHER* nether;

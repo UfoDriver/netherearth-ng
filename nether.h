@@ -70,7 +70,6 @@ public:
   bool loadGame(const std::string& filename);
   bool saveDebugReport(const std::string& filename);
 
-  void redrawRadar() { radar.requestRedraw(); }
   void requestStatsRecomputing() { stats.requestRecomputing(); }
 
   Robot* getControlled() const { return controlled; }
