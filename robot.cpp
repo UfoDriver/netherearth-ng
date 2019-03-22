@@ -208,7 +208,7 @@ void Robot::draw(Vector lightposv, bool shadows) const
     z+=0.45;
     break;
   } /* switch */
-  if (pieces[0]) {
+  if (hasCannons()) {
     if (!shadows) {
       glPushMatrix();
       glTranslatef(0,0,z);
@@ -227,7 +227,7 @@ void Robot::draw(Vector lightposv, bool shadows) const
     } /* if */
     z+=0.5;
   } /* if */
-  if (pieces[1]) {
+  if (hasMissiles()) {
     if (!shadows) {
       glPushMatrix();
       glTranslatef(0,0,z);
@@ -246,7 +246,7 @@ void Robot::draw(Vector lightposv, bool shadows) const
     }
     z+=0.35;
   } /* if */
-  if (pieces[2]) {
+  if (hasPhasers()) {
     if (!shadows) {
       glPushMatrix();
       glTranslatef(0,0,z);
@@ -265,7 +265,7 @@ void Robot::draw(Vector lightposv, bool shadows) const
     } /* if */
     z+=0.5;
   } /* if */
-  if (pieces[3]) {
+  if (hasNuclear()) {
     if (!shadows) {
       glPushMatrix();
       glTranslatef(0,0,z);
@@ -284,7 +284,7 @@ void Robot::draw(Vector lightposv, bool shadows) const
     } /* if */
     z+=0.8;
   } /* if */
-  if (pieces[4]) {
+  if (hasElectronics()) {
     if (!shadows) {
       glPushMatrix();
       glTranslatef(0,0,z);
@@ -333,6 +333,7 @@ float Robot::movingSpeed(int terrain) const
     return 0;
 }
 
+
 int Robot::rotationSpeed(int terrain) const
 {
   if (terrain < 4 && traction < 3)
@@ -342,12 +343,25 @@ int Robot::rotationSpeed(int terrain) const
 }
 
 
-bool Robot::walkable(int terrain) const {
+bool Robot::walkable(int terrain) const
+{
   return movingSpeed(terrain) != 0;
 }
 
+
 bool Robot::checkCollision(const std::vector<Building>& buildings,
-                           const Robots& robots, bool complete, Ship* ship)
+                           const Robots& robots, bool complete, Ship* ship) const
+{
+  if (checkCollision(ship)) return true;
+  if (!complete) return false;
+
+  return
+    checkCollision(buildings) or
+    checkCollision(robots);
+}
+
+
+bool Robot::checkCollision(const std::vector<Building>& buildings) const
 {
   float m1[16] = {1, 0, 0, 0,
                   0, 1, 0, 0,
@@ -357,16 +371,6 @@ bool Robot::checkCollision(const std::vector<Building>& buildings,
                   0, 1, 0, 0,
                   0, 0, 1, 0,
                   0, 0, 0, 1};
-  {
-    float m2[16]={1, 0, 0, 0,
-                  0, 1, 0, 0,
-                  0, 0, 1, 0,
-                  ship->pos.x, ship->pos.y, ship->pos.z, 1};
-    if (cmc.collision_simple(m1, ship->cmc, m2)) return true;
-  }
-
-  if (!complete) return false;
-
   for (const Building& b: buildings) {
     if (b.pos.aboutToCollide3D(pos, COLISION_TEST_THRESHOLD)) {
       m2[12] = b.pos.x;
@@ -375,7 +379,20 @@ bool Robot::checkCollision(const std::vector<Building>& buildings,
       if (cmc.collision_simple(m1, b.getCMC(), m2)) return true;
     }
   }
+  return false;
+}
 
+
+bool Robot::checkCollision(const Robots& robots) const
+{
+  float m1[16] = {1, 0, 0, 0,
+                  0, 1, 0, 0,
+                  0, 0, 1, 0,
+                  pos.x, pos.y, pos.z, 1};
+  float m2[16] = {1, 0, 0, 0,
+                  0, 1, 0, 0,
+                  0, 0, 1, 0,
+                  0, 0, 0, 1};
   for(Robot* rt: robots) {
     if (rt->pos.aboutToCollide3D(pos, COLISION_TEST_THRESHOLD)) {
       if (rt != this) {
@@ -386,8 +403,21 @@ bool Robot::checkCollision(const std::vector<Building>& buildings,
       }
     }
   }
-
   return false;
+}
+
+
+bool Robot::checkCollision(Ship* ship) const
+{
+  float m1[16] = {1, 0, 0, 0,
+                  0, 1, 0, 0,
+                  0, 0, 1, 0,
+                  pos.x, pos.y, pos.z, 1};
+  float m2[16] = {1, 0, 0, 0,
+                  0, 1, 0, 0,
+                  0, 0, 1, 0,
+                  ship->pos.x, ship->pos.y, ship->pos.z, 1};
+  return cmc.collision_simple(m1, ship->cmc, m2);
 }
 
 
@@ -529,6 +559,7 @@ void Robot::dispatchOperator(NETHER* nether, unsigned char* keyboard)
     break;
   case OPERATOR::RIGHT:
     processOperatorRight(nether, keyboard);
+    break;
   case OPERATOR::CANNONS:
     processOperatorCannons(nether, keyboard);
     break;
@@ -543,9 +574,12 @@ void Robot::dispatchOperator(NETHER* nether, unsigned char* keyboard)
     break;
   case OPERATOR::NONE:
     processOperatorNone(nether, keyboard);
+    break;
   }
 
-  if (checkCollision(nether->map.buildings, nether->map.robots, false, nether->getShip()) or
+  if (checkCollision(nether->map.buildings) or
+      checkCollision(nether->map.robots) or
+      checkCollision(nether->getShip()) or
       !walkable(nether->map.worseTerrain(pos))) {
     pos = oldPos;
   } else {
@@ -639,8 +673,8 @@ void Robot::processOperatorCannons(NETHER *nether, unsigned char *keyboard)
     bulletPos.z = piecez(0) + 0.3f;
     nether->map.bullets.emplace_back(new BulletCannon(bulletPos, this));
     nether->sManager.playShot(nether->getShip()->pos, bulletPos);
-    firetimer++;
   }
+  firetimer++;
   if (firetimer >= 64) {
     op = Robot::OPERATOR::NONE;
     firetimer = 0;
@@ -655,8 +689,8 @@ void Robot::processOperatorMissiles(NETHER *nether, unsigned char *keyboard)
     bulletPos.z = piecez(1) + 0.2f;
     nether->map.bullets.emplace_back(new BulletMissile(bulletPos, this));
     nether->sManager.playShot(nether->getShip()->pos, bulletPos);
-    firetimer++;
   }
+  firetimer++;
   if (firetimer >= 64) {
     op = Robot::OPERATOR::NONE;
     firetimer = 0;
@@ -671,8 +705,8 @@ void Robot::processOperatorPhasers(NETHER *nether, unsigned char *keyboard)
     bulletPos.z = piecez(2) + 0.3f;
     nether->map.bullets.emplace_back(new BulletPhaser(bulletPos, this));
     nether->sManager.playShot(nether->getShip()->pos, bulletPos);
-    firetimer++;
   }
+  firetimer++;
   if (firetimer >= 64) {
     op = Robot::OPERATOR::NONE;
     firetimer = 0;
@@ -689,84 +723,94 @@ void Robot::processOperatorNuclear(NETHER *nether, unsigned char *keyboard)
 void Robot::processOperatorNone(NETHER* nether, unsigned char* keyboard)
 {
   if (!shipover) {
-    switch (program) {
-    case Robot::PROGRAM_NONE:
-      break;
-    case Robot::PROGRAM_FORWARD:
+    processProgram(nether, keyboard);
+  } else {
+    if (nether->getActiveMenu() == Menu::TYPE::DIRECTCONTROL ||
+        nether->getActiveMenu() == Menu::TYPE::DIRECTCONTROL2)
+      processDirectInput(nether, keyboard);
+  }
+}
+
+
+void Robot::processProgram(NETHER* nether, unsigned char* keyboard)
+{
+  switch (program) {
+  case Robot::PROGRAM_NONE:
+    break;
+  case Robot::PROGRAM_FORWARD:
+    op = Robot::OPERATOR::FORWARD;
+    break;
+  case Robot::PROGRAM_STOPDEFEND:
+    op = nether->ai.programStopDefend(*this, &program_goal, owner + 1);
+    break;
+  case Robot::PROGRAM_ADVANCE:
+    op = nether->ai.programAdvance(*this, getOwner() + 1);
+    if (op == Robot::OPERATOR::FORWARD && angle == 90)
+      program_parameter.as_int--;
+    if (op == Robot::OPERATOR::FORWARD && angle == 270)
+      program_parameter.as_int++;
+    if (program_parameter.as_int == 0)
+      program = Robot::PROGRAM_STOPDEFEND;
+    break;
+  case Robot::PROGRAM_RETREAT:
+    op = nether->ai.programRetreat(*this, owner + 1);
+    if (op == Robot::OPERATOR::FORWARD && angle == 270)
+      program_parameter.as_int--;
+    if (op == Robot::OPERATOR::FORWARD && angle == 90)
+      program_parameter.as_int++;
+    if (program_parameter.as_int == 0)
+      program = Robot::PROGRAM_STOPDEFEND;
+    break;
+  case Robot::PROGRAM_DESTROY:
+    op = nether->ai.programDestroy(*this, &program_goal, owner + 1);
+    break;
+  case Robot::PROGRAM_CAPTURE:
+    op = nether->ai.programCapture(*this, &program_goal, owner + 1);
+    break;
+  }
+}
+
+
+void Robot::processDirectInput(NETHER* nether, unsigned char* keyboard)
+{
+  if (keyboard[right_key]) {
+    if (angle == 0) {
       op = Robot::OPERATOR::FORWARD;
-      break;
-    case Robot::PROGRAM_STOPDEFEND:
-      op = nether->ai.programStopDefend(*this, &program_goal, owner + 1);
-      break;
-    case Robot::PROGRAM_ADVANCE:
-      op = nether->ai.programAdvance(*this, getOwner() + 1);
-      if (op == Robot::OPERATOR::FORWARD && angle == 90)
-        program_parameter.as_int--;
-      if (op == Robot::OPERATOR::FORWARD && angle == 270)
-        program_parameter.as_int++;
-      if (program_parameter.as_int == 0)
-        program = Robot::PROGRAM_STOPDEFEND;
-      break;
-    case Robot::PROGRAM_RETREAT:
-      op = nether->ai.programRetreat(*this, owner + 1);
-      if (op == Robot::OPERATOR::FORWARD && angle == 270)
-        program_parameter.as_int--;
-      if (op == Robot::OPERATOR::FORWARD && angle == 90)
-        program_parameter.as_int++;
-      if (program_parameter.as_int == 0)
-        program = Robot::PROGRAM_STOPDEFEND;
-      break;
-    case Robot::PROGRAM_DESTROY:
-      op = nether->ai.programDestroy(*this, &program_goal, owner + 1);
-      break;
-    case Robot::PROGRAM_CAPTURE:
-      op = nether->ai.programCapture(*this, &program_goal, owner + 1);
-      break;
+    } else {
+      if (angle == 270)
+        op = Robot::OPERATOR::RIGHT;
+      else
+        op = Robot::OPERATOR::LEFT;
     }
   }
-
-  if (shipover &&
-      (nether->getActiveMenu() == Menu::TYPE::DIRECTCONTROL ||
-       nether->getActiveMenu() == Menu::TYPE::DIRECTCONTROL2)) {
-    if (keyboard[right_key]) {
-      if (angle == 0) {
-        op = Robot::OPERATOR::FORWARD;
-      } else {
-        if (angle == 270)
-          op = Robot::OPERATOR::RIGHT;
-        else
-          op = Robot::OPERATOR::LEFT;
-      }
+  if (keyboard[left_key]) {
+    if (angle == 180) {
+      op = Robot::OPERATOR::FORWARD;
+    } else {
+      if (angle == 90)
+        op = Robot::OPERATOR::RIGHT;
+      else
+        op = Robot::OPERATOR::LEFT;
     }
-    if (keyboard[left_key]) {
-      if (angle == 180) {
-        op = Robot::OPERATOR::FORWARD;
-      } else {
-        if (angle == 90)
-          op = Robot::OPERATOR::RIGHT;
-        else
-          op = Robot::OPERATOR::LEFT;
-      }
+  }
+  if (keyboard[up_key]) {
+    if (angle == 90) {
+      op = Robot::OPERATOR::FORWARD;
+    } else {
+      if (angle == 0)
+        op = Robot::OPERATOR::RIGHT;
+      else
+        op = Robot::OPERATOR::LEFT;
     }
-    if (keyboard[up_key]) {
-      if (angle == 90) {
-        op = Robot::OPERATOR::FORWARD;
-      } else {
-        if (angle == 0)
-          op = Robot::OPERATOR::RIGHT;
-        else
-          op = Robot::OPERATOR::LEFT;
-      }
-    }
-    if (keyboard[down_key]) {
-      if (angle == 270) {
-        op = Robot::OPERATOR::FORWARD;
-      } else {
-        if (angle == 180)
-          op = Robot::OPERATOR::RIGHT;
-        else
-          op = Robot::OPERATOR::LEFT;
-      }
+  }
+  if (keyboard[down_key]) {
+    if (angle == 270) {
+      op = Robot::OPERATOR::FORWARD;
+    } else {
+      if (angle == 180)
+        op = Robot::OPERATOR::RIGHT;
+      else
+        op = Robot::OPERATOR::LEFT;
     }
   }
 }

@@ -19,7 +19,7 @@ class Robot;
 class Map
 {
 public:
-  explicit Map(NETHER* nether): Width(0), Height(0), nether(nether) {}
+  explicit Map(NETHER* nether) : Width{0}, Height{0}, nether {nether} {}
 
   std::vector<int> map;
 
@@ -41,6 +41,7 @@ public:
   std::vector<Explosion> explosions;
   std::vector<Particle> particles;
   Robots robots;
+
 private:
   void cycleBuildings();
   void cycleBullets();

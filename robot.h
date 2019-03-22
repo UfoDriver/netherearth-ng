@@ -51,7 +51,7 @@ public:
   bool hasNuclear() const { return pieces[3]; }
   bool hasElectronics() const { return pieces[4]; }
   bool checkCollision(const std::vector<Building>& buildings,
-                      const Robots& robots, bool complete, Ship* ship);
+                      const Robots& robots, bool complete, Ship* ship) const;
 
   void cycle(NETHER* nether);
   int getId() const { return id; }
@@ -108,6 +108,12 @@ private:
   void processOperatorPhasers(NETHER* nether, unsigned char* keyboard);
   void processOperatorNuclear(NETHER* nether, unsigned char* keyboard);
   void processOperatorNone(NETHER* nether, unsigned char* keyboard);
+  void processProgram(NETHER* nether, unsigned char* keyboard);
+  void processDirectInput(NETHER* nether, unsigned char* keyboard);
+
+  bool checkCollision(const std::vector<Building>& buildings) const;
+  bool checkCollision(const Robots& robots) const;
+  bool checkCollision(Ship* ship) const;
 
   friend std::ostream& operator<<(std::ostream& out, const Robot& robot);
 };

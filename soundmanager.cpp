@@ -1,4 +1,5 @@
 #include <SDL/SDL_mixer.h>
+#include <algorithm>
 
 #include "soundmanager.h"
 
@@ -8,11 +9,11 @@ extern bool sound;
 
 SoundManager::SoundManager()
 {
-  S_shot=Mix_LoadWAV("sound/shot.wav");
-  S_explosion=Mix_LoadWAV("sound/explosion.wav");
-  S_select=Mix_LoadWAV("sound/select.wav");
-  S_wrong=Mix_LoadWAV("sound/wrong.wav");
-  S_construction=Mix_LoadWAV("sound/construction.wav");
+  S_shot = Mix_LoadWAV("sound/shot.wav");
+  S_explosion = Mix_LoadWAV("sound/explosion.wav");
+  S_select = Mix_LoadWAV("sound/select.wav");
+  S_wrong = Mix_LoadWAV("sound/wrong.wav");
+  S_construction = Mix_LoadWAV("sound/construction.wav");
 }
 
 
@@ -72,8 +73,8 @@ void SoundManager::playSound(const Mix_Chunk* sample) const
 
 int SoundManager::withVolume(const Vector& shipPos, const Vector& pos) const
 {
-  float distance = shipPos.norma();
+  float distance = (pos - shipPos).norma();
   distance = (distance - 8) / 8;
-  if (distance < 1) distance = 1;
+  distance = std::max(1.0f, distance);
   return 128 / distance;
 }

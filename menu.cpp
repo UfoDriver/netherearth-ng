@@ -658,6 +658,8 @@ void Menu::hideButtons(const std::unordered_set<StatusButton::NAME>& ids)
     if (ids.count(b.id)) {
       b.status = 1;
     }
+    if (b.isInteractive())
+      b.color = Color(0.0f, 0.0f, 0.8f);
   }
 }
 
