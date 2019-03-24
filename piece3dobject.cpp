@@ -161,7 +161,7 @@ void Piece3DObject::computeShadow(int angle, const Vector& light, std::vector<Ve
 
 void Piece3DObject::computeDynamicShadow(int angle, const Vector& light)
 {
-  // @TODO: seems like it's broken
+  shadowPointsDynamic.clear();
   computeShadow(angle, light, shadowPointsDynamic, shadowFacesDynamic, shadowCMCDynamic);
 }
 
