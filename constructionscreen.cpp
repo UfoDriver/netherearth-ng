@@ -330,7 +330,7 @@ void ConstructionScreen::draw(int width, int height, const Light& light)
 }
 
 
-void ConstructionScreen::open(const Building& factory)
+void ConstructionScreen::open(const BuildingBlock& factory)
 {
   nether->setGameState(NETHER::STATE::CONSTRUCTION);
   menuPointer = MENU::EXIT;

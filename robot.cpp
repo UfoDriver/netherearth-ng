@@ -6,7 +6,7 @@
 #include "bulletcannon.h"
 #include "bulletmissile.h"
 #include "bulletphaser.h"
-#include "building.h"
+#include "buildingblock.h"
 #include "constants.h"
 #include "nether.h"
 #include "piece3dobject.h"
@@ -349,7 +349,7 @@ bool Robot::walkable(int terrain) const
 }
 
 
-bool Robot::checkCollision(const std::vector<Building>& buildings,
+bool Robot::checkCollision(const std::vector<BuildingBlock>& buildings,
                            const Robots& robots, bool complete, Ship* ship) const
 {
   if (checkCollision(ship)) return true;
@@ -361,7 +361,7 @@ bool Robot::checkCollision(const std::vector<Building>& buildings,
 }
 
 
-bool Robot::checkCollision(const std::vector<Building>& buildings) const
+bool Robot::checkCollision(const std::vector<BuildingBlock>& buildings) const
 {
   float m1[16] = {1, 0, 0, 0,
                   0, 1, 0, 0,
@@ -371,7 +371,7 @@ bool Robot::checkCollision(const std::vector<Building>& buildings) const
                   0, 1, 0, 0,
                   0, 0, 1, 0,
                   0, 0, 0, 1};
-  for (const Building& b: buildings) {
+  for (const BuildingBlock& b: buildings) {
     if (b.pos.aboutToCollide3D(pos, COLISION_TEST_THRESHOLD)) {
       m2[12] = b.pos.x;
       m2[13] = b.pos.y;

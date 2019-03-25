@@ -1,5 +1,5 @@
-#ifndef BUILDING_H
-#define BUILDING_H
+#ifndef BUILDINGBLOCK_H
+#define BUILDINGBLOCK_H
 
 #include <iostream>
 #include <vector>
@@ -8,7 +8,7 @@
 #include "vector.h"
 
 
-class Building {
+class BuildingBlock {
 public:
   enum class TYPE {FENCE,
                    WALL1,
@@ -24,13 +24,13 @@ public:
                    FACTORY_CANNONS,
                    FACTORY_CHASSIS,
                    WARBASE};
-  Building(Vector position, TYPE type, int owner=0, int status=0):
-    pos(position), type(type), owner(owner), status(status)
+  BuildingBlock(Vector position, TYPE type, int owner=0, int status=0):
+    pos{position}, type{type}, owner{owner}, status{status}
   {}
-  explicit Building(std::istream& in);
+  explicit BuildingBlock(std::istream& in);
 
   void draw(const bool shadows, const int detaillevel, const Vector& light) const;
-  static const std::vector<Building> readMapFile(std::istream& inFile);
+  static const std::vector<BuildingBlock> readMapFile(std::istream& inFile);
 
   CMC getCMC() const;
   CMC getExtraCMC() const;
@@ -44,6 +44,6 @@ public:
   int status;
 };
 
-std::ostream& operator<<(std::ostream& out, const Building& bulding);
+std::ostream& operator<<(std::ostream& out, const BuildingBlock& bulding);
 
-#endif // BUILDING_H
+#endif // BUILDINGBLOCK_H

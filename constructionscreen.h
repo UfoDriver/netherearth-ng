@@ -25,7 +25,7 @@ public:
                                                nether(nether) {}
   bool cycle(unsigned char *keyboard);
   void draw(int width, int height, const Light& light);
-  void open(const Building& factory);
+  void open(const BuildingBlock& factory);
 
 private:
   void buildRobot();

@@ -48,7 +48,7 @@ void AI::makePrecomputations()
     }
   }
 
-  for (const Building& b: map->buildings) {
+  for (const BuildingBlock& b: map->buildings) {
     fillZone(discreetmap, map->width() * 2, T_BUILDING, int(b.pos.x / 0.5), int(b.pos.y / 0.5), 2, 2);
   }
 }
@@ -158,13 +158,13 @@ void AI::removeBuilding(const Vector& pos)
 
 void AI::enemy()
 {
-	Building *in_danger_warbase=0;
+	BuildingBlock *in_danger_warbase=0;
 	STATE state = STATE::EXPANDING;
 	int nrobots[3]={0,0,0};	/* EXPANDING / ATTACING / DEFENDING */ 
 	Vector mean_factory_position;
-	Building *closest_to_factories_warbase=0;
+	BuildingBlock* closest_to_factories_warbase=0;
 	float distance_to_factories;
-	Building *closest_to_enemy_warbase=0;
+	BuildingBlock* closest_to_enemy_warbase=0;
 	float distance_to_enemy;
 	int factories[3]={0,0,0};
 
@@ -212,20 +212,20 @@ void AI::enemy()
 
     {
       mean_factory_position=Vector(0,0,0);
-      for (const Building& b: map->buildings) {
-        if (b.type==Building::TYPE::FACTORY_ELECTRONICS ||
-            b.type==Building::TYPE::FACTORY_NUCLEAR ||
-            b.type==Building::TYPE::FACTORY_PHASERS ||
-            b.type==Building::TYPE::FACTORY_MISSILES ||
-            b.type==Building::TYPE::FACTORY_CANNONS) {
+      for (const BuildingBlock& b: map->buildings) {
+        if (b.type==BuildingBlock::TYPE::FACTORY_ELECTRONICS ||
+            b.type==BuildingBlock::TYPE::FACTORY_NUCLEAR ||
+            b.type==BuildingBlock::TYPE::FACTORY_PHASERS ||
+            b.type==BuildingBlock::TYPE::FACTORY_MISSILES ||
+            b.type==BuildingBlock::TYPE::FACTORY_CANNONS) {
           factories[b.owner]++;
           if (b.owner!=2) mean_factory_position=mean_factory_position+b.pos;
         }
       }
       mean_factory_position=mean_factory_position/(factories[0]+factories[1]);
 
-      for (Building& b: map->buildings) {
-        if (b.type==Building::TYPE::WARBASE &&
+      for (BuildingBlock& b: map->buildings) {
+        if (b.type==BuildingBlock::TYPE::WARBASE &&
             b.owner==2) {
 
           tmpr->pos=b.pos+Vector(2.5,0.5,0);
@@ -1233,9 +1233,9 @@ Robot::OPERATOR AI::programCapture(const Robot& robot, Vector *program_goal, con
 
       *program_goal = Vector(-1, -1, -1);
 
-      for (const Building& b: map->buildings) {
+      for (const BuildingBlock& b: map->buildings) {
         if (robot.program_parameter.as_int == Robot::P_PARAM_WARBASES &&
-            b.type == Building::TYPE::WARBASE &&
+            b.type == BuildingBlock::TYPE::WARBASE &&
             b.owner != player &&
             worseMapTerrain(int((b.pos.x + 2.0) / 0.5), int(b.pos.y / 0.5), 2, 2) <= T_HOLE) {
           distance = float(((b.pos + Vector(2.5, 0.5, 0)) - robot.pos).norma());
@@ -1246,12 +1246,12 @@ Robot::OPERATOR AI::programCapture(const Robot& robot, Vector *program_goal, con
           }
         }
         if (robot.program_parameter.as_int == Robot::P_PARAM_NFACTORIES &&
-            (b.type == Building::TYPE::FACTORY_ELECTRONICS ||
-             b.type == Building::TYPE::FACTORY_NUCLEAR ||
-             b.type == Building::TYPE::FACTORY_PHASERS ||
-             b.type == Building::TYPE::FACTORY_MISSILES ||
-             b.type == Building::TYPE::FACTORY_CANNONS ||
-             b.type == Building::TYPE::FACTORY_CHASSIS)
+            (b.type == BuildingBlock::TYPE::FACTORY_ELECTRONICS ||
+             b.type == BuildingBlock::TYPE::FACTORY_NUCLEAR ||
+             b.type == BuildingBlock::TYPE::FACTORY_PHASERS ||
+             b.type == BuildingBlock::TYPE::FACTORY_MISSILES ||
+             b.type == BuildingBlock::TYPE::FACTORY_CANNONS ||
+             b.type == BuildingBlock::TYPE::FACTORY_CHASSIS)
             && b.owner == 0 &&
             worseMapTerrain(int((b.pos.x + 1.0) / 0.5), int(b.pos.y / 0.5), 2, 2) <= T_HOLE) {
           distance = float(((b.pos + Vector(1.5, 0.5,0 )) - robot.pos).norma());
@@ -1262,12 +1262,12 @@ Robot::OPERATOR AI::programCapture(const Robot& robot, Vector *program_goal, con
           }
         }
         if (robot.program_parameter.as_int == Robot::P_PARAM_EFACTORIES &&
-            (b.type == Building::TYPE::FACTORY_ELECTRONICS ||
-             b.type == Building::TYPE::FACTORY_NUCLEAR ||
-             b.type == Building::TYPE::FACTORY_PHASERS ||
-             b.type == Building::TYPE::FACTORY_MISSILES ||
-             b.type == Building::TYPE::FACTORY_CANNONS ||
-             b.type == Building::TYPE::FACTORY_CHASSIS) &&
+            (b.type == BuildingBlock::TYPE::FACTORY_ELECTRONICS ||
+             b.type == BuildingBlock::TYPE::FACTORY_NUCLEAR ||
+             b.type == BuildingBlock::TYPE::FACTORY_PHASERS ||
+             b.type == BuildingBlock::TYPE::FACTORY_MISSILES ||
+             b.type == BuildingBlock::TYPE::FACTORY_CANNONS ||
+             b.type == BuildingBlock::TYPE::FACTORY_CHASSIS) &&
             b.owner!=0 &&
             b.owner!=player &&
             worseMapTerrain(int((b.pos.x + 1.0) / 0.5), int(b.pos.y / 0.5), 2, 2) <= T_HOLE) {
@@ -1324,9 +1324,9 @@ Robot::OPERATOR AI::programDestroy(const Robot& robot, Vector *program_goal, con
 
       *program_goal = Vector(-1, -1, -1);
 
-      for (const Building& b: map->buildings) {
+      for (const BuildingBlock& b: map->buildings) {
         if (robot.program_parameter.as_int == Robot::P_PARAM_WARBASES &&
-            b.type == Building::TYPE::WARBASE &&
+            b.type == BuildingBlock::TYPE::WARBASE &&
             b.owner!=player &&
             worseMapTerrain(int((b.pos.x + 2.0) / 0.5), int(b.pos.y / 0.5), 2, 2) <= T_HOLE) {
           distance = float(((b.pos + Vector(2.5, 0.5, 0)) - robot.pos).norma());
@@ -1337,12 +1337,12 @@ Robot::OPERATOR AI::programDestroy(const Robot& robot, Vector *program_goal, con
           }
         }
         if (robot.program_parameter.as_int == Robot::P_PARAM_EFACTORIES
-            && (b.type == Building::TYPE::FACTORY_ELECTRONICS ||
-                b.type == Building::TYPE::FACTORY_NUCLEAR ||
-                b.type == Building::TYPE::FACTORY_PHASERS ||
-                b.type == Building::TYPE::FACTORY_MISSILES ||
-                b.type == Building::TYPE::FACTORY_CANNONS ||
-                b.type == Building::TYPE::FACTORY_CHASSIS) && b.owner != 0 && b.owner != player &&
+            && (b.type == BuildingBlock::TYPE::FACTORY_ELECTRONICS ||
+                b.type == BuildingBlock::TYPE::FACTORY_NUCLEAR ||
+                b.type == BuildingBlock::TYPE::FACTORY_PHASERS ||
+                b.type == BuildingBlock::TYPE::FACTORY_MISSILES ||
+                b.type == BuildingBlock::TYPE::FACTORY_CANNONS ||
+                b.type == BuildingBlock::TYPE::FACTORY_CHASSIS) && b.owner != 0 && b.owner != player &&
             worseMapTerrain(int((b.pos.x + 1.0) / 0.5), int(b.pos.y / 0.5), 2, 2) <= T_HOLE) {
           distance=float(((b.pos + Vector(1.5, 0.5, 0)) - robot.pos).norma());
           if (!anygoal || distance < minimumdistance) {

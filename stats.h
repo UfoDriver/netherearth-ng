@@ -7,7 +7,7 @@
 
 #include "constants.h"
 
-class Building;
+class BuildingBlock;
 class Robot;
 
 
@@ -16,7 +16,7 @@ class Stats
 public:
   Stats(): day(0), hour(0), minute(0), second(0), resources{{20, 0}, {20, 0}},
            stats{{0}, {0}}, needsRecomputing(true) {}
-  void recompute(const std::vector<Building>& buildings);
+  void recompute(const std::vector<BuildingBlock>& buildings);
   void requestRecomputing() { needsRecomputing = true; }
   bool tick(int level);
   std::array<std::pair<int, int>, 7> getBuildingStats() const;

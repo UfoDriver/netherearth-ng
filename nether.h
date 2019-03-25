@@ -9,7 +9,7 @@
 #include "3dobject.h"
 #include "ai.h"
 #include "ai_operator.h"
-#include "building.h"
+#include "buildingblock.h"
 #include "bullet.h"
 #include "camera.h"
 #include "cmc.h"

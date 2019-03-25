@@ -1,49 +1,49 @@
 #include <GL/gl.h>
 
-#include "building.h"
+#include "buildingblock.h"
 #include "constants.h"
 #include "resources.h"
 
 
-Building::Building(std::istream& in)
+BuildingBlock::BuildingBlock(std::istream& in)
 {
   int type_;
   in >> type_ >> owner >> status >> pos;
-  type = Building::TYPE(type_);
+  type = BuildingBlock::TYPE(type_);
 }
 
 
-std::ostream& operator<<(std::ostream& out, const Building& building)
+std::ostream& operator<<(std::ostream& out, const BuildingBlock& building)
 {
   return out << int(building.type) << ' ' << building.owner << ' ' << building.status << '\n'
              << building.pos;
 }
 
 
-const std::vector<Building> Building::readMapFile(std::istream& inFile)
+const std::vector<BuildingBlock> BuildingBlock::readMapFile(std::istream& inFile)
 {
-  std::vector<Building> acc;
+  std::vector<BuildingBlock> acc;
   std::string buffer;
   float x, y;
   inFile >> buffer >> x >> y;
 
   if (buffer == "fence") {
-    acc.emplace_back(Vector(x, y, 0), Building::TYPE::FENCE);
+    acc.emplace_back(Vector(x, y, 0), BuildingBlock::TYPE::FENCE);
   } else if (buffer == "wall1") {
-    acc.emplace_back(Vector(x, y, 0), Building::TYPE::WALL1);
+    acc.emplace_back(Vector(x, y, 0), BuildingBlock::TYPE::WALL1);
   } else if (buffer == "wall2") {
-    acc.emplace_back(Vector(x, y, 0), Building::TYPE::WALL2);
+    acc.emplace_back(Vector(x, y, 0), BuildingBlock::TYPE::WALL2);
   } else if (buffer == "wall3") {
-    acc.emplace_back(Vector(x, y, 0), Building::TYPE::WALL3);
+    acc.emplace_back(Vector(x, y, 0), BuildingBlock::TYPE::WALL3);
   } else if (buffer == "wall4") {
-    acc.emplace_back(Vector(x, y, 0), Building::TYPE::WALL4);
+    acc.emplace_back(Vector(x, y, 0), BuildingBlock::TYPE::WALL4);
   } else if (buffer == "wall6") {
-    acc.emplace_back(Vector(x, y, 0), Building::TYPE::WALL6);
+    acc.emplace_back(Vector(x, y, 0), BuildingBlock::TYPE::WALL6);
   } else if (buffer == "factory") {
-    Building::TYPE obj[4] = {Building::TYPE::WALL4,
-                             Building::TYPE::WALL4,
-                             Building::TYPE::WALL2,
-                             Building::TYPE::WALL2};
+    BuildingBlock::TYPE obj[4] = {BuildingBlock::TYPE::WALL4,
+                                  BuildingBlock::TYPE::WALL4,
+                                  BuildingBlock::TYPE::WALL2,
+                                  BuildingBlock::TYPE::WALL2};
     float xo[4] = {0, 0, 1, 1};
     float yo[4] = {0, 2, 0, 2};
     std::string buffer2;
@@ -52,30 +52,30 @@ const std::vector<Building> Building::readMapFile(std::istream& inFile)
       acc.emplace_back(Vector(x + xo[i], y + yo[i], 0), obj[i], 0, 0);
     }
 
-    Building b(Vector(x, y + 1, 0), Building::TYPE::FACTORY_ELECTRONICS);
-    if (buffer2 == "electronics") b.type = Building::TYPE::FACTORY_ELECTRONICS;
-    if (buffer2 == "nuclear") b.type = Building::TYPE::FACTORY_NUCLEAR;
-    if (buffer2 == "phasers") b.type = Building::TYPE::FACTORY_PHASERS;
-    if (buffer2 == "missiles") b.type = Building::TYPE::FACTORY_MISSILES;
-    if (buffer2 == "cannons") b.type = Building::TYPE::FACTORY_CANNONS;
-    if (buffer2 == "chassis") b.type = Building::TYPE::FACTORY_CHASSIS;
+    BuildingBlock b(Vector(x, y + 1, 0), BuildingBlock::TYPE::FACTORY_ELECTRONICS);
+    if (buffer2 == "electronics") b.type = BuildingBlock::TYPE::FACTORY_ELECTRONICS;
+    if (buffer2 == "nuclear") b.type = BuildingBlock::TYPE::FACTORY_NUCLEAR;
+    if (buffer2 == "phasers") b.type = BuildingBlock::TYPE::FACTORY_PHASERS;
+    if (buffer2 == "missiles") b.type = BuildingBlock::TYPE::FACTORY_MISSILES;
+    if (buffer2 == "cannons") b.type = BuildingBlock::TYPE::FACTORY_CANNONS;
+    if (buffer2 == "chassis") b.type = BuildingBlock::TYPE::FACTORY_CHASSIS;
     acc.push_back(b);
   } else if (buffer == "warbase") {
-    Building::TYPE obj[15] = {Building::TYPE::WALL4,
-                              Building::TYPE::WALL5,
-                              Building::TYPE::WALL4,
-                              Building::TYPE::WALL1,
-                              Building::TYPE::WALL1,
-                              Building::TYPE::WALL2,
-                              Building::TYPE::WALL4,
-                              Building::TYPE::WARBASE,
-                              Building::TYPE::WALL2,
-                              Building::TYPE::WALL4,
-                              Building::TYPE::WALL1,
-                              Building::TYPE::WALL1,
-                              Building::TYPE::WALL2,
-                              Building::TYPE::WALL4,
-                              Building::TYPE::WALL5};
+    BuildingBlock::TYPE obj[15] = {BuildingBlock::TYPE::WALL4,
+                                   BuildingBlock::TYPE::WALL5,
+                                   BuildingBlock::TYPE::WALL4,
+                                   BuildingBlock::TYPE::WALL1,
+                                   BuildingBlock::TYPE::WALL1,
+                                   BuildingBlock::TYPE::WALL2,
+                                   BuildingBlock::TYPE::WALL4,
+                                   BuildingBlock::TYPE::WARBASE,
+                                   BuildingBlock::TYPE::WALL2,
+                                   BuildingBlock::TYPE::WALL4,
+                                   BuildingBlock::TYPE::WALL1,
+                                   BuildingBlock::TYPE::WALL1,
+                                   BuildingBlock::TYPE::WALL2,
+                                   BuildingBlock::TYPE::WALL4,
+                                   BuildingBlock::TYPE::WALL5};
     float xo[15] = {0.5, 1.5,
                     0, 1, 2, 3,
                     0.5, 1.5, 2.5,
@@ -96,7 +96,7 @@ const std::vector<Building> Building::readMapFile(std::istream& inFile)
 }
 
 
-void Building::draw(const bool shadows, const int detaillevel, const Vector& light) const
+void BuildingBlock::draw(const bool shadows, const int detaillevel, const Vector& light) const
 {
   // @TODO: giant switch should be replaced by inheritance
   switch(type) {
@@ -430,7 +430,7 @@ void Building::draw(const bool shadows, const int detaillevel, const Vector& lig
 }
 
 
-bool Building::collidesWith(const Vector& position, const CMC& cmc) const
+bool BuildingBlock::collidesWith(const Vector& position, const CMC& cmc) const
 {
   float m1[16] = {1, 0, 0, 0,
                   0, 1, 0, 0,
@@ -455,7 +455,7 @@ bool Building::collidesWith(const Vector& position, const CMC& cmc) const
 }
 
 
-CMC Building::getCMC() const
+CMC BuildingBlock::getCMC() const
 {
   switch (type) {
   case TYPE::FENCE:
@@ -482,7 +482,7 @@ CMC Building::getCMC() const
 }
 
 
-CMC Building::getExtraCMC() const
+CMC BuildingBlock::getExtraCMC() const
 {
   switch (type) {
   case TYPE::FACTORY_ELECTRONICS:
@@ -509,9 +509,9 @@ CMC Building::getExtraCMC() const
 }
 
 
-Vector Building::getCapturePoint()
+Vector BuildingBlock::getCapturePoint()
 {
-  if (type == Building::TYPE::WARBASE) {
+  if (type == BuildingBlock::TYPE::WARBASE) {
     return pos + Vector(2, 0, 0);
   } else {
     return pos + Vector(1, 0, 0);
@@ -519,14 +519,14 @@ Vector Building::getCapturePoint()
 }
 
 
-bool Building::isCapturable()
+bool BuildingBlock::isCapturable()
 {
   return
-    type == Building::TYPE::FACTORY_ELECTRONICS ||
-    type == Building::TYPE::FACTORY_NUCLEAR ||
-    type == Building::TYPE::FACTORY_PHASERS ||
-    type == Building::TYPE::FACTORY_MISSILES ||
-    type == Building::TYPE::FACTORY_CANNONS ||
-    type == Building::TYPE::FACTORY_CHASSIS ||
-    type == Building::TYPE::WARBASE;
+    type == BuildingBlock::TYPE::FACTORY_ELECTRONICS ||
+    type == BuildingBlock::TYPE::FACTORY_NUCLEAR ||
+    type == BuildingBlock::TYPE::FACTORY_PHASERS ||
+    type == BuildingBlock::TYPE::FACTORY_MISSILES ||
+    type == BuildingBlock::TYPE::FACTORY_CANNONS ||
+    type == BuildingBlock::TYPE::FACTORY_CHASSIS ||
+    type == BuildingBlock::TYPE::WARBASE;
 }

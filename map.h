@@ -4,7 +4,7 @@
 #include <memory>
 #include <vector>
 
-#include "building.h"
+#include "buildingblock.h"
 #include "bullet.h"
 #include "camera.h"
 #include "explosion.h"
@@ -36,7 +36,7 @@ public:
   int worseTerrain(const Vector& position);
   void nuclearExplosionAt(Robot* robot, const Vector& position);
 
-  std::vector<Building> buildings;
+  std::vector<BuildingBlock> buildings;
   std::vector<std::unique_ptr<Bullet>> bullets;
   std::vector<Explosion> explosions;
   std::vector<Particle> particles;

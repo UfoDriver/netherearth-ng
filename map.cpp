@@ -77,7 +77,7 @@ void Map::draw(const Camera& camera, const Vector& light, const bool shadows)
     glPopMatrix();
   }
 
-  for (const Building& building: buildings) {
+  for (const BuildingBlock& building: buildings) {
     if (camera.canSee(building.pos)) {
       glPushMatrix();
       glTranslatef(float(building.pos.x), float(building.pos.y), float(building.pos.z));
@@ -237,7 +237,7 @@ bool Map::loadMap(const std::string& filename)
   }
 
   do {
-    const std::vector<Building>& newBuildings {Building::readMapFile(iFile)};
+    const std::vector<BuildingBlock>& newBuildings {BuildingBlock::readMapFile(iFile)};
     std::copy(newBuildings.cbegin(), newBuildings.cend(), std::back_inserter(buildings));
   } while (iFile.good());
 
@@ -280,7 +280,7 @@ bool Map::cycle(unsigned char *keyboard)
 
 void Map::cycleBuildings()
 {
-  for (Building& b: buildings) {
+  for (BuildingBlock& b: buildings) {
     if (b.isCapturable()) {
       int robot = nether->ai.robotHere(b.getCapturePoint());
 
