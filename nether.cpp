@@ -273,8 +273,8 @@ bool NETHER::saveGame(const std::string& filename)
         << *ship;
 
   oFile << map.buildings.size() << '\n';
-  for (BuildingBlock& b: map.buildings) {
-    oFile << b;
+  for (auto& b: map.buildings) {
+    oFile << *b;
   }
 
   for (int i = 0; i < 2; i++) {
@@ -324,7 +324,8 @@ bool NETHER::loadGame(const std::string& filename)
   int length;
   inFile >> length;
   for (int k = 0; k < length; k++) {
-    map.buildings.push_back(BuildingBlock(inFile));
+    BuildingBlock block(inFile);
+    map.buildings.emplace_back(&block);
   }
 
   for (int i = 0; i < 2; i++) {
@@ -387,12 +388,12 @@ bool NETHER::saveDebugReport(const std::string& filename)
     log << "SHIP NOT LANDED\n";
 
   log << "# OF BUILDINGS: " << map.buildings.size() << '\n';
-  for (const BuildingBlock& b: map.buildings) {
+  for (const auto& b: map.buildings) {
     log << "BUILDING:\n"
-        << " TYPE: " << int(b.type)
-        << "\n OWNER: " << b.owner
-        << "\n STATUS: " << b.status << "\n"
-        << b.pos;
+        << " TYPE: " << int(b->type)
+        << "\n OWNER: " << b->owner
+        << "\n STATUS: " << b->status << "\n"
+        << b->pos;
   }
 
   for (int i = 0; i < 2; i++) {
@@ -526,9 +527,9 @@ bool NETHER::cycle(unsigned char *keyboard)
   }
 
   /* Test if the ship has landed over a Factory: */
-  for (const BuildingBlock& b: map.buildings) {
-    if (b.type == BuildingBlock::TYPE::WARBASE && b.owner == 1 && ship->landedHere(b.pos)) {
-      constructionScreen.open(b);
+  for (const auto& b: map.buildings) {
+    if (b->type == BuildingBlock::TYPE::WARBASE && b->owner == 1 && ship->landedHere(b->pos)) {
+      constructionScreen.open(b->pos);
     }
   }
 

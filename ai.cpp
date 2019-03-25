@@ -48,8 +48,8 @@ void AI::makePrecomputations()
     }
   }
 
-  for (const BuildingBlock& b: map->buildings) {
-    fillZone(discreetmap, map->width() * 2, T_BUILDING, int(b.pos.x / 0.5), int(b.pos.y / 0.5), 2, 2);
+  for (const auto& b: map->buildings) {
+    fillZone(discreetmap, map->width() * 2, T_BUILDING, int(b->pos.x / 0.5), int(b->pos.y / 0.5), 2, 2);
   }
 }
 
@@ -212,35 +212,35 @@ void AI::enemy()
 
     {
       mean_factory_position=Vector(0,0,0);
-      for (const BuildingBlock& b: map->buildings) {
-        if (b.type==BuildingBlock::TYPE::FACTORY_ELECTRONICS ||
-            b.type==BuildingBlock::TYPE::FACTORY_NUCLEAR ||
-            b.type==BuildingBlock::TYPE::FACTORY_PHASERS ||
-            b.type==BuildingBlock::TYPE::FACTORY_MISSILES ||
-            b.type==BuildingBlock::TYPE::FACTORY_CANNONS) {
-          factories[b.owner]++;
-          if (b.owner!=2) mean_factory_position=mean_factory_position+b.pos;
+      for (const auto& b: map->buildings) {
+        if (b->type == BuildingBlock::TYPE::FACTORY_ELECTRONICS ||
+            b->type == BuildingBlock::TYPE::FACTORY_NUCLEAR ||
+            b->type==BuildingBlock::TYPE::FACTORY_PHASERS ||
+            b->type==BuildingBlock::TYPE::FACTORY_MISSILES ||
+            b->type==BuildingBlock::TYPE::FACTORY_CANNONS) {
+          factories[b->owner]++;
+          if (b->owner != 2) mean_factory_position = mean_factory_position + b->pos;
         }
       }
       mean_factory_position=mean_factory_position/(factories[0]+factories[1]);
 
-      for (BuildingBlock& b: map->buildings) {
-        if (b.type==BuildingBlock::TYPE::WARBASE &&
-            b.owner==2) {
+      for (auto& b: map->buildings) {
+        if (b->type == BuildingBlock::TYPE::WARBASE &&
+            b->owner == 2) {
 
-          tmpr->pos=b.pos+Vector(2.5,0.5,0);
+          tmpr->pos=b->pos+Vector(2.5,0.5,0);
           if (!tmpr->checkCollision(map->buildings, map->robots, true, nether->getShip())) {
             /* Find the closest WARBASE to the available FACTORIES: */ 
             if (closest_to_factories_warbase==0 ||
-                (closest_to_factories_warbase->pos-b.pos).norma()<distance_to_factories) {
-              closest_to_factories_warbase=&b;
-              distance_to_factories=float((closest_to_factories_warbase->pos-b.pos).norma());
+                (closest_to_factories_warbase->pos-b->pos).norma()<distance_to_factories) {
+              closest_to_factories_warbase=b.get();
+              distance_to_factories=float((closest_to_factories_warbase->pos-b->pos).norma());
             } /* if */ 
 
             /* Find the closest WARBASE to the enemy: */ 
             if (closest_to_enemy_warbase==0 ||
                 closest_to_enemy_warbase->pos.y<distance_to_enemy) {
-              closest_to_enemy_warbase=&b;
+              closest_to_enemy_warbase=b.get();
               distance_to_enemy=float(closest_to_enemy_warbase->pos.y);
             } /* if */ 
           } /* if */ 
@@ -249,7 +249,7 @@ void AI::enemy()
 
           /* Test for WARBASEs in danger: */ 
           for (Robot* r: map->robots) {
-            if ((r->pos-b.pos).norma() < 10.0) {
+            if ((r->pos-b->pos).norma() < 10.0) {
               /* Robot near: */
               forces[r->getOwner()] += r->cost();
 
@@ -267,7 +267,7 @@ void AI::enemy()
 
           if (forces[0]>forces[1]) {
             state = STATE::DEFENDING;
-            in_danger_warbase=&b;
+            in_danger_warbase=b.get();
           } /* if */ 
         } /* if */ 
       } /* while */
@@ -1233,49 +1233,49 @@ Robot::OPERATOR AI::programCapture(const Robot& robot, Vector *program_goal, con
 
       *program_goal = Vector(-1, -1, -1);
 
-      for (const BuildingBlock& b: map->buildings) {
+      for (const auto& b: map->buildings) {
         if (robot.program_parameter.as_int == Robot::P_PARAM_WARBASES &&
-            b.type == BuildingBlock::TYPE::WARBASE &&
-            b.owner != player &&
-            worseMapTerrain(int((b.pos.x + 2.0) / 0.5), int(b.pos.y / 0.5), 2, 2) <= T_HOLE) {
-          distance = float(((b.pos + Vector(2.5, 0.5, 0)) - robot.pos).norma());
+            b->type == BuildingBlock::TYPE::WARBASE &&
+            b->owner != player &&
+            worseMapTerrain(int((b->pos.x + 2.0) / 0.5), int(b->pos.y / 0.5), 2, 2) <= T_HOLE) {
+          distance = float(((b->pos + Vector(2.5, 0.5, 0)) - robot.pos).norma());
           if (!anygoal || distance < minimumdistance) {
             anygoal = true;
             minimumdistance = distance;
-            *program_goal = b.pos + Vector(2.5, 0.5, 0);
+            *program_goal = b->pos + Vector(2.5, 0.5, 0);
           }
         }
         if (robot.program_parameter.as_int == Robot::P_PARAM_NFACTORIES &&
-            (b.type == BuildingBlock::TYPE::FACTORY_ELECTRONICS ||
-             b.type == BuildingBlock::TYPE::FACTORY_NUCLEAR ||
-             b.type == BuildingBlock::TYPE::FACTORY_PHASERS ||
-             b.type == BuildingBlock::TYPE::FACTORY_MISSILES ||
-             b.type == BuildingBlock::TYPE::FACTORY_CANNONS ||
-             b.type == BuildingBlock::TYPE::FACTORY_CHASSIS)
-            && b.owner == 0 &&
-            worseMapTerrain(int((b.pos.x + 1.0) / 0.5), int(b.pos.y / 0.5), 2, 2) <= T_HOLE) {
-          distance = float(((b.pos + Vector(1.5, 0.5,0 )) - robot.pos).norma());
+            (b->type == BuildingBlock::TYPE::FACTORY_ELECTRONICS ||
+             b->type == BuildingBlock::TYPE::FACTORY_NUCLEAR ||
+             b->type == BuildingBlock::TYPE::FACTORY_PHASERS ||
+             b->type == BuildingBlock::TYPE::FACTORY_MISSILES ||
+             b->type == BuildingBlock::TYPE::FACTORY_CANNONS ||
+             b->type == BuildingBlock::TYPE::FACTORY_CHASSIS)
+            && b->owner == 0 &&
+            worseMapTerrain(int((b->pos.x + 1.0) / 0.5), int(b->pos.y / 0.5), 2, 2) <= T_HOLE) {
+          distance = float(((b->pos + Vector(1.5, 0.5,0 )) - robot.pos).norma());
           if (!anygoal || distance < minimumdistance) {
             anygoal = true;
             minimumdistance = distance;
-            *program_goal = b.pos + Vector(1.5, 0.5, 0);
+            *program_goal = b->pos + Vector(1.5, 0.5, 0);
           }
         }
         if (robot.program_parameter.as_int == Robot::P_PARAM_EFACTORIES &&
-            (b.type == BuildingBlock::TYPE::FACTORY_ELECTRONICS ||
-             b.type == BuildingBlock::TYPE::FACTORY_NUCLEAR ||
-             b.type == BuildingBlock::TYPE::FACTORY_PHASERS ||
-             b.type == BuildingBlock::TYPE::FACTORY_MISSILES ||
-             b.type == BuildingBlock::TYPE::FACTORY_CANNONS ||
-             b.type == BuildingBlock::TYPE::FACTORY_CHASSIS) &&
-            b.owner!=0 &&
-            b.owner!=player &&
-            worseMapTerrain(int((b.pos.x + 1.0) / 0.5), int(b.pos.y / 0.5), 2, 2) <= T_HOLE) {
-          distance=float(((b.pos + Vector(1.5, 0.5, 0)) - robot.pos).norma());
+            (b->type == BuildingBlock::TYPE::FACTORY_ELECTRONICS ||
+             b->type == BuildingBlock::TYPE::FACTORY_NUCLEAR ||
+             b->type == BuildingBlock::TYPE::FACTORY_PHASERS ||
+             b->type == BuildingBlock::TYPE::FACTORY_MISSILES ||
+             b->type == BuildingBlock::TYPE::FACTORY_CANNONS ||
+             b->type == BuildingBlock::TYPE::FACTORY_CHASSIS) &&
+            b->owner!=0 &&
+            b->owner!=player &&
+            worseMapTerrain(int((b->pos.x + 1.0) / 0.5), int(b->pos.y / 0.5), 2, 2) <= T_HOLE) {
+          distance=float(((b->pos + Vector(1.5, 0.5, 0)) - robot.pos).norma());
           if (!anygoal || distance < minimumdistance) {
             anygoal = true;
             minimumdistance = distance;
-            *program_goal = b.pos + Vector(1.5, 0.5, 0);
+            *program_goal = b->pos + Vector(1.5, 0.5, 0);
           }
         }
       }
@@ -1324,31 +1324,31 @@ Robot::OPERATOR AI::programDestroy(const Robot& robot, Vector *program_goal, con
 
       *program_goal = Vector(-1, -1, -1);
 
-      for (const BuildingBlock& b: map->buildings) {
+      for (const auto& b: map->buildings) {
         if (robot.program_parameter.as_int == Robot::P_PARAM_WARBASES &&
-            b.type == BuildingBlock::TYPE::WARBASE &&
-            b.owner!=player &&
-            worseMapTerrain(int((b.pos.x + 2.0) / 0.5), int(b.pos.y / 0.5), 2, 2) <= T_HOLE) {
-          distance = float(((b.pos + Vector(2.5, 0.5, 0)) - robot.pos).norma());
+            b->type == BuildingBlock::TYPE::WARBASE &&
+            b->owner!=player &&
+            worseMapTerrain(int((b->pos.x + 2.0) / 0.5), int(b->pos.y / 0.5), 2, 2) <= T_HOLE) {
+          distance = float(((b->pos + Vector(2.5, 0.5, 0)) - robot.pos).norma());
           if (!anygoal || distance < minimumdistance) {
             anygoal = true;
             minimumdistance = distance;
-            *program_goal = b.pos+Vector(2.5,0.5,0);
+            *program_goal = b->pos+Vector(2.5,0.5,0);
           }
         }
         if (robot.program_parameter.as_int == Robot::P_PARAM_EFACTORIES
-            && (b.type == BuildingBlock::TYPE::FACTORY_ELECTRONICS ||
-                b.type == BuildingBlock::TYPE::FACTORY_NUCLEAR ||
-                b.type == BuildingBlock::TYPE::FACTORY_PHASERS ||
-                b.type == BuildingBlock::TYPE::FACTORY_MISSILES ||
-                b.type == BuildingBlock::TYPE::FACTORY_CANNONS ||
-                b.type == BuildingBlock::TYPE::FACTORY_CHASSIS) && b.owner != 0 && b.owner != player &&
-            worseMapTerrain(int((b.pos.x + 1.0) / 0.5), int(b.pos.y / 0.5), 2, 2) <= T_HOLE) {
-          distance=float(((b.pos + Vector(1.5, 0.5, 0)) - robot.pos).norma());
+            && (b->type == BuildingBlock::TYPE::FACTORY_ELECTRONICS ||
+                b->type == BuildingBlock::TYPE::FACTORY_NUCLEAR ||
+                b->type == BuildingBlock::TYPE::FACTORY_PHASERS ||
+                b->type == BuildingBlock::TYPE::FACTORY_MISSILES ||
+                b->type == BuildingBlock::TYPE::FACTORY_CANNONS ||
+                b->type == BuildingBlock::TYPE::FACTORY_CHASSIS) && b->owner != 0 && b->owner != player &&
+            worseMapTerrain(int((b->pos.x + 1.0) / 0.5), int(b->pos.y / 0.5), 2, 2) <= T_HOLE) {
+          distance=float(((b->pos + Vector(1.5, 0.5, 0)) - robot.pos).norma());
           if (!anygoal || distance < minimumdistance) {
             anygoal = true;
             minimumdistance = distance;
-            *program_goal = b.pos + Vector(1.5,0.5,0);
+            *program_goal = b->pos + Vector(1.5,0.5,0);
           }
         }
       }

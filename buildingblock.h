@@ -2,6 +2,7 @@
 #define BUILDINGBLOCK_H
 
 #include <iostream>
+#include <memory>
 #include <vector>
 
 #include "cmc.h"
@@ -30,7 +31,7 @@ public:
   explicit BuildingBlock(std::istream& in);
 
   void draw(const bool shadows, const int detaillevel, const Vector& light) const;
-  static const std::vector<BuildingBlock> readMapFile(std::istream& inFile);
+  static const std::vector<std::unique_ptr<BuildingBlock>> readMapFile(std::istream& inFile);
 
   CMC getCMC() const;
   CMC getExtraCMC() const;

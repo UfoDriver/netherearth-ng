@@ -349,7 +349,7 @@ bool Robot::walkable(int terrain) const
 }
 
 
-bool Robot::checkCollision(const std::vector<BuildingBlock>& buildings,
+bool Robot::checkCollision(const std::vector<std::unique_ptr<BuildingBlock>>& buildings,
                            const Robots& robots, bool complete, Ship* ship) const
 {
   if (checkCollision(ship)) return true;
@@ -361,7 +361,7 @@ bool Robot::checkCollision(const std::vector<BuildingBlock>& buildings,
 }
 
 
-bool Robot::checkCollision(const std::vector<BuildingBlock>& buildings) const
+bool Robot::checkCollision(const std::vector<std::unique_ptr<BuildingBlock>>& buildings) const
 {
   float m1[16] = {1, 0, 0, 0,
                   0, 1, 0, 0,
@@ -371,12 +371,12 @@ bool Robot::checkCollision(const std::vector<BuildingBlock>& buildings) const
                   0, 1, 0, 0,
                   0, 0, 1, 0,
                   0, 0, 0, 1};
-  for (const BuildingBlock& b: buildings) {
-    if (b.pos.aboutToCollide3D(pos, COLISION_TEST_THRESHOLD)) {
-      m2[12] = b.pos.x;
-      m2[13] = b.pos.y;
-      m2[14] = b.pos.z;
-      if (cmc.collision_simple(m1, b.getCMC(), m2)) return true;
+  for (const auto& b: buildings) {
+    if (b->pos.aboutToCollide3D(pos, COLISION_TEST_THRESHOLD)) {
+      m2[12] = b->pos.x;
+      m2[13] = b->pos.y;
+      m2[14] = b->pos.z;
+      if (cmc.collision_simple(m1, b->getCMC(), m2)) return true;
     }
   }
   return false;

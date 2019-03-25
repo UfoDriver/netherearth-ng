@@ -108,7 +108,7 @@ void Bullet::drawParticles(std::vector<Particle>& particles) const
 }
 
 
-bool Bullet::checkCollision(const std::vector<BuildingBlock>& buildings,
+bool Bullet::checkCollision(const std::vector<std::unique_ptr<BuildingBlock>>& buildings,
                             const Robots& robots, Robot** r)
 {
   float m1[16] = {1, 0, 0, 0,
@@ -120,13 +120,13 @@ bool Bullet::checkCollision(const std::vector<BuildingBlock>& buildings,
                   0, 0, 1, 0,
                   0, 0, 0, 1};
 
-  for (const BuildingBlock& b: buildings) {
-    if (b.pos.aboutToCollide3D(pos, COLISION_TEST_THRESHOLD)) {
-      m2[12] = b.pos.x;
-      m2[13] = b.pos.y;
-      m2[14] = b.pos.z;
+  for (const auto& b: buildings) {
+    if (b->pos.aboutToCollide3D(pos, COLISION_TEST_THRESHOLD)) {
+      m2[12] = b->pos.x;
+      m2[13] = b->pos.y;
+      m2[14] = b->pos.z;
 
-      if (cmc.collision_simple(m1, b.getCMC(), m2))
+      if (cmc.collision_simple(m1, b->getCMC(), m2))
         return true;
     }
   }

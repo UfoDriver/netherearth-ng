@@ -50,7 +50,7 @@ public:
   bool hasPhasers() const { return pieces[2]; }
   bool hasNuclear() const { return pieces[3]; }
   bool hasElectronics() const { return pieces[4]; }
-  bool checkCollision(const std::vector<BuildingBlock>& buildings,
+  bool checkCollision(const std::vector<std::unique_ptr<BuildingBlock>>& buildings,
                       const Robots& robots, bool complete, Ship* ship) const;
 
   void cycle(NETHER* nether);
@@ -111,7 +111,7 @@ private:
   void processProgram(NETHER* nether, unsigned char* keyboard);
   void processDirectInput(NETHER* nether, unsigned char* keyboard);
 
-  bool checkCollision(const std::vector<BuildingBlock>& buildings) const;
+  bool checkCollision(const std::vector<std::unique_ptr<BuildingBlock>>& buildings) const;
   bool checkCollision(const Robots& robots) const;
   bool checkCollision(Ship* ship) const;
 

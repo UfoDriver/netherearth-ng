@@ -20,25 +20,25 @@ std::ostream& operator<<(std::ostream& out, const BuildingBlock& building)
 }
 
 
-const std::vector<BuildingBlock> BuildingBlock::readMapFile(std::istream& inFile)
+const std::vector<std::unique_ptr<BuildingBlock>> BuildingBlock::readMapFile(std::istream& inFile)
 {
-  std::vector<BuildingBlock> acc;
+  std::vector<std::unique_ptr<BuildingBlock>> acc;
   std::string buffer;
   float x, y;
   inFile >> buffer >> x >> y;
 
   if (buffer == "fence") {
-    acc.emplace_back(Vector(x, y, 0), BuildingBlock::TYPE::FENCE);
+    acc.emplace_back(new BuildingBlock(Vector(x, y, 0), BuildingBlock::TYPE::FENCE));
   } else if (buffer == "wall1") {
-    acc.emplace_back(Vector(x, y, 0), BuildingBlock::TYPE::WALL1);
+    acc.emplace_back(new BuildingBlock(Vector(x, y, 0), BuildingBlock::TYPE::WALL1));
   } else if (buffer == "wall2") {
-    acc.emplace_back(Vector(x, y, 0), BuildingBlock::TYPE::WALL2);
+    acc.emplace_back(new BuildingBlock(Vector(x, y, 0), BuildingBlock::TYPE::WALL2));
   } else if (buffer == "wall3") {
-    acc.emplace_back(Vector(x, y, 0), BuildingBlock::TYPE::WALL3);
+    acc.emplace_back(new BuildingBlock(Vector(x, y, 0), BuildingBlock::TYPE::WALL3));
   } else if (buffer == "wall4") {
-    acc.emplace_back(Vector(x, y, 0), BuildingBlock::TYPE::WALL4);
+    acc.emplace_back(new BuildingBlock(Vector(x, y, 0), BuildingBlock::TYPE::WALL4));
   } else if (buffer == "wall6") {
-    acc.emplace_back(Vector(x, y, 0), BuildingBlock::TYPE::WALL6);
+    acc.emplace_back(new BuildingBlock(Vector(x, y, 0), BuildingBlock::TYPE::WALL6));
   } else if (buffer == "factory") {
     BuildingBlock::TYPE obj[4] = {BuildingBlock::TYPE::WALL4,
                                   BuildingBlock::TYPE::WALL4,
@@ -49,17 +49,17 @@ const std::vector<BuildingBlock> BuildingBlock::readMapFile(std::istream& inFile
     std::string buffer2;
     inFile >> buffer2;
     for (int i = 0; i < 4; i++) {
-      acc.emplace_back(Vector(x + xo[i], y + yo[i], 0), obj[i], 0, 0);
+      acc.emplace_back(new BuildingBlock(Vector(x + xo[i], y + yo[i], 0), obj[i], 0, 0));
     }
 
-    BuildingBlock b(Vector(x, y + 1, 0), BuildingBlock::TYPE::FACTORY_ELECTRONICS);
-    if (buffer2 == "electronics") b.type = BuildingBlock::TYPE::FACTORY_ELECTRONICS;
-    if (buffer2 == "nuclear") b.type = BuildingBlock::TYPE::FACTORY_NUCLEAR;
-    if (buffer2 == "phasers") b.type = BuildingBlock::TYPE::FACTORY_PHASERS;
-    if (buffer2 == "missiles") b.type = BuildingBlock::TYPE::FACTORY_MISSILES;
-    if (buffer2 == "cannons") b.type = BuildingBlock::TYPE::FACTORY_CANNONS;
-    if (buffer2 == "chassis") b.type = BuildingBlock::TYPE::FACTORY_CHASSIS;
-    acc.push_back(b);
+    BuildingBlock* b = new BuildingBlock(Vector(x, y + 1, 0), BuildingBlock::TYPE::FACTORY_ELECTRONICS);
+    if (buffer2 == "electronics") b->type = BuildingBlock::TYPE::FACTORY_ELECTRONICS;
+    if (buffer2 == "nuclear") b->type = BuildingBlock::TYPE::FACTORY_NUCLEAR;
+    if (buffer2 == "phasers") b->type = BuildingBlock::TYPE::FACTORY_PHASERS;
+    if (buffer2 == "missiles") b->type = BuildingBlock::TYPE::FACTORY_MISSILES;
+    if (buffer2 == "cannons") b->type = BuildingBlock::TYPE::FACTORY_CANNONS;
+    if (buffer2 == "chassis") b->type = BuildingBlock::TYPE::FACTORY_CHASSIS;
+    acc.emplace_back(b);
   } else if (buffer == "warbase") {
     BuildingBlock::TYPE obj[15] = {BuildingBlock::TYPE::WALL4,
                                    BuildingBlock::TYPE::WALL5,
@@ -89,7 +89,7 @@ const std::vector<BuildingBlock> BuildingBlock::readMapFile(std::istream& inFile
     int owner = 0;
     inFile >> owner;
     for(int i = 0; i < 15; i++) {
-      acc.emplace_back(Vector(x + xo[i], y + yo[i], 0), obj[i], owner, 0);
+      acc.emplace_back(new BuildingBlock(Vector(x + xo[i], y + yo[i], 0), obj[i], owner, 0));
     }
   }
   return acc;

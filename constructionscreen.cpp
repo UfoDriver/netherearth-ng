@@ -330,10 +330,10 @@ void ConstructionScreen::draw(int width, int height, const Light& light)
 }
 
 
-void ConstructionScreen::open(const BuildingBlock& factory)
+void ConstructionScreen::open(const Vector& factoryPos)
 {
   nether->setGameState(NETHER::STATE::CONSTRUCTION);
   menuPointer = MENU::EXIT;
   staple = new Robot(0);
-  staple->pos = factory.pos + Vector(2.5, 0.5, 0);
+  staple->pos = factoryPos + Vector(2.5, 0.5, 0);
 }

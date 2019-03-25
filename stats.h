@@ -3,6 +3,7 @@
 
 #include <array>
 #include <iostream>
+#include <memory>
 #include <vector>
 
 #include "constants.h"
@@ -16,7 +17,7 @@ class Stats
 public:
   Stats(): day(0), hour(0), minute(0), second(0), resources{{20, 0}, {20, 0}},
            stats{{0}, {0}}, needsRecomputing(true) {}
-  void recompute(const std::vector<BuildingBlock>& buildings);
+  void recompute(const std::vector<std::unique_ptr<BuildingBlock>>& buildings);
   void requestRecomputing() { needsRecomputing = true; }
   bool tick(int level);
   std::array<std::pair<int, int>, 7> getBuildingStats() const;

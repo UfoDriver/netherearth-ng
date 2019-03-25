@@ -77,11 +77,11 @@ void Map::draw(const Camera& camera, const Vector& light, const bool shadows)
     glPopMatrix();
   }
 
-  for (const BuildingBlock& building: buildings) {
-    if (camera.canSee(building.pos)) {
+  for (const auto& building: buildings) {
+    if (camera.canSee(building->pos)) {
       glPushMatrix();
-      glTranslatef(float(building.pos.x), float(building.pos.y), float(building.pos.z));
-      building.draw(shadows, detaillevel, light);
+      glTranslatef(float(building->pos.x), float(building->pos.y), float(building->pos.z));
+      building->draw(shadows, detaillevel, light);
       glPopMatrix();
     }
   }
@@ -237,8 +237,10 @@ bool Map::loadMap(const std::string& filename)
   }
 
   do {
-    const std::vector<BuildingBlock>& newBuildings {BuildingBlock::readMapFile(iFile)};
-    std::copy(newBuildings.cbegin(), newBuildings.cend(), std::back_inserter(buildings));
+    std::vector<std::unique_ptr<BuildingBlock>> newBuildings {BuildingBlock::readMapFile(iFile)};
+    buildings.insert(buildings.end(),
+                     std::make_move_iterator(newBuildings.begin()),
+                     std::make_move_iterator(newBuildings.end()));
   } while (iFile.good());
 
   return true;
@@ -280,24 +282,24 @@ bool Map::cycle(unsigned char *keyboard)
 
 void Map::cycleBuildings()
 {
-  for (BuildingBlock& b: buildings) {
-    if (b.isCapturable()) {
-      int robot = nether->ai.robotHere(b.getCapturePoint());
+  for (auto& b: buildings) {
+    if (b->isCapturable()) {
+      int robot = nether->ai.robotHere(b->getCapturePoint());
 
       if (robot == 0) {
-        b.status = 0;
+        b->status = 0;
       } else {
-        if (robot == T_ROBOT) b.status++;
-        if (robot == T_EROBOT) b.status--;
+        if (robot == T_ROBOT) b->status++;
+        if (robot == T_EROBOT) b->status--;
 
-        if (b.status >= CAPTURE_TIME) {
-          b.owner = 1;
-          b.status = 0;
+        if (b->status >= CAPTURE_TIME) {
+          b->owner = 1;
+          b->status = 0;
           nether->requestStatsRecomputing();
         }
-        if (b.status <= -CAPTURE_TIME) {
-          b.owner = 2;
-          b.status = 0;
+        if (b->status <= -CAPTURE_TIME) {
+          b->owner = 2;
+          b->status = 0;
           nether->requestStatsRecomputing();
         }
       }
@@ -409,9 +411,9 @@ void Map::nuclearExplosionAt(Robot* robot, const Vector& position)
   /* Find buildings to destroy: */
   buildings.erase(std::remove_if(buildings.begin(), buildings.end(),
                                  [exp, this](auto& b) {
-                                   float distance = (b.pos - (exp.pos - Vector(0.5, 0.5, 0.5))).norma();
+                                   float distance = (b->pos - (exp.pos - Vector(0.5, 0.5, 0.5))).norma();
                                    if (distance <= NUCLEAR_RADIUS) {
-                                     nether->ai.removeBuilding(b.pos);
+                                     nether->ai.removeBuilding(b->pos);
                                      return true;
                                    } else {
                                      return false;

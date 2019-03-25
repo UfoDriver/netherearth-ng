@@ -18,7 +18,7 @@ public:
   enum class TYPE {CANNONS, MISSILES, PHASERS};
   Bullet(TYPE type, Vector position, Robot *robot);
   virtual void draw(bool shadow, std::vector<Particle>& particles) const = 0;
-  bool checkCollision(const std::vector<BuildingBlock>& buildings,
+  bool checkCollision(const std::vector<std::unique_ptr<BuildingBlock>>& buildings,
                       const Robots& robots, Robot** r);
   virtual int getPersistence() const = 0;
   int getDamageForRobot(const Robot* robot) const;
