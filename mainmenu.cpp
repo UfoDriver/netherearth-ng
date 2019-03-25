@@ -92,19 +92,16 @@ void MainMenu::populateMaps()
     }
   }
 #else
-  // @TODO evaluate c++ way (cmake link_libraries(stdc++fs))
-  // http://www.martinbroadhurst.com/list-the-files-in-a-directory-in-c.html
-  DIR *dp = opendir("maps/");
-  if (dp != NULL) {
-    while (struct dirent* ep = readdir(dp)) {
-      if ((strstr(ep->d_name, ".map") + 4) == ep->d_name + strlen(ep->d_name)) {
-        char *name  = new char[strlen(ep->d_name) + 1];
-        strcpy(name, ep->d_name);
-        mapnames.push_back(name);
-      }
-    }
-    closedir(dp);
-  }
+  std::transform(std::filesystem::directory_iterator("maps/"),
+                 std::filesystem::directory_iterator(),
+                 std::back_inserter(mapnames),
+                 [](auto& entry) {
+                   if (entry.path().extension() == ".map")
+                     return entry.path().stem().string();
+                   else
+                     return std::string();
+                 });
+  mapnames.erase(std::remove(mapnames.begin(), mapnames.end(), ""), mapnames.end());
 #endif
 }
 
@@ -216,29 +213,19 @@ MainMenu::ACTION MainMenu::cycle(int, int)
       saveConfiguration();
     }
     if (keyboard[SDLK_4] && !old_keyboard[SDLK_4]) {
-      shadows++;
-      if (shadows >= 3)
-        shadows = 0;
+      shadows = ++shadows % 3;
       saveConfiguration();
     }
     if (keyboard[SDLK_5] && !old_keyboard[SDLK_5]) {
-      detaillevel++;
-      if (detaillevel >= 5)
-        detaillevel = 0;
+      detaillevel = ++detaillevel % 5;
       saveConfiguration();
     }
     if (keyboard[SDLK_6] && !old_keyboard[SDLK_6]) {
       sound = !sound;
-      if (sound)
-        sound = false;
-      else
-        sound = true;
       saveConfiguration();
     }
     if (keyboard[SDLK_7] && !old_keyboard[SDLK_7]) {
-      level++;
-      if (level >= 4)
-        level = 0;
+      level = ++level % 4;
       saveConfiguration();
     }
     if (keyboard[SDLK_8] && !old_keyboard[SDLK_8]) {
@@ -500,7 +487,7 @@ void MainMenu::refreshDisplayLists()
 
 std::string MainMenu::getMapPath()
 {
-  return "maps/" + *mapnameIter;
+  return "maps/" + *mapnameIter + ".map";
 }
 
 void MainMenu::loadConfiguration(void)
