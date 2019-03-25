@@ -11,7 +11,7 @@
 * ~~Crash on drawing explosions~~
 * ~~Compiler warnings~~
 * Debugging (with command line option)
-* Menu is broken after load (at least in combat mode)
+* ~~Menu is broken after load (at least in combat mode)~~
 * ~~Menu flickering when load/save screen present~~
 * ~~Provide bigger screen resolutions~~
 * ~~"NETHER" is a God object and should be decoupled~~

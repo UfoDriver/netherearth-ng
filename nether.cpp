@@ -311,7 +311,6 @@ bool NETHER::saveGame(const std::string& filename)
 
 bool NETHER::loadGame(const std::string& filename)
 {
-  menu.activateMenu(Menu::TYPE::GENERAL, StatusButton::NAME::NONE);
   std::ifstream inFile(filename);
 
   ai.deletePrecomputations();
