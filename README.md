@@ -3,22 +3,28 @@
 ## TODO
 
 * Better in-game menu navigation
-  * It's too fast sometimes
+  * ~~It's too fast sometimes~~
   * It would be good to have shortcuts
 
-* Guile integration?
-* Robot health bar above (only players'?)
-* Robot program above (only players? with program arguments?)
-* Factory/warbase capturing progress bar
 * Consider using engine like irrlicht
 * ~~No global hardcoded paths~~
 * ~~Crash on drawing explosions~~
 * ~~Compiler warnings~~
 * Debugging (with command line option)
 * Menu is broken after load (at least in combat mode)
-* Menu flickering when load/save screen present
-* Make radar semitransparent
+* ~~Menu flickering when load/save screen present~~
 * ~~Provide bigger screen resolutions~~
 * ~~"NETHER" is a God object and should be decoupled~~
 * ~~Fix collision detection~~
 * ~~Fix ship to robot attachment~~
+* Buildings should be built from blocks as block is not equal to bulding
+
+
+## TODO for NG version
+
+* Guile integration?
+* Robot health bar above (only players'?)
+* Robot program above (only players? with program arguments?)
+* Factory/warbase capturing progress bar
+* Make radar semitransparent (not sure if we need it when we have zoom)
+* Support more than 2 players

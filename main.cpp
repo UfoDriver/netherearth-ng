@@ -10,6 +10,7 @@
 #include <iostream>
 #include <string>
 
+#include "mainmenu.h"
 #include "nether.h"
 
 
@@ -23,12 +24,8 @@ bool sound = true;
 int up_key = SDLK_q, down_key = SDLK_a, left_key = SDLK_o, right_key = SDLK_p,
   fire_key = SDLK_SPACE, pause_key = SDLK_F1;
 int level = 1;
-int mainmenu_status = 0;
-int mainmenu_substatus = 0;
 bool fullscreen = false;
 bool show_radar = true;
-extern std::vector<std::string>::iterator mapnameIter;
-C3DObject *nethertittle = 0;
 
 /* Redrawing constant: */
 const int REDRAWING_PERIOD = 20;
@@ -38,16 +35,7 @@ int frames_per_sec = 0;
 int frames_per_sec_tmp = 0;
 int init_time = 0;
 
-
-/* Surfaces: */
-SDL_Surface *screen_sfc;
-
-NETHER *game = 0;
-
-void saveConfiguration(void);
 void loadConfiguration(void);
-int mainmenu_cycle(int width, int height);
-void mainmenu_draw(int width, int height);
 
 /* AUXILIAR FUNCTION DEFINITION: */
 
@@ -79,7 +67,7 @@ SDL_Surface *initialization(int flags)
   }
 
   if (fullscreen) {
-      bpp = COLOUR_DEPTH;
+    bpp = COLOUR_DEPTH;
   } else {
     bpp = info->vfmt->BitsPerPixel;
   }
@@ -92,39 +80,38 @@ SDL_Surface *initialization(int flags)
   // SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
   // SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 1);
 
-    SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5);
-    SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 5);
-    SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 5);
-    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 8);
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 0);
+  SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5);
+  SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 5);
+  SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 5);
+  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+  SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 0);
 
-    flags = SDL_OPENGL | flags;
+  flags = SDL_OPENGL | flags;
 
-    screen = SDL_SetVideoMode(SCREEN_X, SCREEN_Y, bpp, flags);
-    if (screen == 0) {
-      std::cerr << "Video mode set failed: " << SDL_GetError() << std::endl;
-      return 0;
-    }
+  screen = SDL_SetVideoMode(SCREEN_X, SCREEN_Y, bpp, flags);
+  if (screen == 0) {
+    std::cerr << "Video mode set failed: " << SDL_GetError() << std::endl;
+    return 0;
+  }
 
-    pause(400);
-    if (Mix_OpenAudio(22050, AUDIO_S16, 2, 1024)) {
-      return 0;
-    }
+  pause(400);
+  if (Mix_OpenAudio(22050, AUDIO_S16, 2, 1024)) {
+    return 0;
+  }
 
-    SDL_WM_SetCaption("Nether Earth REMAKE v0.51", 0);
-    SDL_ShowCursor(SDL_DISABLE);
+  SDL_WM_SetCaption("Nether Earth REMAKE v0.51", 0);
+  SDL_ShowCursor(SDL_DISABLE);
 
-    return screen;
+  return screen;
 }
 
 
-void finalization()
+void finalize()
 {
   Mix_CloseAudio();
   SDL_Quit();
 }
-
 
 
 #ifdef _WIN32
@@ -136,26 +123,23 @@ int main(int argc, char** argv)
 {
 #endif
 
-  int time;
-  SDL_Event event;
-  bool quit = false;
+  MainMenu mainMenu;
+  SDL_Surface* screen_sfc = initialization((fullscreen ? SDL_FULLSCREEN : 0));
+  if (!screen_sfc) return 0;
 
-  loadConfiguration();
-
-  screen_sfc = initialization((fullscreen ? SDL_FULLSCREEN : 0));
-  if (screen_sfc == 0) return 0;
+  NETHER* game = 0;
 
   glutInit(&argc, argv);
 
-  time = init_time = SDL_GetTicks();
+  int time = init_time = SDL_GetTicks();
+  bool quit = false;
 
   while (!quit) {
+    SDL_Event event;
     while (SDL_PollEvent(&event)) {
       switch (event.type) {
-        /* Keyboard event */
       case SDL_KEYDOWN:
         if (event.key.keysym.sym == SDLK_F12) quit = true;
-
         if (event.key.keysym.sym == SDLK_RETURN) {
           SDLMod modifiers = SDL_GetModState();
 
@@ -165,7 +149,7 @@ int main(int argc, char** argv)
               Resources::instance()->refreshDisplayLists();
               game->getShip()->refresh_display_lists();
             }
-            if (nethertittle != 0) nethertittle->refresh_display_lists();
+            mainMenu.refreshDisplayLists();
             if (game != 0) Resources::instance()->deleteObjects();
             fullscreen = !fullscreen;
             SDL_QuitSubSystem(SDL_INIT_VIDEO);
@@ -180,7 +164,7 @@ int main(int argc, char** argv)
 
               screen_sfc = SDL_SetVideoMode(SCREEN_X, SCREEN_Y, COLOUR_DEPTH,
                                             SDL_OPENGL | (fullscreen ? SDL_FULLSCREEN : 0));
-              if (game != 0)
+              if (game)
                 Resources::instance()->loadObjects();
               SDL_WM_SetCaption("Nether Earth REMAKE v0.5", 0);
               SDL_ShowCursor(SDL_DISABLE);
@@ -191,7 +175,6 @@ int main(int argc, char** argv)
         }
         break;
 
-        /* SDL_QUIT event (window close) */
       case SDL_QUIT:
         quit = true;
         break;
@@ -211,26 +194,25 @@ int main(int argc, char** argv)
         time += REDRAWING_PERIOD;
         if ((act_time-time) > 50 * REDRAWING_PERIOD)time = act_time;
 
-        if (game != 0) {
+        if (game) {
           if (!game->gamecycle()) {
             delete game;
             game = 0;
-            mainmenu_status = 0;
-            mainmenu_substatus = 0;
+            mainMenu.reset();
           }
         } else {
-          int val = mainmenu_cycle(SCREEN_X, SCREEN_Y);
-          if (val == 1) {
-            game = new NETHER("maps/" + *mapnameIter);
+          MainMenu::ACTION val = mainMenu.cycle(SCREEN_X, SCREEN_Y);
+          if (val == MainMenu::ACTION::START) {
+            game = new NETHER(mainMenu.getMapPath());
           }
-          if (val == 2) quit = true;
-          if (val == 3) {
-            if (game!=0) {
+          if (val == MainMenu::ACTION::QUIT) quit = true;
+          if (val == MainMenu::ACTION::RESTARTVIDEO) {
+            if (game) {
               Resources::instance()->refreshDisplayLists();
               game->getShip()->refresh_display_lists();
             }
-            if (nethertittle != 0) nethertittle->refresh_display_lists();
-            if (game != 0) Resources::instance()->deleteObjects();
+            mainMenu.refreshDisplayLists();
+            if (game) Resources::instance()->deleteObjects();
             SDL_QuitSubSystem(SDL_INIT_VIDEO);
             SDL_InitSubSystem(SDL_INIT_VIDEO);
             if (SDL_WasInit(SDL_INIT_VIDEO)) {
@@ -243,7 +225,7 @@ int main(int argc, char** argv)
 
               screen_sfc = SDL_SetVideoMode(SCREEN_X, SCREEN_Y, COLOUR_DEPTH,
                                             SDL_OPENGL | (fullscreen ? SDL_FULLSCREEN : 0));
-              if (game != 0) Resources::instance()->loadObjects();
+              if (game) Resources::instance()->loadObjects();
               SDL_WM_SetCaption("Nether Earth REMAKE v0.5", 0);
               SDL_ShowCursor(SDL_DISABLE);
             } else {
@@ -254,15 +236,15 @@ int main(int argc, char** argv)
         act_time = SDL_GetTicks();
       } while (act_time-time >= REDRAWING_PERIOD);
 
-      if (game != 0) {
+      if (game) {
         game->gameredraw(SCREEN_X, SCREEN_Y);
       } else {
-        mainmenu_draw(SCREEN_X, SCREEN_Y);
+        mainMenu.draw(SCREEN_X, SCREEN_Y);
       }
     }
   }
 
   delete game;
-  finalization();
+  finalize();
   return 0;
 }

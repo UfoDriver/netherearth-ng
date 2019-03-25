@@ -14,7 +14,7 @@ find_library (GLULIB NAMES GLU)
 find_library (GLUTLIB NAMES glut)
 find_library (SDLLIB NAMES SDL)
 find_library (SDLMIXERLIB NAMES SDL_mixer)
-
+link_libraries(stdc++fs)
 
 # include_directories ("${PROJECT_BINARY_DIR}")
 add_executable (${PROJECT_NAME} ${SOURCES})
