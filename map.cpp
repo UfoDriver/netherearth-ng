@@ -78,7 +78,9 @@ void Map::draw(const Camera& camera, const Vector& light, const bool shadows)
   }
 
   for (const auto& building: buildings) {
-    if (camera.canSee(building->pos)) {
+    // Probably it's faster to open widen camera radius a bit and use building position
+    if (std::any_of(building->blocks.cbegin(), building->blocks.cend(),
+                    [camera](const auto& bb) { return camera.canSee(bb.pos);})) {
       building->draw(shadows, detaillevel, light);
     }
   }
