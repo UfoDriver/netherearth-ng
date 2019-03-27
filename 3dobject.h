@@ -40,7 +40,8 @@ public:
 
 class C3DObject {
 public:
-  C3DObject();
+  C3DObject() {}
+
   C3DObject(const std::string& filename, const std::string& texturedir,
             const Color& color=Color(1, 1, 1, 1));
 
@@ -53,10 +54,10 @@ public:
 
   bool valid();
 
-  void draw();
-  void draw(const Color& color);
-  void draw_notexture(const Color& color);
-  void drawcmc(const Color& color);
+  void draw() const;
+  void draw(const Color& color) const;
+  void draw_notexture(const Color& color) const;
+  void drawcmc(const Color& color) const;
 
   void calculateNormales();
 
@@ -72,18 +73,17 @@ public:
   std::vector<Vector> points;
   std::vector<Face> faces;
 
-  int displayList;
   CMC cmc;
+  Color color;
 
   std::vector<TextureCoordinate> textureCoord;
 
 private:
+  mutable int displayList {-1};
   bool readVertex(const std::string& data);
   int readFace(const std::string& data);
   bool readSmoothing(const std::string& data, int currentFace);
-  bool textured;
-public:
-  Color color;
+  bool textured {false};
 };
 
 #endif

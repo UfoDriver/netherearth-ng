@@ -24,7 +24,7 @@ Shadow3DObject::~Shadow3DObject()
 }
 
 
-void Shadow3DObject::drawShadow(const Color& color)
+void Shadow3DObject::drawShadow(const Color& color) const
 {
   glEnableClientState(GL_VERTEX_ARRAY);
   glVertexPointer(3, GL_FLOAT, 0, shadowPoints.data());

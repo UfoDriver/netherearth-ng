@@ -79,10 +79,7 @@ void Map::draw(const Camera& camera, const Vector& light, const bool shadows)
 
   for (const auto& building: buildings) {
     if (camera.canSee(building->pos)) {
-      glPushMatrix();
-      glTranslatef(float(building->pos.x), float(building->pos.y), float(building->pos.z));
       building->draw(shadows, detaillevel, light);
-      glPopMatrix();
     }
   }
 
@@ -237,10 +234,10 @@ bool Map::loadMap(const std::string& filename)
   }
 
   do {
-    std::vector<std::unique_ptr<BuildingBlock>> newBuildings {BuildingBlock::readMapFile(iFile)};
-    buildings.insert(buildings.end(),
-                     std::make_move_iterator(newBuildings.begin()),
-                     std::make_move_iterator(newBuildings.end()));
+    Building *b = Building::getFromMapFile(iFile);
+    if (b) {
+      buildings.emplace_back(b);
+    }
   } while (iFile.good());
 
   return true;
@@ -319,7 +316,6 @@ void Map::cycleBullets()
                             if (bullet->angle == 180) bullet->pos.x -= BULLET_SPEED;
                             if (bullet->angle == 270) bullet->pos.y -= BULLET_SPEED;
                             bullet->step++;
-
 
                             Robot* r = 0;
                             if (bullet->step >= bullet->getPersistence() || bullet->checkCollision(buildings, robots, &r)) {

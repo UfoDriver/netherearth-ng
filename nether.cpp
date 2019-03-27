@@ -273,9 +273,10 @@ bool NETHER::saveGame(const std::string& filename)
         << *ship;
 
   oFile << map.buildings.size() << '\n';
-  for (auto& b: map.buildings) {
-    oFile << *b;
-  }
+  // @TODO buildings
+  // for (auto& b: map.buildings) {
+  //   oFile << *b;
+  // }
 
   for (int i = 0; i < 2; i++) {
     oFile << map.robots.getRobotCount(i) << '\n';
@@ -324,8 +325,9 @@ bool NETHER::loadGame(const std::string& filename)
   int length;
   inFile >> length;
   for (int k = 0; k < length; k++) {
-    BuildingBlock block(inFile);
-    map.buildings.emplace_back(&block);
+    // @TODO buildings
+    // BuildingBlock block(inFile);
+    // map.buildings.emplace_back(&block);
   }
 
   for (int i = 0; i < 2; i++) {
@@ -528,7 +530,8 @@ bool NETHER::cycle(unsigned char *keyboard)
 
   /* Test if the ship has landed over a Factory: */
   for (const auto& b: map.buildings) {
-    if (b->type == BuildingBlock::TYPE::WARBASE && b->owner == 1 && ship->landedHere(b->pos)) {
+    if (b->type == Building::TYPE::WARBASE && b->owner == 1 and
+        ship->landedHere(b->pos)) {
       constructionScreen.open(b->pos);
     }
   }
@@ -538,7 +541,7 @@ bool NETHER::cycle(unsigned char *keyboard)
       (int(ship->pos.x * 8) % 4) == 0 &&
       (int(ship->pos.y * 8) % 4) == 0) {
     for (Robot* r: map.robots) {
-      if (r->getOwner() == 0 && ship->landedHere(r->pos - Vector(0.5f, 0.5f, 0.0))) {
+      if (r->getOwner() == 0 and ship->landedHere(r->pos - Vector(0.5f, 0.5f, 0.0))) {
         r->shipover = true;
         controlled = r;
         if (controlled->op == Robot::OPERATOR::FORWARD)

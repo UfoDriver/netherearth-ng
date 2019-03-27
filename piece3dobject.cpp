@@ -29,7 +29,7 @@ Piece3DObject::~Piece3DObject()
 }
 
 
-void Piece3DObject::drawShadow(int angle, Vector light, const Color& color)
+void Piece3DObject::drawShadow(int angle, Vector light, const Color& color) const
 {
   glEnableClientState(GL_VERTEX_ARRAY);
   glColor4f(color.red, color.green, color.blue, color.alpha);
@@ -100,7 +100,7 @@ void Piece3DObject::drawShadow(int angle, Vector light, const Color& color)
 
 
 void Piece3DObject::computeShadow(int angle, const Vector& light, std::vector<Vector>& p,
-                                  std::vector<Face>& shadowFaces, CMC &cmc)
+                                  std::vector<Face>& shadowFaces, CMC &cmc) const
 {
   float l[4];
 
@@ -159,7 +159,7 @@ void Piece3DObject::computeShadow(int angle, const Vector& light, std::vector<Ve
 }
 
 
-void Piece3DObject::computeDynamicShadow(int angle, const Vector& light)
+void Piece3DObject::computeDynamicShadow(int angle, const Vector& light) const
 {
   shadowPointsDynamic.clear();
   computeShadow(angle, light, shadowPointsDynamic, shadowFacesDynamic, shadowCMCDynamic);

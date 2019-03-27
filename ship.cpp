@@ -1,5 +1,5 @@
 #include <GL/gl.h>
-#include "buildingblock.h"
+#include "building.h"
 #include "constants.h"
 #include "map.h"
 #include "nether.h"
@@ -16,7 +16,7 @@ Ship::Ship(const std::string &model, const std::string &texturesDir, NETHER *net
 };
 
 
-bool Ship::checkCollision(const std::vector<std::unique_ptr<BuildingBlock>>& buildings,
+bool Ship::checkCollision(const std::vector<std::unique_ptr<Building>>& buildings,
                           const std::vector<Robot*>& robots)
 {
   float m1[16] = {1, 0, 0, 0,
@@ -31,7 +31,7 @@ bool Ship::checkCollision(const std::vector<std::unique_ptr<BuildingBlock>>& bui
   /* Collision with buildings: */
   for (const auto& b: buildings) {
     if (b->pos.aboutToCollide3D(pos, COLISION_TEST_THRESHOLD)) {
-      if (b->collidesWith(pos, cmc)) return true;
+      if (b->collisionCheck(cmc, m1)) return true;
     }
   }
 

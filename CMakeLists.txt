@@ -22,7 +22,11 @@ target_sources (${PROJECT_NAME}
   PUBLIC 3dobject
   PUBLIC ai
   PUBLIC bitmap
+  PUBLIC building
   PUBLIC buildingblock
+  PUBLIC buildingfactory
+  PUBLIC buildingsimple
+  PUBLIC buildingwarbase
   PUBLIC bullet
   PUBLIC bulletcannon
   PUBLIC bulletmissile

@@ -1,9 +1,9 @@
-#include "buildingblock.h"
+#include "building.h"
 #include "robot.h"
 #include "stats.h"
 
 
-void Stats::recompute(const std::vector<std::unique_ptr<BuildingBlock>>& buildings)
+void Stats::recompute(const std::vector<std::unique_ptr<Building>>& buildings)
 {
   if (!needsRecomputing) return;
 
@@ -13,26 +13,31 @@ void Stats::recompute(const std::vector<std::unique_ptr<BuildingBlock>>& buildin
 
   for (const auto& b: buildings) {
     int index = b->owner - 1;
-    if (b->type == BuildingBlock::TYPE::WARBASE) {
+    if (b->type == Building::TYPE::WARBASE) {
       stats[index][0]++;
-    }
-    if (b->type == BuildingBlock::TYPE::FACTORY_ELECTRONICS) {
-      stats[index][1]++;
-    }
-    if (b->type == BuildingBlock::TYPE::FACTORY_NUCLEAR) {
-      stats[index][2]++;
-    }
-    if (b->type == BuildingBlock::TYPE::FACTORY_PHASERS) {
-      stats[index][3]++;
-    }
-    if (b->type == BuildingBlock::TYPE::FACTORY_MISSILES) {
-      stats[index][4]++;
-    }
-    if (b->type == BuildingBlock::TYPE::FACTORY_CANNONS) {
-      stats[index][5]++;
-    }
-    if (b->type == BuildingBlock::TYPE::FACTORY_CHASSIS) {
-      stats[index][6]++;
+    } else if (b->type == Building::TYPE::FACTORY) {
+      switch (b->subtype) {
+      case Building::SUBTYPE::ELECTRONICS:
+        stats[index][1]++;
+        break;
+      case Building::SUBTYPE::NUCLEAR:
+        stats[index][2]++;
+        break;
+      case Building::SUBTYPE::PHASERS:
+        stats[index][3]++;
+        break;
+      case Building::SUBTYPE::MISSILES:
+        stats[index][4]++;
+        break;
+      case Building::SUBTYPE::CANNONS:
+        stats[index][5]++;
+        break;
+      case Building::SUBTYPE::CHASSIS:
+        stats[index][6]++;
+        break;
+      case Building::SUBTYPE::UNKNOWN:
+        break;
+      }
     }
   }
   needsRecomputing = false;

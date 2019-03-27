@@ -14,13 +14,8 @@
 #include "vector.h"
 
 
-C3DObject::C3DObject(): points(0), faces(0), displayList(-1), textured(false)
-{
-}
-
-
 C3DObject::C3DObject(const std::string& filename, const std::string& texturedir, const Color& color):
-          points(0), faces(0), displayList(-1), textured(false), color(color)
+         color(color)
 {
   int l = filename.length();
 
@@ -337,7 +332,7 @@ bool C3DObject::valid(void)
 }
 
 
-void C3DObject::draw()
+void C3DObject::draw() const
 {
   if (displayList != -1) {
     glCallList(displayList);
@@ -390,7 +385,7 @@ void C3DObject::draw()
 }
 
 
-void C3DObject::draw(const Color& color)
+void C3DObject::draw(const Color& color) const
 {
   if (textured) {
     if (displayList == -1) {
@@ -442,7 +437,7 @@ void C3DObject::draw(const Color& color)
 }
 
 
-void C3DObject::draw_notexture(const Color& color)
+void C3DObject::draw_notexture(const Color& color) const
 {
   glEnableClientState(GL_VERTEX_ARRAY);
   glVertexPointer(3, GL_FLOAT, 0, points.data());
@@ -468,7 +463,7 @@ void C3DObject::draw_notexture(const Color& color)
 }
 
 
-void C3DObject::drawcmc(const Color& color)
+void C3DObject::drawcmc(const Color& color) const
 {
   cmc.draw(color);
 }

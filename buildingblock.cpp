@@ -5,9 +5,48 @@
 #include "resources.h"
 
 
+BuildingBlock::BuildingBlock(Vector position, TYPE type) :
+    pos{position}, type{type}
+{
+  switch (type) {
+  case TYPE::FENCE:
+    tile = Resources::buildingTiles[5];
+    break;
+  case TYPE::WALL1:
+    tile = Resources::buildingTiles[0];
+    break;
+  case TYPE::WALL2:
+    tile = Resources::buildingTiles[1];
+    break;
+  case TYPE::WALL3:
+    tile = Resources::buildingTiles[2];
+    break;
+  case TYPE::WALL4:
+    tile = Resources::buildingTiles[3];
+    break;
+  case TYPE::WALL5:
+  case TYPE::FACTORY_CANNONS:
+  case TYPE::FACTORY_CHASSIS:
+  case TYPE::FACTORY_ELECTRONICS:
+  case TYPE::FACTORY_MISSILES:
+  case TYPE::FACTORY_NUCLEAR:
+  case TYPE::FACTORY_PHASERS:
+    tile = Resources::buildingTiles[4];
+    break;
+  case TYPE::WALL6:
+    tile = Resources::buildingTiles[7];
+    break;
+  case TYPE::WARBASE:
+    tile = Resources::buildingTiles[8];
+    break;
+  }
+}
+
+
 BuildingBlock::BuildingBlock(std::istream& in)
 {
   int type_;
+  int owner, status;
   in >> type_ >> owner >> status >> pos;
   type = BuildingBlock::TYPE(type_);
 }
@@ -15,7 +54,7 @@ BuildingBlock::BuildingBlock(std::istream& in)
 
 std::ostream& operator<<(std::ostream& out, const BuildingBlock& building)
 {
-  return out << int(building.type) << ' ' << building.owner << ' ' << building.status << '\n'
+  return out << int(building.type) << ' ' << '?' << ' ' << '?' << '\n'
              << building.pos;
 }
 
@@ -49,7 +88,7 @@ const std::vector<std::unique_ptr<BuildingBlock>> BuildingBlock::readMapFile(std
     std::string buffer2;
     inFile >> buffer2;
     for (int i = 0; i < 4; i++) {
-      acc.emplace_back(new BuildingBlock(Vector(x + xo[i], y + yo[i], 0), obj[i], 0, 0));
+      acc.emplace_back(new BuildingBlock(Vector(x + xo[i], y + yo[i], 0), obj[i]));
     }
 
     BuildingBlock* b = new BuildingBlock(Vector(x, y + 1, 0), BuildingBlock::TYPE::FACTORY_ELECTRONICS);
@@ -89,7 +128,7 @@ const std::vector<std::unique_ptr<BuildingBlock>> BuildingBlock::readMapFile(std
     int owner = 0;
     inFile >> owner;
     for(int i = 0; i < 15; i++) {
-      acc.emplace_back(new BuildingBlock(Vector(x + xo[i], y + yo[i], 0), obj[i], owner, 0));
+      acc.emplace_back(new BuildingBlock(Vector(x + xo[i], y + yo[i], 0), obj[i]));
     }
   }
   return acc;
@@ -98,334 +137,14 @@ const std::vector<std::unique_ptr<BuildingBlock>> BuildingBlock::readMapFile(std
 
 void BuildingBlock::draw(const bool shadows, const int detaillevel, const Vector& light) const
 {
-  // @TODO: giant switch should be replaced by inheritance
-  switch(type) {
-  case TYPE::FENCE:
   if (!shadows) {
     if (detaillevel >= 2)
-      Resources::buildingTiles[5].draw(Color(0.2f, 0.2f, 0.2f));
+      tile.draw(Color(0.2f, 0.2f, 0.2f));
     else
-      Resources::buildingTiles[5].draw_notexture(Color(0.2f, 0.2f, 0.2f));
+      tile.draw_notexture(Color(0.2f, 0.2f, 0.2f));
   } else {
     glTranslatef(0, 0, 0.05f);
-    Resources::buildingTiles[5].drawShadow(Color(0, 0, 0, 0.5));
-  }
-  break;
-  case TYPE::WALL1:
-    if (!shadows) {
-      if (detaillevel >= 2)
-        Resources::buildingTiles[0].draw(Color(0.5, 0.5, 0.5));
-      else
-        Resources::buildingTiles[0].draw_notexture(Color(0.5, 0.5, 0.5));
-    } else {
-      glTranslatef(0,0,0.05f);
-      Resources::buildingTiles[0].drawShadow(Color(0, 0, 0, 0.5));
-    }
-    break;
-  case TYPE::WALL2:
-    if (!shadows) {
-      if (detaillevel >= 2)
-        Resources::buildingTiles[1].draw(Color(0.5, 0.5, 0.5));
-      else
-        Resources::buildingTiles[1].draw_notexture(Color(0.5, 0.5, 0.5));
-    } else {
-      glTranslatef(0,0,0.05f);
-      Resources::buildingTiles[1].drawShadow(Color(0, 0, 0, 0.5));
-    }
-    break;
-  case TYPE::WALL3:if (!shadows) {
-      if (detaillevel >= 2)
-        Resources::buildingTiles[2].draw(Color(0.3f, 0.3f, 0.3f));
-      else
-        Resources::buildingTiles[2].draw_notexture(Color(0.5, 0.5, 0.5));
-    } else {
-      glTranslatef(0, 0, 0.05f);
-      Resources::buildingTiles[2].drawShadow(Color(0, 0, 0, 0.5));
-    }
-    break;
-  case TYPE::WALL4:
-    if (!shadows) {
-      if (detaillevel >= 2)
-        Resources::buildingTiles[3].draw(Color(0.5, 0.5, 0.5));
-      else Resources::buildingTiles[3].draw_notexture(Color(0.5, 0.5, 0.5));
-    } else {
-      glTranslatef(0, 0, 0.05f);
-      Resources::buildingTiles[3].drawShadow(Color(0, 0, 0, 0.5));
-    }
-    break;
-  case TYPE::WALL5:
-    if (!shadows) {
-      if (detaillevel >= 2)
-        Resources::buildingTiles[4].draw(Color(0.5, 0.5, 0.5));
-      else
-        Resources::buildingTiles[4].draw_notexture(Color(0.5, 0.5, 0.5));
-    } else {
-      glTranslatef(0, 0, 0.05f);
-      Resources::buildingTiles[4].drawShadow(Color(0, 0, 0, 0.5));
-    }
-    break;
-  case TYPE::WALL6:
-    if (!shadows) {
-      if (detaillevel >= 2)
-        Resources::buildingTiles[7].draw(Color(0.3f, 0.3f, 0.3f));
-      else Resources::buildingTiles[7].draw_notexture(Color(0.5, 0.5, 0.5));
-    } else {
-      glTranslatef(0, 0, 0.05f);
-      Resources::buildingTiles[7].drawShadow(Color(0, 0, 0, 0.5));
-    }
-    break;
-  case TYPE::FACTORY_ELECTRONICS:
-    if (!shadows) {
-      if (detaillevel >= 2)
-        Resources::buildingTiles[4].draw(Color(0.5, 0.5, 0.5));
-      else
-        Resources::buildingTiles[4].draw_notexture(Color(0.5, 0.5, 0.5));
-      glPushMatrix();
-      glTranslatef(0.5, 0.5, 1);
-      Resources::pieceTiles[0][7].draw_notexture(Color(0.8f, 0.8f, 0.8f));
-      glPopMatrix();
-    } else {
-      glPushMatrix();
-      glTranslatef(0,0,0.05f);
-      Resources::buildingTiles[4].drawShadow(Color(0, 0, 0, 0.5));
-      glTranslatef(float(-light.x), float(-light.y), 0);
-      Resources::pieceTiles[0][7].drawShadow(0, light, Color(0, 0, 0, 0.5));
-      glPopMatrix();
-    }
-    if (owner == 1) {
-      if (!shadows) {
-        glTranslatef(0, -1, 1);
-        Resources::buildingTiles[6].draw(PLAYER1_COLOR);
-      } else {
-        glTranslatef(float(-light.x), float(-light.y) - 1, 0.05f);
-        Resources::buildingTiles[6].drawShadow(Color(0, 0, 0, 0.5));
-      }
-    }
-    if (owner == 2) {
-      if (!shadows) {
-        glTranslatef(0,-1,1);
-        Resources::buildingTiles[6].draw(PLAYER2_COLOR);
-      } else {
-        glTranslatef(float(-light.x),float(-light.y) - 1, 0.05f);
-        Resources::buildingTiles[6].drawShadow(Color(0, 0, 0, 0.5));
-      }
-    }
-    break;
-  case TYPE::FACTORY_NUCLEAR:
-    if (!shadows) {
-      if (detaillevel >= 2)
-        Resources::buildingTiles[4].draw(Color(0.5, 0.5, 0.5));
-      else
-        Resources::buildingTiles[4].draw_notexture(Color(0.5, 0.5, 0.5));
-      glPushMatrix();
-      glTranslatef(0.5, 0.5, 1);
-      Resources::pieceTiles[0][6].draw_notexture(Color(0.8f, 0.8f, 0.8f));
-      glPopMatrix();
-    } else {
-      glPushMatrix();
-      glTranslatef(0, 0, 0.05f);
-      Resources::buildingTiles[4].drawShadow(Color(0, 0, 0, 0.5));
-      glTranslatef(float(-light.x), float(-light.y), 0);
-      Resources::pieceTiles[0][6].drawShadow(0, light, Color(0, 0, 0, 0.5));
-      glPopMatrix();
-    }
-
-    if (owner == 1) {
-      if (!shadows) {
-        glTranslatef(0, -1, 1);
-        Resources::buildingTiles[6].draw(PLAYER1_COLOR);
-      } else {
-        glTranslatef(float(-light.x), float(-light.y) - 1, 0.05f);
-        Resources::buildingTiles[6].drawShadow(Color(0, 0, 0, 0.5));
-      }
-    }
-    if (owner == 2) {
-      if (!shadows) {
-        glTranslatef(0, -1, 1);
-        Resources::buildingTiles[6].draw(PLAYER2_COLOR);
-      } else {
-        glTranslatef(float(-light.x), float(-light.y) - 1, 0.05f);
-        Resources::buildingTiles[6].drawShadow(Color(0, 0, 0, 0.5));
-      }
-    }
-    break;
-  case TYPE::FACTORY_PHASERS:
-    if (!shadows) {
-      if (detaillevel >= 2)
-        Resources::buildingTiles[4].draw(Color(0.5, 0.5, 0.5));
-      else
-        Resources::buildingTiles[4].draw_notexture(Color(0.5, 0.5, 0.5));
-      glPushMatrix();
-      glTranslatef(0.5, 0.5, 1);
-      Resources::pieceTiles[0][5].draw_notexture(Color(0.8f, 0.8f, 0.8f));
-      glPopMatrix();
-    } else {
-      glPushMatrix();
-      glTranslatef(0, 0, 0.05f);
-      Resources::buildingTiles[4].drawShadow(Color(0, 0, 0, 0.5));
-      glTranslatef(float(-light.x), float(-light.y), 0);
-      Resources::pieceTiles[0][5].drawShadow(0, light, Color(0, 0, 0, 0.5));
-      glPopMatrix();
-    }
-    if (owner == 1) {
-      if (!shadows) {
-        glTranslatef(0, -1, 1);
-        Resources::buildingTiles[6].draw(PLAYER1_COLOR);
-      } else {
-        glTranslatef(float(-light.x), float(-light.y) - 1, 0.05f);
-        Resources::buildingTiles[6].drawShadow(Color(0, 0, 0, 0.5));
-      }
-    }
-    if (owner == 2) {
-      if (!shadows) {
-        glTranslatef(0, -1, 1);
-        Resources::buildingTiles[6].draw(PLAYER2_COLOR);
-      } else {
-        glTranslatef(float(-light.x), float(-light.y) - 1, 0.05f);
-        Resources::buildingTiles[6].drawShadow(Color(0, 0, 0, 0.5));
-      }
-    }
-    break;
-  case TYPE::FACTORY_MISSILES:
-    if (!shadows) {
-      if (detaillevel >= 2)
-        Resources::buildingTiles[4].draw(Color(0.5, 0.5, 0.5));
-      else
-        Resources::buildingTiles[4].draw_notexture(Color(0.5, 0.5, 0.5));
-      glPushMatrix();
-      glTranslatef(0.5, 0.5, 1);
-      Resources::pieceTiles[0][4].draw_notexture(Color(0.8f, 0.8f, 0.8f));
-      glPopMatrix();
-    } else {
-      glPushMatrix();
-      glTranslatef(0, 0, 0.05f);
-      Resources::buildingTiles[4].drawShadow(Color(0, 0, 0, 0.5));
-      glTranslatef(float(-light.x), float(-light.y), 0);
-      Resources::pieceTiles[0][4].drawShadow(0, light, Color(0, 0, 0, 0.5));
-      glPopMatrix();
-    }
-    if (owner == 1) {
-      if (!shadows) {
-        glTranslatef(0, -1, 1);
-        Resources::buildingTiles[6].draw(PLAYER1_COLOR);
-      } else {
-        glTranslatef(float(-light.x), float(-light.y) - 1, 0.05f);
-        Resources::buildingTiles[6].drawShadow(Color(0, 0, 0, 0.5));
-      }
-    }
-    if (owner == 2) {
-      if (!shadows) {
-        glTranslatef(0, -1, 1);
-        Resources::buildingTiles[6].draw(PLAYER2_COLOR);
-      } else {
-        glTranslatef(float(-light.x), float(-light.y) - 1, 0.05f);
-        Resources::buildingTiles[6].drawShadow(Color(0, 0, 0, 0.5));
-      }
-    }
-    break;
-  case TYPE::FACTORY_CANNONS:
-    if (!shadows) {
-      if (detaillevel >= 2)
-        Resources::buildingTiles[4].draw(Color(0.5, 0.5, 0.5));
-      else
-        Resources::buildingTiles[4].draw_notexture(Color(0.5, 0.5, 0.5));
-      glPushMatrix();
-      glTranslatef(0.5, 0.5, 1);
-      Resources::pieceTiles[0][3].draw_notexture(Color(0.8f, 0.8f, 0.8f));
-      glPopMatrix();
-    } else {
-      glPushMatrix();
-      glTranslatef(0, 0, 0.05f);
-      Resources::buildingTiles[4].drawShadow(Color(0, 0, 0, 0.5));
-      glTranslatef(float(-light.x), float(-light.y), 0);
-      Resources::pieceTiles[0][3].drawShadow(0, light, Color(0, 0, 0, 0.5));
-      glPopMatrix();
-    }
-
-    if (owner == 1) {
-      if (!shadows) {
-        glTranslatef(0, -1, 1);
-        Resources::buildingTiles[6].draw(PLAYER1_COLOR);
-      } else {
-        glTranslatef(float(-light.x), float(-light.y) - 1, 0.05f);
-        Resources::buildingTiles[6].drawShadow(Color(0, 0, 0, 0.5));
-      }
-    }
-    if (owner == 2) {
-      if (!shadows) {
-        glTranslatef(0,-1,1);
-        Resources::buildingTiles[6].draw(PLAYER2_COLOR);
-      } else {
-        glTranslatef(float(-light.x), float(-light.y) - 1, 0.05f);
-        Resources::buildingTiles[6].drawShadow(Color(0, 0, 0, 0.5));
-      }
-    }
-    break;
-  case TYPE::FACTORY_CHASSIS:
-    if (!shadows) {
-      if (detaillevel>=2)
-        Resources::buildingTiles[4].draw(Color(0.5, 0.5, 0.5));
-      else Resources::buildingTiles[4].draw_notexture(Color(0.5, 0.5, 0.5));
-      glPushMatrix();
-      glTranslatef(0.5, 0.5, 1);
-      Resources::pieceTiles[0][1].draw_notexture(Color(0.8f, 0.8f, 0.8f));
-      glPopMatrix();
-    } else {
-      glPushMatrix();
-      glTranslatef(0, 0, 0.05f);
-      Resources::buildingTiles[4].drawShadow(Color(0, 0, 0, 0.5));
-      glTranslatef(float(-light.x), float(-light.y), 0);
-      Resources::pieceTiles[0][1].drawShadow(0, light, Color(0, 0, 0, 0.5));
-      glPopMatrix();
-    }
-    if (owner == 1) {
-      if (!shadows) {
-        glTranslatef(0, -1, 1);
-        Resources::buildingTiles[6].draw(PLAYER1_COLOR);
-      } else {
-        glTranslatef(float(-light.x), float(-light.y)-1, 0.05f);
-        Resources::buildingTiles[6].drawShadow(Color(0, 0, 0, 0.5));
-      }
-    }
-    if (owner == 2) {
-      if (!shadows) {
-        glTranslatef(0, -1, 1);
-        Resources::buildingTiles[6].draw(PLAYER2_COLOR);
-      } else {
-        glTranslatef(float(-light.x), float(-light.y) - 1, 0.05f);
-        Resources::buildingTiles[6].drawShadow(Color(0, 0, 0, 0.5));
-      }
-    }
-    break;
-
-  case TYPE::WARBASE:if (!shadows) {
-      if (detaillevel >= 2)
-        Resources::buildingTiles[8].draw(Color(0.5, 0.5, 0.5));
-      else
-        Resources::buildingTiles[8].draw_notexture(Color(0.5, 0.5, 0.5));
-    } else {
-      glTranslatef(0, 0, 0.05f);
-      Resources::buildingTiles[8].drawShadow(Color(0, 0, 0, 0.5));
-    }
-    if (owner == 1) {
-      if (!shadows) {
-        glTranslatef(0, -2, 1);
-        Resources::buildingTiles[6].draw(PLAYER1_COLOR);
-      } else {
-        glTranslatef(float(-light.x), float(-light.y) - 2, 0.05f);
-        Resources::buildingTiles[6].drawShadow(Color(0, 0, 0, 0.5));
-      }
-    }
-    if (owner == 2) {
-      if (!shadows) {
-        glTranslatef(0, -2, 1);
-        Resources::buildingTiles[6].draw(PLAYER2_COLOR);
-      } else {
-        glTranslatef(float(-light.x), float(-light.y) - 2, 0.05f);
-        Resources::buildingTiles[6].drawShadow(Color(0, 0, 0, 0.5));
-      }
-    }
-    break;
+    tile.drawShadow(Color(0, 0, 0, 0.5));
   }
 }
 
@@ -457,28 +176,7 @@ bool BuildingBlock::collidesWith(const Vector& position, const CMC& cmc) const
 
 CMC BuildingBlock::getCMC() const
 {
-  switch (type) {
-  case TYPE::FENCE:
-    return Resources::buildingTiles[5].cmc;
-  case TYPE::WALL1:
-    return Resources::buildingTiles[0].cmc;
-  case TYPE::WALL2:
-    return Resources::buildingTiles[1].cmc;
-  case TYPE::WALL3:
-    return Resources::buildingTiles[2].cmc;
-    break;
-  case TYPE::WALL4:
-    return Resources::buildingTiles[3].cmc;
-  case TYPE::WALL5:
-    return Resources::buildingTiles[4].cmc;
-  case TYPE::WALL6:
-    return Resources::buildingTiles[7].cmc;
-  case TYPE::WARBASE:
-    return Resources::buildingTiles[8].cmc;
-    break;
-  default:
-    return Resources::buildingTiles[4].cmc;
-  }
+  return tile.cmc;
 }
 
 
@@ -506,27 +204,4 @@ CMC BuildingBlock::getExtraCMC() const
   default:
     return CMC();
   }
-}
-
-
-Vector BuildingBlock::getCapturePoint()
-{
-  if (type == BuildingBlock::TYPE::WARBASE) {
-    return pos + Vector(2, 0, 0);
-  } else {
-    return pos + Vector(1, 0, 0);
-  }
-}
-
-
-bool BuildingBlock::isCapturable()
-{
-  return
-    type == BuildingBlock::TYPE::FACTORY_ELECTRONICS ||
-    type == BuildingBlock::TYPE::FACTORY_NUCLEAR ||
-    type == BuildingBlock::TYPE::FACTORY_PHASERS ||
-    type == BuildingBlock::TYPE::FACTORY_MISSILES ||
-    type == BuildingBlock::TYPE::FACTORY_CANNONS ||
-    type == BuildingBlock::TYPE::FACTORY_CHASSIS ||
-    type == BuildingBlock::TYPE::WARBASE;
 }

@@ -13,7 +13,7 @@ public:
   Shadow3DObject(const std::string& file, const std::string& texturedir);
   ~Shadow3DObject();
 
-  void drawShadow(const Color& color);
+  void drawShadow(const Color& color) const;
   void computeShadow(Vector light);
 
   std::vector<Vector> shadowPoints;

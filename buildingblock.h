@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "cmc.h"
+#include "shadow3dobject.h"
 #include "vector.h"
 
 
@@ -25,9 +26,7 @@ public:
                    FACTORY_CANNONS,
                    FACTORY_CHASSIS,
                    WARBASE};
-  BuildingBlock(Vector position, TYPE type, int owner=0, int status=0):
-    pos{position}, type{type}, owner{owner}, status{status}
-  {}
+  BuildingBlock(Vector position, TYPE type);
   explicit BuildingBlock(std::istream& in);
 
   void draw(const bool shadows, const int detaillevel, const Vector& light) const;
@@ -36,13 +35,12 @@ public:
   CMC getCMC() const;
   CMC getExtraCMC() const;
   bool collidesWith(const Vector& position, const CMC& cmc) const;
-  Vector getCapturePoint();
-  bool isCapturable();
 
   Vector pos;
   TYPE type;
-  int owner;
-  int status;
+
+private:
+  Shadow3DObject tile;
 };
 
 std::ostream& operator<<(std::ostream& out, const BuildingBlock& bulding);
