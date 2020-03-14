@@ -437,32 +437,6 @@ void C3DObject::draw(const Color& color) const
 }
 
 
-void C3DObject::draw_notexture(const Color& color) const
-{
-  glEnableClientState(GL_VERTEX_ARRAY);
-  glVertexPointer(3, GL_FLOAT, 0, points.data());
-
-  if (color.alpha) {
-    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_BLEND);
-    glColor4f(color.red, color.green, color.blue, color.alpha);
-  } else {
-    glColor3f(color.red, color.green, color.blue);
-  }
-
-  for (const Face face: faces) {
-    glBegin(GL_TRIANGLES);
-    glNormal3f(face.norm1.x, face.norm1.y, face.norm1.z);
-    glArrayElement(face.a);
-    glNormal3f(face.norm2.x, face.norm2.y, face.norm2.z);
-    glArrayElement(face.b);
-    glNormal3f(face.norm3.x, face.norm3.y, face.norm3.z);
-    glArrayElement(face.c);
-    glEnd();
-  }
-}
-
-
 void C3DObject::drawcmc(const Color& color) const
 {
   cmc.draw(color);

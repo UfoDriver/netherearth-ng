@@ -19,7 +19,6 @@ int SCREEN_Y = 480;
 
 int COLOUR_DEPTH = 32;
 int shadows = 0;
-int detaillevel = 4;
 bool sound = true;
 int up_key = SDLK_q, down_key = SDLK_a, left_key = SDLK_o, right_key = SDLK_p,
   fire_key = SDLK_SPACE, pause_key = SDLK_F1;

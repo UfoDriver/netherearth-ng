@@ -5,8 +5,6 @@
 #include "resources.h"
 
 
-extern int detaillevel;
-
 BulletMissile::BulletMissile(Vector& position, Robot* owner):
   Bullet(TYPE::MISSILES, position, owner)
 {
@@ -25,9 +23,7 @@ void BulletMissile::draw(bool shadow, std::vector<Particle>& particles) const
     glTranslatef(0, -0.66, 0);
     Resources::bulletTiles[1].draw(Color(0.8f, 0.8f, 0.8f));
     glPopMatrix();
-    if (detaillevel >= 4) {
-      drawParticles(particles);
-    }
+    drawParticles(particles);
   }
 }
 

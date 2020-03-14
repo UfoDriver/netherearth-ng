@@ -53,11 +53,13 @@ BuildingFactory::BuildingFactory(const Vector& position, SUBTYPE subtype)
   }
 
   flagTile = Resources::buildingTiles[6];
+  // TODO: temporary mutable for building factory tile
+  typeTile.textured = false;
 }
 
-void BuildingFactory::draw(const bool shadows, const int detaillevel, const Vector& light) const
+void BuildingFactory::draw(const bool shadows, const Vector& light) const
 {
-  Building::draw(shadows, detaillevel, light);
+  Building::draw(shadows, light);
 
   glPushMatrix();
   glTranslatef(pos.x, pos.y, pos.z);
@@ -65,8 +67,7 @@ void BuildingFactory::draw(const bool shadows, const int detaillevel, const Vect
   if (!shadows) {
     glPushMatrix();
     glTranslatef(0.5, 0.5, 1);
-
-    typeTile.draw_notexture(Color(0.8f, 0.8f, 0.8f));
+    typeTile.draw(Color(0.8f, 0.8f, 0.8f));
     glPopMatrix();
   } else {
     glPushMatrix();

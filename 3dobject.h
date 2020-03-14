@@ -56,7 +56,6 @@ public:
 
   void draw() const;
   void draw(const Color& color) const;
-  void draw_notexture(const Color& color) const;
   void drawcmc(const Color& color) const;
 
   void calculateNormales();
@@ -83,7 +82,9 @@ private:
   bool readVertex(const std::string& data);
   int readFace(const std::string& data);
   bool readSmoothing(const std::string& data, int currentFace);
-  bool textured {false};
+public:
+  // TODO: temporary mutable for building factory tile
+  mutable bool textured {false};
 };
 
 #endif

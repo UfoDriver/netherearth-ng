@@ -9,12 +9,12 @@
 #include "constants.h"
 
 
-void Building::draw(const bool shadows, const int detaillevel, const Vector& light) const
+void Building::draw(const bool shadows, const Vector& light) const
 {
   for (const BuildingBlock& b : blocks) {
     glPushMatrix();
     glTranslatef(float(b.pos.x), float(b.pos.y), float(b.pos.z));
-    b.draw(shadows, detaillevel, light);
+    b.draw(shadows, light);
     glPopMatrix();
   }
 }

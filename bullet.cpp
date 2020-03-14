@@ -24,9 +24,6 @@
 #include "vector.h"
 
 
-extern int detaillevel;
-
-
 Bullet::Bullet(TYPE type, Vector position, Robot *robot):
   type(type), step(0), pos(position), angle(robot->angle), owner(robot)
 {

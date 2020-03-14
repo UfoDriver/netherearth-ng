@@ -13,7 +13,6 @@
 #include "nether.h"
 #include "resources.h"
 
-extern int detaillevel;
 extern int up_key, down_key, left_key, right_key, fire_key, pause_key;
 
 
@@ -64,10 +63,7 @@ void Map::draw(const Camera& camera, const Vector& light, const bool shadows)
             if (((i * 3 + j * 7) % m[(i + j + 1) % 8]) == 0 ) o = 11;
           } else {
           }
-          if (detaillevel >= 1)
-            Resources::tiles[o].draw(Resources::tiles[0].color);
-          else
-            Resources::tiles[o].draw_notexture(Resources::tiles[0].color);
+          Resources::tiles[o].draw(Resources::tiles[0].color);
         }
         glTranslatef(1.0, 0.0, 0.0);
       }
@@ -81,7 +77,7 @@ void Map::draw(const Camera& camera, const Vector& light, const bool shadows)
     // Probably it's faster to open widen camera radius a bit and use building position
     if (std::any_of(building->blocks.cbegin(), building->blocks.cend(),
                     [camera](const auto& bb) { return camera.canSee(bb.pos);})) {
-      building->draw(shadows, detaillevel, light);
+      building->draw(shadows, light);
     }
   }
 

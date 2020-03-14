@@ -48,7 +48,6 @@ extern int SCREEN_Y;
 extern int COLOUR_DEPTH;
 extern bool fullscreen;
 extern int shadows;
-extern int detaillevel;
 extern bool sound;
 extern int level;
 extern int up_key,down_key,left_key,right_key,fire_key,pause_key;
@@ -217,22 +216,18 @@ MainMenu::ACTION MainMenu::cycle(int, int)
       saveConfiguration();
     }
     if (keyboard[SDLK_5] && !old_keyboard[SDLK_5]) {
-      detaillevel = ++detaillevel % 5;
-      saveConfiguration();
-    }
-    if (keyboard[SDLK_6] && !old_keyboard[SDLK_6]) {
       sound = !sound;
       saveConfiguration();
     }
-    if (keyboard[SDLK_7] && !old_keyboard[SDLK_7]) {
+    if (keyboard[SDLK_6] && !old_keyboard[SDLK_6]) {
       level = ++level % 4;
       saveConfiguration();
     }
-    if (keyboard[SDLK_8] && !old_keyboard[SDLK_8]) {
+    if (keyboard[SDLK_7] && !old_keyboard[SDLK_7]) {
       show_radar = !show_radar;
       saveConfiguration();
     }
-    if (keyboard[SDLK_9] && !old_keyboard[SDLK_9]) {
+    if (keyboard[SDLK_8] && !old_keyboard[SDLK_8]) {
       status = 0;
       substatus = 0;
     }
@@ -388,28 +383,22 @@ void MainMenu::draw(int width, int height)
     if (shadows == 1) scaledglprintf(0.005, 0.005, "4 - SHADOWS: ON - DIAG  ");
     if (shadows == 2) scaledglprintf(0.005, 0.005, "4 - SHADOWS: ON - VERT  ");
     glTranslatef(0, -1, 0);
-    if (detaillevel == 0) scaledglprintf(0.005, 0.005, "5 - DETAIL: LOWEST      ");
-    if (detaillevel == 1) scaledglprintf(0.005, 0.005, "5 - DETAIL: LOW         ");
-    if (detaillevel == 2) scaledglprintf(0.005, 0.005, "5 - DETAIL: MEDIUM      ");
-    if (detaillevel == 3) scaledglprintf(0.005, 0.005, "5 - DETAIL: HIGH        ");
-    if (detaillevel == 4) scaledglprintf(0.005, 0.005, "5 - DETAIL: HIGHEST     ");
-    glTranslatef(0, -1, 0);
     if (sound)
-      scaledglprintf(0.005, 0.005, "6 - SOUND: ON           ");
+      scaledglprintf(0.005, 0.005, "5 - SOUND: ON           ");
     else
-      scaledglprintf(0.005, 0.005, "6 - SOUND: OFF          ");
+      scaledglprintf(0.005, 0.005, "5 - SOUND: OFF          ");
     glTranslatef(0, -1, 0);
-    if (level == 0) scaledglprintf(0.005, 0.005, "7 - LEVEL: EASY         ");
-    if (level == 1) scaledglprintf(0.005, 0.005, "7 - LEVEL: NORMAL       ");
-    if (level == 2) scaledglprintf(0.005, 0.005, "7 - LEVEL: HARD         ");
-    if (level == 3) scaledglprintf(0.005, 0.005, "7 - LEVEL: IMPOSSIBLE   ");
+    if (level == 0) scaledglprintf(0.005, 0.005, "6 - LEVEL: EASY         ");
+    if (level == 1) scaledglprintf(0.005, 0.005, "6 - LEVEL: NORMAL       ");
+    if (level == 2) scaledglprintf(0.005, 0.005, "6 - LEVEL: HARD         ");
+    if (level == 3) scaledglprintf(0.005, 0.005, "6 - LEVEL: IMPOSSIBLE   ");
     glTranslatef(0, -1, 0);
     if (show_radar)
-      scaledglprintf(0.005, 0.005, "8 - RADAR: ON           ");
+      scaledglprintf(0.005, 0.005, "7 - RADAR: ON           ");
     else
-      scaledglprintf(0.005, 0.005, "8 - RADAR: OFF          ");
+      scaledglprintf(0.005, 0.005, "7 - RADAR: OFF          ");
     glTranslatef(0, -1, 0);
-    scaledglprintf(0.005, 0.005, "9 - BACK                ");
+    scaledglprintf(0.005, 0.005, "8 - BACK                ");
     break;
   case 7:
     {
@@ -494,7 +483,7 @@ void MainMenu::loadConfiguration(void)
 {
     std::string mapname;
     std::ifstream configFile("nether.cfg");
-    configFile >> SCREEN_X >> SCREEN_Y >> fullscreen >> shadows >> detaillevel
+    configFile >> SCREEN_X >> SCREEN_Y >> fullscreen >> shadows
                >> up_key >> down_key >> left_key >> right_key >> fire_key >> pause_key
                >> sound >> level >> mapname;
 
@@ -510,7 +499,7 @@ void MainMenu::saveConfiguration(void)
 {
   std::ofstream configFile("nether.cfg");
   configFile << SCREEN_X << ' ' << SCREEN_Y << std::endl
-             << fullscreen << ' ' << shadows << ' ' << detaillevel << std::endl
+             << fullscreen << ' ' << shadows  << std::endl
              << up_key << ' ' << down_key << ' ' << left_key << ' ' << right_key << ' '
              << fire_key << ' ' << pause_key << std::endl
              << sound << std::endl

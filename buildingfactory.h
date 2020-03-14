@@ -11,7 +11,7 @@ class BuildingFactory : public Building
 public:
   explicit BuildingFactory(const Vector& position, SUBTYPE subtype);
 
-  void draw(const bool shadows, const int detaillevel, const Vector& light) const override;
+  void draw(const bool shadows, const Vector& light) const override;
 
   Vector getCapturePoint() const override
   {

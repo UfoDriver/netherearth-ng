@@ -10,7 +10,7 @@ class BuildingWarbase : public Building
 public:
   explicit BuildingWarbase(const Vector& position);
 
-  void draw(const bool shadows, const int detaillevel, const Vector& light) const override;
+  void draw(const bool shadows, const Vector& light) const override;
 
   Vector getCapturePoint() const override
   {

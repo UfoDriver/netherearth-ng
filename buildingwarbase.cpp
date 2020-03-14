@@ -41,9 +41,9 @@ BuildingWarbase::BuildingWarbase(const Vector &position) :
 }
 
 
-void BuildingWarbase::draw(const bool shadows, const int detaillevel, const Vector& light) const
+void BuildingWarbase::draw(const bool shadows, const Vector& light) const
 {
-  Building::draw(shadows, detaillevel, light);
+  Building::draw(shadows, light);
 
   glPushMatrix();
   glTranslatef(pos.x, pos.y, pos.z);

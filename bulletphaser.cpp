@@ -19,10 +19,11 @@ void BulletPhaser::draw(bool shadow, std::vector<Particle>&) const
     glRotatef(angle, 0, 0, 1);
     glRotatef(90, 0, 0, 1);
 
-    if ((rand() % 4) !=0)
-      Resources::bulletTiles[2].draw_notexture(Color(1.0f, 0.5f, 1.0f, 0.9f));
+    if ((rand() % 4) != 0)
+      Resources::bulletTiles[2].draw(Color(1.0f, 0.5f, 1.0f, 0.9f));
     else
-      Resources::bulletTiles[2].draw_notexture(Color(1.0f, 1.0f, 1.0f, 0.5f));
+      Resources::bulletTiles[2].draw(Color(1.0f, 1.0f, 1.0f, 0.5f));
+
 
     glPopMatrix();
   }

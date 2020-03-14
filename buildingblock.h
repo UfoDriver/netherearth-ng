@@ -29,7 +29,7 @@ public:
   BuildingBlock(Vector position, TYPE type);
   explicit BuildingBlock(std::istream& in);
 
-  void draw(const bool shadows, const int detaillevel, const Vector& light) const;
+  void draw(const bool shadows, const Vector& light) const;
   static const std::vector<std::unique_ptr<BuildingBlock>> readMapFile(std::istream& inFile);
 
   CMC getCMC() const;

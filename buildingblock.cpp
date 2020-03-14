@@ -135,13 +135,10 @@ const std::vector<std::unique_ptr<BuildingBlock>> BuildingBlock::readMapFile(std
 }
 
 
-void BuildingBlock::draw(const bool shadows, const int detaillevel, const Vector& light) const
+void BuildingBlock::draw(const bool shadows, const Vector& light) const
 {
   if (!shadows) {
-    if (detaillevel >= 2)
-      tile.draw(Color(0.2f, 0.2f, 0.2f));
-    else
-      tile.draw_notexture(Color(0.2f, 0.2f, 0.2f));
+    tile.draw(Color(0.2f, 0.2f, 0.2f));
   } else {
     glTranslatef(0, 0, 0.05f);
     tile.drawShadow(Color(0, 0, 0, 0.5));

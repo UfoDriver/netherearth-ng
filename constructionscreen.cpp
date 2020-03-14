@@ -259,17 +259,18 @@ void ConstructionScreen::draw(int width, int height, const Light& light)
 
       if (i < 3) {
         if (staple->traction == i) {
-          Resources::pieceTiles[0][i].draw_notexture(Color(1.0, 1.0, 1.0));
+          Resources::pieceTiles[0][i].draw(Color(1.0, 1.0, 1.0));
         } else {
-          Resources::pieceTiles[0][i].draw_notexture(Color(0.5, 0.5, 0.5));
+          Resources::pieceTiles[0][i].draw(Color(0.5, 0.5, 0.5));
         }
       } else {
         if (staple->pieces[i - 3]) {
-          Resources::pieceTiles[0][i].draw_notexture(Color(1.0, 1.0, 1.0));
+          Resources::pieceTiles[0][i].draw(Color(1.0, 1.0, 1.0));
         } else {
-          Resources::pieceTiles[0][i].draw_notexture(Color(0.5, 0.5, 0.5));
+          Resources::pieceTiles[0][i].draw(Color(0.5, 0.5, 0.5));
         }
       }
+
 
       glPopMatrix();
     }
