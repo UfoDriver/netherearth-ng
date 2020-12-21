@@ -274,7 +274,7 @@ void C3DObject::calculateNormales()
 
   // @TODO: temporary copypaste
   // @TODO: use iterator
-  for (int i = 0; i < faces.size(); i++) {
+  for (unsigned int i = 0; i < faces.size(); i++) {
     if (faces[i].smooth == 0) {
       faces[i].norm1 = normales_tmp[i];
       faces[i].norm2 = normales_tmp[i];
@@ -282,7 +282,7 @@ void C3DObject::calculateNormales()
     } else {
       int num = 0;
       // Ineffective search
-      for(int k = 0; k < faces.size(); k++) {
+      for(unsigned int k = 0; k < faces.size(); k++) {
         if (faces[k].smooth == faces[i].smooth && faces[k].hasVertex(faces[i].a)) {
           num++;
           faces[i].norm1 = faces[i].norm1 + normales_tmp[k];
@@ -294,7 +294,7 @@ void C3DObject::calculateNormales()
 
       num = 0;
       // Ineffective search
-      for(int k = 0; k < faces.size(); k++) {
+      for(unsigned int k = 0; k < faces.size(); k++) {
         if (faces[k].smooth == faces[i].smooth && faces[k].hasVertex(faces[i].b)) {
           num++;
           faces[i].norm2 = faces[i].norm2 + normales_tmp[k];
@@ -306,7 +306,7 @@ void C3DObject::calculateNormales()
 
       num = 0;
       // Ineffective search
-      for(int k = 0; k < faces.size(); k++) {
+      for(unsigned int k = 0; k < faces.size(); k++) {
         if (faces[k].smooth == faces[i].smooth && faces[k].hasVertex(faces[i].c)) {
           num++;
           faces[i].norm3 = faces[i].norm3 + normales_tmp[k];
@@ -347,7 +347,7 @@ void C3DObject::draw() const
   if (textured) {
     glEnable(GL_TEXTURE_2D);
 
-    for (int i = 0; i < faces.size(); i++) {
+    for (unsigned int i = 0; i < faces.size(); i++) {
       glBindTexture(GL_TEXTURE_2D, faces[i].texture);
       glColor3f(1, 1, 1);
 
@@ -396,7 +396,7 @@ void C3DObject::draw(const Color& color) const
       glVertexPointer(3, GL_FLOAT, 0, points.data());
 
       // @TODO: use iterator
-      for (int i = 0; i < faces.size(); i++) {
+      for (unsigned int i = 0; i < faces.size(); i++) {
         glBindTexture(GL_TEXTURE_2D, faces[i].texture);
         glColor3f(1, 1, 1);
 

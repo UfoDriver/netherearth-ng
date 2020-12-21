@@ -135,7 +135,7 @@ const std::vector<std::unique_ptr<BuildingBlock>> BuildingBlock::readMapFile(std
 }
 
 
-void BuildingBlock::draw(const bool shadows, const Vector& light) const
+void BuildingBlock::draw(const bool shadows, const Vector&) const
 {
   if (!shadows) {
     tile.draw(Color(0.2f, 0.2f, 0.2f));

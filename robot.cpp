@@ -565,7 +565,7 @@ void Robot::dispatchOperator(NETHER* nether, unsigned char* keyboard)
 }
 
 
-void Robot::processOperatorForward(NETHER* nether, unsigned char* keyboard)
+void Robot::processOperatorForward(NETHER* nether, unsigned char*)
 {
   // Avoid that a Robot can walk agains another and they both get stuck:
   if ((int(pos.x * 256) % 128) == 0 &&
@@ -618,7 +618,7 @@ void Robot::processOperatorForward(NETHER* nether, unsigned char* keyboard)
 }
 
 
-void Robot::processOperatorLeft(NETHER *nether, unsigned char *keyboard)
+void Robot::processOperatorLeft(NETHER *nether, unsigned char *)
 {
   int terrain = nether->map.worseTerrain(pos);
   angle = (angle + 360 - rotationSpeed(terrain)) % 360;
@@ -628,7 +628,7 @@ void Robot::processOperatorLeft(NETHER *nether, unsigned char *keyboard)
 }
 
 
-void Robot::processOperatorRight(NETHER *nether, unsigned char *keyboard)
+void Robot::processOperatorRight(NETHER *nether, unsigned char *)
 {
   int terrain = nether->map.worseTerrain(pos);
   angle = (angle + rotationSpeed(terrain)) % 360;
@@ -637,7 +637,7 @@ void Robot::processOperatorRight(NETHER *nether, unsigned char *keyboard)
 }
 
 
-void Robot::processOperatorCannons(NETHER *nether, unsigned char *keyboard)
+void Robot::processOperatorCannons(NETHER *nether, unsigned char *)
 {
   if (firetimer == 0) {
     Vector bulletPos {pos};
@@ -653,7 +653,7 @@ void Robot::processOperatorCannons(NETHER *nether, unsigned char *keyboard)
 }
 
 
-void Robot::processOperatorMissiles(NETHER *nether, unsigned char *keyboard)
+void Robot::processOperatorMissiles(NETHER *nether, unsigned char *)
 {
   if (firetimer == 0) {
     Vector bulletPos {pos};
@@ -669,7 +669,7 @@ void Robot::processOperatorMissiles(NETHER *nether, unsigned char *keyboard)
 }
 
 
-void Robot::processOperatorPhasers(NETHER *nether, unsigned char *keyboard)
+void Robot::processOperatorPhasers(NETHER *nether, unsigned char *)
 {
   if (firetimer == 0) {
     Vector bulletPos {pos};
@@ -685,7 +685,7 @@ void Robot::processOperatorPhasers(NETHER *nether, unsigned char *keyboard)
 }
 
 
-void Robot::processOperatorNuclear(NETHER *nether, unsigned char *keyboard)
+void Robot::processOperatorNuclear(NETHER *nether, unsigned char *)
 {
   nether->map.nuclearExplosionAt(this, pos);
 }
@@ -703,7 +703,7 @@ void Robot::processOperatorNone(NETHER* nether, unsigned char* keyboard)
 }
 
 
-void Robot::processProgram(NETHER* nether, unsigned char* keyboard)
+void Robot::processProgram(NETHER* nether, unsigned char*)
 {
   switch (program) {
   case Robot::PROGRAM_NONE:
@@ -742,7 +742,7 @@ void Robot::processProgram(NETHER* nether, unsigned char* keyboard)
 }
 
 
-void Robot::processDirectInput(NETHER* nether, unsigned char* keyboard)
+void Robot::processDirectInput(NETHER*, unsigned char* keyboard)
 {
   if (keyboard[right_key]) {
     if (angle == 0) {

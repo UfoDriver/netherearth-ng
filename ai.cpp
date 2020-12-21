@@ -841,7 +841,6 @@ Robot::OPERATOR AI::searchEngine(const Robot& robot, const int goaltype, const V
 
 	/* CAPTURE PROGRAM: */ 
 	if (goaltype==Robot::PROGRAM_CAPTURE) {
-		int i,j;
 		double closer;
 		int mincost;
 		bool first=true;

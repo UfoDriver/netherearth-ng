@@ -551,7 +551,7 @@ bool plane_collision(float *pa,float *va,float *wa,float *pb,float *vb,float *wb
 		float tmp_p[3];
 		bool first;
 
-		range_a[0]=range_a[0]=0;
+		range_a[0] = range_a[0] = 0;
 		first=true;
 
 		if (LineLineCollision(r_p,r_v,pa,va,&tmp,&cutpoint)) {
@@ -617,7 +617,7 @@ bool plane_collision(float *pa,float *va,float *wa,float *pb,float *vb,float *wb
 		float tmp_p[3];
 		bool first;
 
-		range_b[0]=range_b[0]=0;
+		range_b[0] = range_b[0] = 0;
 		first=true;
 
 		if (LineLineCollision(r_p,r_v,pb,vb,&tmp,&cutpoint)) {

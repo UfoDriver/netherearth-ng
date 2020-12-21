@@ -220,7 +220,7 @@ MainMenu::ACTION MainMenu::cycle(int, int)
       saveConfiguration();
     }
     if (keyboard[SDLK_6] && !old_keyboard[SDLK_6]) {
-      level = ++level % 4;
+      level = (++level) % 4;
       saveConfiguration();
     }
     if (keyboard[SDLK_7] && !old_keyboard[SDLK_7]) {

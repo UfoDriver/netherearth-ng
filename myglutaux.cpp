@@ -30,44 +30,36 @@ C3DObject *characters[256]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 							0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 							0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
-//int TEXTURE_APPROXIMATION=GL_NEAREST;
-int TEXTURE_APPROXIMATION=GL_LINEAR;
+// int TEXTURE_APPROXIMATION = GL_NEAREST;
+int TEXTURE_APPROXIMATION = GL_LINEAR;
 
 
 float draw3Dtext(const std::string& text, float dx, float dy, float dz, const Color& color)
 {
-  int len = text.length();
-	float ancho=(float(len-1)*1.8F);
+  float width = (float(text.length() - 1) * 1.8F);
 
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
 
-	glScalef(dx,dy,dz);
-	glTranslatef(-(ancho/2.0F),0,0);
+  glScalef(dx, dy, dz);
+  glTranslatef(- (width / 2.0F), 0, 0);
 
-	for (int i = 0; i < len; i++) {
-		if (characters[text[i]]==0) {
-			char filename[6];
+  for (char letter : text) {
+    if (characters[(int)letter] == 0) {
+      std::string filename = {letter, '.', 'a', 's', 'c'};
+      characters[(int)letter] = new C3DObject(filename, "textures/");
+      characters[(int)letter]->normalize();
+    }
+    if (characters[(int)letter] != NULL) {
+      characters[(int)letter]->draw(color);
+    }
+    glTranslatef(1.8F, 0, 0);
+  }
 
-			filename[0]=text[i];
-			filename[1]='.';
-			filename[2]='a';
-			filename[3]='s';
-			filename[4]='c';
-			filename[5]=0;
-			characters[text[i]]=new C3DObject(filename,"textures/");
-			characters[text[i]]->normalize();
-		} /* if */ 
-		if (characters[text[i]]!=NULL) {
-			characters[text[i]]->draw(color);
-		} /* if */ 
-		glTranslatef(1.8F,0,0);
-	} /* for */ 
+  glPopMatrix();
 
-	glPopMatrix();
-
-	return (ancho+1.0F)*dx;
-} /* draw3Dtext */ 
+  return (width + 1.0F) * dx;
+}
 
 
 int nearest2pow(int n)
@@ -281,23 +273,22 @@ bool PlaneLineCollision(float plane[4],float p[3],float v[3],float crossp[3])
 
 
 
-void DistributeVector(Vector v,Vector v2,Vector *r1,Vector *r2)
+void DistributeVector(Vector v, Vector v2, Vector *r1, Vector *r2)
 {
-	double norma;
-	double tmp;
+  double tmp;
 
-	norma=v.normalize();
+  v.normalize();
 
-	tmp=v.x*v2.x+v.y*v2.y+v.z*v2.z;
+  tmp = v.x * v2.x + v.y * v2.y + v.z * v2.z;
 
-	r1->x=tmp*v.x;
-	r1->y=tmp*v.y;
-	r1->z=tmp*v.z;
+  r1->x = tmp * v.x;
+  r1->y = tmp * v.y;
+  r1->z = tmp * v.z;
 
-	r2->x=v2.x-r1->x;
-	r2->y=v2.y-r1->y;
-	r2->z=v2.z-r1->z;
-} /* DistributeVector */ 
+  r2->x = v2.x - r1->x;
+  r2->y = v2.y - r1->y;
+  r2->z = v2.z - r1->z;
+}
 
 
 double determinante_d(double m[9])

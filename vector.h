@@ -9,6 +9,15 @@ public:
   Vector() = default;
   Vector(double x, double y, double z) : x {float(x)}, y {float(y)}, z {float(z)} {};
   Vector(const Vector &v) : x {v.x}, y {v.y}, z {v.z} {};
+  //  Vector(Vector &&o) : x(std::move(o.x)), y(std::move(o.y)), z(std::move(o.z)) {};
+
+  Vector& operator=(const Vector& o)
+  {
+    x = o.x;
+    y = o.y;
+    z = o.z;
+    return *this;
+  }
 
   Vector operator+(const Vector &v) const;
   Vector operator-(const Vector &v) const;

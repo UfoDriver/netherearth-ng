@@ -13,7 +13,7 @@ Ship::Ship(const std::string &model, const std::string &texturesDir, NETHER *net
     : Shadow3DObject(model, texturesDir), nether{nether} {
   normalize(0.5f);
   makepositive();
-};
+}
 
 
 bool Ship::checkCollision(const std::vector<std::unique_ptr<Building>>& buildings,

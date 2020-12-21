@@ -104,7 +104,7 @@ std::ostream& operator<<(std::ostream& out, Stats& stats)
 std::array<std::pair<int, int>, 7> Stats::getBuildingStats() const
 {
   std::array<std::pair<int, int>, 7> data;
-  for (int i = 0; i < data.size(); i++) {
+  for (unsigned int i = 0; i < data.size(); i++) {
     data[i] = std::make_pair(stats[0][i], stats[1][i]);
   }
   return data;
@@ -113,7 +113,7 @@ std::array<std::pair<int, int>, 7> Stats::getBuildingStats() const
 std::array<std::pair<int, int>, 7> Stats::getResourceStats() const
 {
   std::array<std::pair<int, int>, 7> data;
-  for (int i = 0; i < data.size(); i++) {
+  for (unsigned int i = 0; i < data.size(); i++) {
     data[i] = std::make_pair(resources[0][i], resources[1][i]);
   }
   return data;
