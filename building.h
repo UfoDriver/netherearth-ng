@@ -2,6 +2,7 @@
 #define BUILDING_H
 
 #include <vector>
+#include <sexp/value.hpp>
 
 #include "buildingblock.h"
 #include "vector.h"
@@ -24,6 +25,8 @@ public:
   virtual ~Building() {}
 
   static Building* getFromMapFile(std::istream& inFile);
+  static Building* getFromSexp(const sexp::Value& sexp);
+
 
   virtual Vector getCapturePoint() const = 0;
   virtual bool isCapturable() const = 0;

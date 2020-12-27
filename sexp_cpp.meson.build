@@ -1,0 +1,23 @@
+project('sexp_cpp', 'cpp')
+
+includes = include_directories('include')
+sources = [
+  'src/float.cpp',
+  'src/io.cpp',
+  'src/lexer.cpp',
+  'src/parser.cpp',
+  'src/util.cpp',
+  'src/value.cpp'
+]
+
+sexp_cpp = shared_library(
+  'sexp_cpp',
+  sources,
+  include_directories : includes,
+  install : true
+)
+
+sexp_cpp_dep = declare_dependency(
+  include_directories : includes,
+  link_with : sexp_cpp
+)

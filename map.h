@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <vector>
+#include <sexp/value.hpp>
 
 #include "building.h"
 #include "bullet.h"
@@ -49,6 +50,8 @@ private:
   int Width;
   int Height;
   NETHER* nether;
+
+  void processMapSectionSexp(const sexp::Value&);
 };
 
 

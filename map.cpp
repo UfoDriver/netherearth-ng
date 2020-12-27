@@ -13,6 +13,10 @@
 #include "nether.h"
 #include "resources.h"
 
+#include "sexp/parser.hpp"
+#include "sexp/value.hpp"
+#include "sexp/util.hpp"
+
 extern int up_key, down_key, left_key, right_key, fire_key, pause_key;
 
 
@@ -215,28 +219,16 @@ int Map::worseTerrain(const Vector& pos)
 
 bool Map::loadMap(const std::string& filename)
 {
-  std::ifstream iFile(filename);
-  iFile >> Width >> Height;
-  resize(Width, Height);
-
-  const std::unordered_map<std::string, int> tiles = {
-      {"G", 0},   {"S", 1},   {"S2", 2},  {"M", 3},  {"H1", 4},
-      {"H2", 5},  {"H3", 6},  {"H4", 7},  {"H5", 8}, {"H6", 9},
-      {"GG", 10}, {"SS", 11}, {"MM", 12}, {"?", 13}};
-  std::string tilestr;
-  for (int i = 0; i < Width * Height; i++) {
-    iFile >> tilestr;
-    int tile = tiles.at(tilestr);
-    if (tile >= 10) tile -= 10;
-    map[i] = tile;
-  }
-
-  do {
-    Building *b = Building::getFromMapFile(iFile);
-    if (b) {
-      buildings.emplace_back(b);
+  std::cout << "Loading map " << filename << std::endl;
+  std::ifstream sexpFile(filename);
+  sexp::Value value = sexp::Parser::from_stream(sexpFile, false);
+  if (sexp::car(value).as_string() == "map") {
+    for (const sexp::Value& section: sexp::ListAdapter(sexp::cdr(value))) {
+      processMapSectionSexp(section);
     }
-  } while (iFile.good());
+  } else {
+    std::cout << "Cannot load map " << filename + ".sexp" << std::endl;
+  }
 
   return true;
 }
@@ -416,4 +408,35 @@ void Map::nuclearExplosionAt(Robot* robot, const Vector& position)
                   buildings.end());
   nether->sManager.playExplosion(nether->getShip()->pos, position);
   nether->stats.requestRecomputing();
+}
+
+void Map::processMapSectionSexp(const sexp::Value& cons)
+{
+  if (sexp::car(cons).as_string() == "terrain") {
+    Height = sexp::list_length(cons) - 1;
+    // Seems cadr is cdar in this implementation
+    Width = sexp::list_length(sexp::cdar(cons));
+    resize(Width, Height);
+    const std::unordered_map<std::string, int> tiles = {
+        {"G", 0},   {"S", 1},   {"S2", 2},  {"M", 3},  {"H1", 4},
+        {"H2", 5},  {"H3", 6},  {"H4", 7},  {"H5", 8}, {"H6", 9},
+        {"GG", 10}, {"SS", 11}, {"MM", 12}, {"?", 13}};
+
+    int index = 0;
+    for (const sexp::Value& row: sexp::ListAdapter(sexp::cdr(cons))) {
+      for (const sexp::Value &tile: sexp::ListAdapter(row)) {
+        int tileCode = tiles.at(tile.as_string());
+        if (tileCode >= 10) tileCode -= 10;
+        map[index++] = tileCode;
+      }
+    }
+  } else if (sexp::car(cons).as_string() == "buildings") {
+    std::cerr << "Got buildings" << std::endl;
+    for (const sexp::Value& building: sexp::ListAdapter(sexp::cdr(cons))) {
+      Building *b = Building::getFromSexp(building);
+      if (b) {
+        buildings.emplace_back(b);
+      }
+    }
+  }
 }

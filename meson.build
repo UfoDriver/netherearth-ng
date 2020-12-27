@@ -47,16 +47,20 @@ project_source_files = [
   'vector.cpp'
 ]
 
+sexp_proj = subproject('sexp_cpp')
+sexp_dep = sexp_proj.get_variable('sexp_cpp_dep')
+
 project_dependencies = [
   dependency('OpenGL'),
   dependency('glu'),
   dependency('glut'),
   dependency('sdl'),
   dependency('SDL_mixer'),
-  dependency('yaml-cpp')
+  dependency('yaml-cpp'),
+  sexp_dep
 ]
 
 executable(meson.project_name(),
            project_source_files,
-           dependencies : project_dependencies
+           dependencies : project_dependencies,
           )

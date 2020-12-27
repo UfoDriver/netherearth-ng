@@ -1,6 +1,7 @@
 #include <GL/gl.h>
 #include <algorithm>
 #include <unordered_map>
+#include <sexp/util.hpp>
 
 #include "building.h"
 #include "buildingsimple.h"
@@ -86,6 +87,46 @@ Building* Building::getFromMapFile(std::istream& inFile)
     inFile >> building->owner;
   } else if (buffer != "") {
     building = new BuildingSimple(position, simple_map.at(buffer));
+  }
+
+  return building;
+}
+
+
+Building* Building::getFromSexp(const sexp::Value& sexp)
+{
+  std::unordered_map<std::string, BuildingBlock::TYPE> simple_map
+    {
+     {"fence", BuildingBlock::TYPE::FENCE},
+     {"wall1", BuildingBlock::TYPE::WALL1},
+     {"wall2", BuildingBlock::TYPE::WALL2},
+     {"wall3", BuildingBlock::TYPE::WALL3},
+     {"wall4", BuildingBlock::TYPE::WALL4},
+     {"wall6", BuildingBlock::TYPE::WALL6}};
+  std::unordered_map<std::string, Building::SUBTYPE> factories_map
+    {
+    {"electronics", Building::SUBTYPE::ELECTRONICS},
+    {"nuclear", Building::SUBTYPE::NUCLEAR},
+    {"phasers", Building::SUBTYPE::PHASERS},
+    {"missiles", Building::SUBTYPE::MISSILES},
+    {"cannons", Building::SUBTYPE::CANNONS},
+    {"chassis", Building::SUBTYPE::CHASSIS}
+  };
+
+  Building* building = nullptr;
+
+  Vector position{0, 0, 0};
+  std::string buildingType = sexp::car(sexp).as_string();
+  position.x = sexp::cdar(sexp).as_float();
+  position.y = sexp::cddar(sexp).as_float();
+
+  if (buildingType == "factory") {
+    building = new BuildingFactory(position, factories_map.at(sexp::cdddar(sexp).as_string()));
+  } else if (buildingType == "warbase") {
+    building = new BuildingWarbase(position);
+    building->owner = sexp::cdddar(sexp).as_int();
+  } else if (buildingType != "") {
+    building = new BuildingSimple(position, simple_map.at(buildingType));
   }
 
   return building;
