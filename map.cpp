@@ -440,3 +440,17 @@ void Map::processMapSectionSexp(const sexp::Value& cons)
     }
   }
 }
+
+
+sexp::Value Map::toSexp() const
+{
+  std::vector<sexp::Value> sexpMap;
+  std::transform(map.cbegin(), map.cend(), std::back_inserter(sexpMap), [](int x) { return sexp::Value::integer(x); });
+
+  return sexp::Value::list(
+    sexp::Value::symbol("map"),
+    sexp::Value::integer(Width),
+    sexp::Value::integer(Height),
+    sexp::Value::array(sexpMap)
+  );
+}

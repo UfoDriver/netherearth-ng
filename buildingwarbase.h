@@ -1,6 +1,8 @@
 #ifndef BUILDINGWARBASE_H
 #define BUILDINGWARBASE_H
 
+#include <sexp/value.hpp>
+
 #include "building.h"
 #include "vector.h"
 
@@ -20,6 +22,7 @@ public:
   {
     return true;
   }
+  sexp::Value toSexp() const override;
 
 private:
   Shadow3DObject flagTile;

@@ -1,3 +1,5 @@
+#include <sstream>
+
 #include <GL/gl.h>
 #include <GL/glu.h>
 
@@ -90,16 +92,14 @@ void OptionsScreen::draw(int w, int h, const Light& light)
     glTranslatef(0, -4, 0);
     scaledglprintf(0.01, 0.01, "CANCEL");
 
-    for (int i = 0;i < 4; i++) {
+    for (int i = 0; i < 4; i++) {
       if (selectedOption == (i + 1))
         glColor3f(1.0, 0.0, 0.0);
       else
         glColor3f(0.5, 0.5, 1.0);
       glTranslatef(0, -2,0);
-      char filename[80];
-      sprintf(filename, "savedgame%i.txt", i);
 
-      std::ifstream checkfile(filename);
+      std::ifstream checkfile(generateFilename(i));
       if (checkfile.is_open()) {
         scaledglprintf(0.01, 0.01, "SLOT%i - GAME SAVED", i + 1);
       } else {
@@ -126,10 +126,8 @@ void OptionsScreen::draw(int w, int h, const Light& light)
       else
         glColor3f(0.5, 0.5, 1.0);
       glTranslatef(0, -2,0);
-      char filename[80];
-      sprintf(filename, "savedgame%i.txt", i);
 
-      std::ifstream checkfile(filename);
+      std::ifstream checkfile(generateFilename(i));
       if (checkfile.is_open()) {
         scaledglprintf(0.01, 0.01, "SLOT%i - GAME SAVED", i + 1);
       } else {
@@ -186,9 +184,7 @@ bool OptionsScreen::cycle(unsigned char *keyboard)
       case 3:
       case 4:
         {
-          char filename[80];
-          sprintf(filename,"savedgame%i.txt", selectedOption-1);
-          nether->saveGame(filename);
+          nether->saveGame(generateFilename(selectedOption - 1));
           nether->saveDebugReport("debugreport.txt");
           nether->setGameState(NETHER::STATE::PAUSE);
           selectedOption = 2;
@@ -219,9 +215,7 @@ bool OptionsScreen::cycle(unsigned char *keyboard)
       case 3:
       case 4:
         {
-          char filename[80];
-          sprintf(filename, "savedgame%i.txt", selectedOption - 1);
-          nether->loadGame(filename);
+          nether->loadGame(generateFilename(selectedOption - 1));
           nether->requestStatsRecomputing();
           nether->setGameFinished(0);
           nether->setGameStarted(INTRO_TIME);
@@ -251,4 +245,12 @@ void OptionsScreen::open()
 {
   nether->setGameState(NETHER::STATE::PAUSE);
   selectedOption = 0;
+}
+
+
+std::string OptionsScreen::generateFilename(int number) const
+{
+  std::stringstream filename;
+  filename << "savedgame" << number << ".sexp";
+  return filename.str();
 }

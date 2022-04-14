@@ -58,3 +58,14 @@ void BuildingWarbase::draw(const bool shadows, const Vector& light) const
 
   glPopMatrix();
 }
+
+
+sexp::Value BuildingWarbase::toSexp() const
+{
+  return sexp::Value::list(
+    sexp::Value::symbol("warbase"),
+    pos.toSexp(),
+    sexp::Value::integer(owner),
+    sexp::Value::integer(status)
+  );
+}

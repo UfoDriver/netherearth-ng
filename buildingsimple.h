@@ -1,6 +1,8 @@
 #ifndef BUILDINGSIMPLE_H
 #define BUILDINGSIMPLE_H
 
+#include <sexp/value.hpp>
+
 #include "building.h"
 #include "buildingblock.h"
 #include "vector.h"
@@ -22,6 +24,8 @@ public:
   {
     return false;
   }
+
+  sexp::Value toSexp() const override;
 };
 
 #endif // BUILDINGSIMPLE_H

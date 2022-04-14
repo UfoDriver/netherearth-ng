@@ -33,10 +33,7 @@ public:
   virtual void draw(const bool shadows, const Vector& light) const;
   virtual bool collisionCheck(const CMC& other, float* m2) const;
 
-  // Vector getPosition() { return pos; }
-  // TYPE getType() { return type; }
-  // int getOwner() { return owner; }
-  // int getStatus() { return status; }
+  virtual sexp::Value toSexp() const;
 
   Vector pos;
 protected:

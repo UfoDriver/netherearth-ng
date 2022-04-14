@@ -12,6 +12,7 @@
 #include "piece3dobject.h"
 #include "resources.h"
 #include "robot.h"
+#include "sexp/value.hpp"
 #include "ship.h"
 
 
@@ -442,8 +443,9 @@ std::ostream& operator<<(std::ostream& out, const Robot& robot)
   for (int j = 0; j < 5; j++) {
     out << robot.pieces[j] << '\n';
   }
-  out << robot.program << ' ' << robot.program_parameter.as_int << '\n';
-  return out << robot.program_goal
+  return out << robot.program << ' '
+             << robot.program_parameter.as_int
+             << robot.program_goal
              << int(robot.op) << '\n'
              << robot.shipover << '\n'
              << robot.firetimer << ' ' << robot.strength << '\n'
@@ -784,4 +786,41 @@ void Robot::processDirectInput(NETHER*, unsigned char* keyboard)
         op = Robot::OPERATOR::LEFT;
     }
   }
+}
+
+
+sexp::Value Robot::toSexp() const
+{
+  sexp::Value programSexp = sexp::Value::list(
+    sexp::Value::symbol("program"),
+    sexp::Value::integer(program),
+    sexp::Value::integer(program_parameter.as_int),
+    program_goal.toSexp()
+  );
+
+  sexp::Value piecesSexp = sexp::Value::list(
+    sexp::Value::symbol("pieces"),
+    sexp::Value::integer(pieces[0]),
+    sexp::Value::integer(pieces[1]),
+    sexp::Value::integer(pieces[2]),
+    sexp::Value::integer(pieces[3]),
+    sexp::Value::integer(pieces[4])
+  );
+
+  return sexp::Value::list(
+    sexp::Value::symbol("robot"),
+    sexp::Value::integer(owner),
+    sexp::Value::integer(traction),
+    piecesSexp,
+    programSexp,
+    sexp::Value::integer((int)op),
+    sexp::Value::boolean(shipover),
+    sexp::Value::integer(firetimer),
+    sexp::Value::integer(strength),
+    pos.toSexp(),
+    sexp::Value::integer(angle),
+    cmc.toSexp(),
+    sexp::Value::integer(electronicsState),
+    sexp::Value::integer(chassisState)
+  );
 }

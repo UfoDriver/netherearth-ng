@@ -1,6 +1,7 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
+#include <sexp/value.hpp>
 #include "vector.h"
 
 class Camera: public Vector
@@ -15,6 +16,7 @@ public:
 
   void updateViewportForShip(const Vector& shipPosition, int mapWidth, int mapHeight);
   bool canSee(const Vector& position) const;
+  sexp::Value toSexp() const;
 
 private:
   float minx = -8;

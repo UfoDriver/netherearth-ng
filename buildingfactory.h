@@ -1,6 +1,8 @@
 #ifndef BUILDINGFACTORY_H
 #define BUILDINGFACTORY_H
 
+#include <sexp/value.hpp>
+
 #include "building.h"
 #include "piece3dobject.h"
 #include "vector.h"
@@ -22,6 +24,7 @@ public:
     return true;
   }
   bool collisionCheck(const CMC& other, float* m2) const override;
+  sexp::Value toSexp() const override;
 
 private:
   Shadow3DObject flagTile;

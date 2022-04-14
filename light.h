@@ -1,6 +1,8 @@
 #ifndef LIGHT_H
 #define LIGHT_H
 
+#include <sexp/value.hpp>
+
 #include "vector.h"
 
 
@@ -16,6 +18,8 @@ public:
     pos[3] = type;};
   Vector asVector() const { return Vector(pos[0], pos[1], pos[2]); }
   const float* raw() const { return pos; }
+
+  sexp::Value toSexp() const;
 
 private:
   friend std::istream& operator>>(std::istream& in, Light& light);

@@ -6,6 +6,8 @@
 #include <vector>
 #include <unordered_set>
 
+#include <sexp/value.hpp>
+
 #include "statusbutton.h"
 
 
@@ -69,6 +71,7 @@ public:
   void activateMenu(TYPE newMenu, StatusButton::NAME activeButton);
   StatusButton::NAME getActiveButton() const { return activeButton; }
   TYPE getActiveMenu() const { return activeMenu; }
+  sexp::Value toSexp() const;
 
 private:
   void drawStatus();

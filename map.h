@@ -43,6 +43,8 @@ public:
   std::vector<Particle> particles;
   Robots robots;
 
+  sexp::Value toSexp() const;
+
 private:
   void cycleBuildings();
   void cycleBullets();

@@ -3,6 +3,8 @@
 
 #include "vector.h"
 
+#include <sexp/value.hpp>
+
 
 class Explosion {
 public:
@@ -12,6 +14,8 @@ public:
   bool cycle();
   float getRadius() const;
   float getAlpha() const;
+
+  sexp::Value toSexp() const;
 
   Vector pos;
   int step;

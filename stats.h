@@ -6,6 +6,8 @@
 #include <memory>
 #include <vector>
 
+#include <sexp/value.hpp>
+
 #include "constants.h"
 
 class Building;
@@ -27,6 +29,7 @@ public:
   std::array<int, 7> calculateCost(const Robot& robot);
   std::array<int, 7> normalizeCost(int player, const std::array<int, 7>& invoice);
   bool noWarbasesLeft();
+  sexp::Value toSexp() const;
 
   int day;
   int hour;

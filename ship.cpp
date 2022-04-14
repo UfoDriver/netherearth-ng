@@ -4,6 +4,7 @@
 #include "map.h"
 #include "nether.h"
 #include "robot.h"
+#include "sexp/value.hpp"
 #include "ship.h"
 
 extern int up_key, down_key, left_key, right_key, fire_key, pause_key;
@@ -197,4 +198,13 @@ std::ostream& operator<<(std::ostream& out, const Ship& ship)
 std::istream& operator>>(std::istream& in, Ship& ship)
 {
   return in >> ship.pos >> ship.landed;
+}
+
+
+sexp::Value Ship::toSexp() const
+{
+  return sexp::Value::list(
+    sexp::Value::symbol("ship"),
+    pos.toSexp()
+  );
 }

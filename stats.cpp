@@ -1,3 +1,5 @@
+#include <sexp/value.hpp>
+
 #include "building.h"
 #include "robot.h"
 #include "stats.h"
@@ -181,4 +183,29 @@ std::array<int, 7> Stats::normalizeCost(int player, const std::array<int, 7>& in
 bool Stats::noWarbasesLeft()
 {
   return !(stats[0][0] && stats[1][0]);
+}
+
+
+sexp::Value Stats::toSexp() const
+{
+  sexp::Value player1Stat = sexp::Value::array();
+  for (int j = 0; j <= 7; j++) {
+    player1Stat.append(sexp::Value::integer(stats[0][j]));
+  }
+  sexp::Value player2Stat = sexp::Value::array();
+  for (int j = 0; j <= 7; j++) {
+    player2Stat.append(sexp::Value::integer(stats[1][j]));
+  }
+
+  sexp::Value stat = sexp::Value::list(
+    sexp::Value::symbol("stats"),
+    sexp::Value::integer(day),
+    sexp::Value::integer(hour),
+    sexp::Value::integer(minute),
+    sexp::Value::integer(second),
+    player1Stat,
+    player2Stat
+  );
+
+  return stat;
 }

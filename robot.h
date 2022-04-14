@@ -2,10 +2,14 @@
 #define ROBOT_H
 
 #include <memory>
+
+#include <sexp/value.hpp>
+
 #include "cmc.h"
 #include "piece3dobject.h"
 #include "robots.h"
 #include "vector.h"
+
 
 class Building;
 class Bullet;
@@ -87,6 +91,7 @@ public:
   void copyDesign(const Robot& robot);
   void shipDetached() { electronicsState = 6; }
   int getElectronicsState() { return electronicsState; }
+  sexp::Value toSexp() const;
 
   /* Animation variables: */
   int chassisState {0};

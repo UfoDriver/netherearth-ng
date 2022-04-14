@@ -157,3 +157,19 @@ int Bullet::getDamageForRobot(const Robot* robot) const
     maxDamage -= baseDamage;
   return maxDamage - multiplier[robot->npieces() - 1] * baseDamage;
 }
+
+
+sexp::Value Bullet::toSexp() const
+{
+  return sexp::Value::list(
+    sexp::Value::symbol("bullet"),
+    sexp::Value::integer((int)type),
+    sexp::Value::integer(step),
+    sexp::Value::integer(angle),
+    pos.toSexp(),
+    // @TODO
+  //   map.robots[index]->getOwner()
+  //  index
+    cmc.toSexp()
+  );
+}

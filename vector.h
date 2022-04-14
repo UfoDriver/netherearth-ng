@@ -2,6 +2,7 @@
 #define VECTOR_H
 
 #include <iostream>
+#include <sexp/value.hpp>
 
 
 class Vector {
@@ -45,6 +46,8 @@ public:
   float x {0};
   float y {0};
   float z {0};
+
+  sexp::Value toSexp() const;
 };
 
 std::ostream& operator<<(std::ostream& out, const Vector& vector);

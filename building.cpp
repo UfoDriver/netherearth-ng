@@ -8,6 +8,7 @@
 #include "buildingfactory.h"
 #include "buildingwarbase.h"
 #include "constants.h"
+#include "sexp/value.hpp"
 
 
 void Building::draw(const bool shadows, const Vector& light) const
@@ -130,4 +131,16 @@ Building* Building::getFromSexp(const sexp::Value& sexp)
   }
 
   return building;
+}
+
+
+sexp::Value Building::toSexp() const
+{
+  return sexp::Value::list(
+    sexp::Value::symbol("building"),
+    pos.toSexp(),
+    sexp::Value::integer((int)type),
+    sexp::Value::integer(owner),
+    sexp::Value::integer(status)
+  );
 }

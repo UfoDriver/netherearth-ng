@@ -1,6 +1,7 @@
 #include <cmath>
 #include <iomanip>
 
+#include "sexp/value.hpp"
 #include "vector.h"
 
 
@@ -133,4 +134,14 @@ std::ostream& operator<<(std::ostream& out, const Vector& vector)
 std::istream& operator>>(std::istream& in, Vector& vector)
 {
   return in >> vector.x >> vector.y >> vector.z;
+}
+
+
+sexp::Value Vector::toSexp() const
+{
+  return sexp::Value::list(
+    sexp::Value::real(x),
+    sexp::Value::real(y),
+    sexp::Value::real(z)
+  );
 }

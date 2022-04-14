@@ -43,3 +43,14 @@ std::ostream& operator<<(std::ostream& out, const Explosion& explosion)
 {
   return out << explosion.pos << explosion.step << ' ' << explosion.size << '\n';
 }
+
+
+sexp::Value Explosion::toSexp() const
+{
+  return sexp::Value::list(
+    sexp::Value::symbol("explosion"),
+    pos.toSexp(),
+    sexp::Value::integer(step),
+    sexp::Value::integer(size)
+  );
+}

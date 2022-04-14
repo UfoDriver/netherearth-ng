@@ -764,3 +764,13 @@ StatusButton& Menu::findButton(StatusButton::NAME id)
   }
   return buttons[0];
 }
+
+
+sexp::Value Menu::toSexp() const
+{
+  return sexp::Value::list(
+    sexp::Value::symbol("menu"),
+    sexp::Value::integer((int)activeMenu),
+    sexp::Value::integer((int)activeButton)
+  );
+}

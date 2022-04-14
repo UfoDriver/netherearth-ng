@@ -4,6 +4,8 @@
 #include <fstream>
 #include <vector>
 
+#include <sexp/value.hpp>
+
 class Color;
 class Vector;
 
@@ -27,6 +29,8 @@ public:
   bool collision(const CMC& other) const;
   bool collision(float* m, const CMC& other, float* m2) const;
   bool collision_simple(float* m, const CMC& other, float* m2) const;
+
+  sexp::Value toSexp() const;
 
   float x[2] {0, 0}, y[2] {0, 0}, z[2] {0, 0};
 };

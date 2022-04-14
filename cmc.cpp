@@ -1,3 +1,4 @@
+#include "sexp/value.hpp"
 #ifdef _WIN32
 #include "windows.h"
 #endif
@@ -697,4 +698,17 @@ std::istream& operator>>(std::istream& in, CMC& cmc)
   in >> cmc.z[0] >> cmc.z[1];
 
   return in;
+}
+
+sexp::Value CMC::toSexp() const
+{
+  return sexp::Value::list(
+    sexp::Value::symbol("cmc"),
+    sexp::Value::real(x[0]),
+    sexp::Value::real(x[1]),
+    sexp::Value::real(y[0]),
+    sexp::Value::real(y[1]),
+    sexp::Value::real(z[0]),
+    sexp::Value::real(z[1])
+);
 }

@@ -3,6 +3,8 @@
 
 #include <memory>
 
+#include <sexp/value.hpp>
+
 #include "cmc.h"
 #include "vector.h"
 #include "particle.h"
@@ -34,6 +36,8 @@ public:
   Robot *owner;	/* The robot who fired this bullet */
 
   CMC cmc;
+
+  virtual sexp::Value toSexp() const;
 
 protected:
   void drawParticles(std::vector<Particle>& particles) const;

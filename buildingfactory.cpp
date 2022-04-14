@@ -103,3 +103,15 @@ bool BuildingFactory::collisionCheck(const CMC& other, float* m2) const
   m1[14] = pos.z + 1;
   return typeTile.cmc.collision_simple(m1, other, m2);
 }
+
+
+sexp::Value BuildingFactory::toSexp() const
+{
+  return sexp::Value::list(
+    sexp::Value::symbol("factory"),
+    sexp::Value::integer((int)subtype),
+    pos.toSexp(),
+    sexp::Value::integer(owner),
+    sexp::Value::integer(status)
+  );
+}

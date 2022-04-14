@@ -1,6 +1,8 @@
 #ifndef OPTIONSSCREEN_H
 #define OPTIONSSCREEN_H
 
+#include <string>
+
 class Light;
 class NETHER;
 
@@ -14,10 +16,11 @@ public:
   bool cycle(unsigned char *keyboard);
   void open();
 
-
 private:
   int selectedOption;
   NETHER* nether;
+
+  std::string generateFilename(int number) const;
 };
 
 #endif // OPTIONSSCREEN_H

@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+#include <sexp/value.hpp>
+
 #include "resources.h"
 
 
@@ -34,6 +36,8 @@ public:
   int op {OPS::NONE}, op2 {OPS::NONE}, op3 {OPS::NONE};
   int timemoving {0};
   NETHER* nether;
+
+  sexp::Value toSexp() const;
 };
 
 

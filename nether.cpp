@@ -1,3 +1,4 @@
+#include "sexp/value.hpp"
 #ifdef _WIN32
 #include "windows.h"
 #endif
@@ -12,6 +13,8 @@
 #include <iostream>
 #include <numeric>
 #include <string>
+
+#include <sexp/io.hpp>
 
 #include "3dobject.h"
 #include "buildingblock.h"
@@ -263,49 +266,59 @@ void NETHER::drawGame(bool shadows)
 
 bool NETHER::saveGame(const std::string& filename)
 {
-  std::ofstream oFile(filename);
-
-  oFile << map;
-
-  oFile << light
-        << camera
-        << camera.viewport
-        << *ship;
-
-  oFile << map.buildings.size() << '\n';
-  // @TODO buildings
-  // for (auto& b: map.buildings) {
-  //   oFile << *b;
-  // }
-
-  for (int i = 0; i < 2; i++) {
-    oFile << map.robots.getRobotCount(i) << '\n';
-    for (Robot* r: map.robots) {
-      if (r->getOwner() == i)
-        oFile << *r;
-    }
+  sexp::Value robotList = sexp::Value::array();
+  for (Robot* r: map.robots) {
+    robotList.append(r->toSexp());
   }
 
-  oFile << map.bullets.size() << '\n';
-  for (const std::unique_ptr<Bullet>& bullet: map.bullets) {
-    int index = map.robots.findIndex(bullet->owner);
-
-    oFile << (int)bullet->type << ' ' << bullet->step << ' ' << bullet->angle << '\n';
-    oFile << bullet->pos;
-    oFile << map.robots[index]->getOwner() << ' ' << index;
-    oFile << bullet->cmc;
-  }
-
-  oFile << map.explosions.size() << '\n';
+  sexp::Value explosionList = sexp::Value::array();
   for (Explosion& e: map.explosions) {
-    oFile << e;
+    explosionList.append(e.toSexp());
   }
 
-  oFile << stats;
+  sexp::Value bulletList = sexp::Value::array();
+  for (const std::unique_ptr<Bullet>& bullet: map.bullets) {
+    bulletList.append(bullet->toSexp());
+  }
 
-  oFile << map.robots.findIndex(controlled) << '\n';
-  oFile << menu << std::endl;
+  sexp::Value buildingList = sexp::Value::array();
+  for (auto& b: map.buildings) {
+    // @TODO: should use pointer here because of virtual function
+    buildingList.append(b->toSexp());
+  }
 
+  sexp::Value gamestate = sexp::Value::list(
+    sexp::Value::symbol("gamestate"),
+    map.toSexp(),
+    light.toSexp(),
+    camera.toSexp(),
+    ship->toSexp(),
+    sexp::Value::list(
+      sexp::Value::symbol("buildings"),
+      buildingList
+    ),
+    sexp::Value::list(
+      sexp::Value::symbol("robots"),
+      robotList
+    ),
+    sexp::Value::list(
+      sexp::Value::symbol("bullets"),
+      bulletList
+    ),
+    sexp::Value::list(
+      sexp::Value::symbol("explosions"),
+      explosionList
+    ),
+    stats.toSexp(),
+    sexp::Value::list(
+      sexp::Value::symbol("controlled-robot"),
+      sexp::Value::integer(map.robots.findIndex(controlled))
+    ),
+    menu.toSexp()
+  );
+
+  std::ofstream oFile(filename);
+  oFile << gamestate;
   return true;
 }
 

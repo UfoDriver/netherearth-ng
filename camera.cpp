@@ -108,3 +108,13 @@ void Camera::lookAt(float offset) const
             viewport.z,
             0, 0, 1);
 }
+
+
+sexp::Value Camera::toSexp() const
+{
+  return sexp::Value::list(
+    sexp::Value::symbol("camera"),
+    Vector::toSexp(),
+    viewport.toSexp()
+  );
+}
