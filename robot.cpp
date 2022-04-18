@@ -81,7 +81,7 @@ bool Robot::bulletHit(const std::unique_ptr<Bullet>& bullet)
 }
 
 
-float Robot::piecez(int piece)
+float Robot::piece_z(int piece)
 {
   const float tractions[] {1.0, 0.35, 0.25};
   float z = tractions[traction];
@@ -645,7 +645,7 @@ void Robot::processOperatorCannons(NETHER *nether, unsigned char *)
 {
   if (firetimer == 0) {
     Vector bulletPos {pos};
-    bulletPos.z = piecez(0) + 0.3f;
+    bulletPos.z = piece_z(0) + 0.3f;
     nether->map.bullets.emplace_back(new BulletCannon(bulletPos, this));
     nether->sManager.playShot(nether->getShip()->pos, bulletPos);
   }
@@ -661,7 +661,7 @@ void Robot::processOperatorMissiles(NETHER *nether, unsigned char *)
 {
   if (firetimer == 0) {
     Vector bulletPos {pos};
-    bulletPos.z = piecez(1) + 0.2f;
+    bulletPos.z = piece_z(1) + 0.2f;
     nether->map.bullets.emplace_back(new BulletMissile(bulletPos, this));
     nether->sManager.playShot(nether->getShip()->pos, bulletPos);
   }
@@ -677,7 +677,7 @@ void Robot::processOperatorPhasers(NETHER *nether, unsigned char *)
 {
   if (firetimer == 0) {
     Vector bulletPos {pos};
-    bulletPos.z = piecez(2) + 0.3f;
+    bulletPos.z = piece_z(2) + 0.3f;
     nether->map.bullets.emplace_back(new BulletPhaser(bulletPos, this));
     nether->sManager.playShot(nether->getShip()->pos, bulletPos);
   }

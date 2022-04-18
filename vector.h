@@ -2,6 +2,8 @@
 #define VECTOR_H
 
 #include <iostream>
+
+#include <sexp/util.hpp>
 #include <sexp/value.hpp>
 
 
@@ -10,6 +12,9 @@ public:
   Vector() = default;
   Vector(double x, double y, double z) : x {float(x)}, y {float(y)}, z {float(z)} {};
   Vector(const Vector &v) : x {v.x}, y {v.y}, z {v.z} {};
+  Vector(const sexp::Value& value) : x { sexp::car(value).as_float()},
+                                     y { sexp::cdar(value).as_float()},
+                                     z { sexp::cddar(value).as_float()} {};
   //  Vector(Vector &&o) : x(std::move(o.x)), y(std::move(o.y)), z(std::move(o.z)) {};
 
   Vector& operator=(const Vector& o)

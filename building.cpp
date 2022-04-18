@@ -116,35 +116,18 @@ Building* Building::getFromSexp(const sexp::Value& sexp)
 }
 
 
-sexp::Value Building::toSexp() const
-{
-  return sexp::Value::list(
-    sexp::Value::symbol("building"),
-    pos.toSexp(),
-    sexp::Value::integer((int)type),
-    sexp::Value::integer(owner),
-    sexp::Value::integer(status)
-  );
-}
-
-
 Building* Building::fromSexp(const sexp::Value& sexp)
 {
-  // @TODO: broken along with toSexp
-  Building* building = nullptr;
-
   std::string buildingType = sexp::car(sexp).as_string();
-  Vector position{0, 0, 0};
-  position.fromSexp(sexp::cadr(sexp));
 
   if (buildingType == "factory") {
-    building = new BuildingFactory(position, factories_map.at(sexp::cdddar(sexp).as_string()));
+    return new BuildingFactory(sexp);
   } else if (buildingType == "warbase") {
-    building = new BuildingWarbase(position);
-    building->owner = sexp::cdddar(sexp).as_int();
+    return new BuildingWarbase(sexp);
   } else if (buildingType != "") {
-    building = new BuildingSimple(position, simple_buildings_map.at(buildingType));
+    return new BuildingSimple(sexp);
   }
 
-  return building;
+  std::cerr << "Cannot guess building type" << buildingType << std::endl;
+  return nullptr;
 }

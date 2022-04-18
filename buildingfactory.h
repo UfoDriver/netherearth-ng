@@ -12,6 +12,12 @@ class BuildingFactory : public Building
 {
 public:
   explicit BuildingFactory(const Vector& position, SUBTYPE subtype);
+  BuildingFactory(const sexp::Value& value)
+    : BuildingFactory(Vector(sexp::cddr(value)), (SUBTYPE)sexp::cdr(value).as_int())
+  {
+    owner = sexp::cdddr(value).as_int();
+    status = sexp::cdddr(value.get_cdr()).as_int();
+  };
 
   void draw(const bool shadows, const Vector& light) const override;
 
@@ -25,6 +31,7 @@ public:
   }
   bool collisionCheck(const CMC& other, float* m2) const override;
   sexp::Value toSexp() const override;
+
 
 private:
   Shadow3DObject flagTile;

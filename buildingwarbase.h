@@ -11,6 +11,11 @@ class BuildingWarbase : public Building
 {
 public:
   explicit BuildingWarbase(const Vector& position);
+  BuildingWarbase(const sexp::Value &value) : BuildingWarbase(Vector(sexp::cadr(value)))
+  {
+    owner = sexp::caddr(value).as_int();
+    status = sexp::cadddr(value).as_int();
+  };
 
   void draw(const bool shadows, const Vector& light) const override;
 

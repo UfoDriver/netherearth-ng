@@ -46,7 +46,7 @@ public:
   Robot(const sexp::Value& sexp) { Robot(-1); fromSexp(sexp); }
 
   bool valid() const;
-  float piecez(int piece);
+  float piece_z(int piece);
   bool bulletHit(const std::unique_ptr<Bullet>& bullet);
   void draw(Vector lightposv, bool shadows) const;
   int cost() const;
@@ -70,6 +70,7 @@ public:
   void dispatchOperator(NETHER* nether, unsigned char* keyboard);
 
   int traction {-1};
+  // @TODO: bit array here
   bool pieces[5] = {};
 
   // @TODO: program setter along with program param
