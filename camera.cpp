@@ -1,7 +1,10 @@
+#include <algorithm>
+
 #include <GL/gl.h>
 #include <GL/glut.h>
 #include <SDL/SDL.h>
-#include <algorithm>
+#include <sexp/util.hpp>
+
 #include "camera.h"
 
 
@@ -117,4 +120,12 @@ sexp::Value Camera::toSexp() const
     Vector::toSexp(),
     viewport.toSexp()
   );
+}
+
+
+bool Camera::fromSexp(const sexp::Value& value)
+{
+  Vector::fromSexp(sexp::cdar(value));
+  viewport.fromSexp(sexp::cddar(value));
+  return true;
 }

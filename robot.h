@@ -43,6 +43,8 @@ public:
 
   explicit Robot(unsigned short owner);
   Robot(unsigned short owner, std::istream& in);
+  Robot(const sexp::Value& sexp) { Robot(-1); fromSexp(sexp); }
+
   bool valid() const;
   float piecez(int piece);
   bool bulletHit(const std::unique_ptr<Bullet>& bullet);
@@ -80,6 +82,7 @@ public:
   Vector program_goal;
 
   OPERATOR op;
+
   bool shipover;
   int firetimer {0};
   int strength {100};
@@ -91,7 +94,9 @@ public:
   void copyDesign(const Robot& robot);
   void shipDetached() { electronicsState = 6; }
   int getElectronicsState() { return electronicsState; }
+
   sexp::Value toSexp() const;
+  bool fromSexp(const sexp::Value&);
 
   /* Animation variables: */
   int chassisState {0};

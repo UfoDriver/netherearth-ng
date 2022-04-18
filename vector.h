@@ -48,6 +48,7 @@ public:
   float z {0};
 
   sexp::Value toSexp() const;
+  bool fromSexp(const sexp::Value&);
 };
 
 std::ostream& operator<<(std::ostream& out, const Vector& vector);

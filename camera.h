@@ -16,7 +16,9 @@ public:
 
   void updateViewportForShip(const Vector& shipPosition, int mapWidth, int mapHeight);
   bool canSee(const Vector& position) const;
+
   sexp::Value toSexp() const;
+  bool fromSexp(const sexp::Value&);
 
 private:
   float minx = -8;

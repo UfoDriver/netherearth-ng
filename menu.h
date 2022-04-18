@@ -71,7 +71,9 @@ public:
   void activateMenu(TYPE newMenu, StatusButton::NAME activeButton);
   StatusButton::NAME getActiveButton() const { return activeButton; }
   TYPE getActiveMenu() const { return activeMenu; }
+
   sexp::Value toSexp() const;
+  bool fromSexp(const sexp::Value&);
 
 private:
   void drawStatus();

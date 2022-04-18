@@ -11,6 +11,26 @@
 #include "sexp/value.hpp"
 
 
+std::unordered_map<std::string, BuildingBlock::TYPE> Building::simple_buildings_map =
+    {
+     {"fence", BuildingBlock::TYPE::FENCE},
+     {"wall1", BuildingBlock::TYPE::WALL1},
+     {"wall2", BuildingBlock::TYPE::WALL2},
+     {"wall3", BuildingBlock::TYPE::WALL3},
+     {"wall4", BuildingBlock::TYPE::WALL4},
+     {"wall6", BuildingBlock::TYPE::WALL6}};
+
+std::unordered_map<std::string, Building::SUBTYPE> Building::factories_map =
+  {
+    {"electronics", Building::SUBTYPE::ELECTRONICS},
+    {"nuclear", Building::SUBTYPE::NUCLEAR},
+    {"phasers", Building::SUBTYPE::PHASERS},
+    {"missiles", Building::SUBTYPE::MISSILES},
+    {"cannons", Building::SUBTYPE::CANNONS},
+    {"chassis", Building::SUBTYPE::CHASSIS}
+  };
+
+
 void Building::draw(const bool shadows, const Vector& light) const
 {
   for (const BuildingBlock& b : blocks) {
@@ -51,28 +71,8 @@ Color Building::getFlagColor() const
   }
 }
 
-
-
 Building* Building::getFromMapFile(std::istream& inFile)
 {
-  std::unordered_map<std::string, BuildingBlock::TYPE> simple_map
-    {
-     {"fence", BuildingBlock::TYPE::FENCE},
-     {"wall1", BuildingBlock::TYPE::WALL1},
-     {"wall2", BuildingBlock::TYPE::WALL2},
-     {"wall3", BuildingBlock::TYPE::WALL3},
-     {"wall4", BuildingBlock::TYPE::WALL4},
-     {"wall6", BuildingBlock::TYPE::WALL6}};
-  std::unordered_map<std::string, Building::SUBTYPE> factories_map
-    {
-    {"electronics", Building::SUBTYPE::ELECTRONICS},
-    {"nuclear", Building::SUBTYPE::NUCLEAR},
-    {"phasers", Building::SUBTYPE::PHASERS},
-    {"missiles", Building::SUBTYPE::MISSILES},
-    {"cannons", Building::SUBTYPE::CANNONS},
-    {"chassis", Building::SUBTYPE::CHASSIS}
-  };
-
   Building* building = nullptr;
 
   std::string buffer;
@@ -87,7 +87,7 @@ Building* Building::getFromMapFile(std::istream& inFile)
     building = new BuildingWarbase(position);
     inFile >> building->owner;
   } else if (buffer != "") {
-    building = new BuildingSimple(position, simple_map.at(buffer));
+    building = new BuildingSimple(position, simple_buildings_map.at(buffer));
   }
 
   return building;
@@ -96,24 +96,6 @@ Building* Building::getFromMapFile(std::istream& inFile)
 
 Building* Building::getFromSexp(const sexp::Value& sexp)
 {
-  std::unordered_map<std::string, BuildingBlock::TYPE> simple_map
-    {
-     {"fence", BuildingBlock::TYPE::FENCE},
-     {"wall1", BuildingBlock::TYPE::WALL1},
-     {"wall2", BuildingBlock::TYPE::WALL2},
-     {"wall3", BuildingBlock::TYPE::WALL3},
-     {"wall4", BuildingBlock::TYPE::WALL4},
-     {"wall6", BuildingBlock::TYPE::WALL6}};
-  std::unordered_map<std::string, Building::SUBTYPE> factories_map
-    {
-    {"electronics", Building::SUBTYPE::ELECTRONICS},
-    {"nuclear", Building::SUBTYPE::NUCLEAR},
-    {"phasers", Building::SUBTYPE::PHASERS},
-    {"missiles", Building::SUBTYPE::MISSILES},
-    {"cannons", Building::SUBTYPE::CANNONS},
-    {"chassis", Building::SUBTYPE::CHASSIS}
-  };
-
   Building* building = nullptr;
 
   Vector position{0, 0, 0};
@@ -127,7 +109,7 @@ Building* Building::getFromSexp(const sexp::Value& sexp)
     building = new BuildingWarbase(position);
     building->owner = sexp::cdddar(sexp).as_int();
   } else if (buildingType != "") {
-    building = new BuildingSimple(position, simple_map.at(buildingType));
+    building = new BuildingSimple(position, simple_buildings_map.at(buildingType));
   }
 
   return building;
@@ -143,4 +125,26 @@ sexp::Value Building::toSexp() const
     sexp::Value::integer(owner),
     sexp::Value::integer(status)
   );
+}
+
+
+Building* Building::fromSexp(const sexp::Value& sexp)
+{
+  // @TODO: broken along with toSexp
+  Building* building = nullptr;
+
+  std::string buildingType = sexp::car(sexp).as_string();
+  Vector position{0, 0, 0};
+  position.fromSexp(sexp::cadr(sexp));
+
+  if (buildingType == "factory") {
+    building = new BuildingFactory(position, factories_map.at(sexp::cdddar(sexp).as_string()));
+  } else if (buildingType == "warbase") {
+    building = new BuildingWarbase(position);
+    building->owner = sexp::cdddar(sexp).as_int();
+  } else if (buildingType != "") {
+    building = new BuildingSimple(position, simple_buildings_map.at(buildingType));
+  }
+
+  return building;
 }

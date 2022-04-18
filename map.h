@@ -44,6 +44,7 @@ public:
   Robots robots;
 
   sexp::Value toSexp() const;
+  bool fromSexp(const sexp::Value&);
 
 private:
   void cycleBuildings();

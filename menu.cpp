@@ -2,14 +2,16 @@
 #include "windows.h"
 #endif
 
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <SDL/SDL.h>
-#include <SDL/SDL_mixer.h>
 #include <algorithm>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
+
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <SDL/SDL.h>
+#include <SDL/SDL_mixer.h>
+#include <sexp/util.hpp>
 
 #include "3dobject.h"
 #include "cmc.h"
@@ -773,4 +775,13 @@ sexp::Value Menu::toSexp() const
     sexp::Value::integer((int)activeMenu),
     sexp::Value::integer((int)activeButton)
   );
+}
+
+
+bool Menu::fromSexp(const sexp::Value& value)
+{
+  activeMenu = (Menu::TYPE)sexp::cdar(value).as_int();
+  activeButton = (StatusButton::NAME)sexp::cddar(value).as_int();
+
+  return true;
 }

@@ -1,10 +1,12 @@
 #include <GL/gl.h>
+#include <sexp/util.hpp>
+#include <sexp/value.hpp>
+
 #include "building.h"
 #include "constants.h"
 #include "map.h"
 #include "nether.h"
 #include "robot.h"
-#include "sexp/value.hpp"
 #include "ship.h"
 
 extern int up_key, down_key, left_key, right_key, fire_key, pause_key;
@@ -207,4 +209,12 @@ sexp::Value Ship::toSexp() const
     sexp::Value::symbol("ship"),
     pos.toSexp()
   );
+}
+
+
+bool Ship::fromSexp(const sexp::Value& value)
+{
+  pos.fromSexp(sexp::cdar(value));
+
+  return true;
 }

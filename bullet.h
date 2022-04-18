@@ -38,6 +38,7 @@ public:
   CMC cmc;
 
   virtual sexp::Value toSexp() const;
+  static Bullet* fromSexp(const sexp::Value&);
 
 protected:
   void drawParticles(std::vector<Particle>& particles) const;

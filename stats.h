@@ -29,7 +29,9 @@ public:
   std::array<int, 7> calculateCost(const Robot& robot);
   std::array<int, 7> normalizeCost(int player, const std::array<int, 7>& invoice);
   bool noWarbasesLeft();
+
   sexp::Value toSexp() const;
+  bool fromSexp(const sexp::Value&);
 
   int day;
   int hour;

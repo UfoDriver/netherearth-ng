@@ -38,6 +38,7 @@ public:
   NETHER* nether;
 
   sexp::Value toSexp() const;
+  bool fromSexp(const sexp::Value&);
 };
 
 

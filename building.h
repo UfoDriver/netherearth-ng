@@ -1,6 +1,7 @@
 #ifndef BUILDING_H
 #define BUILDING_H
 
+#include <unordered_map>
 #include <vector>
 #include <sexp/value.hpp>
 
@@ -20,6 +21,9 @@ public:
                       CHASSIS,
                       UNKNOWN};
 
+  static std::unordered_map<std::string, BuildingBlock::TYPE> simple_buildings_map;
+  static std::unordered_map<std::string, Building::SUBTYPE> factories_map;
+
   Building(Vector position, TYPE type, int owner = 0, int status = 0)
     : pos{position}, type{type}, owner{owner}, status{status} {}
   virtual ~Building() {}
@@ -34,6 +38,7 @@ public:
   virtual bool collisionCheck(const CMC& other, float* m2) const;
 
   virtual sexp::Value toSexp() const;
+  static Building* fromSexp(const sexp::Value&);
 
   Vector pos;
 protected:

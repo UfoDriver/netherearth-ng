@@ -1,3 +1,5 @@
+#include <algorithm>
+#include <sexp/util.hpp>
 #include <sexp/value.hpp>
 
 #include "building.h"
@@ -208,4 +210,22 @@ sexp::Value Stats::toSexp() const
   );
 
   return stat;
+}
+
+
+bool Stats::fromSexp(const sexp::Value& value)
+{
+  day = sexp::cdar(value).as_int();
+  hour = sexp::cddar(value).as_int();
+  minute = sexp::cdddar(value).as_int();
+  second = sexp::cdddar(value.get_cdr()).as_int();
+
+  std::vector<sexp::Value> p1stat = sexp::cdddar(value.get_cdr().get_cdr()).as_array();
+  std::transform(p1stat.cbegin(), p1stat.cend(), stats[0],
+                 [](const sexp::Value& value) { return value.as_int(); });
+  std::vector<sexp::Value> p2stat = sexp::cdddar(value.get_cdr().get_cdr().get_cdr()).as_array();
+  std::transform(p2stat.cbegin(), p2stat.cend(), stats[1],
+                 [](const sexp::Value& value) { return value.as_int(); });
+
+  return true;
 }

@@ -1,7 +1,9 @@
 #include <cmath>
 #include <iomanip>
 
-#include "sexp/value.hpp"
+#include <sexp/util.hpp>
+#include <sexp/value.hpp>
+
 #include "vector.h"
 
 
@@ -144,4 +146,14 @@ sexp::Value Vector::toSexp() const
     sexp::Value::real(y),
     sexp::Value::real(z)
   );
+}
+
+
+bool Vector::fromSexp(const sexp::Value& value)
+{
+  x = sexp::car(value).as_float();
+  y = sexp::cdar(value).as_float();
+  z = sexp::cddar(value).as_float();
+
+  return true;
 }

@@ -1,10 +1,15 @@
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <GL/glut.h>
 #include <algorithm>
 #include <cmath>
 #include <numeric>
 #include <unordered_map>
+
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/glut.h>
+
+#include <sexp/parser.hpp>
+#include <sexp/util.hpp>
+#include <sexp/value.hpp>
 
 #include "bulletcannon.h"
 #include "bulletmissile.h"
@@ -12,10 +17,6 @@
 #include "map.h"
 #include "nether.h"
 #include "resources.h"
-
-#include "sexp/parser.hpp"
-#include "sexp/value.hpp"
-#include "sexp/util.hpp"
 
 extern int up_key, down_key, left_key, right_key, fire_key, pause_key;
 
@@ -453,4 +454,18 @@ sexp::Value Map::toSexp() const
     sexp::Value::integer(Height),
     sexp::Value::array(sexpMap)
   );
+}
+
+
+bool Map::fromSexp(const sexp::Value& value)
+{
+  Width = sexp::cdar(value).as_int();
+  Height = sexp::cddar(value).as_int();
+
+  std::vector<sexp::Value> mapItems = sexp::cdddar(value).as_array();
+  map.clear();
+  std::transform(mapItems.cbegin(), mapItems.cend(), std::back_inserter(map),
+                 [](const sexp::Value &value) { return value.as_int(); });
+
+  return true;
 }

@@ -7,6 +7,7 @@
 #include <GL/glut.h>
 #include <SDL/SDL.h>
 #include <SDL/SDL_mixer.h>
+#include <sexp/util.hpp>
 
 #include "3dobject.h"
 #include "bullet.h"
@@ -167,9 +168,34 @@ sexp::Value Bullet::toSexp() const
     sexp::Value::integer(step),
     sexp::Value::integer(angle),
     pos.toSexp(),
-    // @TODO
-  //   map.robots[index]->getOwner()
-  //  index
+    // @TODO: bullet owner should be in tags
+    //   map.robots[index]->getOwner()
+    //  index
     cmc.toSexp()
   );
+}
+
+
+Bullet* Bullet::fromSexp(const sexp::Value& value)
+{
+  sexp::Value posAndCMC = sexp::cdddar(value.get_cdr());
+  Vector pos;
+  pos.fromSexp(sexp::car(posAndCMC));
+
+  Bullet* bullet;
+  switch (TYPE(sexp::cdar(value).as_int())) {
+  case TYPE::CANNONS:
+    bullet = new BulletCannon(pos, nullptr);
+    break;
+  case TYPE::MISSILES:
+    bullet = new BulletMissile(pos, nullptr);
+    break;
+  case TYPE::PHASERS:
+    bullet = new BulletPhaser(pos, nullptr);
+    break;
+  }
+  bullet->step = sexp::cddar(value).as_int();
+  bullet->angle = sexp::cdddar(value).as_int();
+  bullet->cmc.fromSexp(sexp::cdar(posAndCMC));
+  return bullet;
 }

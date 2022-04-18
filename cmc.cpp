@@ -1,14 +1,15 @@
-#include "sexp/value.hpp"
 #ifdef _WIN32
 #include "windows.h"
 #endif
 
+#include <algorithm>
+#include <iomanip>
+
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glut.h>
-
-#include <algorithm>
-#include <iomanip>
+#include <sexp/value.hpp>
+#include <sexp/util.hpp>
 
 #include "cmc.h"
 #include "color.h"
@@ -711,4 +712,16 @@ sexp::Value CMC::toSexp() const
     sexp::Value::real(z[0]),
     sexp::Value::real(z[1])
 );
+}
+
+bool CMC::fromSexp(const sexp::Value& value)
+{
+  x[0] = sexp::cdar(value).as_float();
+  x[1] = sexp::cddar(value).as_float();
+  y[0] = sexp::cdddar(value).as_float();
+  y[1] = sexp::cdddar(value.get_cdr()).as_float();
+  z[0] = sexp::cdddar(value.get_cdr().get_cdr()).as_float();
+  z[1] = sexp::cdddar(value.get_cdr().get_cdr().get_cdr()).as_float();
+
+  return true;
 }

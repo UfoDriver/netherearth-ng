@@ -1,4 +1,3 @@
-#include "sexp/value.hpp"
 #ifdef _WIN32
 #include "windows.h"
 #endif
@@ -15,6 +14,8 @@
 #include <string>
 
 #include <sexp/io.hpp>
+#include <sexp/parser.hpp>
+#include <sexp/util.hpp>
 
 #include "3dobject.h"
 #include "buildingblock.h"
@@ -266,25 +267,25 @@ void NETHER::drawGame(bool shadows)
 
 bool NETHER::saveGame(const std::string& filename)
 {
-  sexp::Value robotList = sexp::Value::array();
+  sexp::Value robotList = sexp::Value::nil();
   for (Robot* r: map.robots) {
-    robotList.append(r->toSexp());
+    robotList = sexp::Value::cons(r->toSexp(), std::move(robotList));
+
   }
 
-  sexp::Value explosionList = sexp::Value::array();
+  sexp::Value explosionList = sexp::Value::nil();
   for (Explosion& e: map.explosions) {
-    explosionList.append(e.toSexp());
+    explosionList = sexp::Value::cons(e.toSexp(), std::move(explosionList));
   }
 
-  sexp::Value bulletList = sexp::Value::array();
+  sexp::Value bulletList = sexp::Value::nil();
   for (const std::unique_ptr<Bullet>& bullet: map.bullets) {
-    bulletList.append(bullet->toSexp());
+    bulletList = sexp::Value::cons(bullet->toSexp(), std::move(bulletList));
   }
 
-  sexp::Value buildingList = sexp::Value::array();
+  sexp::Value buildingList = sexp::Value::nil();
   for (auto& b: map.buildings) {
-    // @TODO: should use pointer here because of virtual function
-    buildingList.append(b->toSexp());
+    buildingList = sexp::Value::cons(b->toSexp(), std::move(buildingList));
   }
 
   sexp::Value gamestate = sexp::Value::list(
@@ -293,21 +294,21 @@ bool NETHER::saveGame(const std::string& filename)
     light.toSexp(),
     camera.toSexp(),
     ship->toSexp(),
-    sexp::Value::list(
+    sexp::Value::cons(
       sexp::Value::symbol("buildings"),
-      buildingList
+      std::move(buildingList)
     ),
-    sexp::Value::list(
+    sexp::Value::cons(
       sexp::Value::symbol("robots"),
-      robotList
+      std::move(robotList)
     ),
-    sexp::Value::list(
+    sexp::Value::cons(
       sexp::Value::symbol("bullets"),
-      bulletList
+      std::move(bulletList)
     ),
-    sexp::Value::list(
+    sexp::Value::cons(
       sexp::Value::symbol("explosions"),
-      explosionList
+      std::move(explosionList)
     ),
     stats.toSexp(),
     sexp::Value::list(
@@ -317,59 +318,69 @@ bool NETHER::saveGame(const std::string& filename)
     menu.toSexp()
   );
 
-  std::ofstream oFile(filename);
-  oFile << gamestate;
+  std::ofstream(filename, std::ios::binary) << gamestate;
   return true;
 }
 
 
 bool NETHER::loadGame(const std::string& filename)
 {
-  std::ifstream inFile(filename);
-
   ai.deletePrecomputations();
 
-  inFile >> map
-         >> light
-         >> camera
-         >> camera.viewport
-         >> *ship;
+  std::ifstream inFile(filename, std::ios::binary);
+  sexp::Value gamestate = sexp::Parser::from_stream(inFile);
 
-  int length;
-  inFile >> length;
-  for (int k = 0; k < length; k++) {
-    // @TODO buildings
-    // BuildingBlock block(inFile);
-    // map.buildings.emplace_back(&block);
+  if (gamestate.get_car().as_string() != "gamestate1") {
+    std::cerr << "Not a gamestate" << std::endl;
+    return false;
   }
 
-  for (int i = 0; i < 2; i++) {
-    inFile >> length;
-    for (int k = 0; k < length; k++) {
-      map.robots.push_back(new Robot(i, inFile));
+  // @TODO: loading order of sexps matters but code doesn't reflect this. That means in some sexp
+  // structure, it's possible to load bullets without having robots
+  for (const sexp::Value& value: sexp::ListAdapter(sexp::cdr(gamestate))) {
+    if (sexp::car(value).as_string() == "map") {
+      map.fromSexp(value);
+    } else if (sexp::car(value).as_string() == "light") {
+      light.fromSexp(value);
+    } else if (sexp::car(value).as_string() == "camera") {
+      camera.fromSexp(value);
+    } else if (sexp::car(value).as_string() == "ship") {
+      ship->fromSexp(value);
+    } else if (sexp::car(value).as_string() == "buildings") {
+      // @TODO: check if memory leak in clear
+      map.buildings.clear();
+      for (const sexp::Value& building: sexp::ListAdapter(sexp::cdr(value))) {
+        map.buildings.emplace_back(Building::fromSexp(building));
+      }
+    } else if (sexp::car(value).as_string() == "robots") {
+      // @TODO: memory leak, robots should be destroyed first
+      map.robots.clear();
+      for (const sexp::Value& robot: sexp::ListAdapter(sexp::cdr(value))) {
+        map.robots.emplace_back(new Robot(robot));
+      }
+    } else if (sexp::car(value).as_string() == "bullets") {
+      // @TODO: check if memory leak in .clear()
+      map.bullets.clear();
+      for (const sexp::Value& bullet: sexp::ListAdapter(sexp::cdr(value))) {
+        map.bullets.emplace_back(Bullet::fromSexp(bullet));
+      }
+    } else if (sexp::car(value).as_string() == "explosions") {
+      map.explosions.clear();
+      for (const sexp::Value& explosion: sexp::ListAdapter(sexp::cdr(value))) {
+        map.explosions.emplace_back(explosion);
+      }
+    } else if (sexp::car(value).as_string() == "stats") {
+      stats.fromSexp(value);
+    } else if (sexp::car(value).as_string() == "controlled-robot") {
+      int controlledRobot = sexp::cdar(value).as_int();
+      if (controlledRobot >= 0)
+        controlled = map.robots[controlledRobot];
+      else
+        controlled = 0;
+    } else if (sexp::car(value).as_string() == "menu") {
+      menu.fromSexp(value);
     }
   }
-
-  inFile >> length;
-  for (int k = 0; k < length; k++) {
-    map.bullets.emplace_back(Bullet::read(inFile, map.robots));
-  }
-
-  inFile >> length;
-  for (int k = 0; k < length; k++) {
-    map.explosions.emplace_back(inFile);
-  }
-
-  inFile >> stats;
-
-  int i;
-  inFile >> i;
-  if (i >= 0)
-    controlled = map.robots[i];
-  else
-    controlled = 0;
-
-  inFile >> menu;
 
   ai.makePrecomputations();
   return true;

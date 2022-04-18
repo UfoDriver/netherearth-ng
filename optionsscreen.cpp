@@ -251,6 +251,6 @@ void OptionsScreen::open()
 std::string OptionsScreen::generateFilename(int number) const
 {
   std::stringstream filename;
-  filename << "savedgame" << number << ".sexp";
+  filename << "saved-games/" << number << ".sexp";
   return filename.str();
 }

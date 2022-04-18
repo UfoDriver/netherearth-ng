@@ -1,6 +1,9 @@
-#include <GL/gl.h>
 #include <algorithm>
 #include <cmath>
+
+#include <GL/gl.h>
+#include <sexp/util.hpp>
+#include <sexp/value.hpp>
 
 #include "bullet.h"
 #include "bulletcannon.h"
@@ -12,7 +15,6 @@
 #include "piece3dobject.h"
 #include "resources.h"
 #include "robot.h"
-#include "sexp/value.hpp"
 #include "ship.h"
 
 
@@ -823,4 +825,39 @@ sexp::Value Robot::toSexp() const
     sexp::Value::integer(electronicsState),
     sexp::Value::integer(chassisState)
   );
+}
+
+
+bool Robot::fromSexp(const sexp::Value& value)
+{
+  owner = sexp::cdar(value).as_int();
+  traction = sexp::cddar(value).as_int();
+  sexp::Value piecesSexp = sexp::cdddar(value);
+  pieces[0] = sexp::cdar(piecesSexp).as_int();
+  pieces[1] = sexp::cddar(piecesSexp).as_int();
+  pieces[2] = sexp::cdddar(piecesSexp).as_int();
+  pieces[3] = sexp::cdddar(piecesSexp.get_cdr()).as_int();
+  pieces[4] = sexp::cdddar(piecesSexp.get_cdr().get_cdr()).as_int();
+
+  sexp::Value tmpVal1 = sexp::cdddar(value).get_cdr();
+  sexp::Value programSexp = sexp::car(tmpVal1);
+  program = (Robot::ROBOT_PROGRAMS)sexp::cdar(programSexp).as_int();
+  program_parameter.as_int = sexp::cddar(programSexp).as_int();
+  program_goal.fromSexp(sexp::cdddar(programSexp));
+
+  op = (Robot::OPERATOR)sexp::cdar(tmpVal1).as_int();
+  shipover = sexp::cddar(tmpVal1).as_bool();
+  firetimer = sexp::cdddar(tmpVal1).as_int();
+
+  sexp::Value tmpVal2 = sexp::cdddar(tmpVal1).get_cdr();
+  strength = sexp::car(tmpVal2).as_int();
+  pos.fromSexp(sexp::cdar(tmpVal2));
+  angle = sexp::cddar(tmpVal2).as_int();
+  cmc.fromSexp(sexp::cdddar(tmpVal2));
+
+  sexp::Value tmpVal3 = sexp::cdddar(tmpVal2).get_cdr();
+  electronicsState = sexp::car(tmpVal3).as_int();
+  chassisState = sexp::cdar(tmpVal3).as_int();
+
+  return true;
 }

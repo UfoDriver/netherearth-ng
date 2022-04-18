@@ -31,6 +31,7 @@ public:
   bool collision_simple(float* m, const CMC& other, float* m2) const;
 
   sexp::Value toSexp() const;
+  bool fromSexp(const sexp::Value&);
 
   float x[2] {0, 0}, y[2] {0, 0}, z[2] {0, 0};
 };

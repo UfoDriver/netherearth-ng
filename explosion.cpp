@@ -1,5 +1,7 @@
 #include <algorithm>
 
+#include <sexp/util.hpp>
+
 #include "explosion.h"
 
 
@@ -53,4 +55,15 @@ sexp::Value Explosion::toSexp() const
     sexp::Value::integer(step),
     sexp::Value::integer(size)
   );
+}
+
+
+bool Explosion::fromSexp(const sexp::Value& value)
+{
+
+  pos.fromSexp(sexp::cdar(value));
+  step = sexp::cddar(value).as_int();
+  size = sexp::cdddar(value).as_int();
+
+  return true;
 }

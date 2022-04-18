@@ -20,6 +20,7 @@ public:
   const float* raw() const { return pos; }
 
   sexp::Value toSexp() const;
+  bool fromSexp(const sexp::Value&);
 
 private:
   friend std::istream& operator>>(std::istream& in, Light& light);
