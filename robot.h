@@ -94,8 +94,10 @@ public:
 
   void setPieces(std::bitset<5> newPieces) { pieces = newPieces; }
   std::bitset<5> getPieces() const { return pieces; }
-
-  int traction {-1};
+  void setAngle(int newAngle) { angle = newAngle; }
+  int getAngle() const { return angle; }
+  void setTraction(int newTraction) { traction = newTraction; }
+  int getTraction() const { return traction; }
 
   RobotProgram program;
   OPERATOR op;
@@ -105,7 +107,6 @@ public:
   int strength {100};
 
   Vector pos;
-  int angle;
   CMC cmc;
 
   void copyDesign(const Robot& robot);
@@ -117,6 +118,9 @@ public:
 
 private:
   std::bitset<5> pieces = false;
+  int traction {-1};
+  int angle;
+
   int id { Robot::counter++ };
   unsigned short owner;
 

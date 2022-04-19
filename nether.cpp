@@ -431,7 +431,7 @@ bool NETHER::saveDebugReport(const std::string& filename)
     for (Robot* r: map.robots) {
       if (r->getOwner() != i) continue;
       log << "ROBOT:\n";
-      log << ' ' << tractions[r->traction] << '\n';
+      log << ' ' << tractions[r->getTraction()] << '\n';
 
       std::bitset<5> pieces = r->getPieces();
       for (int j = 0; j < 5; j++) {
@@ -451,7 +451,7 @@ bool NETHER::saveDebugReport(const std::string& filename)
       log << " FIRETIMER: " << r->firetimer << "\n STRENGTH: " << r->strength << '\n';
       log << " POSITION: ";
       log << r->pos;
-      log << " ANGLE: " << r->angle << '\n';
+      log << " ANGLE: " << r->getAngle() << '\n';
       log << " MINIMUM CONTAINER BOX:\n";
       log << r->cmc;
       log << "\n\n";

@@ -157,7 +157,7 @@ std::array<int, 7> Stats::calculateCost(const Robot& robot)
     }
   }
 
-  switch (robot.traction) {
+  switch (robot.getTraction()) {
   case 0:
     invoice[6] = 3;
     break;

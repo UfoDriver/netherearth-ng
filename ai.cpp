@@ -203,9 +203,9 @@ void AI::enemy()
     pieces[0] = true;
 
 	tmpr=new Robot(1);
-	tmpr->traction=0;
+	tmpr->setTraction(0);
 	tmpr->setPieces(pieces);
-	tmpr->angle=0;
+	tmpr->setAngle(0);
 	tmpr->program.type=RobotProgram::FORWARD;
 	tmpr->op=Robot::OPERATOR::NONE;
 	tmpr->calculateCMC(Resources::pieceTiles[1]);
@@ -578,7 +578,7 @@ Robot* AI::enemyNewRobot(const STATE state, const Vector& pos)
 	/* Build the robot: */ 
 	{
 		Robot *r = new Robot(1);
-		r->traction=traction;
+		r->setTraction(traction);
 		r->setPieces(pieces);
 
         if (!nether->stats.canBuildRobot(1, *r)) {
@@ -588,7 +588,7 @@ Robot* AI::enemyNewRobot(const STATE state, const Vector& pos)
 
 		/* Valid robot, build it: */ 
 		r->pos=pos;
-		r->angle=0;
+		r->setAngle(0);
 		r->program.type=RobotProgram::FORWARD;
 		r->op=Robot::OPERATOR::NONE;
 		r->calculateCMC(Resources::pieceTiles[1]);
@@ -620,7 +620,7 @@ void AI::availableOperators(const Robot& robot, std::vector<AIOperator>& l)
     int terrain = worseMapTerrain(x + xd2[i], y + yd2[i], 2 + xd3[i], 2 + yd3[i]);
     if (terrain <= T_HOLE && robot.walkable(terrain)) {
       /* Rotation cost: */
-      int dif = dangle[i] - robot.angle;
+      int dif = dangle[i] - robot.getAngle();
       if (dif > 360) dif -= 360;
       if (dif < 0) dif += 360;
       int n_turns = 0;
@@ -726,7 +726,7 @@ Robot::OPERATOR AI::searchEngine(const Robot& robot, const int goaltype, const V
   searchmap[offs].first_robotop = Robot::OPERATOR::NONE;
   searchmap[offs].newpos = robot.pos;
   searchmap[offs].deadend = false;
-  expandOperators(x, y, robot.angle, robot, y * (map->width() * 2) + x, 0, depth);
+  expandOperators(x, y, robot.getAngle(), robot, y * (map->width() * 2) + x, 0, depth);
 
   /* ADVANCE PROGRAM: */
   if (goaltype==RobotProgram::ADVANCE) {
@@ -1157,10 +1157,10 @@ Robot::OPERATOR AI::programStopDefend(const Robot& robot, Vector *program_goal, 
           /* This is just to make the program not to think that the robot doesn't have any goal: */
           *program_goal = Vector(0, 0, 0);
 
-          if (robot.angle == 0) dirmask = 1;
-          if (robot.angle == 90) dirmask = 2;
-          if (robot.angle == 180) dirmask = 4;
-          if (robot.angle == 270) dirmask = 8;
+          if (robot.getAngle() == 0) dirmask = 1;
+          if (robot.getAngle() == 90) dirmask = 2;
+          if (robot.getAngle() == 180) dirmask = 4;
+          if (robot.getAngle() == 270) dirmask = 8;
           if ((rsp & dirmask) != 0) {
             if ((prsp & dirmask) !=0 ) {
               op = Robot::OPERATOR::PHASERS;
@@ -1432,10 +1432,10 @@ Robot::OPERATOR AI::programDestroy(const Robot& robot, Vector *program_goal, con
 
           if (rsp != 0) {
             int dirmask = 0;
-            if (robot.angle == 0) dirmask = 1;
-            if (robot.angle == 90) dirmask = 2;
-            if (robot.angle == 180) dirmask = 4;
-            if (robot.angle == 270) dirmask = 8;
+            if (robot.getAngle() == 0) dirmask = 1;
+            if (robot.getAngle() == 90) dirmask = 2;
+            if (robot.getAngle() == 180) dirmask = 4;
+            if (robot.getAngle() == 270) dirmask = 8;
             if ((rsp & dirmask) != 0) {
               if ((prsp & dirmask) != 0) {
                 op = Robot::OPERATOR::PHASERS;

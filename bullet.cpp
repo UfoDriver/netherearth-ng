@@ -26,7 +26,7 @@
 
 
 Bullet::Bullet(TYPE type, Vector position, Robot *robot):
-  type(type), step(0), pos(position), angle(robot->angle), owner(robot)
+  type(type), step(0), pos(position), angle(robot->getAngle()), owner(robot)
 {
 }
 
@@ -154,7 +154,7 @@ int Bullet::getDamageForRobot(const Robot* robot) const
   int baseDamage = getBaseDamage();
   int maxDamage = baseDamage * 12;
   int multiplier[] = {1, 2, 4, 6, 8};
-  if (robot->traction == 0)
+  if (robot->getTraction() == 0)
     maxDamage -= baseDamage;
   return maxDamage - multiplier[robot->npieces() - 1] * baseDamage;
 }

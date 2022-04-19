@@ -69,10 +69,10 @@ void ConstructionScreen::constructRobot()
   }
 
   if (menuPointer <= MENU::ANTIGRAV) {
-    if (proto.traction == int(menuPointer) - 20) {
-      proto.traction = -1;
+    if (proto.getTraction() == int(menuPointer) - 20) {
+      proto.setTraction(-1);
     } else {
-      proto.traction = int(menuPointer) - 20;
+      proto.setTraction(int(menuPointer) - 20);
     }
   }
 
@@ -90,7 +90,7 @@ void ConstructionScreen::constructRobot()
 void ConstructionScreen::buildRobot()
 {
   if (staple->valid()) {
-    staple->angle = 0;
+    staple->setAngle(0);
     staple->program.type = RobotProgram::FORWARD;
     staple->op = Robot::OPERATOR::NONE;
     staple->calculateCMC(Resources::pieceTiles[0]);
@@ -262,7 +262,7 @@ void ConstructionScreen::draw(int width, int height, const Light& light)
       glRotatef(-90, 1, 0, 0);
 
       if (i < 3) {
-        if (staple->traction == i) {
+        if (staple->getTraction() == i) {
           Resources::pieceTiles[0][i].draw(Color(1.0, 1.0, 1.0));
         } else {
           Resources::pieceTiles[0][i].draw(Color(0.5, 0.5, 0.5));
