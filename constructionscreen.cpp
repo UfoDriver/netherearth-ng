@@ -87,7 +87,7 @@ void ConstructionScreen::buildRobot()
 {
   if (staple->valid()) {
     staple->angle = 0;
-    staple->program = Robot::PROGRAM_FORWARD;
+    staple->program.type = RobotProgram::FORWARD;
     staple->op = Robot::OPERATOR::NONE;
     staple->calculateCMC(Resources::pieceTiles[0]);
     staple->shipover = false;

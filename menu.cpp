@@ -1,3 +1,4 @@
+#include "robot.h"
 #ifdef _WIN32
 #include "windows.h"
 #endif
@@ -111,8 +112,8 @@ void Menu::drawStatus()
         glColor3f(1.0f,1.0f,0.0);
         scaledglprintf(0.1f,0.1f,"-ORDERS-");
         glColor3f(0.5f,0.5f,1.0f);
-        switch(nether->getControlled()->program) {
-        case Robot::PROGRAM_STOPDEFEND:
+        switch(nether->getControlled()->program.type) {
+        case RobotProgram::STOPDEFEND:
           glTranslatef(0,-20,0);
           scaledglprintf(0.1f,0.1f,"STOP");
           glTranslatef(0,-18,0);
@@ -120,45 +121,45 @@ void Menu::drawStatus()
           glTranslatef(0,-18,0);
           scaledglprintf(0.1f,0.1f,"DEFEND");
           break;
-        case Robot::PROGRAM_ADVANCE:
+        case RobotProgram::ADVANCE:
           glTranslatef(0,-20,0);
           scaledglprintf(0.1f,0.1f,"ADVANCE");
           glTranslatef(0,-18,0);
-          scaledglprintf(0.1f,0.1f,"%.2i", nether->getControlled()->program_parameter.as_int / 2);
+          scaledglprintf(0.1f,0.1f,"%.2i", nether->getControlled()->program.parameter.as_int / 2);
           glTranslatef(0,-18,0);
           scaledglprintf(0.1f,0.1f,"MILES");
           break;
-        case Robot::PROGRAM_RETREAT:
+        case RobotProgram::RETREAT:
           glTranslatef(0,-20,0);
           scaledglprintf(0.1f,0.1f,"RETREAT");
           glTranslatef(0,-18,0);
-          scaledglprintf(0.1f,0.1f,"%.2i",nether->getControlled()->program_parameter.as_int / 2);
+          scaledglprintf(0.1f,0.1f,"%.2i",nether->getControlled()->program.parameter.as_int / 2);
           glTranslatef(0,-18,0);
           scaledglprintf(0.1f,0.1f,"MILES");
           break;
-        case Robot::PROGRAM_DESTROY:
+        case RobotProgram::DESTROY:
           glTranslatef(0,-20,0);
           scaledglprintf(0.1f,0.1f,"DESTROY");
-          switch(nether->getControlled()->program_parameter.param) {
-          case Robot::P_PARAM_ROBOTS:
+          switch(nether->getControlled()->program.parameter.param) {
+          case RobotProgram::ROBOTS:
             glTranslatef(0,-18,0);
             scaledglprintf(0.1f,0.1f,"ENEMY");
             glTranslatef(0,-18,0);
             scaledglprintf(0.1f,0.1f,"ROBOTS");
             break;
-          case Robot::P_PARAM_WARBASES:
+          case RobotProgram::WARBASES:
             glTranslatef(0,-18,0);
             scaledglprintf(0.1f,0.1f,"ENEMY");
             glTranslatef(0,-18,0);
             scaledglprintf(0.1f,0.1f,"WARBASES");
             break;
-          case Robot::P_PARAM_NFACTORIES:
+          case RobotProgram::NEUTRAL_FACTORIES:
             glTranslatef(0,-18,0);
             scaledglprintf(0.1f,0.1f,"NEUTRAL");
             glTranslatef(0,-18,0);
             scaledglprintf(0.1f,0.1f,"FACTORIES");
             break;
-          case Robot::P_PARAM_EFACTORIES:
+          case RobotProgram::ENEMY_FACTORIES:
             glTranslatef(0,-18,0);
             scaledglprintf(0.1f,0.1f,"ENEMY");
             glTranslatef(0,-18,0);
@@ -166,29 +167,29 @@ void Menu::drawStatus()
             break;
           }
           break;
-        case Robot::PROGRAM_CAPTURE:
+        case RobotProgram::CAPTURE:
           glTranslatef(0,-20,0);
           scaledglprintf(0.1f,0.1f,"CAPTURE");
-          switch(nether->getControlled()->program_parameter.param) {
-          case Robot::P_PARAM_ROBOTS:
+          switch(nether->getControlled()->program.parameter.param) {
+          case RobotProgram::ROBOTS:
             glTranslatef(0,-18,0);
             scaledglprintf(0.1f,0.1f,"ENEMY");
             glTranslatef(0,-18,0);
             scaledglprintf(0.1f,0.1f,"ROBOTS");
             break;
-          case Robot::P_PARAM_WARBASES:
+          case RobotProgram::WARBASES:
             glTranslatef(0,-18,0);
             scaledglprintf(0.1f,0.1f,"ENEMY");
             glTranslatef(0,-18,0);
             scaledglprintf(0.1f,0.1f,"WARBASES");
             break;
-          case Robot::P_PARAM_NFACTORIES:
+          case RobotProgram::NEUTRAL_FACTORIES:
             glTranslatef(0,-18,0);
             scaledglprintf(0.1f,0.1f,"NEUTRAL");
             glTranslatef(0,-18,0);
             scaledglprintf(0.1f,0.1f,"FACTORIES");
             break;
-          case Robot::P_PARAM_EFACTORIES:
+          case RobotProgram::ENEMY_FACTORIES:
             glTranslatef(0,-18,0);
             scaledglprintf(0.1f,0.1f,"ENEMY");
             glTranslatef(0,-18,0);
@@ -248,7 +249,7 @@ void Menu::drawStatus()
 
       glColor3f(1.0f,1.0f,0.0);
       glTranslatef(0,-40,0);
-      scaledglprintf(0.1f,0.1f,"%.2i MILES", nether->getControlled()->program_parameter.as_int / 2);
+      scaledglprintf(0.1f,0.1f,"%.2i MILES", nether->getControlled()->program.parameter.as_int / 2);
 
       glTranslatef(0,-200,0);
       glColor3f(1.0f,1.0f,0.0);
@@ -399,25 +400,25 @@ void Menu::cycle(unsigned char* keyboard)
         switch (activeButton) {
         case StatusButton::NAME::ORDERS1:
           /* STOP & DEFEND: */
-          nether->getControlled()->program = Robot::PROGRAM_STOPDEFEND;
-          nether->getControlled()->program_goal = Vector(-1, -1, -1);
+          nether->getControlled()->program.type = RobotProgram::STOPDEFEND;
+          nether->getControlled()->program.goal = Vector(-1, -1, -1);
           activateMenu(Menu::TYPE::ROBOT, StatusButton::NAME::ROBOT2);
           nether->sManager.playSelect();
           break;
         case StatusButton::NAME::ORDERS2:
           /* ADVANCE ?? MILES: */
-          nether->getControlled()->program = Robot::PROGRAM_ADVANCE;
-          nether->getControlled()->program_parameter.as_int = 0;
-          nether->getControlled()->program_goal = Vector(-1, -1, -1);
+          nether->getControlled()->program.type = RobotProgram::ADVANCE;
+          nether->getControlled()->program.parameter.as_int = 0;
+          nether->getControlled()->program.goal = Vector(-1, -1, -1);
 
           activateMenu(Menu::TYPE::SELECTDISTANCE, StatusButton::NAME::NONE);
           nether->sManager.playSelect();
           break;
         case StatusButton::NAME::ORDERS3:
           /* RETREAT ?? MILES: */
-          nether->getControlled()->program = Robot::PROGRAM_RETREAT;
-          nether->getControlled()->program_parameter.as_int = 0;
-          nether->getControlled()->program_goal = Vector(-1, -1, -1);
+          nether->getControlled()->program.type = RobotProgram::RETREAT;
+          nether->getControlled()->program.parameter.as_int = 0;
+          nether->getControlled()->program.goal = Vector(-1, -1, -1);
 
           activateMenu(Menu::TYPE::SELECTDISTANCE, StatusButton::NAME::NONE);
           nether->sManager.playSelect();
@@ -439,19 +440,19 @@ void Menu::cycle(unsigned char* keyboard)
   case Menu::TYPE::SELECTDISTANCE:
     {
       if (keyboard[up_key] > 1) {
-        nether->getControlled()->program_parameter.as_int =
-          std::min(190, nether->getControlled()->program_parameter.as_int + 10);
-        nether->getControlled()->program_goal = Vector(-1, -1, -1);
+        nether->getControlled()->program.parameter.as_int =
+          std::min(190, nether->getControlled()->program.parameter.as_int + 10);
+        nether->getControlled()->program.goal = Vector(-1, -1, -1);
       }
       if (keyboard[down_key] > 1) {
-        nether->getControlled()->program_parameter.as_int =
-          std::max(0, nether->getControlled()->program_parameter.as_int - 10);
-        nether->getControlled()->program_goal = Vector(-1, -1, -1);
+        nether->getControlled()->program.parameter.as_int =
+          std::max(0, nether->getControlled()->program.parameter.as_int - 10);
+        nether->getControlled()->program.goal = Vector(-1, -1, -1);
       }
       if (keyboard[fire_key] > 1) {
-        if (nether->getControlled()->program_parameter.as_int == 0)
-          nether->getControlled()->program = Robot::PROGRAM_STOPDEFEND;
-        nether->getControlled()->program_goal = Vector(-1, -1, -1);
+        if (nether->getControlled()->program.parameter.as_int == 0)
+          nether->getControlled()->program.type = RobotProgram::STOPDEFEND;
+        nether->getControlled()->program.goal = Vector(-1, -1, -1);
 
         activateMenu(Menu::TYPE::ROBOT, StatusButton::NAME::ROBOT2);
         nether->sManager.playSelect();
@@ -469,9 +470,9 @@ void Menu::cycle(unsigned char* keyboard)
               nether->getControlled()->pieces[1] ||
               nether->getControlled()->pieces[2]) {
             activateMenu(Menu::TYPE::ROBOT, StatusButton::NAME::ROBOT2);
-            nether->getControlled()->program = Robot::PROGRAM_DESTROY;
-            nether->getControlled()->program_parameter.param = Robot::P_PARAM_ROBOTS;
-            nether->getControlled()->program_goal = Vector(-1, -1, -1);
+            nether->getControlled()->program.type = RobotProgram::DESTROY;
+            nether->getControlled()->program.parameter.param = RobotProgram::ROBOTS;
+            nether->getControlled()->program.goal = Vector(-1, -1, -1);
             nether->sManager.playSelect();
           } else {
             /* The robot has no standard WEAPONS!: */
@@ -481,9 +482,9 @@ void Menu::cycle(unsigned char* keyboard)
         case StatusButton::NAME::TARGET2:
           if (nether->getControlled()->pieces[3]) {
             activateMenu(Menu::TYPE::ROBOT, StatusButton::NAME::ROBOT2);
-            nether->getControlled()->program = Robot::PROGRAM_DESTROY;
-            nether->getControlled()->program_parameter.param = Robot::P_PARAM_EFACTORIES;
-            nether->getControlled()->program_goal = Vector(-1, -1, -1);
+            nether->getControlled()->program.type = RobotProgram::DESTROY;
+            nether->getControlled()->program.parameter.param = RobotProgram::ENEMY_FACTORIES;
+            nether->getControlled()->program.goal = Vector(-1, -1, -1);
             nether->sManager.playSelect();
           } else {
             /* The robot has no NUCLEAR weapons: */
@@ -493,9 +494,9 @@ void Menu::cycle(unsigned char* keyboard)
         case StatusButton::NAME::TARGET3:
           if (nether->getControlled()->pieces[3]) {
             activateMenu(Menu::TYPE::ROBOT, StatusButton::NAME::ROBOT2);
-            nether->getControlled()->program = Robot::PROGRAM_DESTROY;
-            nether->getControlled()->program_parameter.param = Robot::P_PARAM_WARBASES;
-            nether->getControlled()->program_goal = Vector(-1, -1, -1);
+            nether->getControlled()->program.type = RobotProgram::DESTROY;
+            nether->getControlled()->program.parameter.param = RobotProgram::WARBASES;
+            nether->getControlled()->program.goal = Vector(-1, -1, -1);
             nether->sManager.playSelect();
           } else {
             /* The robot has no NUCLEAR weapons: */
@@ -514,23 +515,23 @@ void Menu::cycle(unsigned char* keyboard)
         switch (activeButton) {
         case StatusButton::NAME::TARGET11:
           activateMenu(Menu::TYPE::ROBOT, StatusButton::NAME::ROBOT2);
-          nether->getControlled()->program = Robot::PROGRAM_CAPTURE;
-          nether->getControlled()->program_parameter.param = Robot::P_PARAM_NFACTORIES;
-          nether->getControlled()->program_goal = Vector(-1, -1, -1);
+          nether->getControlled()->program.type = RobotProgram::CAPTURE;
+          nether->getControlled()->program.parameter.param = RobotProgram::NEUTRAL_FACTORIES;
+          nether->getControlled()->program.goal = Vector(-1, -1, -1);
           nether->sManager.playSelect();
           break;
         case StatusButton::NAME::TARGET21:
           activateMenu(Menu::TYPE::ROBOT, StatusButton::NAME::ROBOT2);
-          nether->getControlled()->program = Robot::PROGRAM_CAPTURE;
-          nether->getControlled()->program_parameter.param = Robot::P_PARAM_EFACTORIES;
-          nether->getControlled()->program_goal = Vector(-1, -1, -1);
+          nether->getControlled()->program.type = RobotProgram::CAPTURE;
+          nether->getControlled()->program.parameter.param = RobotProgram::ENEMY_FACTORIES;
+          nether->getControlled()->program.goal = Vector(-1, -1, -1);
           nether->sManager.playSelect();
           break;
         case StatusButton::NAME::TARGET31:
           activateMenu(Menu::TYPE::ROBOT, StatusButton::NAME::ROBOT2);
-          nether->getControlled()->program = Robot::PROGRAM_CAPTURE;
-          nether->getControlled()->program_parameter.param = Robot::P_PARAM_WARBASES;
-          nether->getControlled()->program_goal = Vector(-1,-1,-1);
+          nether->getControlled()->program.type = RobotProgram::CAPTURE;
+          nether->getControlled()->program.parameter.param = RobotProgram::WARBASES;
+          nether->getControlled()->program.goal = Vector(-1,-1,-1);
           nether->sManager.playSelect();
           break;
         }
@@ -577,9 +578,9 @@ void Menu::showMenu(TYPE menu)
     break;
 
   case TYPE::SELECTDISTANCE:
-    if (nether->getControlled()->program == Robot::PROGRAM_ADVANCE)
+    if (nether->getControlled()->program.type == RobotProgram::ADVANCE)
       showButtons({StatusButton::NAME::ORDERS11});
-    if (nether->getControlled()->program == Robot::PROGRAM_RETREAT)
+    if (nether->getControlled()->program.type == RobotProgram::RETREAT)
       showButtons({StatusButton::NAME::ORDERS12});
     activeMenu = TYPE::SELECTDISTANCE;
     break;

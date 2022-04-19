@@ -21,15 +21,20 @@
 extern int up_key, down_key, left_key, right_key, fire_key, pause_key;
 
 
-const float Robot::MS[4][3]={{0.0078125, 0.015625, 0.03125},
-                             {0.00390625, 0.0078125, 0.03125},
-                             {0, 0.0078125, 0.015625},
-                             {0, 0, 0.03125}};
+const float Robot::MOVING_SPEED[4][3] = {
+  {0.0078125, 0.015625, 0.03125},
+  {0.00390625, 0.0078125, 0.03125},
+  {0, 0.0078125, 0.015625},
+  {0, 0, 0.03125}
+};
 
-const int Robot::RS[4][3]={{2, 3, 5},
-                           {1, 2, 5},
-                           {0, 2, 3},
-                           {0, 0, 5}};
+const int Robot::ROTATION_SPEED[4][3] = {
+  {2, 3, 5},
+  {1, 2, 5},
+  {0, 2, 3},
+  {0, 0, 5}
+};
+
 int Robot::counter = 0;
 
 
@@ -38,38 +43,10 @@ Robot::Robot(unsigned short owner) : owner {owner}
 }
 
 
-Robot::Robot(unsigned short owner, std::istream &in) : owner {owner}
-{
-  in >> traction;
-  for (int j = 0; j < 5; j++) {
-    in >> pieces[j];
-  }
-  int program_;
-  int op_;
-  in >> program_ >> program_parameter.as_int;
-  program = Robot::ROBOT_PROGRAMS(program_);
-  in >> program_goal;
-  in >> op_;
-  in >> shipover;
-  in >> firetimer >> strength;
-  in >> pos;
-  in >> angle;
-  in >> cmc;
-  in >> electronicsState >> chassisState;
-  op = Robot::OPERATOR(op_);
-}
-
-
 bool Robot::valid() const
 {
   if (traction == -1) return false;
   return pieces[0] || pieces[1] || pieces[2] || pieces[3];
-}
-
-
-int Robot::npieces() const
-{
-  return std::count(std::begin(pieces), std::end(pieces), true);
 }
 
 
@@ -81,7 +58,7 @@ bool Robot::bulletHit(const std::unique_ptr<Bullet>& bullet)
 }
 
 
-float Robot::piece_z(int piece)
+float Robot::piecesHeight(int piece)
 {
   const float tractions[] {1.0, 0.35, 0.25};
   float z = tractions[traction];
@@ -120,17 +97,17 @@ void Robot::draw(Vector lightposv, bool shadows) const
   glPushMatrix();
   switch(traction) {
   case 0:
-    if (chassisState >= 0) {
-      if (chassisState < 32) {
-        bipod_v = chassisState * 0.00390625;
+    if (animation.chassis >= 0) {
+      if (animation.chassis < 32) {
+        bipod_v = animation.chassis * 0.00390625;
       } else {
-        bipod_v = (64 - chassisState) * 0.00390625;
+        bipod_v = (64 - animation.chassis) * 0.00390625;
       }
     } else {
-      if (chassisState > -31) {
-        bipod_v = chassisState * 0.00390625;
+      if (animation.chassis > -31) {
+        bipod_v = animation.chassis * 0.00390625;
       } else {
-        bipod_v = (-63 - chassisState) * 0.00390625;
+        bipod_v = (-63 - animation.chassis) * 0.00390625;
       }
     }
     if (!shadows) {
@@ -179,7 +156,7 @@ void Robot::draw(Vector lightposv, bool shadows) const
     z+=0.35;
     break;
   case 2:
-    z+=(cos(chassisState/15.0)*0.1)-0.1;
+    z+=(cos(animation.chassis/15.0)*0.1)-0.1;
     if (!shadows) {
       glPushMatrix();
       glTranslatef(0,0,z);
@@ -266,14 +243,14 @@ void Robot::draw(Vector lightposv, bool shadows) const
       glTranslatef(0,0,z);
       glRotatef(angle,0,0,1);
       if (!pieces[3]) glTranslatef(-0.2,0,0);
-      glRotatef(electronicsState,0,0,1);
+      glRotatef(animation.electronics,0,0,1);
       Resources::pieceTiles[owner][7].draw(colors[owner]);
       glPopMatrix();
     } else {
       glPushMatrix();
       glTranslatef(-z*light.x,-z*light.y,0.05);
-      glRotatef(angle+electronicsState,0,0,1);
-      Resources::pieceTiles[owner][7].drawShadow(angle+electronicsState, lightposv, Color(0, 0, 0, 0.5));
+      glRotatef(angle+animation.electronics,0,0,1);
+      Resources::pieceTiles[owner][7].drawShadow(angle+animation.electronics, lightposv, Color(0, 0, 0, 0.5));
       glPopMatrix();
     } /* if */
   } /* if */
@@ -301,7 +278,7 @@ int Robot::cost() const
 float Robot::movingSpeed(int terrain) const
 {
   if (terrain < 4 && traction < 3)
-    return MS[terrain][traction];
+    return MOVING_SPEED[terrain][traction];
   else
     return 0;
 }
@@ -310,7 +287,7 @@ float Robot::movingSpeed(int terrain) const
 int Robot::rotationSpeed(int terrain) const
 {
   if (terrain < 4 && traction < 3)
-    return RS[terrain][traction];
+    return ROTATION_SPEED[terrain][traction];
   else
     return 0;
 }
@@ -439,45 +416,26 @@ void Robot::calculateCMC(std::vector<Piece3DObject>& pieceTiles)
 }
 
 
-std::ostream& operator<<(std::ostream& out, const Robot& robot)
-{
-  out << robot.traction << '\n';
-  for (int j = 0; j < 5; j++) {
-    out << robot.pieces[j] << '\n';
-  }
-  return out << robot.program << ' '
-             << robot.program_parameter.as_int
-             << robot.program_goal
-             << int(robot.op) << '\n'
-             << robot.shipover << '\n'
-             << robot.firetimer << ' ' << robot.strength << '\n'
-             << robot.pos
-             << robot.angle << '\n'
-             << robot.cmc
-             << robot.electronicsState << ' ' << robot.chassisState << '\n';
-}
-
-
 void Robot::copyDesign(const Robot& robot)
 {
   traction = robot.traction;
-  std::copy(std::begin(robot.pieces), std::end(robot.pieces), std::begin(pieces));
+  pieces = robot.pieces;
 }
 
 
 void Robot::cycle(NETHER* nether)
 {
-  if (electronicsState) {
-    electronicsState = (electronicsState + 6) % 360;
+  if (animation.electronics) {
+    animation.electronics = (animation.electronics + 6) % 360;
   }
 
   if (traction == 2) {
-    chassisState++;
+    animation.chassis++;
   }
 
   if (op == OPERATOR::FORWARD) {
     if (traction == 0) { // Bipod
-      chassisState = (chassisState + int(movingSpeed(nether->map.worseTerrain(pos)) / 0.00390625)) % 64;
+      animation.chassis = (animation.chassis + int(movingSpeed(nether->map.worseTerrain(pos)) / 0.00390625)) % 64;
     }
 
     if (traction == 1) { // Tracks
@@ -515,7 +473,7 @@ void Robot::cycle(NETHER* nether)
       }
     }
   } else if (traction == 0) {
-    chassisState = 0;
+    animation.chassis = 0;
   }
 }
 
@@ -645,7 +603,7 @@ void Robot::processOperatorCannons(NETHER *nether, unsigned char *)
 {
   if (firetimer == 0) {
     Vector bulletPos {pos};
-    bulletPos.z = piece_z(0) + 0.3f;
+    bulletPos.z = piecesHeight(0) + 0.3f;
     nether->map.bullets.emplace_back(new BulletCannon(bulletPos, this));
     nether->sManager.playShot(nether->getShip()->pos, bulletPos);
   }
@@ -661,7 +619,7 @@ void Robot::processOperatorMissiles(NETHER *nether, unsigned char *)
 {
   if (firetimer == 0) {
     Vector bulletPos {pos};
-    bulletPos.z = piece_z(1) + 0.2f;
+    bulletPos.z = piecesHeight(1) + 0.2f;
     nether->map.bullets.emplace_back(new BulletMissile(bulletPos, this));
     nether->sManager.playShot(nether->getShip()->pos, bulletPos);
   }
@@ -677,7 +635,7 @@ void Robot::processOperatorPhasers(NETHER *nether, unsigned char *)
 {
   if (firetimer == 0) {
     Vector bulletPos {pos};
-    bulletPos.z = piece_z(2) + 0.3f;
+    bulletPos.z = piecesHeight(2) + 0.3f;
     nether->map.bullets.emplace_back(new BulletPhaser(bulletPos, this));
     nether->sManager.playShot(nether->getShip()->pos, bulletPos);
   }
@@ -709,38 +667,38 @@ void Robot::processOperatorNone(NETHER* nether, unsigned char* keyboard)
 
 void Robot::processProgram(NETHER* nether, unsigned char*)
 {
-  switch (program) {
-  case Robot::PROGRAM_NONE:
+  switch (program.type) {
+  case RobotProgram::NONE:
     break;
-  case Robot::PROGRAM_FORWARD:
+  case RobotProgram::FORWARD:
     op = Robot::OPERATOR::FORWARD;
     break;
-  case Robot::PROGRAM_STOPDEFEND:
-    op = nether->ai.programStopDefend(*this, &program_goal, owner + 1);
+  case RobotProgram::STOPDEFEND:
+    op = nether->ai.programStopDefend(*this, &program.goal, owner + 1);
     break;
-  case Robot::PROGRAM_ADVANCE:
+  case RobotProgram::ADVANCE:
     op = nether->ai.programAdvance(*this, getOwner() + 1);
     if (op == Robot::OPERATOR::FORWARD && angle == 90)
-      program_parameter.as_int--;
+      program.parameter.as_int--;
     if (op == Robot::OPERATOR::FORWARD && angle == 270)
-      program_parameter.as_int++;
-    if (program_parameter.as_int == 0)
-      program = Robot::PROGRAM_STOPDEFEND;
+      program.parameter.as_int++;
+    if (program.parameter.as_int == 0)
+      program.type = RobotProgram::STOPDEFEND;
     break;
-  case Robot::PROGRAM_RETREAT:
+  case RobotProgram::RETREAT:
     op = nether->ai.programRetreat(*this, owner + 1);
     if (op == Robot::OPERATOR::FORWARD && angle == 270)
-      program_parameter.as_int--;
+      program.parameter.as_int--;
     if (op == Robot::OPERATOR::FORWARD && angle == 90)
-      program_parameter.as_int++;
-    if (program_parameter.as_int == 0)
-      program = Robot::PROGRAM_STOPDEFEND;
+      program.parameter.as_int++;
+    if (program.parameter.as_int == 0)
+      program.type = RobotProgram::STOPDEFEND;
     break;
-  case Robot::PROGRAM_DESTROY:
-    op = nether->ai.programDestroy(*this, &program_goal, owner + 1);
+  case RobotProgram::DESTROY:
+    op = nether->ai.programDestroy(*this, &program.goal, owner + 1);
     break;
-  case Robot::PROGRAM_CAPTURE:
-    op = nether->ai.programCapture(*this, &program_goal, owner + 1);
+  case RobotProgram::CAPTURE:
+    op = nether->ai.programCapture(*this, &program.goal, owner + 1);
     break;
   }
 }
@@ -795,9 +753,9 @@ sexp::Value Robot::toSexp() const
 {
   sexp::Value programSexp = sexp::Value::list(
     sexp::Value::symbol("program"),
-    sexp::Value::integer(program),
-    sexp::Value::integer(program_parameter.as_int),
-    program_goal.toSexp()
+    sexp::Value::integer(program.type),
+    sexp::Value::integer(program.parameter.as_int),
+    program.goal.toSexp()
   );
 
   sexp::Value piecesSexp = sexp::Value::list(
@@ -822,8 +780,8 @@ sexp::Value Robot::toSexp() const
     pos.toSexp(),
     sexp::Value::integer(angle),
     cmc.toSexp(),
-    sexp::Value::integer(electronicsState),
-    sexp::Value::integer(chassisState)
+    sexp::Value::integer(animation.electronics),
+    sexp::Value::integer(animation.chassis)
   );
 }
 
@@ -841,9 +799,9 @@ bool Robot::fromSexp(const sexp::Value& value)
 
   sexp::Value tmpVal1 = sexp::cdddar(value).get_cdr();
   sexp::Value programSexp = sexp::car(tmpVal1);
-  program = (Robot::ROBOT_PROGRAMS)sexp::cdar(programSexp).as_int();
-  program_parameter.as_int = sexp::cddar(programSexp).as_int();
-  program_goal.fromSexp(sexp::cdddar(programSexp));
+  program.type = (RobotProgram::TYPE)sexp::cdar(programSexp).as_int();
+  program.parameter.as_int = sexp::cddar(programSexp).as_int();
+  program.goal.fromSexp(sexp::cdddar(programSexp));
 
   op = (Robot::OPERATOR)sexp::cdar(tmpVal1).as_int();
   shipover = sexp::cddar(tmpVal1).as_bool();
@@ -856,8 +814,8 @@ bool Robot::fromSexp(const sexp::Value& value)
   cmc.fromSexp(sexp::cdddar(tmpVal2));
 
   sexp::Value tmpVal3 = sexp::cdddar(tmpVal2).get_cdr();
-  electronicsState = sexp::car(tmpVal3).as_int();
-  chassisState = sexp::cdar(tmpVal3).as_int();
+  animation.electronics = sexp::car(tmpVal3).as_int();
+  animation.chassis = sexp::cdar(tmpVal3).as_int();
 
   return true;
 }

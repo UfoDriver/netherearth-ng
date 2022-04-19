@@ -206,7 +206,7 @@ void AI::enemy()
 	tmpr->pieces[3]=false;
 	tmpr->pieces[4]=false;
 	tmpr->angle=0;
-	tmpr->program=Robot::PROGRAM_FORWARD;
+	tmpr->program.type=RobotProgram::FORWARD;
 	tmpr->op=Robot::OPERATOR::NONE;
 	tmpr->calculateCMC(Resources::pieceTiles[1]);
 	tmpr->shipover=false;
@@ -252,10 +252,10 @@ void AI::enemy()
 
               if (r->getOwner() == 1) {
                 if (forces[0]>forces[1] &&
-                    (r->program!=Robot::PROGRAM_DESTROY ||
-                     r->program_parameter.param != Robot::P_PARAM_ROBOTS)) {
-                  r->program=Robot::PROGRAM_DESTROY;
-                  r->program_parameter.param = Robot::P_PARAM_ROBOTS;
+                    (r->program.type!=RobotProgram::DESTROY ||
+                     r->program.parameter.param != RobotProgram::ROBOTS)) {
+                  r->program.type=RobotProgram::DESTROY;
+                  r->program.parameter.param = RobotProgram::ROBOTS;
                   return;
                 } /* if */ 
               } /* if */ 
@@ -288,9 +288,9 @@ void AI::enemy()
 	/* Count the number of robots: */ 
     for (Robot* r: map->robots) {
       if (r->getOwner() == 1) {
-        if (r->program==Robot::PROGRAM_CAPTURE) nrobots[0]++;
-        if (r->program==Robot::PROGRAM_DESTROY) nrobots[1]++;
-        if (r->program==Robot::PROGRAM_STOPDEFEND) nrobots[2]++;
+        if (r->program.type==RobotProgram::CAPTURE) nrobots[0]++;
+        if (r->program.type==RobotProgram::DESTROY) nrobots[1]++;
+        if (r->program.type==RobotProgram::STOPDEFEND) nrobots[2]++;
       }
     }
 
@@ -308,8 +308,8 @@ void AI::enemy()
 			
 //			fprintf(fp,"Achieved.\n");
 
-          r->program=Robot::PROGRAM_DESTROY;
-          r->program_parameter.param = Robot::P_PARAM_ROBOTS;
+          r->program.type=RobotProgram::DESTROY;
+          r->program.parameter.param = RobotProgram::ROBOTS;
 		} /* if */ 
 	} else {
       int map_robots_0_size =
@@ -322,33 +322,33 @@ void AI::enemy()
           /* There are too many robots in STOP & DEFEND: */
           for (Robot *r : map->robots) {
             if (r->getOwner() == 1) {
-              if (r->program == Robot::PROGRAM_STOPDEFEND) {
+              if (r->program.type == RobotProgram::STOPDEFEND) {
                 if (nrobots[0] < 6 &&
                     factories[2] <
                     (factories[1] + factories[0]) &&
                     (map_robots_0_size * 2) <= nrobots[1]) {
                   /* Convert the robot to a conquering one: */
                   if (factories[1] > factories[0]) {
-                    r->program = Robot::PROGRAM_CAPTURE;
-                    r->program_parameter.param =
-                                 Robot::P_PARAM_EFACTORIES;
+                    r->program.type = RobotProgram::CAPTURE;
+                    r->program.parameter.param =
+                                 RobotProgram::ENEMY_FACTORIES;
                     return;
                   } else {
-                    r->program = Robot::PROGRAM_CAPTURE;
-                    r->program_parameter.param =
-                      Robot::P_PARAM_NFACTORIES;
+                    r->program.type = RobotProgram::CAPTURE;
+                    r->program.parameter.param =
+                      RobotProgram::NEUTRAL_FACTORIES;
                     return;
                   } /* if */
                 } else {
                   if ((map_robots_0_size * 2) > nrobots[1]) {
-                    r->program = Robot::PROGRAM_DESTROY;
-                    r->program_parameter.param =
-                      Robot::P_PARAM_ROBOTS;
+                    r->program.type = RobotProgram::DESTROY;
+                    r->program.parameter.param =
+                      RobotProgram::ROBOTS;
                     return;
                   } else {
-                    r->program = Robot::PROGRAM_CAPTURE;
-                    r->program_parameter.param =
-                      Robot::P_PARAM_WARBASES;
+                    r->program.type = RobotProgram::CAPTURE;
+                    r->program.parameter.param =
+                      RobotProgram::WARBASES;
                     return;
                   } /* if */
                 }   /* if */
@@ -387,14 +387,14 @@ void AI::enemy()
 					
 //					fprintf(fp,"Achieved, it will conquer ENEMY FACTORIES\n");
 
-					r->program=Robot::PROGRAM_CAPTURE;
-					r->program_parameter.param = Robot::P_PARAM_EFACTORIES;
+					r->program.type=RobotProgram::CAPTURE;
+					r->program.parameter.param = RobotProgram::ENEMY_FACTORIES;
 				} else {
 
 //					fprintf(fp,"Achieved, it will conquer NEUTRAL FACTORIES\n");
 
-					r->program=Robot::PROGRAM_CAPTURE;
-					r->program_parameter.param = Robot::P_PARAM_NFACTORIES;
+					r->program.type=RobotProgram::CAPTURE;
+					r->program.parameter.param = RobotProgram::NEUTRAL_FACTORIES;
 				} /* if */ 
 			} /* if */ 
 		} else {
@@ -409,8 +409,8 @@ void AI::enemy()
 
 //					fprintf(fp,"Achieved.\n");
 
-					r->program=Robot::PROGRAM_CAPTURE;
-					r->program_parameter.param = Robot::P_PARAM_WARBASES;
+					r->program.type=RobotProgram::CAPTURE;
+					r->program.parameter.param = RobotProgram::WARBASES;
 				} /* if */ 
 			} else {
 				/* I need more attacking robots: */ 
@@ -442,8 +442,8 @@ void AI::enemy()
 
 //					fprintf(fp,"Achieved.\n");
 					
-					r->program=Robot::PROGRAM_DESTROY;
-					r->program_parameter.param = Robot::P_PARAM_ROBOTS;
+					r->program.type=RobotProgram::DESTROY;
+					r->program.parameter.param = RobotProgram::ROBOTS;
 				} /* if */ 
 			} /* if */ 
 		} /* if */ 
@@ -593,7 +593,7 @@ Robot* AI::enemyNewRobot(const STATE state, const Vector& pos)
 		/* Valid robot, build it: */ 
 		r->pos=pos;
 		r->angle=0;
-		r->program=Robot::PROGRAM_FORWARD;
+		r->program.type=RobotProgram::FORWARD;
 		r->op=Robot::OPERATOR::NONE;
 		r->calculateCMC(Resources::pieceTiles[1]);
 		r->shipover=false;
@@ -733,7 +733,7 @@ Robot::OPERATOR AI::searchEngine(const Robot& robot, const int goaltype, const V
   expandOperators(x, y, robot.angle, robot, y * (map->width() * 2) + x, 0, depth);
 
   /* ADVANCE PROGRAM: */
-  if (goaltype==Robot::PROGRAM_ADVANCE) {
+  if (goaltype==RobotProgram::ADVANCE) {
     double further;
     int mincost;
     bool first = true;
@@ -787,7 +787,7 @@ Robot::OPERATOR AI::searchEngine(const Robot& robot, const int goaltype, const V
   }
 
   /* RETREAT PROGRAM: */
-  if (goaltype==Robot::PROGRAM_RETREAT) {
+  if (goaltype==RobotProgram::RETREAT) {
     double further;
     int mincost;
     bool first = true;
@@ -840,7 +840,7 @@ Robot::OPERATOR AI::searchEngine(const Robot& robot, const int goaltype, const V
 	} /* if */ 
 
 	/* CAPTURE PROGRAM: */ 
-	if (goaltype==Robot::PROGRAM_CAPTURE) {
+	if (goaltype==RobotProgram::CAPTURE) {
 		double closer;
 		int mincost;
 		bool first=true;
@@ -903,7 +903,7 @@ Robot::OPERATOR AI::searchEngine(const Robot& robot, const int goaltype, const V
 
 
 	/* DESTROY PROGRAM: */ 
-	if (goaltype==Robot::PROGRAM_DESTROY) {
+	if (goaltype==RobotProgram::DESTROY) {
 		int i,j;
 		double closer;
 		AIOperator *op;
@@ -1006,10 +1006,10 @@ Robot::OPERATOR AI::programAdvance(const Robot& robot, const int player)
 
   if (operators.size()) {
     if (robot.hasElectronics()) {
-      op = searchEngine(robot, Robot::PROGRAM_ADVANCE, Vector(0, 0, 0), WE_SEARCH_DEPTH);
+      op = searchEngine(robot, RobotProgram::ADVANCE, Vector(0, 0, 0), WE_SEARCH_DEPTH);
     } else {
       if ((rand() % 4) != 0) {
-        op = searchEngine(robot, Robot::PROGRAM_ADVANCE, Vector(0, 0, 0), WOE_SEARCH_DEPTH);
+        op = searchEngine(robot, RobotProgram::ADVANCE, Vector(0, 0, 0), WOE_SEARCH_DEPTH);
       } else {
         rankOperatorsAdvance(operators);
         op = chooseOperator(operators, 8).first_robotop;
@@ -1043,10 +1043,10 @@ Robot::OPERATOR AI::programRetreat(const Robot& robot, const int player)
   if (operators.size()) {
     /* Choose one operator: */
     if (robot.hasElectronics()) {
-      op = searchEngine(robot, Robot::PROGRAM_RETREAT, Vector(0, 0, 0), WE_SEARCH_DEPTH);
+      op = searchEngine(robot, RobotProgram::RETREAT, Vector(0, 0, 0), WE_SEARCH_DEPTH);
     } else {
       if ((rand() % 4) != 0) {
-        op = searchEngine(robot, Robot::PROGRAM_RETREAT, Vector(0, 0, 0), WOE_SEARCH_DEPTH);
+        op = searchEngine(robot, RobotProgram::RETREAT, Vector(0, 0, 0), WOE_SEARCH_DEPTH);
       } else {
         rankOperatorsRetreat(operators);
         op = chooseOperator(operators, 8).first_robotop;
@@ -1230,7 +1230,7 @@ Robot::OPERATOR AI::programCapture(const Robot& robot, Vector *program_goal, con
       *program_goal = Vector(-1, -1, -1);
 
       for (const auto& b: map->buildings) {
-        if (robot.program_parameter.as_int == Robot::P_PARAM_WARBASES &&
+        if (robot.program.parameter.as_int == RobotProgram::WARBASES &&
             b->type == Building::TYPE::WARBASE &&
             b->owner != player &&
             worseMapTerrain(int((b->pos.x + 2.0) / 0.5), int(b->pos.y / 0.5), 2, 2) <= T_HOLE) {
@@ -1241,7 +1241,7 @@ Robot::OPERATOR AI::programCapture(const Robot& robot, Vector *program_goal, con
             *program_goal = b->pos + Vector(2.5, 0.5, 0);
           }
         }
-        if (robot.program_parameter.as_int == Robot::P_PARAM_NFACTORIES &&
+        if (robot.program.parameter.as_int == RobotProgram::NEUTRAL_FACTORIES &&
             (b->type == Building::TYPE::FACTORY)
             && b->owner == 0 &&
             worseMapTerrain(int((b->pos.x + 1.0) / 0.5), int(b->pos.y / 0.5), 2, 2) <= T_HOLE) {
@@ -1252,7 +1252,7 @@ Robot::OPERATOR AI::programCapture(const Robot& robot, Vector *program_goal, con
             *program_goal = b->pos + Vector(1.5, 0.5, 0);
           }
         }
-        if (robot.program_parameter.as_int == Robot::P_PARAM_EFACTORIES &&
+        if (robot.program.parameter.as_int == RobotProgram::ENEMY_FACTORIES &&
             (b->type == Building::TYPE::FACTORY) &&
             b->owner!=0 &&
             b->owner!=player &&
@@ -1270,10 +1270,10 @@ Robot::OPERATOR AI::programCapture(const Robot& robot, Vector *program_goal, con
     if (program_goal->x != -1 &&
         (*program_goal) != robot.pos) {
       if (robot.hasElectronics()) {
-        op = searchEngine(robot, Robot::PROGRAM_CAPTURE, *program_goal, WE_SEARCH_DEPTH);
+        op = searchEngine(robot, RobotProgram::CAPTURE, *program_goal, WE_SEARCH_DEPTH);
       } else {
         if ((rand() % 4) != 0) {
-          op = searchEngine(robot, Robot::PROGRAM_CAPTURE, *program_goal, WOE_SEARCH_DEPTH);
+          op = searchEngine(robot, RobotProgram::CAPTURE, *program_goal, WOE_SEARCH_DEPTH);
         } else {
           rankOperatorsCapture(l, *program_goal);
           op = chooseOperator(l, 8).first_robotop;
@@ -1303,7 +1303,7 @@ Robot::OPERATOR AI::programDestroy(const Robot& robot, Vector *program_goal, con
 
   if (lops.size()) {
     /* Choose one operator: */
-    if (robot.program_parameter.as_int != Robot::P_PARAM_ROBOTS) {
+    if (robot.program.parameter.as_int != RobotProgram::ROBOTS) {
       /* Seek a goal: */
       bool anygoal = false;
       float distance, minimumdistance;
@@ -1311,7 +1311,7 @@ Robot::OPERATOR AI::programDestroy(const Robot& robot, Vector *program_goal, con
       *program_goal = Vector(-1, -1, -1);
 
       for (const auto& b: map->buildings) {
-        if (robot.program_parameter.as_int == Robot::P_PARAM_WARBASES &&
+        if (robot.program.parameter.as_int == RobotProgram::WARBASES &&
             b->type == Building::TYPE::WARBASE &&
             b->owner!=player &&
             worseMapTerrain(int((b->pos.x + 2.0) / 0.5), int(b->pos.y / 0.5), 2, 2) <= T_HOLE) {
@@ -1322,7 +1322,7 @@ Robot::OPERATOR AI::programDestroy(const Robot& robot, Vector *program_goal, con
             *program_goal = b->pos+Vector(2.5,0.5,0);
           }
         }
-        if (robot.program_parameter.as_int == Robot::P_PARAM_EFACTORIES
+        if (robot.program.parameter.as_int == RobotProgram::ENEMY_FACTORIES
             && (b->type == Building::TYPE::FACTORY) && b->owner != 0 && b->owner != player &&
             worseMapTerrain(int((b->pos.x + 1.0) / 0.5), int(b->pos.y / 0.5), 2, 2) <= T_HOLE) {
           distance=float(((b->pos + Vector(1.5, 0.5, 0)) - robot.pos).norma());
@@ -1337,10 +1337,10 @@ Robot::OPERATOR AI::programDestroy(const Robot& robot, Vector *program_goal, con
       if (program_goal->x != -1 &&
           (*program_goal) != robot.pos) {
         if (robot.hasElectronics()) {
-          op = searchEngine(robot, Robot::PROGRAM_CAPTURE, *program_goal, WE_SEARCH_DEPTH);
+          op = searchEngine(robot, RobotProgram::CAPTURE, *program_goal, WE_SEARCH_DEPTH);
         } else {
           if ((rand() % 4) != 0) {
-            op = searchEngine(robot, Robot::PROGRAM_CAPTURE, *program_goal, WOE_SEARCH_DEPTH);
+            op = searchEngine(robot, RobotProgram::CAPTURE, *program_goal, WOE_SEARCH_DEPTH);
           } else {
             rankOperatorsCapture(lops, *program_goal);
             op = chooseOperator(lops, 8).first_robotop;
@@ -1461,10 +1461,10 @@ Robot::OPERATOR AI::programDestroy(const Robot& robot, Vector *program_goal, con
             }
           } else {
             if (robot.hasElectronics()) {
-              op = searchEngine(robot, Robot::PROGRAM_DESTROY, *program_goal, WE_SEARCH_DEPTH);
+              op = searchEngine(robot, RobotProgram::DESTROY, *program_goal, WE_SEARCH_DEPTH);
             } else {
               if ((rand() % 4) != 0) {
-                op = searchEngine(robot, Robot::PROGRAM_DESTROY, *program_goal, WOE_SEARCH_DEPTH);
+                op = searchEngine(robot, RobotProgram::DESTROY, *program_goal, WOE_SEARCH_DEPTH);
               } else {
                 rankOperatorsCapture(lops, *program_goal);
                 op = chooseOperator(lops, 8).first_robotop;
@@ -1473,10 +1473,10 @@ Robot::OPERATOR AI::programDestroy(const Robot& robot, Vector *program_goal, con
           }
         } else {
           if (robot.hasElectronics()) {
-            op = searchEngine(robot, Robot::PROGRAM_DESTROY, *program_goal, WE_SEARCH_DEPTH);
+            op = searchEngine(robot, RobotProgram::DESTROY, *program_goal, WE_SEARCH_DEPTH);
           } else {
             if ((rand() % 4) != 0) {
-              op = searchEngine(robot, Robot::PROGRAM_DESTROY, *program_goal, WOE_SEARCH_DEPTH);
+              op = searchEngine(robot, RobotProgram::DESTROY, *program_goal, WOE_SEARCH_DEPTH);
             } else {
               rankOperatorsCapture(lops, *program_goal);
               op = chooseOperator(lops, 8).first_robotop;

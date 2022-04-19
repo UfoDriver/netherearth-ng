@@ -435,10 +435,10 @@ bool NETHER::saveDebugReport(const std::string& filename)
         if (r->pieces[j])
           log << ' ' << pieces[j] << '\n';
       }
-      log << " PROGRAM: " << r->program << '\n';
-      log << " PROGRAM PARAMETER: " << r->program_parameter.as_int << '\n';
+      log << " PROGRAM: " << r->program.type << '\n';
+      log << " PROGRAM PARAMETER: " << r->program.parameter.as_int << '\n';
       log << " PROGRAM GOAL: ";
-      log << r->program_goal;
+      log << r->program.goal;
       log << " ACTUAL OPERATOR: " << int(r->op) << '\n';
       if (r->shipover)
         log << " HAS THE SHIP OVER IT\n";
@@ -450,8 +450,6 @@ bool NETHER::saveDebugReport(const std::string& filename)
       log << " ANGLE: " << r->angle << '\n';
       log << " MINIMUM CONTAINER BOX:\n";
       log << r->cmc;
-      log << " ELECTRONICS STATE: " << r->getElectronicsState()
-          <<"\n CHASSIS STATE: " << r->chassisState;
       log << "\n\n";
     }
   }
@@ -570,8 +568,8 @@ bool NETHER::cycle(unsigned char *keyboard)
         controlled = r;
         if (controlled->op == Robot::OPERATOR::FORWARD)
           controlled->op = Robot::OPERATOR::NONE;
-        if (controlled->program == Robot::PROGRAM_FORWARD)
-          controlled->program=Robot::PROGRAM_STOPDEFEND;
+        if (controlled->program.type == RobotProgram::FORWARD)
+          controlled->program.type=RobotProgram::STOPDEFEND;
         menu.activateMenu(Menu::TYPE::ROBOT, StatusButton::NAME::ROBOT4);
       }
     }
