@@ -150,8 +150,9 @@ std::array<int, 7> Stats::calculateCost(const Robot& robot)
 
   std::array<int, 7> invoice {0};
   // Calculate specific resources first, except chasis
+  std::bitset<5> pieces = robot.getPieces();
   for (int robotIndex = 0, priceIndex = 5; robotIndex < 5; robotIndex++, priceIndex--) {
-    if (robot.pieces[robotIndex]) {
+    if (pieces[robotIndex]) {
       invoice[priceIndex] = prices[priceIndex];
     }
   }

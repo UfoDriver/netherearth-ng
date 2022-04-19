@@ -92,8 +92,10 @@ public:
   unsigned short getOwner() { return owner; }
   void dispatchOperator(NETHER* nether, unsigned char* keyboard);
 
+  void setPieces(std::bitset<5> newPieces) { pieces = newPieces; }
+  std::bitset<5> getPieces() const { return pieces; }
+
   int traction {-1};
-  std::bitset<5> pieces = false;
 
   RobotProgram program;
   OPERATOR op;
@@ -106,14 +108,15 @@ public:
   int angle;
   CMC cmc;
 
-  void calculateCMC(std::vector<Piece3DObject>& pieceTiles);
   void copyDesign(const Robot& robot);
   void shipDetached() { animation.electronics = 6; }
+  void calculateCMC(std::vector<Piece3DObject>& pieceTiles);
 
   sexp::Value toSexp() const;
   bool fromSexp(const sexp::Value&);
 
 private:
+  std::bitset<5> pieces = false;
   int id { Robot::counter++ };
   unsigned short owner;
 

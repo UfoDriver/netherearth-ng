@@ -1,5 +1,6 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
+#include <bitset>
 #include <numeric>
 #include <cmath>
 
@@ -61,9 +62,10 @@ bool ConstructionScreen::cycle(unsigned char *keyboard)
 void ConstructionScreen::constructRobot()
 {
   Robot proto(*staple);
+  std::bitset<5> pieces = proto.getPieces();
 
   if (menuPointer >= MENU::CANNON) {
-    proto.pieces[int(menuPointer) - 23] = !proto.pieces[int(menuPointer) - 23];
+    pieces[int(menuPointer) - 23] = !pieces[int(menuPointer) - 23];
   }
 
   if (menuPointer <= MENU::ANTIGRAV) {
@@ -73,6 +75,8 @@ void ConstructionScreen::constructRobot()
       proto.traction = int(menuPointer) - 20;
     }
   }
+
+  proto.setPieces(pieces);
 
   if (nether->stats.canBuildRobot(0, proto)) {
     staple->copyDesign(proto);
@@ -264,7 +268,7 @@ void ConstructionScreen::draw(int width, int height, const Light& light)
           Resources::pieceTiles[0][i].draw(Color(0.5, 0.5, 0.5));
         }
       } else {
-        if (staple->pieces[i - 3]) {
+        if (staple->getPieces()[i - 3]) {
           Resources::pieceTiles[0][i].draw(Color(1.0, 1.0, 1.0));
         } else {
           Resources::pieceTiles[0][i].draw(Color(0.5, 0.5, 0.5));

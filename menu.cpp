@@ -466,9 +466,9 @@ void Menu::cycle(unsigned char* keyboard)
       if (handleKeys(keyboard)) {
         switch (activeButton) {
         case StatusButton::NAME::TARGET1:
-          if (nether->getControlled()->pieces[0] ||
-              nether->getControlled()->pieces[1] ||
-              nether->getControlled()->pieces[2]) {
+          if (nether->getControlled()->hasCannons() ||
+              nether->getControlled()->hasMissiles() ||
+              nether->getControlled()->hasPhasers()) {
             activateMenu(Menu::TYPE::ROBOT, StatusButton::NAME::ROBOT2);
             nether->getControlled()->program.type = RobotProgram::DESTROY;
             nether->getControlled()->program.parameter.param = RobotProgram::ROBOTS;
@@ -480,7 +480,7 @@ void Menu::cycle(unsigned char* keyboard)
           }
           break;
         case StatusButton::NAME::TARGET2:
-          if (nether->getControlled()->pieces[3]) {
+          if (nether->getControlled()->hasNuclear()) {
             activateMenu(Menu::TYPE::ROBOT, StatusButton::NAME::ROBOT2);
             nether->getControlled()->program.type = RobotProgram::DESTROY;
             nether->getControlled()->program.parameter.param = RobotProgram::ENEMY_FACTORIES;
@@ -492,7 +492,7 @@ void Menu::cycle(unsigned char* keyboard)
           }
           break;
         case StatusButton::NAME::TARGET3:
-          if (nether->getControlled()->pieces[3]) {
+          if (nether->getControlled()->hasNuclear()) {
             activateMenu(Menu::TYPE::ROBOT, StatusButton::NAME::ROBOT2);
             nether->getControlled()->program.type = RobotProgram::DESTROY;
             nether->getControlled()->program.parameter.param = RobotProgram::WARBASES;

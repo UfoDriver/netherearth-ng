@@ -46,7 +46,7 @@ Robot::Robot(unsigned short owner) : owner {owner}
 bool Robot::valid() const
 {
   if (traction == -1) return false;
-  return pieces[0] || pieces[1] || pieces[2] || pieces[3];
+  return hasCannons() || hasMissiles() || hasPhasers() || hasNuclear();
 }
 
 
@@ -242,7 +242,7 @@ void Robot::draw(Vector lightposv, bool shadows) const
       glPushMatrix();
       glTranslatef(0,0,z);
       glRotatef(angle,0,0,1);
-      if (!pieces[3]) glTranslatef(-0.2,0,0);
+      if (!hasNuclear()) glTranslatef(-0.2,0,0);
       glRotatef(animation.electronics,0,0,1);
       Resources::pieceTiles[owner][7].draw(colors[owner]);
       glPopMatrix();
@@ -394,23 +394,23 @@ void Robot::calculateCMC(std::vector<Piece3DObject>& pieceTiles)
     break;
   }
 
-  if (pieces[0]) {
+  if (hasCannons()) {
     cmc.expand(pieceTiles[3].cmc, m);
     m[14] += 0.5;
   }
-  if (pieces[1]) {
+  if (hasMissiles()) {
     cmc.expand(pieceTiles[4].cmc, m);
     m[14] += 0.35;
   }
-  if (pieces[2]) {
+  if (hasPhasers()) {
     cmc.expand(pieceTiles[5].cmc, m);
     m[14] += 0.5;
   }
-  if (pieces[3]) {
+  if (hasNuclear()) {
     cmc.expand(pieceTiles[6].cmc, m);
     m[14] += 0.8;
   }
-  if (pieces[4]) {
+  if (hasElectronics()) {
     cmc.expand(pieceTiles[7].cmc, m);
   }
 }

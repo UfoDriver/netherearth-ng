@@ -1,3 +1,4 @@
+#include <bitset>
 #ifdef _WIN32
 #include "windows.h"
 #endif
@@ -431,10 +432,13 @@ bool NETHER::saveDebugReport(const std::string& filename)
       if (r->getOwner() != i) continue;
       log << "ROBOT:\n";
       log << ' ' << tractions[r->traction] << '\n';
+
+      std::bitset<5> pieces = r->getPieces();
       for (int j = 0; j < 5; j++) {
-        if (r->pieces[j])
+        if (pieces[j])
           log << ' ' << pieces[j] << '\n';
       }
+
       log << " PROGRAM: " << r->program.type << '\n';
       log << " PROGRAM PARAMETER: " << r->program.parameter.as_int << '\n';
       log << " PROGRAM GOAL: ";

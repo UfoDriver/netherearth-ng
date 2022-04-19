@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <bitset>
 #include "ai.h"
 #include "constants.h"
 #include "nether.h"
@@ -198,13 +199,12 @@ void AI::enemy()
 
 	Robot *tmpr;	// To test is the entrance to Warbases is free
 
+    std::bitset<5>pieces {false};
+    pieces[0] = true;
+
 	tmpr=new Robot(1);
 	tmpr->traction=0;
-	tmpr->pieces[0]=true;
-	tmpr->pieces[1]=false;
-	tmpr->pieces[2]=false;
-	tmpr->pieces[3]=false;
-	tmpr->pieces[4]=false;
+	tmpr->setPieces(pieces);
 	tmpr->angle=0;
 	tmpr->program.type=RobotProgram::FORWARD;
 	tmpr->op=Robot::OPERATOR::NONE;
@@ -455,7 +455,7 @@ void AI::enemy()
 Robot* AI::enemyNewRobot(const STATE state, const Vector& pos)
 {
 	int traction=0;
-	bool pieces[5]={false,false,false,false,false};
+    std::bitset<5> pieces {false};
 	int rg=nether->stats.resources[1][R_GENERAL];
 
 	if (rg+nether->stats.resources[1][R_CHASSIS]>30 &&
@@ -579,11 +579,7 @@ Robot* AI::enemyNewRobot(const STATE state, const Vector& pos)
 	{
 		Robot *r = new Robot(1);
 		r->traction=traction;
-		r->pieces[0]=pieces[0];
-		r->pieces[1]=pieces[1];
-		r->pieces[2]=pieces[2];
-		r->pieces[3]=pieces[3];
-		r->pieces[4]=pieces[4];
+		r->setPieces(pieces);
 
         if (!nether->stats.canBuildRobot(1, *r)) {
           return 0;
@@ -1150,9 +1146,9 @@ Robot::OPERATOR AI::programStopDefend(const Robot& robot, Vector *program_goal, 
            attackmap[y * (map->width() * 2) + x + 1] != 0 ||
            attackmap[(y + 1) * (map->width() * 2) + x + 1] != 0)) {
         int prsp = 0, mrsp = 0, crsp = 0, rsp = 0;
-        if (robot.pieces[2]) prsp = realShotPaths(x, y, player, PHASER_PERSISTENCE);
-        if (robot.pieces[1]) mrsp = realShotPaths(x, y, player, MISSILE_PERSISTENCE);
-        if (robot.pieces[0]) crsp = realShotPaths(x, y, player, CANNON_PERSISTENCE);
+        if (robot.hasPhasers()) prsp = realShotPaths(x, y, player, PHASER_PERSISTENCE);
+        if (robot.hasMissiles()) mrsp = realShotPaths(x, y, player, MISSILE_PERSISTENCE);
+        if (robot.hasCannons()) crsp = realShotPaths(x, y, player, CANNON_PERSISTENCE);
         rsp = prsp | mrsp | crsp;
 
         if (rsp != 0) {
