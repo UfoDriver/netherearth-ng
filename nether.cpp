@@ -444,7 +444,7 @@ bool NETHER::saveDebugReport(const std::string& filename)
       log << " PROGRAM GOAL: ";
       log << r->program.goal;
       log << " ACTUAL OPERATOR: " << int(r->op) << '\n';
-      if (r->shipover)
+      if (r->isShipOver())
         log << " HAS THE SHIP OVER IT\n";
       else
         log << " HAS NO SHIP OVER IT\n";
@@ -524,8 +524,7 @@ void NETHER::addNewRobot(Robot* robot, int player)
 void NETHER::detachShip(Robot* robot)
 {
   if (robot == controlled) {
-    controlled->shipDetached();
-    controlled->shipover = false;
+    controlled->detachShip();
     controlled = nullptr;
     menu.activateMenu(Menu::TYPE::GENERAL, StatusButton::NAME::NONE);
   }
@@ -568,7 +567,7 @@ bool NETHER::cycle(unsigned char *keyboard)
       (int(ship->pos.y * 8) % 4) == 0) {
     for (Robot* r: map.robots) {
       if (r->getOwner() == 0 and ship->landedHere(r->pos - Vector(0.5f, 0.5f, 0.0))) {
-        r->shipover = true;
+        r->attachShip();
         controlled = r;
         if (controlled->op == Robot::OPERATOR::FORWARD)
           controlled->op = Robot::OPERATOR::NONE;

@@ -209,8 +209,6 @@ void AI::enemy()
 	tmpr->program.type=RobotProgram::FORWARD;
 	tmpr->op=Robot::OPERATOR::NONE;
 	tmpr->calculateCMC(Resources::pieceTiles[1]);
-	tmpr->shipover=false;
-
 
     {
       mean_factory_position=Vector(0,0,0);
@@ -592,7 +590,6 @@ Robot* AI::enemyNewRobot(const STATE state, const Vector& pos)
 		r->program.type=RobotProgram::FORWARD;
 		r->op=Robot::OPERATOR::NONE;
 		r->calculateCMC(Resources::pieceTiles[1]);
-		r->shipover=false;
 
 		if (!r->checkCollision(map->buildings, map->robots, true, nether->ship)) {
 			map->robots.push_back(r);

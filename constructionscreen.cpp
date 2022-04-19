@@ -94,7 +94,6 @@ void ConstructionScreen::buildRobot()
     staple->program.type = RobotProgram::FORWARD;
     staple->op = Robot::OPERATOR::NONE;
     staple->calculateCMC(Resources::pieceTiles[0]);
-    staple->shipover = false;
 
     if (!staple->checkCollision(nether->map.buildings, nether->map.robots, true, nether->getShip())) {
       nether->addNewRobot(staple, 0);

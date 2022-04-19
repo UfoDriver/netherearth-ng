@@ -68,7 +68,6 @@ public:
   Robot(const sexp::Value& sexp) { Robot(-1); fromSexp(sexp); }
 
   bool valid() const;
-  float piecesHeight(int piece);
   bool bulletHit(const std::unique_ptr<Bullet>& bullet);
   void draw(Vector lightposv, bool shadows) const;
   int cost() const;
@@ -98,11 +97,16 @@ public:
   int getAngle() const { return angle; }
   void setTraction(int newTraction) { traction = newTraction; }
   int getTraction() const { return traction; }
+  void detachShip() {
+    animation.electronics = 6;
+    shipover = false;
+  }
+  void attachShip() { shipover = true; }
+  bool isShipOver() const { return shipover; }
 
   RobotProgram program;
   OPERATOR op;
 
-  bool shipover;
   int firetimer {0};
   int strength {100};
 
@@ -110,7 +114,6 @@ public:
   CMC cmc;
 
   void copyDesign(const Robot& robot);
-  void shipDetached() { animation.electronics = 6; }
   void calculateCMC(std::vector<Piece3DObject>& pieceTiles);
 
   sexp::Value toSexp() const;
@@ -120,6 +123,7 @@ private:
   std::bitset<5> pieces = false;
   int traction {-1};
   int angle;
+  bool shipover {false};
 
   int id { Robot::counter++ };
   unsigned short owner;
@@ -145,6 +149,7 @@ private:
   bool checkCollision(const Robots& robots) const;
   bool checkCollision(Ship* ship) const;
 
+  float piecesHeight(int piece);
 };
 
 #endif // ROBOT_H
