@@ -16,7 +16,10 @@
 class NETHER;
 class Robot;
 
-
+/*
+  Map has terrain, building blocks and buildings. It has dimension and know some terrain details.
+  It reacts on big explosions (nuclear) that change the map.
+*/
 class Map
 {
 public:
@@ -33,25 +36,21 @@ public:
   float getMaxZ(const Vector& position) const;
   int getTerrain(float x, float y);
 
-  bool cycle(unsigned char* keyboard);
   bool loadMap(const std::string& filename);
+
   int worseTerrain(const Vector& position);
   void nuclearExplosionAt(Robot* robot, const Vector& position);
 
   std::vector<std::unique_ptr<Building>> buildings;
-  std::vector<std::unique_ptr<Bullet>> bullets;
-  std::vector<Explosion> explosions;
-  std::vector<Particle> particles;
-  Robots robots;
+  std::vector<BuildingBlock> buidlingBlocks;
+
+  bool cycle(unsigned char* keyboard);
 
   sexp::Value toSexp() const;
   bool fromSexp(const sexp::Value&);
 
 private:
   void cycleBuildings();
-  void cycleBullets();
-  void cycleRobots(unsigned char *keyboard);
-
   void processMapSectionSexp(const sexp::Value&);
 
   int width;

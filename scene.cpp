@@ -1,0 +1,158 @@
+#include <numeric>
+#include <cmath>
+
+#include <GL/gl.h>
+
+#include "constants.h"
+#include "nether.h"
+#include "robot.h"
+#include "scene.h"
+
+
+bool Scene::cycle(unsigned char* keyboard, NETHER* nether)
+{
+  cycleRobots(keyboard, nether);
+  cycleBullets(nether);
+
+  explosions.erase(std::remove_if(explosions.begin(), explosions.end(),
+                                  [](auto& exp) { return !exp.cycle(); }),
+                   explosions.end());
+
+  particles.erase(std::remove_if(particles.begin(), particles.end(),
+                                 [](auto& particle) { return !particle.cycle(); }),
+                  particles.end());
+
+  return true;
+}
+
+void Scene::cycleBullets(NETHER* nether)
+{
+  bullets.erase(remove_if(bullets.begin(), bullets.end(),
+                          [this, nether](auto& bullet) {
+                            bool ret = false;
+
+                            if (bullet->angle == 0) bullet->pos.x += BULLET_SPEED;
+                            if (bullet->angle == 90) bullet->pos.y += BULLET_SPEED;
+                            if (bullet->angle == 180) bullet->pos.x -= BULLET_SPEED;
+                            if (bullet->angle == 270) bullet->pos.y -= BULLET_SPEED;
+                            bullet->step++;
+
+                            Robot* r = 0;
+                            if (bullet->step >= bullet->getPersistence() || bullet->checkCollision(nether->map.buildings, robots, &r)) {
+                              ret = true;
+                              if (bullet->step < bullet->getPersistence()) {
+                                explosions.emplace_back(bullet->pos, 0);
+                              }
+                            }
+
+                            if (r != 0) {
+                              /* The bullet has collided with a robot: */
+                              if (!r->bulletHit(bullet)) {
+                                /* Robot destroyed: */
+                                explosions.emplace_back(r->pos,1);
+                                nether->sManager.playExplosion(nether->getShip()->pos, r->pos);
+                                nether->detachShip(r);
+                                nether->ai.killRobot(r->pos);
+                                robots.findAndDestroy(r);
+                              }
+                            }
+                            return ret;
+                          }),
+                bullets.end());
+}
+
+
+void Scene::cycleRobots(unsigned char* keyboard, NETHER* nether)
+{
+  for (Robot* r: robots) {
+    r->cycle(nether);
+    r->dispatchOperator(nether, keyboard);
+  }
+}
+
+
+void Scene::clear()
+{
+  explosions.clear();
+  // bullets.clear();
+  particles.clear();
+  for (Robot* r: robots) delete r;
+  robots.clear();
+}
+
+
+void Scene::draw(const Camera& camera, const Vector& light, const bool shadows)
+{
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+
+  if (explosions.size()) {
+    int minstep = std::accumulate(explosions.cbegin(), explosions.cend(), 128,
+                                  [](const int acc, const auto& e) {
+                                    if (e.size == 2 && e.step < acc)
+                                      return e.step;
+                                    else
+                                      return acc;
+                                  });
+    float r = (128 - minstep) / 256.0;
+    float offset = sin(minstep) * r;
+    camera.lookAt(offset);
+  } else {
+    camera.lookAt();
+  }
+
+  for (Robot* r: robots) {
+    if (camera.canSee(r->pos)) {
+      glPushMatrix();
+      glTranslatef(r->pos.x, r->pos.y, r->pos.z);
+      r->draw(light, shadows);
+      glPopMatrix();
+    }
+  }
+
+  for (const auto& bullet: bullets) {
+    if (camera.canSee(bullet->pos)) {
+      glPushMatrix();
+      glTranslatef(bullet->pos.x, bullet->pos.y, bullet->pos.z);
+      bullet->draw(shadows, particles);
+      glPopMatrix();
+    }
+  }
+
+  // nether->getShip()->draw(shadows, light, *this, nether->getControlled());
+
+  if (!shadows) {
+    for (const Explosion& exp: explosions) {
+      if (camera.canSee(exp.pos)) {
+        exp.draw(light, shadows);
+      }
+    }
+
+    for (const Particle& particle: particles) {
+      if (camera.canSee(particle.pos))
+        particle.draw();
+    }
+  }
+}
+
+
+void Scene::nuclearExplosionAt(const Vector& position, NETHER* nether)
+{
+  Explosion explosion(position, 2);
+  explosions.push_back(explosion);
+
+  /* Find Robots to destroy: */
+  // Ops, modifying container while iterating
+  robots.erase(std::remove_if(robots.begin(), robots.end(),
+                              [explosion, nether] (auto& r) {
+                                float distance=(r->pos - explosion.pos).norma();
+                                if (distance <= NUCLEAR_RADIUS) {
+                                  nether->ai.killRobot(r->pos);
+                                  return true;
+                                } else {
+                                  return false;
+                                }
+                              }),
+               robots.end());
+
+}

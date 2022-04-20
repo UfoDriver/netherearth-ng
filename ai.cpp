@@ -224,7 +224,7 @@ void AI::enemy()
         if (b->type == Building::TYPE::WARBASE && b->owner == 2) {
 
           tmpr->pos=b->pos+Vector(2.5,0.5,0);
-          if (!tmpr->checkCollision(map->buildings, map->robots, true, nether->getShip())) {
+          if (!tmpr->checkCollision(map->buildings, scene->robots, true, nether->getShip())) {
             /* Find the closest WARBASE to the available FACTORIES: */ 
             if (closest_to_factories_warbase==0 ||
                 (closest_to_factories_warbase->pos-b->pos).norma()<distance_to_factories) {
@@ -243,7 +243,7 @@ void AI::enemy()
           int forces[2] = {0,0};
 
           /* Test for WARBASEs in danger: */ 
-          for (Robot* r: map->robots) {
+          for (Robot* r: scene->robots) {
             if ((r->pos-b->pos).norma() < 10.0) {
               /* Robot near: */
               forces[r->getOwner()] += r->cost();
@@ -273,7 +273,7 @@ void AI::enemy()
 	/* If the warbase in danger id blocked, build robots from another warbase: */ 
 	if (in_danger_warbase!=0) {
 		tmpr->pos=in_danger_warbase->pos+Vector(2.0,0.5,0);
-		if (tmpr->checkCollision(map->buildings, map->robots, true, nether->getShip())) in_danger_warbase=closest_to_enemy_warbase;
+		if (tmpr->checkCollision(map->buildings, scene->robots, true, nether->getShip())) in_danger_warbase=closest_to_enemy_warbase;
 	} /* if */ 
 
 	delete tmpr;
@@ -284,7 +284,7 @@ void AI::enemy()
 
 
 	/* Count the number of robots: */ 
-    for (Robot* r: map->robots) {
+    for (Robot* r: scene->robots) {
       if (r->getOwner() == 1) {
         if (r->program.type==RobotProgram::CAPTURE) nrobots[0]++;
         if (r->program.type==RobotProgram::DESTROY) nrobots[1]++;
@@ -311,14 +311,14 @@ void AI::enemy()
 		} /* if */ 
 	} else {
       int map_robots_0_size =
-        std::count_if(map->robots.cbegin(), map->robots.cend(),
+        std::count_if(scene->robots.cbegin(), scene->robots.cend(),
                       [](const auto r) {return r->getOwner() == 0;});
 		if (nrobots[2]>0 &&
 			(level>=2 ||
 			(level==1 && (rand()%2)==0) ||
 			(level==0 && (rand()%4)==0))) {
           /* There are too many robots in STOP & DEFEND: */
-          for (Robot *r : map->robots) {
+          for (Robot *r : scene->robots) {
             if (r->getOwner() == 1) {
               if (r->program.type == RobotProgram::STOPDEFEND) {
                 if (nrobots[0] < 6 &&
@@ -591,8 +591,8 @@ Robot* AI::enemyNewRobot(const STATE state, const Vector& pos)
 		r->op=Robot::OPERATOR::NONE;
 		r->calculateCMC(Resources::pieceTiles[1]);
 
-		if (!r->checkCollision(map->buildings, map->robots, true, nether->ship)) {
-			map->robots.push_back(r);
+		if (!r->checkCollision(map->buildings, scene->robots, true, nether->ship)) {
+			scene->robots.push_back(r);
 			newRobot(r->pos,0);
 
             nether->stats.spendRobotResources(1, *r);
@@ -1079,7 +1079,7 @@ Robot::OPERATOR AI::programStopDefend(const Robot& robot, Vector *program_goal, 
     std::fill(attackmap.begin(), attackmap.end(), 0);
 
     /* Find the nearest FIRE position: */
-    for (Robot* r: map->robots) {
+    for (Robot* r: scene->robots) {
       if (r->getOwner() == 2 - player) {
         robotZone(r->pos, &x, &y, &dx, &dy);
         for (int i = 0; i < dx; i++) {
@@ -1132,7 +1132,7 @@ Robot::OPERATOR AI::programStopDefend(const Robot& robot, Vector *program_goal, 
       }
     }
 
-    bool hasEnemies = std::any_of(map->robots.cbegin(), map->robots.cend(),
+    bool hasEnemies = std::any_of(scene->robots.cbegin(), scene->robots.cend(),
                                   [player](auto r) {
                                     return r->getOwner() == 2 - player;
                                   });
@@ -1356,7 +1356,7 @@ Robot::OPERATOR AI::programDestroy(const Robot& robot, Vector *program_goal, con
       std::fill(attackmap.begin(), attackmap.end(), 0);
 
       /* Find the nearest FIRE position: */
-      for (Robot* r: map->robots) {
+      for (Robot* r: scene->robots) {
         if (r->getOwner() != 2 - player) continue;
         if (first ||
             (*program_goal - robot.pos).norma() < distance) {

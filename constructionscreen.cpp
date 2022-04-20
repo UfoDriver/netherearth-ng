@@ -95,7 +95,7 @@ void ConstructionScreen::buildRobot()
     staple->op = Robot::OPERATOR::NONE;
     staple->calculateCMC(Resources::pieceTiles[0]);
 
-    if (!staple->checkCollision(nether->map.buildings, nether->map.robots, true, nether->getShip())) {
+    if (!staple->checkCollision(nether->map.buildings, nether->scene.robots, true, nether->getShip())) {
       nether->addNewRobot(staple, 0);
       nether->stats.spendRobotResources(0, *staple);
       nether->getShip()->pos.z = 2.0;
@@ -207,7 +207,7 @@ void ConstructionScreen::draw(int width, int height, const Light& light)
   glColor3f(1.0f, 0.0f, 0.0f);
   glTranslatef(12, 15, 0);
   staple->calculateCMC(Resources::pieceTiles[0]);
-  if (staple->checkCollision(nether->map.buildings, nether->map.robots, true, nether->getShip()) &&
+  if (staple->checkCollision(nether->map.buildings, nether->scene.robots, true, nether->getShip()) &&
       (int(nether->getAnimationTimer() * 4) % 2) == 0) {
     scaledglprintf(0.01f, 0.01f, "ENTRANCE BLOCKED!");
   }

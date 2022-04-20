@@ -57,6 +57,7 @@ target_sources (${PROJECT_NAME}
       resources.cpp
       robot.cpp
       robots.cpp
+      scene.cpp
       shadow3dobject.cpp
       ship.cpp
       soundmanager.cpp

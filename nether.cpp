@@ -37,7 +37,7 @@ extern int level;
 extern bool show_radar;
 
 
-NETHER::NETHER(const std::string& mapname): map(this), ai(this, &map), menu(this), radar(this),
+NETHER::NETHER(const std::string& mapname): map(this), ai(this, &map, &scene), menu(this), radar(this),
                                             optionsScreen(this), constructionScreen(this),
                                             camera(0, 0, 0, 0), controlled(nullptr)
 {
@@ -102,7 +102,7 @@ bool NETHER::gamecycle()
 
   switch(gameState) {
   case NETHER::STATE::PLAYING:
-    retval = cycle(keyboard);
+    retval = cycle(keyboard) && scene.cycle(keyboard, this);
     break;
   case NETHER::STATE::CONSTRUCTION:
     retval = constructionScreen.cycle(keyboard);
@@ -262,6 +262,7 @@ void NETHER::drawGame(bool shadows)
   Vector newLight(light.asVector());
   newLight = newLight / newLight.z;
   map.draw(camera, newLight, shadows);
+  scene.draw(camera, newLight, shadows);
   camera.drawViewport();
 }
 
@@ -269,18 +270,18 @@ void NETHER::drawGame(bool shadows)
 bool NETHER::saveGame(const std::string& filename)
 {
   sexp::Value robotList = sexp::Value::nil();
-  for (Robot* r: map.robots) {
+  for (Robot* r: scene.robots) {
     robotList = sexp::Value::cons(r->toSexp(), std::move(robotList));
 
   }
 
   sexp::Value explosionList = sexp::Value::nil();
-  for (Explosion& e: map.explosions) {
+  for (Explosion& e: scene.explosions) {
     explosionList = sexp::Value::cons(e.toSexp(), std::move(explosionList));
   }
 
   sexp::Value bulletList = sexp::Value::nil();
-  for (const std::unique_ptr<Bullet>& bullet: map.bullets) {
+  for (const std::unique_ptr<Bullet>& bullet: scene.bullets) {
     bulletList = sexp::Value::cons(bullet->toSexp(), std::move(bulletList));
   }
 
@@ -314,7 +315,7 @@ bool NETHER::saveGame(const std::string& filename)
     stats.toSexp(),
     sexp::Value::list(
       sexp::Value::symbol("controlled-robot"),
-      sexp::Value::integer(map.robots.findIndex(controlled))
+      sexp::Value::integer(scene.robots.findIndex(controlled))
     ),
     menu.toSexp()
   );
@@ -355,27 +356,27 @@ bool NETHER::loadGame(const std::string& filename)
       }
     } else if (sexp::car(value).as_string() == "robots") {
       // @TODO: memory leak, robots should be destroyed first
-      map.robots.clear();
+      scene.robots.clear();
       for (const sexp::Value& robot: sexp::ListAdapter(sexp::cdr(value))) {
-        map.robots.emplace_back(new Robot(robot));
+        scene.robots.emplace_back(new Robot(robot));
       }
     } else if (sexp::car(value).as_string() == "bullets") {
       // @TODO: check if memory leak in .clear()
-      map.bullets.clear();
+      scene.bullets.clear();
       for (const sexp::Value& bullet: sexp::ListAdapter(sexp::cdr(value))) {
-        map.bullets.emplace_back(Bullet::fromSexp(bullet));
+        scene.bullets.emplace_back(Bullet::fromSexp(bullet));
       }
     } else if (sexp::car(value).as_string() == "explosions") {
-      map.explosions.clear();
+      scene.explosions.clear();
       for (const sexp::Value& explosion: sexp::ListAdapter(sexp::cdr(value))) {
-        map.explosions.emplace_back(explosion);
+        scene.explosions.emplace_back(explosion);
       }
     } else if (sexp::car(value).as_string() == "stats") {
       stats.fromSexp(value);
     } else if (sexp::car(value).as_string() == "controlled-robot") {
       int controlledRobot = sexp::cdar(value).as_int();
       if (controlledRobot >= 0)
-        controlled = map.robots[controlledRobot];
+        controlled = scene.robots[controlledRobot];
       else
         controlled = 0;
     } else if (sexp::car(value).as_string() == "menu") {
@@ -424,11 +425,11 @@ bool NETHER::saveDebugReport(const std::string& filename)
   }
 
   for (int i = 0; i < 2; i++) {
-    log << "\n# OF ROBOTS PLAYER " << i << ": " << map.robots.getRobotCount(i) << '\n';
+    log << "\n# OF ROBOTS PLAYER " << i << ": " << scene.robots.getRobotCount(i) << '\n';
 
     const char* tractions[3] = {"BIPOD", "TRACKS", "ANTIGRAV"};
     const char* pieces[5] = {"CANNONS", "MISSILES", "PHASERS", "NUCLEAR", "ELECTRONICS"};
-    for (Robot* r: map.robots) {
+    for (Robot* r: scene.robots) {
       if (r->getOwner() != i) continue;
       log << "ROBOT:\n";
       log << ' ' << tractions[r->getTraction()] << '\n';
@@ -458,8 +459,8 @@ bool NETHER::saveDebugReport(const std::string& filename)
     }
   }
 
-  log << "\n# BULLETS: " << map.bullets.size() << '\n';
-  for (auto& bullet: map.bullets) {
+  log << "\n# BULLETS: " << scene.bullets.size() << '\n';
+  for (auto& bullet: scene.bullets) {
     log << " BULLET:\n TYPE: " << int(bullet->type)
         << "\n STEP: " << bullet->step
         << "\n ANGLE: " << bullet->angle << '\n';
@@ -473,8 +474,8 @@ bool NETHER::saveDebugReport(const std::string& filename)
     log << bullet->cmc << '\n';
   }
 
-  log << "# EXPLOSIONS " << map.explosions.size() << '\n';
-  for (Explosion& e: map.explosions) {
+  log << "# EXPLOSIONS " << scene.explosions.size() << '\n';
+  for (Explosion& e: scene.explosions) {
     log << "EXPLOSION:\n POSITION:\n";
     log << e.pos;
     log << " STEP: " << e.step << "\n SIZE: " << e.size << "\n\n";
@@ -516,7 +517,7 @@ std::array<std::pair<int, int>, 7> NETHER::getResourceStats() const
 
 void NETHER::addNewRobot(Robot* robot, int player)
 {
-  map.robots.push_back(robot);
+  scene.robots.push_back(robot);
   ai.newRobot(robot->pos, player);
 }
 
@@ -565,7 +566,7 @@ bool NETHER::cycle(unsigned char *keyboard)
   if (menu.getActiveMenu() == Menu::TYPE::GENERAL &&
       (int(ship->pos.x * 8) % 4) == 0 &&
       (int(ship->pos.y * 8) % 4) == 0) {
-    for (Robot* r: map.robots) {
+    for (Robot* r: scene.robots) {
       if (r->getOwner() == 0 and ship->landedHere(r->pos - Vector(0.5f, 0.5f, 0.0))) {
         r->attachShip();
         controlled = r;
@@ -579,6 +580,7 @@ bool NETHER::cycle(unsigned char *keyboard)
   }
 
   map.cycle(keyboard);
+  scene.cycle(keyboard, this);
 
   if (gameState == NETHER::STATE::PLAYING && keyboard[pause_key] > 1) {
     optionsScreen.open();

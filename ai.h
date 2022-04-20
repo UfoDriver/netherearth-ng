@@ -9,6 +9,7 @@
 
 class AIOperator;
 class NETHER;
+class Scene;
 
 
 class AI
@@ -20,7 +21,7 @@ public:
                     CONQUERING,
                     DESTROYING};
 
-  AI(NETHER* nether, Map* map): nether(nether), map(map) {}
+  AI(NETHER* nether, Map* map, Scene* scene): nether{nether}, map{map}, scene{scene} {};
   void makePrecomputations();
   void deletePrecomputations();
   void enemy();
@@ -61,6 +62,7 @@ private:
 
   NETHER* nether;
   Map* map;
+  Scene* scene;
 };
 
 

@@ -141,25 +141,25 @@ void Ship::cycle(unsigned char* keyboard)
   }
 
   if (pos != old_shipp) {
-    if (checkCollision(nether->map.buildings, nether->map.robots)) {
+    if (checkCollision(nether->map.buildings, nether->scene.robots)) {
       timemoving = 0;
       Vector p = pos;
       pos.x = old_shipp.x;
       pos.y = old_shipp.y;
-      if (p.z != old_shipp.z && checkCollision(nether->map.buildings, nether->map.robots)) {
+      if (p.z != old_shipp.z && checkCollision(nether->map.buildings, nether->scene.robots)) {
         pos.z = old_shipp.z;
         landed = true;
       } else {
         pos.z = p.z;
       }
       pos.x = p.x;
-      if (p.x != old_shipp.x && checkCollision(nether->map.buildings, nether->map.robots)) {
+      if (p.x != old_shipp.x && checkCollision(nether->map.buildings, nether->scene.robots)) {
         pos.x = old_shipp.x;
       } else {
         pos.x = p.x;
       }
       pos.y = p.y;
-      if (p.y != old_shipp.y && checkCollision(nether->map.buildings, nether->map.robots)) {
+      if (p.y != old_shipp.y && checkCollision(nether->map.buildings, nether->scene.robots)) {
         pos.y = old_shipp.y;
       } else {
         pos.y = p.y;

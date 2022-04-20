@@ -23,6 +23,7 @@
 #include "piece3dobject.h"
 #include "radar.h"
 #include "robot.h"
+#include "scene.h"
 #include "shadow3dobject.h"
 #include "soundmanager.h"
 #include "ship.h"
@@ -90,6 +91,7 @@ public:
   std::array<std::pair<int, int>, 7> getBuildingStats() const;
   std::array<std::pair<int, int>, 7> getResourceStats() const;
 
+  Scene scene;
   Map map;
   AI ai;
   SoundManager sManager;

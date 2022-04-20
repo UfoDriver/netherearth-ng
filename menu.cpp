@@ -90,8 +90,8 @@ void Menu::drawStatus()
         }
 
         scaledglprintf(0.1f,0.1f,"%.2i ROBOTS %.2i",
-                       nether->map.robots.getRobotCount(1),
-                       nether->map.robots.getRobotCount(0));
+                       nether->scene.robots.getRobotCount(1),
+                       nether->scene.robots.getRobotCount(0));
         glColor3f(0.0f,0.8f,0.0f);
         glTranslatef(0,-65,0);
 

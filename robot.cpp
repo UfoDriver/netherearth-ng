@@ -469,7 +469,7 @@ void Robot::cycle(NETHER* nether)
           particlePos.x += ((rand() % 2) == 0 ? -0.5 : 0.5);
           break;
         }
-        nether->map.particles.emplace_back(particlePos, particleSpeed, Vector(0, 0, 0.05), 0, 0.3, color, 1.0, 0.0, 20 + (rand() % 10));
+        nether->scene.particles.emplace_back(particlePos, particleSpeed, Vector(0, 0, 0.05), 0, 0.3, color, 1.0, 0.0, 20 + (rand() % 10));
       }
     }
   } else if (traction == 0) {
@@ -511,7 +511,7 @@ void Robot::dispatchOperator(NETHER* nether, unsigned char* keyboard)
   }
 
   if (checkCollision(nether->map.buildings) or
-      checkCollision(nether->map.robots) or
+      checkCollision(nether->scene.robots) or
       checkCollision(nether->getShip()) or
       !walkable(nether->map.worseTerrain(pos))) {
     pos = oldPos;
@@ -604,7 +604,7 @@ void Robot::processOperatorCannons(NETHER *nether, unsigned char *)
   if (firetimer == 0) {
     Vector bulletPos {pos};
     bulletPos.z = piecesHeight(0) + 0.3f;
-    nether->map.bullets.emplace_back(new BulletCannon(bulletPos, this));
+    nether->scene.bullets.emplace_back(new BulletCannon(bulletPos, this));
     nether->sManager.playShot(nether->getShip()->pos, bulletPos);
   }
   firetimer++;
@@ -620,7 +620,7 @@ void Robot::processOperatorMissiles(NETHER *nether, unsigned char *)
   if (firetimer == 0) {
     Vector bulletPos {pos};
     bulletPos.z = piecesHeight(1) + 0.2f;
-    nether->map.bullets.emplace_back(new BulletMissile(bulletPos, this));
+    nether->scene.bullets.emplace_back(new BulletMissile(bulletPos, this));
     nether->sManager.playShot(nether->getShip()->pos, bulletPos);
   }
   firetimer++;
@@ -636,7 +636,7 @@ void Robot::processOperatorPhasers(NETHER *nether, unsigned char *)
   if (firetimer == 0) {
     Vector bulletPos {pos};
     bulletPos.z = piecesHeight(2) + 0.3f;
-    nether->map.bullets.emplace_back(new BulletPhaser(bulletPos, this));
+    nether->scene.bullets.emplace_back(new BulletPhaser(bulletPos, this));
     nether->sManager.playShot(nether->getShip()->pos, bulletPos);
   }
   firetimer++;
@@ -650,6 +650,7 @@ void Robot::processOperatorPhasers(NETHER *nether, unsigned char *)
 void Robot::processOperatorNuclear(NETHER *nether, unsigned char *)
 {
   nether->map.nuclearExplosionAt(this, pos);
+  nether->scene.nuclearExplosionAt(pos, nether);
 }
 
 
