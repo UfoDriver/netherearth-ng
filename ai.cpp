@@ -29,12 +29,12 @@ void AI::fillZone(std::vector<int>& map, int w, int val, int x, int y, int dx, i
 void AI::makePrecomputations()
 {
   discreetmap.clear();
-  discreetmap.resize(map->width() * 2 * map->height() * 2, 0);
+  discreetmap.resize(map->getWidth() * 2 * map->getHeight() * 2, 0);
   bk_discreetmap.clear();
-  bk_discreetmap.resize(map->width() * 2 * map->height() * 2);
-  searchmap.resize(map->width() * 2 * map->height() * 2);
-  attackmap.resize(map->width() * 2 * map->height() * 2);
-  for (int i = 0; i < map->width() * 2 * map->height() * 2; i++) {
+  bk_discreetmap.resize(map->getWidth() * 2 * map->getHeight() * 2);
+  searchmap.resize(map->getWidth() * 2 * map->getHeight() * 2);
+  attackmap.resize(map->getWidth() * 2 * map->getHeight() * 2);
+  for (int i = 0; i < map->getWidth() * 2 * map->getHeight() * 2; i++) {
     AIOperator op;
     op.used = false;
     searchmap[i] = op;
@@ -42,16 +42,16 @@ void AI::makePrecomputations()
   }
 
   /* Setup the terrains for the new map: */
-  for (int y = 0; y < map->height(); y++) {
-    for(int x = 0; x < map->width(); x++) {
-      fillZone(discreetmap, map->width() * 2, map->terrain(float(x), float(y)), x * 2, y * 2, 2, 2);
-      fillZone(bk_discreetmap, map->width() * 2, map->terrain(float(x), float(y)), x * 2, y * 2, 2, 2);
+  for (int y = 0; y < map->getHeight(); y++) {
+    for(int x = 0; x < map->getWidth(); x++) {
+      fillZone(discreetmap, map->getWidth() * 2, map->getTerrain(float(x), float(y)), x * 2, y * 2, 2, 2);
+      fillZone(bk_discreetmap, map->getWidth() * 2, map->getTerrain(float(x), float(y)), x * 2, y * 2, 2, 2);
     }
   }
 
   for (const auto& b: map->buildings) {
     for (const auto& block: b->blocks)
-    fillZone(discreetmap, map->width() * 2,
+    fillZone(discreetmap, map->getWidth() * 2,
              T_BUILDING, int(block.pos.x / 0.5), int(block.pos.y / 0.5), 2, 2);
   }
 }
@@ -69,7 +69,7 @@ int AI::robotHere(const Vector& pos)
 {
   int x = int(pos.x/0.5);
   int y = int(pos.y/0.5);
-  int robot = discreetmap[y * (map->width() * 2) + x];
+  int robot = discreetmap[y * (map->getWidth() * 2) + x];
 
   if (robot != T_ROBOT && robot != T_EROBOT) robot = 0;
   return robot;
@@ -80,10 +80,10 @@ int AI::killRobot(const Vector& pos)
 {
   int x, y, dx, dy;
   robotZone(pos, &x, &y, &dx, &dy);
-  int owner = discreetmap[y * (map->width() * 2) + x];
+  int owner = discreetmap[y * (map->getWidth() * 2) + x];
   for (int i = 0; i < dx; i++) {
     for(int j = 0; j < dy; j++) {
-      discreetmap[(y + j) * (map->width() * 2) + (x + i)] = bk_discreetmap[(y + j) * (map->width() * 2) + (x + i)];
+      discreetmap[(y + j) * (map->getWidth() * 2) + (x + i)] = bk_discreetmap[(y + j) * (map->getWidth() * 2) + (x + i)];
     }
   }
   return owner;
@@ -117,9 +117,9 @@ void AI::newRobot(const Vector& pos, const int owner)
   int x, y, dx, dy;
   robotZone(pos,&x,&y,&dx,&dy);
   if (owner == 0)
-    fillZone(discreetmap, map->width() * 2, T_ROBOT, x, y, dx, dy);
+    fillZone(discreetmap, map->getWidth() * 2, T_ROBOT, x, y, dx, dy);
   else
-    fillZone(discreetmap, map->width() * 2, T_EROBOT, x, y, dx, dy);
+    fillZone(discreetmap, map->getWidth() * 2, T_EROBOT, x, y, dx, dy);
 }
 
 
@@ -135,10 +135,10 @@ int AI::worseMapTerrain(const int x, const int y, const int dx, const int dy)
   int t = T_GRASS, t2;
   for (int i = 0; i < dx; i++) {
     for (int j = 0; j < dy; j++) {
-      if (x + i < 0 || x + i >= map->width() * 2 ||
-          y + j < 0 || y + j >= map->height() * 2)
+      if (x + i < 0 || x + i >= map->getWidth() * 2 ||
+          y + j < 0 || y + j >= map->getHeight() * 2)
         return T_OUT;
-      t2 = discreetmap[(y + j) * (map->width() * 2) + x + i];
+      t2 = discreetmap[(y + j) * (map->getWidth() * 2) + x + i];
       if (t2 > t) t = t2;
     }
   }
@@ -153,7 +153,7 @@ void AI::removeBuilding(const Vector& pos)
 
   for (int i = 0; i < 2; i++) {
     for (int j = 0; j  <2; j++) {
-      discreetmap[(y + j) * (map->width() * 2) + (x + i)] = bk_discreetmap[(y + j) * (map->width() * 2) + (x + i)];
+      discreetmap[(y + j) * (map->getWidth() * 2) + (x + i)] = bk_discreetmap[(y + j) * (map->getWidth() * 2) + (x + i)];
     }
   }
 }
@@ -655,7 +655,7 @@ bool AI::expandOperators(const int x, const int y, const int angle, const Robot&
 	bool deadend=true;
 
 	for (int i = 0; i < 4; i++) {
-		int newpos = previous+xd[i]+yd[i]*(map->width()*2);
+		int newpos = previous+xd[i]+yd[i]*(map->getWidth()*2);
 		if (newpos!=searchmap[previous].previous) {
 			terrain=worseMapTerrain(x+xd2[i],y+yd2[i],2+xd3[i],2+yd3[i]);
 			if (terrain<=T_HOLE &&
@@ -716,14 +716,14 @@ Robot::OPERATOR AI::searchEngine(const Robot& robot, const int goaltype, const V
   robotZone(robot.pos, &x, &y, &dx, &dy);
 
   /* Build a new AI_operator: */
-  int offs = y * (map->width() * 2) + x;
+  int offs = y * (map->getWidth() * 2) + x;
   searchmap[offs].used = true;
   searchmap[offs].cost = 0;
   searchmap[offs].previous = -1;
   searchmap[offs].first_robotop = Robot::OPERATOR::NONE;
   searchmap[offs].newpos = robot.pos;
   searchmap[offs].deadend = false;
-  expandOperators(x, y, robot.getAngle(), robot, y * (map->width() * 2) + x, 0, depth);
+  expandOperators(x, y, robot.getAngle(), robot, y * (map->getWidth() * 2) + x, 0, depth);
 
   /* ADVANCE PROGRAM: */
   if (goaltype==RobotProgram::ADVANCE) {
@@ -735,10 +735,10 @@ Robot::OPERATOR AI::searchEngine(const Robot& robot, const int goaltype, const V
 
     for(int i = -depth; i < depth; i++) {
       for(int j = -depth; j < depth; j++) {
-        if ((x + i) >= 0 && (x + i) < (map->width() * 2) &&
-            (y + j) >= 0 && (y + j) < (map->height() * 2) &&
+        if ((x + i) >= 0 && (x + i) < (map->getWidth() * 2) &&
+            (y + j) >= 0 && (y + j) < (map->getHeight() * 2) &&
             (i != 0 || j != 0)) {
-          op = &searchmap[(y + j) * (map->width() * 2) + (x + i)];
+          op = &searchmap[(y + j) * (map->getWidth() * 2) + (x + i)];
           if (op->used) {
             if (first ||
                 (op->deadend == bestop->deadend &&
@@ -789,10 +789,10 @@ Robot::OPERATOR AI::searchEngine(const Robot& robot, const int goaltype, const V
 
     for (int i = -depth; i < depth; i++) {
       for(int j = -depth; j < depth; j++) {
-        if ((x + i) >= 0 && (x + i) < (map->width() * 2) &&
-            (y+j)>=0 && (y+j)<(map->height()*2) &&
+        if ((x + i) >= 0 && (x + i) < (map->getWidth() * 2) &&
+            (y+j)>=0 && (y+j)<(map->getHeight()*2) &&
 					(i!=0 || j!=0)) {
-					op=&searchmap[(y+j)*(map->width()*2)+(x+i)];
+					op=&searchmap[(y+j)*(map->getWidth()*2)+(x+i)];
 					if (op->used) {
 						if (first ||
 							(op->deadend==bestop->deadend &&
@@ -846,10 +846,10 @@ Robot::OPERATOR AI::searchEngine(const Robot& robot, const int goaltype, const V
 
 		for(int i=-depth;i<depth;i++) {
 			for(int j=-depth;j<depth;j++) {
-				if ((x+i)>=0 && (x+i)<(map->width()*2) &&
-					(y+j)>=0 && (y+j)<(map->height()*2) &&
+				if ((x+i)>=0 && (x+i)<(map->getWidth()*2) &&
+					(y+j)>=0 && (y+j)<(map->getHeight()*2) &&
 					(i!=0 || j!=0)) {
-					op=&searchmap[(y+j)*(map->width()*2)+(x+i)];
+					op=&searchmap[(y+j)*(map->getWidth()*2)+(x+i)];
 					if (op->used) {
 						if (first ||
 							((op->deadend==bestop->deadend || (op->newpos+Vector(0.5,0.5,0)-goalpos).norma()==0) &&
@@ -907,10 +907,10 @@ Robot::OPERATOR AI::searchEngine(const Robot& robot, const int goaltype, const V
 
 		for(i=-depth;i<depth;i++) {
 			for(j=-depth;j<depth;j++) {
-				if ((x+i)>=0 && (x+i)<(map->width()*2) &&
-					(y+j)>=0 && (y+j)<(map->height()*2) &&
+				if ((x+i)>=0 && (x+i)<(map->getWidth()*2) &&
+					(y+j)>=0 && (y+j)<(map->getHeight()*2) &&
 					(i!=0 || j!=0)) {
-					op=&searchmap[(y+j)*(map->width()*2)+(x+i)];
+					op=&searchmap[(y+j)*(map->getWidth()*2)+(x+i)];
 					if (op->used) {
 						if (first ||
 							((op->deadend==bestop->deadend || (op->newpos+Vector(0.5,0.5,0)-goalpos).norma()==0) &&
@@ -922,10 +922,10 @@ Robot::OPERATOR AI::searchEngine(const Robot& robot, const int goaltype, const V
 							mincost=op->cost;
 							first=false;
 						} /*if */ 
-						if (attackmap[(y+j)*(map->width()*2)+(x+i)]!=0 ||
-							attackmap[(y+j+1)*(map->width()*2)+(x+i)]!=0 ||
-							attackmap[(y+j)*(map->width()*2)+(x+i+1)]!=0 ||
-							attackmap[(y+j+1)*(map->width()*2)+(x+i+1)]!=0) {
+						if (attackmap[(y+j)*(map->getWidth()*2)+(x+i)]!=0 ||
+							attackmap[(y+j+1)*(map->getWidth()*2)+(x+i)]!=0 ||
+							attackmap[(y+j)*(map->getWidth()*2)+(x+i+1)]!=0 ||
+							attackmap[(y+j+1)*(map->getWidth()*2)+(x+i+1)]!=0) {
 							if (first2 ||
 								op->cost<mincost2) {
 								bestop2=op;
@@ -976,9 +976,9 @@ void AI::resetSearch(const Vector& pos, const int depth)
 
   for (int i = -depth; i < depth; i++) {
     for(int j = -depth; j < depth; j++) {
-      if ((x + i) >= 0 && (x + i) < (map->width() * 2) &&
-          (y + j) >= 0 && (y + j) < (map->height() * 2)) {
-        searchmap[(y + j) * (map->width() * 2) + (x + i)].used = false;
+      if ((x + i) >= 0 && (x + i) < (map->getWidth() * 2) &&
+          (y + j) >= 0 && (y + j) < (map->getHeight() * 2)) {
+        searchmap[(y + j) * (map->getWidth() * 2) + (x + i)].used = false;
       }
     }
   }
@@ -1086,45 +1086,45 @@ Robot::OPERATOR AI::programStopDefend(const Robot& robot, Vector *program_goal, 
           for (int j = 0; j < dy; j++) {
             collided = false;
             for (int k = 1; !collided && k < int((persistence * BULLET_SPEED) / 0.5); k++) {
-              if (x + i + k < 0 || x + i + k >= map->width() * 2 ||
-                  y + j < 0 || y + j >= map->height() * 2 ||
-                  discreetmap[(y + j) * (map->width() * 2) + (x + i + k)] > 3) {
+              if (x + i + k < 0 || x + i + k >= map->getWidth() * 2 ||
+                  y + j < 0 || y + j >= map->getHeight() * 2 ||
+                  discreetmap[(y + j) * (map->getWidth() * 2) + (x + i + k)] > 3) {
                 collided = true;
               } else {
-                attackmap[(y + j) * (map->width() * 2) + (x + i + k)] |= 4;
+                attackmap[(y + j) * (map->getWidth() * 2) + (x + i + k)] |= 4;
               }
             }
 
             collided = false;
             for (int k = 1; !collided && k < int((persistence * BULLET_SPEED) / 0.5); k++) {
-              if (x + i - k < 0 || x + i - k >= map->width() * 2 ||
-                  y + j < 0 || y + j >= map->height() * 2 ||
-                  discreetmap[(y + j) * (map->width() * 2) + (x + i - k)] >3) {
+              if (x + i - k < 0 || x + i - k >= map->getWidth() * 2 ||
+                  y + j < 0 || y + j >= map->getHeight() * 2 ||
+                  discreetmap[(y + j) * (map->getWidth() * 2) + (x + i - k)] >3) {
                 collided = true;
               } else {
-                attackmap[(y + j) * (map->width() * 2) + (x + i - k)] |= 1;
+                attackmap[(y + j) * (map->getWidth() * 2) + (x + i - k)] |= 1;
               }
             }
 
             collided = false;
             for (int k = 1; !collided && k < int((persistence * BULLET_SPEED) / 0.5); k++) {
-              if (x + i < 0 || x + i >= map->width() * 2 ||
-                  y + j + k < 0 || y + j + k >= map->height() * 2 ||
-                  discreetmap[(y + j + k) * (map->width() * 2) + (x + i)] >3) {
+              if (x + i < 0 || x + i >= map->getWidth() * 2 ||
+                  y + j + k < 0 || y + j + k >= map->getHeight() * 2 ||
+                  discreetmap[(y + j + k) * (map->getWidth() * 2) + (x + i)] >3) {
                 collided = true;
               } else {
-                attackmap[(y + j + k) * (map->width() * 2) + (x + i)] |= 8;
+                attackmap[(y + j + k) * (map->getWidth() * 2) + (x + i)] |= 8;
               }
             }
 
             collided = false;
             for (int k = 1; !collided && k < int((persistence * BULLET_SPEED) / 0.5); k++) {
-              if (x + i < 0 || x + i >= map->width() * 2 ||
-                  y + j - k < 0 || y + j - k >= map->height() * 2 ||
-                  discreetmap[(y + j - k) * (map->width() * 2) + (x + i)] > 3) {
+              if (x + i < 0 || x + i >= map->getWidth() * 2 ||
+                  y + j - k < 0 || y + j - k >= map->getHeight() * 2 ||
+                  discreetmap[(y + j - k) * (map->getWidth() * 2) + (x + i)] > 3) {
                 collided = true;
               } else {
-                attackmap[(y + j - k) * (map->width() * 2) + (x + i)] |= 2;
+                attackmap[(y + j - k) * (map->getWidth() * 2) + (x + i)] |= 2;
               }
             }
           }
@@ -1138,10 +1138,10 @@ Robot::OPERATOR AI::programStopDefend(const Robot& robot, Vector *program_goal, 
                                   });
     if (hasEnemies) {
       robotZone(robot.pos, &x, &y, &dx, &dy);
-      if ((attackmap[y * (map->width() * 2) + x] != 0 ||
-           attackmap[(y + 1) * (map->width() * 2) + x] != 0 ||
-           attackmap[y * (map->width() * 2) + x + 1] != 0 ||
-           attackmap[(y + 1) * (map->width() * 2) + x + 1] != 0)) {
+      if ((attackmap[y * (map->getWidth() * 2) + x] != 0 ||
+           attackmap[(y + 1) * (map->getWidth() * 2) + x] != 0 ||
+           attackmap[y * (map->getWidth() * 2) + x + 1] != 0 ||
+           attackmap[(y + 1) * (map->getWidth() * 2) + x + 1] != 0)) {
         int prsp = 0, mrsp = 0, crsp = 0, rsp = 0;
         if (robot.hasPhasers()) prsp = realShotPaths(x, y, player, PHASER_PERSISTENCE);
         if (robot.hasMissiles()) mrsp = realShotPaths(x, y, player, MISSILE_PERSISTENCE);
@@ -1370,45 +1370,45 @@ Robot::OPERATOR AI::programDestroy(const Robot& robot, Vector *program_goal, con
           for (int j = 0; j < dy; j++) {
             collided = false;
             for (int k = 1; !collided && k < int((persistence * BULLET_SPEED) / 0.5); k++) {
-              if (x + i + k < 0 || x + i + k >= map->width() * 2 ||
-                  y + j < 0 || y + j >= map->height() * 2 ||
-                  discreetmap[(y + j) * (map->width() * 2) + (x + i + k)] > 3) {
+              if (x + i + k < 0 || x + i + k >= map->getWidth() * 2 ||
+                  y + j < 0 || y + j >= map->getHeight() * 2 ||
+                  discreetmap[(y + j) * (map->getWidth() * 2) + (x + i + k)] > 3) {
                 collided = true;
               } else {
-                attackmap[(y + j) * (map->width() * 2) + (x + i + k)] |= 4;
+                attackmap[(y + j) * (map->getWidth() * 2) + (x + i + k)] |= 4;
               }
             }
 
             collided = false;
             for (int k = 1; !collided && k < int((persistence * BULLET_SPEED) / 0.5); k++) {
-              if (x + i - k < 0 || x + i - k >= map->width() * 2 ||
-                  y + j < 0 || y + j >= map->height() * 2 ||
-                  discreetmap[(y + j) * (map->width() * 2) + (x + i - k)] > 3) {
+              if (x + i - k < 0 || x + i - k >= map->getWidth() * 2 ||
+                  y + j < 0 || y + j >= map->getHeight() * 2 ||
+                  discreetmap[(y + j) * (map->getWidth() * 2) + (x + i - k)] > 3) {
                 collided = true;
               } else {
-                attackmap[(y + j) * (map->width() * 2) + (x + i - k)] |= 1;
+                attackmap[(y + j) * (map->getWidth() * 2) + (x + i - k)] |= 1;
               }
             }
 
             collided = false;
             for (int k = 1; !collided && k < int((persistence * BULLET_SPEED) / 0.5); k++) {
-              if (x + i < 0 || x + i >= map->width() * 2 ||
-                  y + j + k < 0 || y + j + k >= map->height() * 2 ||
-                  discreetmap[(y + j + k) * (map->width() * 2) + (x + i)] > 3) {
+              if (x + i < 0 || x + i >= map->getWidth() * 2 ||
+                  y + j + k < 0 || y + j + k >= map->getHeight() * 2 ||
+                  discreetmap[(y + j + k) * (map->getWidth() * 2) + (x + i)] > 3) {
                 collided = true;
               } else {
-                attackmap[(y + j + k) * (map->width() * 2) + (x + i)] |= 8;
+                attackmap[(y + j + k) * (map->getWidth() * 2) + (x + i)] |= 8;
               }
             }
 
             collided = false;
             for (int k = 1; !collided && k < int((persistence * BULLET_SPEED) / 0.5); k++) {
-              if (x + i < 0 || x + i >= map->width() * 2 ||
-                  y + j - k < 0 || y + j - k >= map->height() * 2 ||
-                  discreetmap[(y + j - k) * (map->width() * 2) + (x + i)] >3) {
+              if (x + i < 0 || x + i >= map->getWidth() * 2 ||
+                  y + j - k < 0 || y + j - k >= map->getHeight() * 2 ||
+                  discreetmap[(y + j - k) * (map->getWidth() * 2) + (x + i)] >3) {
                 collided = true;
               } else {
-                attackmap[(y + j - k) * (map->width() * 2) + (x + i)] |= 2;
+                attackmap[(y + j - k) * (map->getWidth() * 2) + (x + i)] |= 2;
               }
             }
           }
@@ -1417,10 +1417,10 @@ Robot::OPERATOR AI::programDestroy(const Robot& robot, Vector *program_goal, con
 
       if (!first) {
         robotZone(robot.pos, &x, &y, &dx, &dy);
-        if ((attackmap[y * (map->width() * 2) + x] !=0 ||
-             attackmap[(y + 1) * (map->width() * 2) + x] != 0 ||
-             attackmap[y * (map->width() * 2) + x + 1] !=0 ||
-             attackmap[(y + 1) * (map->width() * 2) + x + 1] != 0)) {
+        if ((attackmap[y * (map->getWidth() * 2) + x] !=0 ||
+             attackmap[(y + 1) * (map->getWidth() * 2) + x] != 0 ||
+             attackmap[y * (map->getWidth() * 2) + x + 1] !=0 ||
+             attackmap[(y + 1) * (map->getWidth() * 2) + x + 1] != 0)) {
           int prsp = 0, mrsp = 0,crsp = 0,rsp = 0;
           if (robot.hasPhasers()) prsp = realShotPaths(x, y, player, PHASER_PERSISTENCE);
           if (robot.hasMissiles()) mrsp = realShotPaths(x, y, player, MISSILE_PERSISTENCE);
@@ -1558,22 +1558,22 @@ int AI::realShotPaths(const int x, const int y, const int player, const int pers
 {
 	int rsp=0;
 
-	for (int i = 2;i < int((persistence*BULLET_SPEED)/0.5)+2 && (x+i<map->width()*2); i++) {
-		if (discreetmap[x+i+y*(map->width()*2)]==T_BUILDING ||
-			discreetmap[x+i+(y+1)*(map->width()*2)]==T_BUILDING) break;
+	for (int i = 2;i < int((persistence*BULLET_SPEED)/0.5)+2 && (x+i<map->getWidth()*2); i++) {
+		if (discreetmap[x+i+y*(map->getWidth()*2)]==T_BUILDING ||
+			discreetmap[x+i+(y+1)*(map->getWidth()*2)]==T_BUILDING) break;
 		if (player==1) {
-			if (discreetmap[x+i+y*(map->width()*2)]==T_ROBOT ||
-				discreetmap[x+i+(y+1)*(map->width()*2)]==T_ROBOT) break;
-			if (discreetmap[x+i+y*(map->width()*2)]==T_EROBOT ||
-				discreetmap[x+i+(y+1)*(map->width()*2)]==T_EROBOT) {
+			if (discreetmap[x+i+y*(map->getWidth()*2)]==T_ROBOT ||
+				discreetmap[x+i+(y+1)*(map->getWidth()*2)]==T_ROBOT) break;
+			if (discreetmap[x+i+y*(map->getWidth()*2)]==T_EROBOT ||
+				discreetmap[x+i+(y+1)*(map->getWidth()*2)]==T_EROBOT) {
 				rsp|=1;
 				break;
 			} /* if */ 
 		} else {
-			if (discreetmap[x+i+y*(map->width()*2)]==T_EROBOT ||
-				discreetmap[x+i+(y+1)*(map->width()*2)]==T_EROBOT) break;
-			if (discreetmap[x+i+y*(map->width()*2)]==T_ROBOT ||
-				discreetmap[x+i+(y+1)*(map->width()*2)]==T_ROBOT) {
+			if (discreetmap[x+i+y*(map->getWidth()*2)]==T_EROBOT ||
+				discreetmap[x+i+(y+1)*(map->getWidth()*2)]==T_EROBOT) break;
+			if (discreetmap[x+i+y*(map->getWidth()*2)]==T_ROBOT ||
+				discreetmap[x+i+(y+1)*(map->getWidth()*2)]==T_ROBOT) {
 				rsp|=1;
 				break;
 			} /* if */ 
@@ -1581,43 +1581,43 @@ int AI::realShotPaths(const int x, const int y, const int player, const int pers
 	} /* for */ 
 
 	for (int i = 1;i < int((persistence*BULLET_SPEED)/0.5)+1 && (x-i>=0); i++) {
-		if (discreetmap[x-i+y*(map->width()*2)]==T_BUILDING ||
-			discreetmap[x-i+(y+1)*(map->width()*2)]==T_BUILDING) break;
+		if (discreetmap[x-i+y*(map->getWidth()*2)]==T_BUILDING ||
+			discreetmap[x-i+(y+1)*(map->getWidth()*2)]==T_BUILDING) break;
 		if (player==1) {
-			if (discreetmap[x-i+y*(map->width()*2)]==T_ROBOT ||
-				discreetmap[x-i+(y+1)*(map->width()*2)]==T_ROBOT) break;
-			if (discreetmap[x-i+y*(map->width()*2)]==T_EROBOT ||
-				discreetmap[x-i+(y+1)*(map->width()*2)]==T_EROBOT) {
+			if (discreetmap[x-i+y*(map->getWidth()*2)]==T_ROBOT ||
+				discreetmap[x-i+(y+1)*(map->getWidth()*2)]==T_ROBOT) break;
+			if (discreetmap[x-i+y*(map->getWidth()*2)]==T_EROBOT ||
+				discreetmap[x-i+(y+1)*(map->getWidth()*2)]==T_EROBOT) {
 				rsp|=4;
 				break;
 			} /* if */ 
 		} else {
-			if (discreetmap[x-i+y*(map->width()*2)]==T_EROBOT ||
-				discreetmap[x-i+(y+1)*(map->width()*2)]==T_EROBOT) break;
-			if (discreetmap[x-i+y*(map->width()*2)]==T_ROBOT ||
-				discreetmap[x-i+(y+1)*(map->width()*2)]==T_ROBOT) {
+			if (discreetmap[x-i+y*(map->getWidth()*2)]==T_EROBOT ||
+				discreetmap[x-i+(y+1)*(map->getWidth()*2)]==T_EROBOT) break;
+			if (discreetmap[x-i+y*(map->getWidth()*2)]==T_ROBOT ||
+				discreetmap[x-i+(y+1)*(map->getWidth()*2)]==T_ROBOT) {
 				rsp|=4;
 				break;
 			} /* if */ 
 		} /* if */ 
 	} /* for */ 
 
-	for (int i = 2; i < int((persistence*BULLET_SPEED)/0.5)+2 && (y+i<map->height()*2); i++) {
-		if (discreetmap[x+(y+i)*(map->width()*2)]==T_BUILDING ||
-			discreetmap[(x+1)+(y+i)*(map->width()*2)]==T_BUILDING) break;
+	for (int i = 2; i < int((persistence*BULLET_SPEED)/0.5)+2 && (y+i<map->getHeight()*2); i++) {
+		if (discreetmap[x+(y+i)*(map->getWidth()*2)]==T_BUILDING ||
+			discreetmap[(x+1)+(y+i)*(map->getWidth()*2)]==T_BUILDING) break;
 		if (player==1) {
-			if (discreetmap[x+(y+i)*(map->width()*2)]==T_ROBOT ||
-				discreetmap[(x+1)+(y+i)*(map->width()*2)]==T_ROBOT) break;
-			if (discreetmap[x+(y+i)*(map->width()*2)]==T_EROBOT ||
-				discreetmap[(x+1)+(y+i)*(map->width()*2)]==T_EROBOT) {
+			if (discreetmap[x+(y+i)*(map->getWidth()*2)]==T_ROBOT ||
+				discreetmap[(x+1)+(y+i)*(map->getWidth()*2)]==T_ROBOT) break;
+			if (discreetmap[x+(y+i)*(map->getWidth()*2)]==T_EROBOT ||
+				discreetmap[(x+1)+(y+i)*(map->getWidth()*2)]==T_EROBOT) {
 				rsp|=2;
 				break;
 			} /* if */ 
 		} else {
-			if (discreetmap[x+(y+i)*(map->width()*2)]==T_EROBOT ||
-				discreetmap[(x+1)+(y+i)*(map->width()*2)]==T_EROBOT) break;
-			if (discreetmap[x+(y+i)*(map->width()*2)]==T_ROBOT ||
-				discreetmap[(x+1)+(y+i)*(map->width()*2)]==T_ROBOT) {
+			if (discreetmap[x+(y+i)*(map->getWidth()*2)]==T_EROBOT ||
+				discreetmap[(x+1)+(y+i)*(map->getWidth()*2)]==T_EROBOT) break;
+			if (discreetmap[x+(y+i)*(map->getWidth()*2)]==T_ROBOT ||
+				discreetmap[(x+1)+(y+i)*(map->getWidth()*2)]==T_ROBOT) {
 				rsp|=2;
 				break;
 			} /* if */ 
@@ -1625,21 +1625,21 @@ int AI::realShotPaths(const int x, const int y, const int player, const int pers
 	} /* for */ 
 
 	for (int i = 1; i < int((persistence*BULLET_SPEED)/0.5)+1 && (y-i>=0); i++) {
-		if (discreetmap[x+(y-i)*(map->width()*2)]==T_BUILDING ||
-			discreetmap[(x+1)+(y-i)*(map->width()*2)]==T_BUILDING) break;
+		if (discreetmap[x+(y-i)*(map->getWidth()*2)]==T_BUILDING ||
+			discreetmap[(x+1)+(y-i)*(map->getWidth()*2)]==T_BUILDING) break;
 		if (player==1) {
-			if (discreetmap[x+(y-i)*(map->width()*2)]==T_ROBOT ||
-				discreetmap[(x+1)+(y-i)*(map->width()*2)]==T_ROBOT) break;
-			if (discreetmap[x+(y-i)*(map->width()*2)]==T_EROBOT ||
-				discreetmap[(x+1)+(y-i)*(map->width()*2)]==T_EROBOT) {
+			if (discreetmap[x+(y-i)*(map->getWidth()*2)]==T_ROBOT ||
+				discreetmap[(x+1)+(y-i)*(map->getWidth()*2)]==T_ROBOT) break;
+			if (discreetmap[x+(y-i)*(map->getWidth()*2)]==T_EROBOT ||
+				discreetmap[(x+1)+(y-i)*(map->getWidth()*2)]==T_EROBOT) {
 				rsp|=8;
 				break;
 			} /* if */ 
 		} else {
-			if (discreetmap[x+(y-i)*(map->width()*2)]==T_EROBOT ||
-				discreetmap[(x+1)+(y-i)*(map->width()*2)]==T_EROBOT) break;
-			if (discreetmap[x+(y-i)*(map->width()*2)]==T_ROBOT ||
-				discreetmap[(x+1)+(y-i)*(map->width()*2)]==T_ROBOT) {
+			if (discreetmap[x+(y-i)*(map->getWidth()*2)]==T_EROBOT ||
+				discreetmap[(x+1)+(y-i)*(map->getWidth()*2)]==T_EROBOT) break;
+			if (discreetmap[x+(y-i)*(map->getWidth()*2)]==T_ROBOT ||
+				discreetmap[(x+1)+(y-i)*(map->getWidth()*2)]==T_ROBOT) {
 				rsp|=8;
 				break;
 			} /* if */ 

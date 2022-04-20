@@ -33,15 +33,17 @@
 
 /* GAME STATES: */
 
-enum TERRAINS {T_GRASS,
-               T_SAND,
-               T_MOUNTAINS,
-               T_HOLE,
-               T_BUILDING,
-               T_SHIP,
-               T_ROBOT,
-               T_EROBOT,
-               T_OUT};
+enum TERRAIN {
+  T_GRASS,
+  T_SAND,
+  T_MOUNTAINS,
+  T_HOLE,
+  T_BUILDING,
+  T_SHIP,
+  T_ROBOT,
+  T_EROBOT,
+  T_OUT
+};
 
 enum RESOURCES {R_GENERAL,
                 R_ELECTRONICS,

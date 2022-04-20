@@ -20,20 +20,21 @@ class Robot;
 class Map
 {
 public:
-  explicit Map(NETHER* nether) : Width{0}, Height{0}, nether {nether} {}
+  explicit Map(NETHER* nether) : width{0}, height{0}, nether{nether} {}
 
   std::vector<int> map;
 
   void resize(int const width, int const height);
   void draw(const Camera& camera, const Vector& light, const bool shadows);
 
-  int width() const { return Width; }
-  int height() const { return Height; }
+  int getWidth() const { return width; }
+  int getHeight() const { return height; }
+  float getMaxZ(float x[2], float y[2]) const;
+  float getMaxZ(const Vector& position) const;
+  int getTerrain(float x, float y);
+
   bool cycle(unsigned char* keyboard);
   bool loadMap(const std::string& filename);
-  float maxZ(float x[2], float y[2]) const;
-  float maxZ(const Vector& position) const;
-  int terrain(float x, float y);
   int worseTerrain(const Vector& position);
   void nuclearExplosionAt(Robot* robot, const Vector& position);
 
@@ -50,16 +51,13 @@ private:
   void cycleBuildings();
   void cycleBullets();
   void cycleRobots(unsigned char *keyboard);
-  int Width;
-  int Height;
-  NETHER* nether;
 
   void processMapSectionSexp(const sexp::Value&);
+
+  int width;
+  int height;
+  NETHER* nether;
 };
-
-
-std::ostream& operator<<(std::ostream& out, const Map& map);
-std::istream& operator>>(std::istream& in, Map& map);
 
 
 #endif // MAP_H

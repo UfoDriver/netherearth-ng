@@ -21,10 +21,10 @@
 extern int up_key, down_key, left_key, right_key, fire_key, pause_key;
 
 
-void Map::resize(const int width, const int height)
+void Map::resize(const int newWidth, const int newHeight)
 {
-  Width = width;
-  Height = height;
+  width = newWidth;
+  height = newHeight;
   map.clear();
   map.resize(width * height, 0);
   explosions.clear();
@@ -57,11 +57,11 @@ void Map::draw(const Camera& camera, const Vector& light, const bool shadows)
 
   if (!shadows) {
     glPushMatrix();
-    for (int j = 0; j < Height; j++) {
+    for (int j = 0; j < height; j++) {
       glPushMatrix();
-      for (int i = 0; i < Width; i++) {
+      for (int i = 0; i < width; i++) {
         if (camera.canSee(Vector(i, j, 0.0))) {
-          int o = map[i + j * Width];
+          int o = map[i + j * width];
           if (o == 0) {
             int m[8] = {13, 15, 17, 19, 7, 23, 21, 25};
             if (((i * 3 + j * 7) % m[(i + j) % 8]) == 0) o = 10;
@@ -108,18 +108,9 @@ void Map::draw(const Camera& camera, const Vector& light, const bool shadows)
 
   if (!shadows) {
     for (const Explosion& exp: explosions) {
-      glPushMatrix();
-      glTranslatef(exp.pos.x, exp.pos.y, exp.pos.z);
-      glColor4f(1.0f, 0.5f, 0.0, exp.getAlpha());
-      glDepthMask(GL_FALSE);
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-      glEnable(GL_BLEND);
-      // Somehow solid sphere dumps core
-      // glutSolidSphere(exp.getRadius(), 8, 8);
-      glutWireSphere(exp.getRadius(), 8, 8);
-      glDisable(GL_BLEND);
-      glDepthMask(GL_TRUE);
-      glPopMatrix();
+      if (camera.canSee(exp.pos)) {
+        exp.draw(light, shadows);
+      }
     }
 
     for (const Particle& particle: particles) {
@@ -130,16 +121,15 @@ void Map::draw(const Camera& camera, const Vector& light, const bool shadows)
 }
 
 
-float Map::maxZ(float x[2], float y[2]) const
+float Map::getMaxZ(float x[2], float y[2]) const
 {
   float z = 0;
-  int o;
 
   for (int i = int(x[0]); float(i) < x[1]; i++) {
     for (int j = int(y[0]); float(j) < y[1]; j++) {
-      if (i >= 0 && i < Width &&
-          j >= 0 && j < Height) {
-        o = map[i + j * Width];
+      if (i >= 0 && i < width &&
+          j >= 0 && j < height) {
+        int o = map[i + j * width];
         z = std::max(Resources::tiles[o].cmc.z[0], z);
         z = std::max(Resources::tiles[o].cmc.z[1], z);
       }
@@ -149,7 +139,7 @@ float Map::maxZ(float x[2], float y[2]) const
 }
 
 
-float Map::maxZ(const Vector& position) const
+float Map::getMaxZ(const Vector& position) const
 {
   float z = 0;
   float x[2], y[2];
@@ -157,13 +147,12 @@ float Map::maxZ(const Vector& position) const
   x[1] = position.x + 0.5;
   y[0] = position.y - 0.5;
   y[1] = position.y + 0.5;
-  int o;
 
   for (int i = int(x[0]); float(i) < x[1]; i++) {
     for (int j = int(y[0]); float(j) < y[1]; j++) {
-      if (i >= 0 && i < Width &&
-          j >= 0 && j < Height) {
-        o = map[i + j * Width];
+      if (i >= 0 && i < width &&
+          j >= 0 && j < height) {
+        int o = map[i + j * width];
         z = std::max(Resources::tiles[o].cmc.z[0], z);
         z = std::max(Resources::tiles[o].cmc.z[1], z);
       }
@@ -173,9 +162,9 @@ float Map::maxZ(const Vector& position) const
 }
 
 
-int Map::terrain(float x, float y)
+int Map::getTerrain(float x, float y)
 {
-  switch (map[int(x) + int(y) * Width]) {
+  switch (map[int(x) + int(y) * width]) {
   case 0:
     return T_GRASS;
     break;
@@ -201,16 +190,16 @@ int Map::worseTerrain(const Vector& pos)
   y[0] = pos.y - 0.5;
   y[1] = pos.y + 0.5;
 
-  int t = terrain(x[0] + 0.001f, y[0] + 0.001f);
-  int t2 = terrain(x[1] - 0.001f, y[0] + 0.001f);
+  int t = getTerrain(x[0] + 0.001f, y[0] + 0.001f);
+  int t2 = getTerrain(x[1] - 0.001f, y[0] + 0.001f);
   if (t2 == T_HOLE || t == T_HOLE) return T_HOLE;
   if ((t2 == T_MOUNTAINS && (t == T_SAND || t == T_GRASS)) || (t2 == T_SAND && t == T_GRASS))
     t = t2;
-  t2 = terrain(x[0] + 0.001f, y[1] - 0.001f);
+  t2 = getTerrain(x[0] + 0.001f, y[1] - 0.001f);
   if (t2==T_HOLE) return T_HOLE;
   if ((t2 == T_MOUNTAINS && (t == T_SAND || t == T_GRASS)) || (t2 == T_SAND && t == T_GRASS))
     t = t2;
-  t2 = terrain(x[1] - 0.001f, y[1] - 0.001f);
+  t2 = getTerrain(x[1] - 0.001f, y[1] - 0.001f);
   if (t2 == T_HOLE) return T_HOLE;
   if ((t2 == T_MOUNTAINS && (t == T_SAND || t == T_GRASS)) ||
       (t2 == T_SAND && t == T_GRASS)) t = t2;
@@ -342,37 +331,6 @@ void Map::cycleRobots(unsigned char* keyboard)
 }
 
 
-std::ostream& operator<<(std::ostream& out, const Map& map)
-{
-  out << map.width() << ' ' << map.height() << '\n';
-
-  for (int i = 0; i < map.height(); i++) {
-    for (int j = 0; j < map.width(); j++) {
-      out << map.map[j + i * map.width()] << ' ';
-    }
-    out << '\n';
-  }
-  return out;
-}
-
-
-std::istream& operator>>(std::istream& in, Map& map)
-{
-  int width, height;
-  in >> width >> height;
-  map.resize(width, height);
-
-  for (int i = 0; i < height; i++) {
-    for (int j = 0; j < width; j++) {
-      int tile;
-      in >> tile;
-      map.map.push_back(tile);
-    }
-  }
-  return in;
-}
-
-
 void Map::nuclearExplosionAt(Robot* robot, const Vector& position)
 {
   Explosion exp(position, 2);
@@ -414,10 +372,10 @@ void Map::nuclearExplosionAt(Robot* robot, const Vector& position)
 void Map::processMapSectionSexp(const sexp::Value& cons)
 {
   if (sexp::car(cons).as_string() == "terrain") {
-    Height = sexp::list_length(cons) - 1;
+    height = sexp::list_length(cons) - 1;
     // Seems cadr is cdar in this implementation
-    Width = sexp::list_length(sexp::cdar(cons));
-    resize(Width, Height);
+    width = sexp::list_length(sexp::cdar(cons));
+    resize(width, height);
     const std::unordered_map<std::string, int> tiles = {
         {"G", 0},   {"S", 1},   {"S2", 2},  {"M", 3},  {"H1", 4},
         {"H2", 5},  {"H3", 6},  {"H4", 7},  {"H5", 8}, {"H6", 9},
@@ -450,8 +408,8 @@ sexp::Value Map::toSexp() const
 
   return sexp::Value::list(
     sexp::Value::symbol("map"),
-    sexp::Value::integer(Width),
-    sexp::Value::integer(Height),
+    sexp::Value::integer(width),
+    sexp::Value::integer(height),
     sexp::Value::array(sexpMap)
   );
 }
@@ -459,8 +417,8 @@ sexp::Value Map::toSexp() const
 
 bool Map::fromSexp(const sexp::Value& value)
 {
-  Width = sexp::cdar(value).as_int();
-  Height = sexp::cddar(value).as_int();
+  width = sexp::cdar(value).as_int();
+  height = sexp::cddar(value).as_int();
 
   std::vector<sexp::Value> mapItems = sexp::cdddar(value).as_array();
   map.clear();

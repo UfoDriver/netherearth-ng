@@ -481,7 +481,7 @@ void Robot::cycle(NETHER* nether)
 void Robot::dispatchOperator(NETHER* nether, unsigned char* keyboard)
 {
   Vector oldPos {pos};
-  pos.z = nether->map.maxZ(pos);
+  pos.z = nether->map.getMaxZ(pos);
 
   switch (op) {
   case OPERATOR::FORWARD:
@@ -555,7 +555,7 @@ void Robot::processOperatorForward(NETHER* nether, unsigned char*)
   float speed = movingSpeed(nether->map.worseTerrain(pos));
   switch (angle) {
   case 0:
-    if (pos.x < nether->map.width() - 0.5)
+    if (pos.x < nether->map.getWidth() - 0.5)
       pos.x += speed;
     break;
   case 90:
@@ -567,7 +567,7 @@ void Robot::processOperatorForward(NETHER* nether, unsigned char*)
       pos.x -= speed;
     break;
   case 270:
-    if (pos.y < nether->map.height() - 0.5)
+    if (pos.y < nether->map.getHeight() - 0.5)
       pos.y -= speed;
     break;
   }

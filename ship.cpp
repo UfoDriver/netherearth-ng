@@ -73,7 +73,7 @@ void Ship::draw(const bool shadows, const Vector& light, const Map& map, const R
       x[1] = sx + shadowCMC.x[1];
       y[0] = sy + shadowCMC.y[0];
       y[1] = sy + shadowCMC.y[1];
-      minz = map.maxZ(x, y);
+      minz = map.getMaxZ(x, y);
     } else {
       minz = controlled->pos.z;
     }
@@ -105,9 +105,9 @@ void Ship::cycle(unsigned char* keyboard)
   x[1] = pos.x + 1.0;
   y[0] = pos.y;
   y[1] = pos.y + 1.0;
-  minz = nether->map.maxZ(x, y);
+  minz = nether->map.getMaxZ(x, y);
 
-  if (op == Ship::OPS::RIGHT && pos.x < nether->map.width() - 1) {
+  if (op == Ship::OPS::RIGHT && pos.x < nether->map.getWidth() - 1) {
     pos.x += 0.125;
     if (timemoving >= 50 && (int(pos.x * 8) % 2) == 1)
       pos.x += 0.125;
@@ -117,7 +117,7 @@ void Ship::cycle(unsigned char* keyboard)
     if (timemoving >= 50 && (int(pos.x * 8) % 2) == 1)
       pos.x -= 0.125;
   }
-  if (op2 == Ship::OPS::FORWARD && pos.y < nether->map.height() - 1) {
+  if (op2 == Ship::OPS::FORWARD && pos.y < nether->map.getHeight() - 1) {
     pos.y += 0.125;
     if (timemoving >= 50 && (int(pos.y * 8) % 2) == 1)
       pos.y += 0.125;

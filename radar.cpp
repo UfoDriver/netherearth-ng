@@ -51,18 +51,18 @@ void Radar::draw(const int width, const int height, const int split, const int s
     int startx = (int)((nether->getShip()->pos.x - 4) * 2);
     int starty = (int)((nether->getShip()->pos.y - 23) * 2);
     // @TODO: std::min/std::max can be used here. Or, event better, std::clamp (c++17)
-    if ((starty + maxy) > (nether->map.height() * 2)) starty = (nether->map.height() * 2) - maxy;
+    if ((starty + maxy) > (nether->map.getHeight() * 2)) starty = (nether->map.getHeight() * 2) - maxy;
     starty = std::max(starty, 0);
-    if ((startx + maxx) > (nether->map.width() * 2)) startx = (nether->map.width() * 2) - maxx;
+    if ((startx + maxx) > (nether->map.getWidth() * 2)) startx = (nether->map.getWidth() * 2) - maxx;
     startx = std::max(0, startx);
 
     glNormal3f(0, 0, 1);
     for (int y = 0; y < maxy; y++) {
       for (int x = 0; x < maxx; x++) {
-        if (x + startx < (nether->map.width() * 2) &&
-            y + starty < (nether->map.height() * 2) &&
+        if (x + startx < (nether->map.getWidth() * 2) &&
+            y + starty < (nether->map.getHeight() * 2) &&
             nether->ai.discreetmapSize()) {
-          switch(nether->ai.discreetmapValue(x + startx + (y + starty) * (nether->map.width() * 2))) {
+          switch(nether->ai.discreetmapValue(x + startx + (y + starty) * (nether->map.getWidth() * 2))) {
           case T_GRASS:
             glColor3f(0.0, 1.0, 0.0);
             break;

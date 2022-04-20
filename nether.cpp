@@ -58,7 +58,7 @@ NETHER::NETHER(const std::string& mapname): map(this), ai(this, &map), menu(this
   camera.y = -6;
   camera.z = 11;
   camera.zoom = 1;
-  camera.viewport.x = map.width() / 2;
+  camera.viewport.x = map.getWidth() / 2;
   camera.viewport.y = 0;
 
   gameState = NETHER::STATE::PLAYING;
@@ -392,11 +392,11 @@ bool NETHER::saveDebugReport(const std::string& filename)
 {
   std::ofstream log(filename);
   log << "NETHER EARTH NG Debug Report\n\n";
-  log << "MAPW: " << map.width() << "\nMAPH: " << map.height() << '\n';
+  log << "MAPW: " << map.getWidth() << "\nMAPH: " << map.getHeight() << '\n';
   log << "MAP:\n";
-  for (int i = 0; i < map.height(); i++) {
-    for (int j = 0; j < map.width(); j++) {
-      log << map.map[j + i * map.width()] << ' ';
+  for (int i = 0; i < map.getHeight(); i++) {
+    for (int j = 0; j < map.getWidth(); j++) {
+      log << map.map[j + i * map.getWidth()] << ' ';
     }
     log << '\n';
   }
@@ -548,7 +548,7 @@ bool NETHER::cycle(unsigned char *keyboard)
   if (menu.getActiveMenu() == Menu::TYPE::GENERAL)
     ship->cycle(keyboard);
   menu.cycle(keyboard);
-  camera.updateViewportForShip(ship->pos, map.width(), map.height());
+  camera.updateViewportForShip(ship->pos, map.getWidth(), map.getHeight());
   if (stats.tick(level)) {
     menu.updateTime(stats);
   }
