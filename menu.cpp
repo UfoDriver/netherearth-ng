@@ -316,7 +316,7 @@ void Menu::cycle(unsigned char* keyboard)
         case StatusButton::NAME::ROBOT4:
           /* Back to the general menu: */
           nether->detachShip(nether->getControlled());
-          nether->getShip()->op3 = Ship::OPS::UP;
+          nether->scene.ship.op3 = Ship::OPS::UP;
           nether->sManager.playSelect();
           break;
         }

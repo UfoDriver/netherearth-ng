@@ -7,14 +7,14 @@
 #include "nether.h"
 #include "robot.h"
 #include "scene.h"
-
-
-extern int shadows;
+#include "ship.h"
 
 
 Scene::Scene(NETHER *nether, const std::string& mapName)
-  : nether{nether}, map{nether}
+  : nether{nether}, map{nether}, ship{"models/ship.asc", "textures/", nether}
 {
+  Resources::instance()->loadObjects();
+  ship.computeShadow(nether->light.asVector());
 };
 
 
@@ -67,7 +67,7 @@ void Scene::cycleBullets()
                               if (!r->bulletHit(bullet)) {
                                 /* Robot destroyed: */
                                 explosions.emplace_back(r->pos,1);
-                                nether->sManager.playExplosion(nether->getShip()->pos, r->pos);
+                                nether->sManager.playExplosion(ship.pos, r->pos);
                                 nether->detachShip(r);
                                 nether->ai.killRobot(r->pos);
                                 robots.findAndDestroy(r);
@@ -104,6 +104,7 @@ void Scene::draw(const Camera& camera, const Vector& light, const bool shadows)
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
   map.draw(camera, light, shadows);
+  ship.draw(shadows, light, map, nether->getControlled());
 
   if (explosions.size()) {
     int minstep = std::accumulate(explosions.cbegin(), explosions.cend(), 128,
@@ -138,7 +139,6 @@ void Scene::draw(const Camera& camera, const Vector& light, const bool shadows)
     }
   }
 
-  // nether->getShip()->draw(shadows, light, *this, nether->getControlled());
 
   if (!shadows) {
     for (const Explosion& exp: explosions) {
@@ -174,4 +174,5 @@ void Scene::nuclearExplosionAt(const Vector& position)
                               }),
                robots.end());
 
+  nether->sManager.playExplosion(ship.pos, position);
 }

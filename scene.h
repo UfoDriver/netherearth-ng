@@ -7,11 +7,12 @@
 #include "bullet.h"
 #include "camera.h"
 #include "explosion.h"
+#include "map.h"
 #include "robots.h"
+#include "ship.h"
 
 
 class NETHER;
-class Ship;
 
 /*
   Manage map, robots, bullets, particles and explosions. Handles their interactions as collisions.
@@ -37,6 +38,7 @@ public:
   Map map;
 
   Robots robots;
+  Ship ship;
 
   sexp::Value toSexp() const;
   bool fromSexp(const sexp::Value&);

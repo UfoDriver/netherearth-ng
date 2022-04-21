@@ -49,9 +49,6 @@ NETHER::NETHER(const std::string& mapname): scene(this, mapname), ai(this, &scen
 
   Resources::instance()->loadObjects();
 
-  ship = new Ship("models/ship.asc", "textures/", this);
-  ship->computeShadow(light.asVector());
-
   scene.map.loadMap(mapname);
 
   camera.x = 6;
@@ -78,8 +75,6 @@ NETHER::~NETHER()
   scene.map.resize(0, 0);
   Resources::instance()->deleteObjects();
   ai.deletePrecomputations();
-  delete ship;
-  ship = 0;
 }
 
 
@@ -294,7 +289,7 @@ bool NETHER::saveGame(const std::string& filename)
     scene.map.toSexp(),
     light.toSexp(),
     camera.toSexp(),
-    ship->toSexp(),
+    scene.ship.toSexp(),
     sexp::Value::cons(
       sexp::Value::symbol("buildings"),
       std::move(buildingList)
@@ -346,7 +341,7 @@ bool NETHER::loadGame(const std::string& filename)
     } else if (sexp::car(value).as_string() == "camera") {
       camera.fromSexp(value);
     } else if (sexp::car(value).as_string() == "ship") {
-      ship->fromSexp(value);
+      scene.ship.fromSexp(value);
     } else if (sexp::car(value).as_string() == "buildings") {
       // @TODO: check if memory leak in clear
       scene.map.buildings.clear();
@@ -408,8 +403,8 @@ bool NETHER::saveDebugReport(const std::string& filename)
   log << "LIGHTPOSV: " << light.asVector();
   log << "CAMERA: " << camera;
   log << "VIEWP: " << camera.viewport;
-  log << "SHIPP: " << ship->pos;
-  if (ship->landed)
+  log << "SHIPP: " << scene.ship.pos;
+  if (scene.ship.landed)
     log << "SHIP LANDED\n";
   else
     log << "SHIP NOT LANDED\n";
@@ -544,11 +539,11 @@ bool NETHER::cycle(unsigned char *keyboard)
   }
 
   /* GAME Cycle: */
-  ship->landed = false;
+  scene.ship.landed = false;
   if (menu.getActiveMenu() == Menu::TYPE::GENERAL)
-    ship->cycle(keyboard);
+    scene.ship.cycle(keyboard);
   menu.cycle(keyboard);
-  camera.updateViewportForShip(ship->pos, scene.map.getWidth(), scene.map.getHeight());
+  camera.updateViewportForShip(scene.ship.pos, scene.map.getWidth(), scene.map.getHeight());
   if (stats.tick(level)) {
     menu.updateTime(stats);
   }
@@ -556,17 +551,17 @@ bool NETHER::cycle(unsigned char *keyboard)
   /* Test if the ship has landed over a Factory: */
   for (const auto& b: scene.map.buildings) {
     if (b->type == Building::TYPE::WARBASE && b->owner == 1 and
-        ship->landedHere(b->pos)) {
+        scene.ship.landedHere(b->pos)) {
       constructionScreen.open(b->pos);
     }
   }
 
   /* Test if the ship has landed over a robot: */
   if (menu.getActiveMenu() == Menu::TYPE::GENERAL &&
-      (int(ship->pos.x * 8) % 4) == 0 &&
-      (int(ship->pos.y * 8) % 4) == 0) {
+      (int(scene.ship.pos.x * 8) % 4) == 0 &&
+      (int(scene.ship.pos.y * 8) % 4) == 0) {
     for (Robot* r: scene.robots) {
-      if (r->getOwner() == 0 and ship->landedHere(r->pos - Vector(0.5f, 0.5f, 0.0))) {
+      if (r->getOwner() == 0 and scene.ship.landedHere(r->pos - Vector(0.5f, 0.5f, 0.0))) {
         r->attachShip();
         controlled = r;
         if (controlled->op == Robot::OPERATOR::FORWARD)

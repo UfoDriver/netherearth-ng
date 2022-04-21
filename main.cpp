@@ -146,7 +146,7 @@ int main(int argc, char** argv)
             /* Toogle FULLSCREEN mode: */
             if (game != 0) {
               Resources::instance()->refreshDisplayLists();
-              game->getShip()->refresh_display_lists();
+              game->scene.ship.refresh_display_lists();
             }
             mainMenu.refreshDisplayLists();
             if (game != 0) Resources::instance()->deleteObjects();
@@ -208,7 +208,7 @@ int main(int argc, char** argv)
           if (val == MainMenu::ACTION::RESTARTVIDEO) {
             if (game) {
               Resources::instance()->refreshDisplayLists();
-              game->getShip()->refresh_display_lists();
+              game->scene.ship.refresh_display_lists();
             }
             mainMenu.refreshDisplayLists();
             if (game) Resources::instance()->deleteObjects();

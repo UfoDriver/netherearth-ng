@@ -49,7 +49,7 @@ bool ConstructionScreen::cycle(unsigned char *keyboard)
   if (menuPointer == MENU::EXIT && keyboard[fire_key] > 1) {
     delete staple;
     nether->setGameState(NETHER::STATE::PLAYING);
-    nether->getShip()->pos.z = 2.0;
+    nether->scene.ship.pos.z = 2.0;
   }
 
   if (menuPointer == MENU::START && keyboard[fire_key] > 1) {
@@ -95,10 +95,10 @@ void ConstructionScreen::buildRobot()
     staple->op = Robot::OPERATOR::NONE;
     staple->calculateCMC(Resources::pieceTiles[0]);
 
-    if (!staple->checkCollision(nether->scene.map.buildings, nether->scene.robots, true, nether->getShip())) {
+    if (!staple->checkCollision(nether->scene.map.buildings, nether->scene.robots, true, &nether->scene.ship)) {
       nether->addNewRobot(staple, 0);
       nether->stats.spendRobotResources(0, *staple);
-      nether->getShip()->pos.z = 2.0;
+      nether->scene.ship.pos.z = 2.0;
       nether->setGameState(NETHER::STATE::PLAYING);
       nether->sManager.playConstruction();
       staple = nullptr;
@@ -207,7 +207,7 @@ void ConstructionScreen::draw(int width, int height, const Light& light)
   glColor3f(1.0f, 0.0f, 0.0f);
   glTranslatef(12, 15, 0);
   staple->calculateCMC(Resources::pieceTiles[0]);
-  if (staple->checkCollision(nether->scene.map.buildings, nether->scene.robots, true, nether->getShip()) &&
+  if (staple->checkCollision(nether->scene.map.buildings, nether->scene.robots, true, &nether->scene.ship) &&
       (int(nether->getAnimationTimer() * 4) % 2) == 0) {
     scaledglprintf(0.01f, 0.01f, "ENTRANCE BLOCKED!");
   }

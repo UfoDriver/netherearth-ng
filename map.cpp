@@ -68,8 +68,6 @@ void Map::draw(const Camera& camera, const Vector& light, const bool shadows)
       building->draw(shadows, light);
     }
   }
-
-  nether->getShip()->draw(shadows, light, *this, nether->getControlled());
 }
 
 
@@ -237,7 +235,7 @@ void Map::nuclearExplosionAt(Robot* robot, const Vector& position)
                                    }
                                  }),
                   buildings.end());
-  nether->sManager.playExplosion(nether->getShip()->pos, position);
+
   nether->stats.requestRecomputing();
 }
 

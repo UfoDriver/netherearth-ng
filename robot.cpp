@@ -512,7 +512,7 @@ void Robot::dispatchOperator(NETHER* nether, unsigned char* keyboard)
 
   if (checkCollision(nether->scene.map.buildings) or
       checkCollision(nether->scene.robots) or
-      checkCollision(nether->getShip()) or
+      checkCollision(&nether->scene.ship) or
       !walkable(nether->scene.map.worseTerrain(pos))) {
     pos = oldPos;
   } else {
@@ -520,9 +520,9 @@ void Robot::dispatchOperator(NETHER* nether, unsigned char* keyboard)
   }
 
   if (shipover) {
-    nether->getShip()->pos.x = pos.x - 0.5;
-    nether->getShip()->pos.y = pos.y - 0.5;
-    nether->getShip()->pos.z = pos.z + cmc.z[1];
+    nether->scene.ship.pos.x = pos.x - 0.5;
+    nether->scene.ship.pos.y = pos.y - 0.5;
+    nether->scene.ship.pos.z = pos.z + cmc.z[1];
   }
 }
 
@@ -605,7 +605,7 @@ void Robot::processOperatorCannons(NETHER *nether, unsigned char *)
     Vector bulletPos {pos};
     bulletPos.z = piecesHeight(0) + 0.3f;
     nether->scene.bullets.emplace_back(new BulletCannon(bulletPos, this));
-    nether->sManager.playShot(nether->getShip()->pos, bulletPos);
+    nether->sManager.playShot(nether->scene.ship.pos, bulletPos);
   }
   firetimer++;
   if (firetimer >= 64) {
@@ -621,7 +621,7 @@ void Robot::processOperatorMissiles(NETHER *nether, unsigned char *)
     Vector bulletPos {pos};
     bulletPos.z = piecesHeight(1) + 0.2f;
     nether->scene.bullets.emplace_back(new BulletMissile(bulletPos, this));
-    nether->sManager.playShot(nether->getShip()->pos, bulletPos);
+    nether->sManager.playShot(nether->scene.ship.pos, bulletPos);
   }
   firetimer++;
   if (firetimer >= 64) {
@@ -637,7 +637,7 @@ void Robot::processOperatorPhasers(NETHER *nether, unsigned char *)
     Vector bulletPos {pos};
     bulletPos.z = piecesHeight(2) + 0.3f;
     nether->scene.bullets.emplace_back(new BulletPhaser(bulletPos, this));
-    nether->sManager.playShot(nether->getShip()->pos, bulletPos);
+    nether->sManager.playShot(nether->scene.ship.pos, bulletPos);
   }
   firetimer++;
   if (firetimer >= 64) {

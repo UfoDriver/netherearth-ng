@@ -75,7 +75,6 @@ public:
   void requestStatsRecomputing() { stats.requestRecomputing(); }
 
   Robot* getControlled() const { return controlled; }
-  Ship* getShip() const { return ship; }
   STATE getGameState() const { return gameState; };
   void setGameState(STATE newState) { gameState = newState; }
   void setGameFinished(int time) { gameFinished = time; }
@@ -94,6 +93,7 @@ public:
   AI ai;
   SoundManager sManager;
   Stats stats;
+  Light light;
 
 private:
   unsigned char prevKeyboard[SDLK_LAST];
@@ -102,12 +102,10 @@ private:
   void drawGame(bool shadows);
 
   /* Game variables: */
-  Ship *ship;
   Menu menu;
   Radar radar;
   OptionsScreen optionsScreen;
   ConstructionScreen constructionScreen;
-  Light light;
 
   Camera camera;
 
