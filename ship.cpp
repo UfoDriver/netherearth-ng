@@ -105,9 +105,9 @@ void Ship::cycle(unsigned char* keyboard)
   x[1] = pos.x + 1.0;
   y[0] = pos.y;
   y[1] = pos.y + 1.0;
-  minz = nether->map.getMaxZ(x, y);
+  minz = nether->scene.map.getMaxZ(x, y);
 
-  if (op == Ship::OPS::RIGHT && pos.x < nether->map.getWidth() - 1) {
+  if (op == Ship::OPS::RIGHT && pos.x < nether->scene.map.getWidth() - 1) {
     pos.x += 0.125;
     if (timemoving >= 50 && (int(pos.x * 8) % 2) == 1)
       pos.x += 0.125;
@@ -117,7 +117,7 @@ void Ship::cycle(unsigned char* keyboard)
     if (timemoving >= 50 && (int(pos.x * 8) % 2) == 1)
       pos.x -= 0.125;
   }
-  if (op2 == Ship::OPS::FORWARD && pos.y < nether->map.getHeight() - 1) {
+  if (op2 == Ship::OPS::FORWARD && pos.y < nether->scene.map.getHeight() - 1) {
     pos.y += 0.125;
     if (timemoving >= 50 && (int(pos.y * 8) % 2) == 1)
       pos.y += 0.125;
@@ -141,25 +141,25 @@ void Ship::cycle(unsigned char* keyboard)
   }
 
   if (pos != old_shipp) {
-    if (checkCollision(nether->map.buildings, nether->scene.robots)) {
+    if (checkCollision(nether->scene.map.buildings, nether->scene.robots)) {
       timemoving = 0;
       Vector p = pos;
       pos.x = old_shipp.x;
       pos.y = old_shipp.y;
-      if (p.z != old_shipp.z && checkCollision(nether->map.buildings, nether->scene.robots)) {
+      if (p.z != old_shipp.z && checkCollision(nether->scene.map.buildings, nether->scene.robots)) {
         pos.z = old_shipp.z;
         landed = true;
       } else {
         pos.z = p.z;
       }
       pos.x = p.x;
-      if (p.x != old_shipp.x && checkCollision(nether->map.buildings, nether->scene.robots)) {
+      if (p.x != old_shipp.x && checkCollision(nether->scene.map.buildings, nether->scene.robots)) {
         pos.x = old_shipp.x;
       } else {
         pos.x = p.x;
       }
       pos.y = p.y;
-      if (p.y != old_shipp.y && checkCollision(nether->map.buildings, nether->scene.robots)) {
+      if (p.y != old_shipp.y && checkCollision(nether->scene.map.buildings, nether->scene.robots)) {
         pos.y = old_shipp.y;
       } else {
         pos.y = p.y;
@@ -189,17 +189,6 @@ void Ship::cycle(unsigned char* keyboard)
   if (keyboard[fire_key]) {
     op3 = Ship::OPS::UP;
   }
-}
-
-std::ostream& operator<<(std::ostream& out, const Ship& ship)
-{
-  return out << ship.pos << ship.landed << '\n';
-}
-
-
-std::istream& operator>>(std::istream& in, Ship& ship)
-{
-  return in >> ship.pos >> ship.landed;
 }
 
 

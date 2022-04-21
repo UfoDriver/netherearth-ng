@@ -19,12 +19,14 @@ class Robot;
 class Ship: public Shadow3DObject
 {
 public:
-  enum OPS {NONE = -1,
-            LEFT,
-            RIGHT,
-            FORWARD,
-            BACKWARD,
-            UP};
+  enum OPS {
+    NONE = -1,
+    LEFT,
+    RIGHT,
+    FORWARD,
+    BACKWARD,
+    UP
+  };
   Ship(const std::string& model, const std::string& texturesDir, NETHER* nether);
   bool checkCollision(const std::vector<std::unique_ptr<Building>>& buildings, const std::vector<Robot*>& robots);
   void draw(const bool shadows, const Vector& light, const Map& map, const Robot* controlled);
@@ -40,10 +42,5 @@ public:
   sexp::Value toSexp() const;
   bool fromSexp(const sexp::Value&);
 };
-
-
-std::ostream& operator<<(std::ostream& out, const Ship& ship);
-std::istream& operator>>(std::istream& in, Ship& ship);
-
 
 # endif // SHIP_H

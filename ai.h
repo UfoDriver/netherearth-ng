@@ -21,7 +21,7 @@ public:
                     CONQUERING,
                     DESTROYING};
 
-  AI(NETHER* nether, Map* map, Scene* scene): nether{nether}, map{map}, scene{scene} {};
+  AI(NETHER* nether, Scene* scene): nether{nether}, scene{scene} {};
   void makePrecomputations();
   void deletePrecomputations();
   void enemy();
@@ -61,7 +61,6 @@ private:
   std::vector<int> attackmap;
 
   NETHER* nether;
-  Map* map;
   Scene* scene;
 };
 

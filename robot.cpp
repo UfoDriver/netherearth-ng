@@ -435,7 +435,7 @@ void Robot::cycle(NETHER* nether)
 
   if (op == OPERATOR::FORWARD) {
     if (traction == 0) { // Bipod
-      animation.chassis = (animation.chassis + int(movingSpeed(nether->map.worseTerrain(pos)) / 0.00390625)) % 64;
+      animation.chassis = (animation.chassis + int(movingSpeed(nether->scene.map.worseTerrain(pos)) / 0.00390625)) % 64;
     }
 
     if (traction == 1) { // Tracks
@@ -481,7 +481,7 @@ void Robot::cycle(NETHER* nether)
 void Robot::dispatchOperator(NETHER* nether, unsigned char* keyboard)
 {
   Vector oldPos {pos};
-  pos.z = nether->map.getMaxZ(pos);
+  pos.z = nether->scene.map.getMaxZ(pos);
 
   switch (op) {
   case OPERATOR::FORWARD:
@@ -510,10 +510,10 @@ void Robot::dispatchOperator(NETHER* nether, unsigned char* keyboard)
     break;
   }
 
-  if (checkCollision(nether->map.buildings) or
+  if (checkCollision(nether->scene.map.buildings) or
       checkCollision(nether->scene.robots) or
       checkCollision(nether->getShip()) or
-      !walkable(nether->map.worseTerrain(pos))) {
+      !walkable(nether->scene.map.worseTerrain(pos))) {
     pos = oldPos;
   } else {
     nether->ai.moveRobot(oldPos, pos, owner);
@@ -552,10 +552,10 @@ void Robot::processOperatorForward(NETHER* nether, unsigned char*)
     }
   }
 
-  float speed = movingSpeed(nether->map.worseTerrain(pos));
+  float speed = movingSpeed(nether->scene.map.worseTerrain(pos));
   switch (angle) {
   case 0:
-    if (pos.x < nether->map.getWidth() - 0.5)
+    if (pos.x < nether->scene.map.getWidth() - 0.5)
       pos.x += speed;
     break;
   case 90:
@@ -567,7 +567,7 @@ void Robot::processOperatorForward(NETHER* nether, unsigned char*)
       pos.x -= speed;
     break;
   case 270:
-    if (pos.y < nether->map.getHeight() - 0.5)
+    if (pos.y < nether->scene.map.getHeight() - 0.5)
       pos.y -= speed;
     break;
   }
@@ -582,7 +582,7 @@ void Robot::processOperatorForward(NETHER* nether, unsigned char*)
 
 void Robot::processOperatorLeft(NETHER *nether, unsigned char *)
 {
-  int terrain = nether->map.worseTerrain(pos);
+  int terrain = nether->scene.map.worseTerrain(pos);
   angle = (angle + 360 - rotationSpeed(terrain)) % 360;
 
   if (angle % 90 == 0)
@@ -592,7 +592,7 @@ void Robot::processOperatorLeft(NETHER *nether, unsigned char *)
 
 void Robot::processOperatorRight(NETHER *nether, unsigned char *)
 {
-  int terrain = nether->map.worseTerrain(pos);
+  int terrain = nether->scene.map.worseTerrain(pos);
   angle = (angle + rotationSpeed(terrain)) % 360;
   if (op == Robot::OPERATOR::RIGHT && (angle % 90) == 0)
     op = Robot::OPERATOR::NONE;
@@ -649,8 +649,8 @@ void Robot::processOperatorPhasers(NETHER *nether, unsigned char *)
 
 void Robot::processOperatorNuclear(NETHER *nether, unsigned char *)
 {
-  nether->map.nuclearExplosionAt(this, pos);
-  nether->scene.nuclearExplosionAt(pos, nether);
+  nether->scene.map.nuclearExplosionAt(this, pos);
+  nether->scene.nuclearExplosionAt(pos);
 }
 
 

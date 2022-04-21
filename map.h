@@ -42,15 +42,14 @@ public:
   void nuclearExplosionAt(Robot* robot, const Vector& position);
 
   std::vector<std::unique_ptr<Building>> buildings;
-  std::vector<BuildingBlock> buidlingBlocks;
+  std::vector<std::shared_ptr<BuildingBlock>> buidlingBlocks;
 
-  bool cycle(unsigned char* keyboard);
+  bool cycle();
 
   sexp::Value toSexp() const;
   bool fromSexp(const sexp::Value&);
 
 private:
-  void cycleBuildings();
   void processMapSectionSexp(const sexp::Value&);
 
   int width;

@@ -16,7 +16,6 @@
 #include "constructionscreen.h"
 #include "explosion.h"
 #include "light.h"
-#include "map.h"
 #include "menu.h"
 #include "optionsscreen.h"
 #include "particle.h"
@@ -92,7 +91,6 @@ public:
   std::array<std::pair<int, int>, 7> getResourceStats() const;
 
   Scene scene;
-  Map map;
   AI ai;
   SoundManager sManager;
   Stats stats;

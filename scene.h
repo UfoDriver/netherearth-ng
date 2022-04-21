@@ -11,6 +11,7 @@
 
 
 class NETHER;
+class Ship;
 
 /*
   Manage map, robots, bullets, particles and explosions. Handles their interactions as collisions.
@@ -19,18 +20,21 @@ class NETHER;
 class Scene
 {
 public:
+  Scene(NETHER* nether, const std::string& mapName);
+  ~Scene();
 
   void clear();
 
-  bool cycle(unsigned char* keyboard, NETHER* nether);
+  bool cycle(unsigned char* keyboard);
   void draw(const Camera& camera, const Vector& light, const bool shadows);
 
-  void nuclearExplosionAt(const Vector& position, NETHER* nether);
+  void nuclearExplosionAt(const Vector& position);
 
 
   std::vector<Explosion> explosions;
   std::vector<std::unique_ptr<Bullet>> bullets;
   std::vector<Particle> particles;
+  Map map;
 
   Robots robots;
 
@@ -38,8 +42,10 @@ public:
   bool fromSexp(const sexp::Value&);
 
 private:
-  void cycleBullets(NETHER* nether);
-  void cycleRobots(unsigned char *keyboard, NETHER* nether);
+  void cycleBullets();
+  void cycleRobots(unsigned char *keyboard);
+
+  std::shared_ptr<NETHER> nether;
 };
 
 #endif // SCENE_H

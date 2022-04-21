@@ -176,7 +176,7 @@ bool Map::loadMap(const std::string& filename)
 }
 
 
-bool Map::cycle(unsigned char *keyboard)
+bool Map::cycle()
 {
   // Keyboard/zoom
   // ship movement
@@ -193,14 +193,6 @@ bool Map::cycle(unsigned char *keyboard)
   // Particles cycling
   // Game goals checking
 
-  cycleBuildings();
-
-  return true;
-}
-
-
-void Map::cycleBuildings()
-{
   for (auto& b: buildings) {
     if (b->isCapturable()) {
       int robot = nether->ai.robotHere(b->getCapturePoint());
@@ -224,6 +216,7 @@ void Map::cycleBuildings()
       }
     }
   }
+  return true;
 }
 
 

@@ -37,7 +37,7 @@ extern int level;
 extern bool show_radar;
 
 
-NETHER::NETHER(const std::string& mapname): map(this), ai(this, &map, &scene), menu(this), radar(this),
+NETHER::NETHER(const std::string& mapname): scene(this, mapname), ai(this, &scene), menu(this), radar(this),
                                             optionsScreen(this), constructionScreen(this),
                                             camera(0, 0, 0, 0), controlled(nullptr)
 {
@@ -52,13 +52,13 @@ NETHER::NETHER(const std::string& mapname): map(this), ai(this, &map, &scene), m
   ship = new Ship("models/ship.asc", "textures/", this);
   ship->computeShadow(light.asVector());
 
-  map.loadMap(mapname);
+  scene.map.loadMap(mapname);
 
   camera.x = 6;
   camera.y = -6;
   camera.z = 11;
   camera.zoom = 1;
-  camera.viewport.x = map.getWidth() / 2;
+  camera.viewport.x = scene.map.getWidth() / 2;
   camera.viewport.y = 0;
 
   gameState = NETHER::STATE::PLAYING;
@@ -75,7 +75,7 @@ NETHER::NETHER(const std::string& mapname): map(this), ai(this, &map, &scene), m
 
 NETHER::~NETHER()
 {
-  map.resize(0, 0);
+  scene.map.resize(0, 0);
   Resources::instance()->deleteObjects();
   ai.deletePrecomputations();
   delete ship;
@@ -102,7 +102,7 @@ bool NETHER::gamecycle()
 
   switch(gameState) {
   case NETHER::STATE::PLAYING:
-    retval = cycle(keyboard) && scene.cycle(keyboard, this);
+    retval = cycle(keyboard) && scene.cycle(keyboard);
     break;
   case NETHER::STATE::CONSTRUCTION:
     retval = constructionScreen.cycle(keyboard);
@@ -261,7 +261,6 @@ void NETHER::drawGame(bool shadows)
 {
   Vector newLight(light.asVector());
   newLight = newLight / newLight.z;
-  map.draw(camera, newLight, shadows);
   scene.draw(camera, newLight, shadows);
   camera.drawViewport();
 }
@@ -286,13 +285,13 @@ bool NETHER::saveGame(const std::string& filename)
   }
 
   sexp::Value buildingList = sexp::Value::nil();
-  for (auto& b: map.buildings) {
+  for (auto& b: scene.map.buildings) {
     buildingList = sexp::Value::cons(b->toSexp(), std::move(buildingList));
   }
 
   sexp::Value gamestate = sexp::Value::list(
     sexp::Value::symbol("gamestate"),
-    map.toSexp(),
+    scene.map.toSexp(),
     light.toSexp(),
     camera.toSexp(),
     ship->toSexp(),
@@ -341,7 +340,7 @@ bool NETHER::loadGame(const std::string& filename)
   // structure, it's possible to load bullets without having robots
   for (const sexp::Value& value: sexp::ListAdapter(sexp::cdr(gamestate))) {
     if (sexp::car(value).as_string() == "map") {
-      map.fromSexp(value);
+      scene.map.fromSexp(value);
     } else if (sexp::car(value).as_string() == "light") {
       light.fromSexp(value);
     } else if (sexp::car(value).as_string() == "camera") {
@@ -350,9 +349,9 @@ bool NETHER::loadGame(const std::string& filename)
       ship->fromSexp(value);
     } else if (sexp::car(value).as_string() == "buildings") {
       // @TODO: check if memory leak in clear
-      map.buildings.clear();
+      scene.map.buildings.clear();
       for (const sexp::Value& building: sexp::ListAdapter(sexp::cdr(value))) {
-        map.buildings.emplace_back(Building::fromSexp(building));
+        scene.map.buildings.emplace_back(Building::fromSexp(building));
       }
     } else if (sexp::car(value).as_string() == "robots") {
       // @TODO: memory leak, robots should be destroyed first
@@ -393,11 +392,11 @@ bool NETHER::saveDebugReport(const std::string& filename)
 {
   std::ofstream log(filename);
   log << "NETHER EARTH NG Debug Report\n\n";
-  log << "MAPW: " << map.getWidth() << "\nMAPH: " << map.getHeight() << '\n';
+  log << "MAPW: " << scene.map.getWidth() << "\nMAPH: " << scene.map.getHeight() << '\n';
   log << "MAP:\n";
-  for (int i = 0; i < map.getHeight(); i++) {
-    for (int j = 0; j < map.getWidth(); j++) {
-      log << map.map[j + i * map.getWidth()] << ' ';
+  for (int i = 0; i < scene.map.getHeight(); i++) {
+    for (int j = 0; j < scene.map.getWidth(); j++) {
+      log << scene.map.map[j + i * scene.map.getWidth()] << ' ';
     }
     log << '\n';
   }
@@ -415,8 +414,8 @@ bool NETHER::saveDebugReport(const std::string& filename)
   else
     log << "SHIP NOT LANDED\n";
 
-  log << "# OF BUILDINGS: " << map.buildings.size() << '\n';
-  for (const auto& b: map.buildings) {
+  log << "# OF BUILDINGS: " << scene.map.buildings.size() << '\n';
+  for (const auto& b: scene.map.buildings) {
     log << "BUILDING:\n"
         << " TYPE: " << int(b->type)
         << "\n OWNER: " << b->owner
@@ -535,7 +534,7 @@ void NETHER::detachShip(Robot* robot)
 bool NETHER::cycle(unsigned char *keyboard)
 {
   camera.cycle(keyboard);
-  stats.recompute(map.buildings);
+  stats.recompute(scene.map.buildings);
 
   /* ENEMY Artificial Intelligence: */
   if (stats.second == 0) {
@@ -549,13 +548,13 @@ bool NETHER::cycle(unsigned char *keyboard)
   if (menu.getActiveMenu() == Menu::TYPE::GENERAL)
     ship->cycle(keyboard);
   menu.cycle(keyboard);
-  camera.updateViewportForShip(ship->pos, map.getWidth(), map.getHeight());
+  camera.updateViewportForShip(ship->pos, scene.map.getWidth(), scene.map.getHeight());
   if (stats.tick(level)) {
     menu.updateTime(stats);
   }
 
   /* Test if the ship has landed over a Factory: */
-  for (const auto& b: map.buildings) {
+  for (const auto& b: scene.map.buildings) {
     if (b->type == Building::TYPE::WARBASE && b->owner == 1 and
         ship->landedHere(b->pos)) {
       constructionScreen.open(b->pos);
@@ -579,8 +578,7 @@ bool NETHER::cycle(unsigned char *keyboard)
     }
   }
 
-  map.cycle(keyboard);
-  scene.cycle(keyboard, this);
+  scene.cycle(keyboard);
 
   if (gameState == NETHER::STATE::PLAYING && keyboard[pause_key] > 1) {
     optionsScreen.open();
