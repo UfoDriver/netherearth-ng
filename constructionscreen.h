@@ -10,16 +10,18 @@ class NETHER;
 class ConstructionScreen
 {
 private:
-  enum class MENU {EXIT = 0,
-                   START = 10,
-                   BIPOD = 20,
-                   TRACKS,
-                   ANTIGRAV,
-                   CANNON,
-                   MISSILES,
-                   PHASERS,
-                   NUCLEAR,
-                   ELECTRONICS};
+  enum class MENU {
+    EXIT = 0,
+    START = 10,
+    BIPOD = 20,
+    TRACKS,
+    ANTIGRAV,
+    CANNON,
+    MISSILES,
+    PHASERS,
+    NUCLEAR,
+    ELECTRONICS
+  };
 public:
   explicit ConstructionScreen(NETHER* nether): menuPointer(MENU::EXIT), staple(nullptr),
                                                nether(nether) {}
@@ -32,7 +34,7 @@ private:
   void constructRobot();
 
   MENU menuPointer;
-  Robot* staple;
+  std::shared_ptr<Robot> staple;
   NETHER* nether;
 
   friend MENU operator++(MENU &m, int);

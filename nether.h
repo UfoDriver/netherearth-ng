@@ -74,15 +74,17 @@ public:
 
   void requestStatsRecomputing() { stats.requestRecomputing(); }
 
-  Robot* getControlled() const { return controlled; }
+  std::shared_ptr<Robot> getControlled() const { return controlled; }
+
   STATE getGameState() const { return gameState; };
   void setGameState(STATE newState) { gameState = newState; }
+
   void setGameFinished(int time) { gameFinished = time; }
   void setGameStarted(int time) { gameStarted = time; }
   void increaseAnimationTimer(float delta) { animationTimer += delta; }
   float getAnimationTimer() const { return animationTimer; }
-  void addNewRobot(Robot* robot, int player);
-  void detachShip(Robot* robot);
+  void addNewRobot(std::shared_ptr<Robot> robot, int player);
+  void detachShip(std::shared_ptr<Robot> robot);
   void debug();
   Menu::TYPE getActiveMenu() { return menu.getActiveMenu(); }
 
@@ -114,7 +116,7 @@ private:
   int gameFinished;
   int gameStarted;
 
-  Robot* controlled;
+  std::shared_ptr<Robot> controlled;
 
   friend class AI;
 };

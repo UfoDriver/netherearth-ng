@@ -1,4 +1,5 @@
 #include <GL/gl.h>
+#include <memory>
 #include <sexp/util.hpp>
 #include <sexp/value.hpp>
 
@@ -20,7 +21,7 @@ Ship::Ship(const std::string &model, const std::string &texturesDir, NETHER *net
 
 
 bool Ship::checkCollision(const std::vector<std::unique_ptr<Building>>& buildings,
-                          const std::vector<Robot*>& robots)
+                          const std::vector<std::shared_ptr<Robot>>& robots)
 {
   float m1[16] = {1, 0, 0, 0,
                   0, 1, 0, 0,
@@ -39,7 +40,7 @@ bool Ship::checkCollision(const std::vector<std::unique_ptr<Building>>& building
   }
 
   /* Collision with the robots: */
-  for (Robot* r: robots) {
+  for (std::shared_ptr<Robot> r: robots) {
     if (r->pos.aboutToCollide2D(pos, COLISION_TEST_THRESHOLD)) {
       m2[12] = r->pos.x;
       m2[13] = r->pos.y;
@@ -52,7 +53,7 @@ bool Ship::checkCollision(const std::vector<std::unique_ptr<Building>>& building
 }
 
 
-void Ship::draw(const bool shadows, const Vector& light, const Map& map, const Robot* controlled)
+void Ship::draw(const bool shadows, const Vector& light, const Map& map, const std::shared_ptr<Robot> controlled)
 {
   glPushMatrix();
   glTranslatef(pos.x, pos.y, pos.z);
@@ -79,7 +80,7 @@ void Ship::draw(const bool shadows, const Vector& light, const Map& map, const R
     }
 
     glPushMatrix();
-    glTranslatef(sx, sy, minz+0.05);
+    glTranslatef(sx, sy, minz + 0.05);
     drawShadow(Color(0, 0, 0, 0.5));
     glPopMatrix();
   }

@@ -264,9 +264,8 @@ void NETHER::drawGame(bool shadows)
 bool NETHER::saveGame(const std::string& filename)
 {
   sexp::Value robotList = sexp::Value::nil();
-  for (Robot* r: scene.robots) {
+  for (std::shared_ptr<Robot> r: scene.robots) {
     robotList = sexp::Value::cons(r->toSexp(), std::move(robotList));
-
   }
 
   sexp::Value explosionList = sexp::Value::nil();
@@ -423,7 +422,7 @@ bool NETHER::saveDebugReport(const std::string& filename)
 
     const char* tractions[3] = {"BIPOD", "TRACKS", "ANTIGRAV"};
     const char* pieces[5] = {"CANNONS", "MISSILES", "PHASERS", "NUCLEAR", "ELECTRONICS"};
-    for (Robot* r: scene.robots) {
+    for (std::shared_ptr<Robot> r: scene.robots) {
       if (r->getOwner() != i) continue;
       log << "ROBOT:\n";
       log << ' ' << tractions[r->getTraction()] << '\n';
@@ -509,14 +508,14 @@ std::array<std::pair<int, int>, 7> NETHER::getResourceStats() const
 }
 
 
-void NETHER::addNewRobot(Robot* robot, int player)
+void NETHER::addNewRobot(std::shared_ptr<Robot> robot, int player)
 {
   scene.robots.push_back(robot);
   ai.newRobot(robot->pos, player);
 }
 
 
-void NETHER::detachShip(Robot* robot)
+void NETHER::detachShip(std::shared_ptr<Robot> robot)
 {
   if (robot == controlled) {
     controlled->detachShip();
@@ -560,7 +559,7 @@ bool NETHER::cycle(unsigned char *keyboard)
   if (menu.getActiveMenu() == Menu::TYPE::GENERAL &&
       (int(scene.ship.pos.x * 8) % 4) == 0 &&
       (int(scene.ship.pos.y * 8) % 4) == 0) {
-    for (Robot* r: scene.robots) {
+    for (std::shared_ptr<Robot> r: scene.robots) {
       if (r->getOwner() == 0 and scene.ship.landedHere(r->pos - Vector(0.5f, 0.5f, 0.0))) {
         r->attachShip();
         controlled = r;

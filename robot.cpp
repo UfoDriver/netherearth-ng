@@ -2,6 +2,7 @@
 #include <cmath>
 
 #include <GL/gl.h>
+#include <memory>
 #include <sexp/util.hpp>
 #include <sexp/value.hpp>
 
@@ -344,9 +345,9 @@ bool Robot::checkCollision(const Robots& robots) const
                   0, 1, 0, 0,
                   0, 0, 1, 0,
                   0, 0, 0, 1};
-  for(Robot* rt: robots) {
+  for(std::shared_ptr<Robot> rt: robots) {
     if (rt->pos.aboutToCollide3D(pos, COLISION_TEST_THRESHOLD)) {
-      if (rt != this) {
+      if (rt.get() != this) {
         m2[12] = rt->pos.x;
         m2[13] = rt->pos.y;
         m2[14] = rt->pos.z;
@@ -649,7 +650,7 @@ void Robot::processOperatorPhasers(NETHER *nether, unsigned char *)
 
 void Robot::processOperatorNuclear(NETHER *nether, unsigned char *)
 {
-  nether->scene.map.nuclearExplosionAt(this, pos);
+  nether->scene.map.nuclearExplosionAt(std::shared_ptr<Robot>(this), pos);
   nether->scene.nuclearExplosionAt(pos);
 }
 

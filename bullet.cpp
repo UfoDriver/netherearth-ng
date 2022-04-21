@@ -133,13 +133,13 @@ bool Bullet::checkCollision(const std::vector<std::unique_ptr<Building>>& buildi
     }
   }
 
-  for (Robot* rt: robots) {
-    if ((rt != owner) && rt->pos.aboutToCollide3D(pos, COLISION_TEST_THRESHOLD)) {
+  for (std::shared_ptr<Robot> rt: robots) {
+    if ((rt.get() != owner) && rt->pos.aboutToCollide3D(pos, COLISION_TEST_THRESHOLD)) {
       m2[12] = rt->pos.x;
       m2[13] = rt->pos.y;
       m2[14] = rt->pos.z;
       if (cmc.collision_simple(m1, rt->cmc, m2)) {
-        *r = rt;
+        *r = rt.get();
         return true;
       }
     }

@@ -80,31 +80,6 @@ bool Stats::tick(int level)
 }
 
 
-std::istream& operator>>(std::istream& in, Stats& stats)
-{
-  in >> stats.day >> stats.hour >> stats.minute >> stats.second;
-  for (int i = 0; i < 2; i++) {
-    for (int j = 0; j < 7; j++) {
-      in >> stats.resources[i][j];
-    }
-  }
-  return in;
-}
-
-
-std::ostream& operator<<(std::ostream& out, Stats& stats)
-{
-  out << stats.day << ' ' << stats.hour << ' ' << stats.minute << ' ' << stats.second << '\n';
-  for (int i = 0; i < 2; i++) {
-    for (int j = 0; j < 7; j++) {
-      out << stats.resources[i][j] << ' ';
-    }
-    out << '\n';
-   }
-  return out;
-}
-
-
 std::array<std::pair<int, int>, 7> Stats::getBuildingStats() const
 {
   std::array<std::pair<int, int>, 7> data;

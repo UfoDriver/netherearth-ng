@@ -17,7 +17,7 @@ class Robot;
 class Stats
 {
 public:
-  Stats(): day(0), hour(0), minute(0), second(0), resources{{20, 0}, {20, 0}},
+  Stats(): day{0}, hour{0}, minute{0}, second{0}, resources{{20, 0}, {20, 0}},
            stats{{0}, {0}}, needsRecomputing(true) {}
   void recompute(const std::vector<std::unique_ptr<Building>>& buildings);
   void requestRecomputing() { needsRecomputing = true; }
@@ -43,8 +43,5 @@ public:
 private:
   bool needsRecomputing;
 };
-
-std::istream& operator>>(std::istream& in, Stats& stats);
-std::ostream& operator<<(std::ostream& out, Stats& stats);
 
 #endif // STATS

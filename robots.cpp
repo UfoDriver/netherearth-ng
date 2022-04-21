@@ -13,7 +13,7 @@ int Robots::getRobotCount(unsigned short int owner)
 }
 
 
-int Robots::findIndex(const Robot* robot)
+int Robots::findIndex(std::shared_ptr<Robot> robot)
 {
   auto pos = std::find(cbegin(), cend(), robot);
   if (pos != cend()) {
@@ -24,16 +24,15 @@ int Robots::findIndex(const Robot* robot)
 }
 
 
-void Robots::findAndDestroy(Robot* robot)
+void Robots::findAndDestroy(std::shared_ptr<Robot> robot)
 {
   erase(std::remove(begin(), end(), robot), end());
-  delete robot;
 }
 
 
 PlayerOnly::iterator::iterator(unsigned short player,
-                               std::vector<Robot *>::iterator begin_,
-                               std::vector<Robot *>::iterator end_)
+                               std::vector<std::shared_ptr<Robot>>::iterator begin_,
+                               std::vector<std::shared_ptr<Robot>>::iterator end_)
   : player{player}, internal {begin_}, end_ {end_}
 {
   do {
@@ -59,5 +58,5 @@ bool PlayerOnly::iterator::operator!=(const iterator& other)
 
 Robot* PlayerOnly::iterator::operator*()
 {
-  return *internal;
+  return (*internal).get();
 }

@@ -47,7 +47,7 @@ bool ConstructionScreen::cycle(unsigned char *keyboard)
   }
 
   if (menuPointer == MENU::EXIT && keyboard[fire_key] > 1) {
-    delete staple;
+    staple.reset();
     nether->setGameState(NETHER::STATE::PLAYING);
     nether->scene.ship.pos.z = 2.0;
   }
@@ -338,6 +338,6 @@ void ConstructionScreen::open(const Vector& factoryPos)
 {
   nether->setGameState(NETHER::STATE::CONSTRUCTION);
   menuPointer = MENU::EXIT;
-  staple = new Robot(0);
+  staple = std::shared_ptr<Robot>(0);
   staple->pos = factoryPos + Vector(2.5, 0.5, 0);
 }

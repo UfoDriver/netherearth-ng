@@ -2,6 +2,7 @@
 #define ROBOTS_H
 
 #include <algorithm>
+#include <memory>
 #include <vector>
 
 class Robot;
@@ -13,9 +14,9 @@ public:
   class iterator {
   public:
     iterator(unsigned short player,
-             std::vector<Robot *>::iterator begin_,
-             std::vector<Robot *>::iterator end_);
-    explicit iterator(std::vector<Robot *>::iterator end_) : player {0}, internal{end_} {}
+             std::vector<std::shared_ptr<Robot>>::iterator begin_,
+             std::vector<std::shared_ptr<Robot>>::iterator end_);
+    explicit iterator(std::vector<std::shared_ptr<Robot>>::iterator end_) : player {0}, internal{end_} {}
 
     iterator& operator++();
     bool operator!=(const iterator& other);
@@ -23,13 +24,13 @@ public:
 
   private:
     unsigned short player;
-    std::vector<Robot *>::iterator internal;
-    std::vector<Robot *>::iterator end_;
+    std::vector<std::shared_ptr<Robot>>::iterator internal;
+    std::vector<std::shared_ptr<Robot>>::iterator end_;
   };
 
   explicit PlayerOnly(unsigned short player,
-                      std::vector<Robot *>::iterator begin_,
-                      std::vector<Robot *>::iterator end_)
+                      std::vector<std::shared_ptr<Robot>>::iterator begin_,
+                      std::vector<std::shared_ptr<Robot>>::iterator end_)
     : player{player}, begin_{begin_}, end_{end_} {};
 
   iterator begin()
@@ -43,21 +44,21 @@ public:
 
 private:
   unsigned short player;
-  std::vector<Robot *>::iterator begin_;
-  std::vector<Robot *>::iterator end_;
+  std::vector<std::shared_ptr<Robot>>::iterator begin_;
+  std::vector<std::shared_ptr<Robot>>::iterator end_;
 };
 
 
 // @TODO std::unique_ptr?
-class Robots : public std::vector<Robot *> {
+class Robots : public std::vector<std::shared_ptr<Robot>> {
 public:
   int getRobotCount(unsigned short int owner);
   PlayerOnly forPlayer(unsigned short player)
   {
     return PlayerOnly(player, begin(), end());
   }
-  int findIndex(const Robot* robot);
-  void findAndDestroy(Robot* robot);
+  int findIndex(std::shared_ptr<Robot> robot);
+  void findAndDestroy(std::shared_ptr<Robot> robot);
 };
 
 

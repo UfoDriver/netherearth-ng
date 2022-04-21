@@ -243,7 +243,7 @@ void AI::enemy()
           int forces[2] = {0,0};
 
           /* Test for WARBASEs in danger: */ 
-          for (Robot* r: scene->robots) {
+          for (std::shared_ptr<Robot> r: scene->robots) {
             if ((r->pos-b->pos).norma() < 10.0) {
               /* Robot near: */
               forces[r->getOwner()] += r->cost();
@@ -284,7 +284,7 @@ void AI::enemy()
 
 
 	/* Count the number of robots: */ 
-    for (Robot* r: scene->robots) {
+    for (std::shared_ptr<Robot> r: scene->robots) {
       if (r->getOwner() == 1) {
         if (r->program.type==RobotProgram::CAPTURE) nrobots[0]++;
         if (r->program.type==RobotProgram::DESTROY) nrobots[1]++;
@@ -318,7 +318,7 @@ void AI::enemy()
 			(level==1 && (rand()%2)==0) ||
 			(level==0 && (rand()%4)==0))) {
           /* There are too many robots in STOP & DEFEND: */
-          for (Robot *r : scene->robots) {
+          for (std::shared_ptr<Robot> r : scene->robots) {
             if (r->getOwner() == 1) {
               if (r->program.type == RobotProgram::STOPDEFEND) {
                 if (nrobots[0] < 6 &&
@@ -575,7 +575,7 @@ Robot* AI::enemyNewRobot(const STATE state, const Vector& pos)
 
 	/* Build the robot: */ 
 	{
-		Robot *r = new Robot(1);
+      std::shared_ptr<Robot> r {new Robot(1)};
 		r->setTraction(traction);
 		r->setPieces(pieces);
 
@@ -596,9 +596,7 @@ Robot* AI::enemyNewRobot(const STATE state, const Vector& pos)
 			newRobot(r->pos,0);
 
             nether->stats.spendRobotResources(1, *r);
-			return r;
-		} else {
-			delete r;
+			return r.get();
 		} /* if */ 
 	}
 
@@ -1079,7 +1077,7 @@ Robot::OPERATOR AI::programStopDefend(const Robot& robot, Vector *program_goal, 
     std::fill(attackmap.begin(), attackmap.end(), 0);
 
     /* Find the nearest FIRE position: */
-    for (Robot* r: scene->robots) {
+    for (std::shared_ptr<Robot> r: scene->robots) {
       if (r->getOwner() == 2 - player) {
         robotZone(r->pos, &x, &y, &dx, &dy);
         for (int i = 0; i < dx; i++) {
@@ -1356,7 +1354,7 @@ Robot::OPERATOR AI::programDestroy(const Robot& robot, Vector *program_goal, con
       std::fill(attackmap.begin(), attackmap.end(), 0);
 
       /* Find the nearest FIRE position: */
-      for (Robot* r: scene->robots) {
+      for (std::shared_ptr<Robot> r: scene->robots) {
         if (r->getOwner() != 2 - player) continue;
         if (first ||
             (*program_goal - robot.pos).norma() < distance) {

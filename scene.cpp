@@ -1,3 +1,4 @@
+#include <memory>
 #include <numeric>
 #include <cmath>
 
@@ -54,7 +55,7 @@ void Scene::cycleBullets()
                             if (bullet->angle == 270) bullet->pos.y -= BULLET_SPEED;
                             bullet->step++;
 
-                            Robot* r = 0;
+                            Robot* r;
                             if (bullet->step >= bullet->getPersistence() || bullet->checkCollision(map.buildings, robots, &r)) {
                               ret = true;
                               if (bullet->step < bullet->getPersistence()) {
@@ -68,9 +69,9 @@ void Scene::cycleBullets()
                                 /* Robot destroyed: */
                                 explosions.emplace_back(r->pos,1);
                                 nether->sManager.playExplosion(ship.pos, r->pos);
-                                nether->detachShip(r);
+                                nether->detachShip(std::shared_ptr<Robot>(r));
                                 nether->ai.killRobot(r->pos);
-                                robots.findAndDestroy(r);
+                                robots.findAndDestroy(std::shared_ptr<Robot>(r));
                               }
                             }
                             return ret;
@@ -81,7 +82,7 @@ void Scene::cycleBullets()
 
 void Scene::cycleRobots(unsigned char* keyboard)
 {
-  for (Robot* r: robots) {
+  for (std::shared_ptr<Robot> r: robots) {
     r->cycle(nether.get());
     r->dispatchOperator(nether.get(), keyboard);
   }
@@ -93,8 +94,6 @@ void Scene::clear()
   explosions.clear();
   bullets.clear();
   particles.clear();
-  // @TODO: check if robots.clear() calls destructors (in case of shared_ptr)
-  for (Robot* r: robots) delete r;
   robots.clear();
 }
 
@@ -121,7 +120,7 @@ void Scene::draw(const Camera& camera, const Vector& light, const bool shadows)
     camera.lookAt();
   }
 
-  for (Robot* r: robots) {
+  for (std::shared_ptr<Robot> r: robots) {
     if (camera.canSee(r->pos)) {
       glPushMatrix();
       glTranslatef(r->pos.x, r->pos.y, r->pos.z);
