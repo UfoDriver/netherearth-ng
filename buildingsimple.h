@@ -15,7 +15,7 @@ public:
   BuildingSimple(const Vector& position, BuildingBlock::TYPE blockType)
     : Building(position, TYPE::SIMPLE)
   {
-    blocks.emplace_back(position, BuildingBlock::TYPE::WALL1);
+    blocks.emplace_back(position, blockType);
   }
   BuildingSimple(const sexp::Value& sexp)
     : Building({0, 0, 0}, TYPE::SIMPLE)

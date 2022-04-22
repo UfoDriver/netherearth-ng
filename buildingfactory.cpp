@@ -1,3 +1,4 @@
+#include <GL/freeglut_std.h>
 #include <GL/gl.h>
 #include <algorithm>
 
@@ -86,6 +87,16 @@ void BuildingFactory::draw(const bool shadows, const Vector& light) const
       flagTile.draw(getFlagColor());
     }
   }
+
+  /// @TODO: debug info
+  if (isCapturable()) {
+    glPushMatrix();
+    Vector capturePoint = getCapturePoint();
+    glTranslatef(capturePoint.x, capturePoint.y, capturePoint.z);
+    glutSolidCube(1.1);
+    glPopMatrix();
+  }
+
   glPopMatrix();
 }
 

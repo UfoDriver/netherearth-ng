@@ -273,8 +273,6 @@ void ConstructionScreen::draw(int width, int height, const Light& light)
           Resources::pieceTiles[0][i].draw(Color(0.5, 0.5, 0.5));
         }
       }
-
-
       glPopMatrix();
     }
 
@@ -338,6 +336,6 @@ void ConstructionScreen::open(const Vector& factoryPos)
 {
   nether->setGameState(NETHER::STATE::CONSTRUCTION);
   menuPointer = MENU::EXIT;
-  staple = std::shared_ptr<Robot>(0);
+  staple.reset(new Robot(0));
   staple->pos = factoryPos + Vector(2.5, 0.5, 0);
 }

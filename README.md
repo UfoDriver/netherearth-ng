@@ -28,3 +28,18 @@
 * Factory/warbase capturing progress bar
 * Make radar semitransparent (not sure if we need it when we have zoom)
 * Support more than 2 players
+
+
+~~Connecting to a warbase leads to segfault~~
+~~No robots are spawn~~
+~~Factory signs and flags are shifted~~
+~~Chances that capture points are broken~~
+~~No sound~~
+
+
+Firing breaks the game
+Correct warbase positions in map files
+Correct factory positions in map files
+
+Quiting the game leads to segfault (double free or corruption)
+Game speed seems too high

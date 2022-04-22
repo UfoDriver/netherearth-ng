@@ -26,8 +26,8 @@ public:
 
   void clear();
 
-  bool cycle(unsigned char* keyboard);
   void draw(const Camera& camera, const Vector& light, const bool shadows);
+  bool cycle(unsigned char* keyboard);
 
   void nuclearExplosionAt(const Vector& position);
 

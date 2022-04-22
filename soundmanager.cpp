@@ -66,8 +66,9 @@ void SoundManager::playConstruction() const
 
 void SoundManager::playSound(const Mix_Chunk* sample) const
 {
-  if (sample && sound)
+  if (sample && sound) {
     Mix_Volume(Mix_PlayChannel(-1, const_cast<Mix_Chunk*>(sample), 0), 128);
+  }
 }
 
 
