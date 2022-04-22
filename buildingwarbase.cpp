@@ -9,9 +9,6 @@
 BuildingWarbase::BuildingWarbase(const Vector &position) :
   Building(position, TYPE::WARBASE)
 {
-  // @TODO temporary position correction before maps are updated (if ever)
-  pos = pos + Vector(1.5, 2, 0);
-
   // @TODO somehow out of the method it makes sigfault
   const std::vector<BuildingBlock> WARBASE_TEMPLATE
     {
