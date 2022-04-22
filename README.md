@@ -35,9 +35,9 @@
 ~~Factory signs and flags are shifted~~
 ~~Chances that capture points are broken~~
 ~~No sound~~
+~~Firing breaks the game~~
 
 
-Firing breaks the game
 Correct warbase positions in map files
 Correct factory positions in map files
 

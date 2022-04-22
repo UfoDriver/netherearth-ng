@@ -29,7 +29,7 @@ public:
   virtual void draw(bool shadow, std::vector<Particle>& particles) const = 0;
 
   bool checkCollision(const std::vector<std::unique_ptr<Building>>& buildings,
-                      const Robots& robots, Robot** r);
+                      const Robots& robots, std::shared_ptr<Robot> &r);
 
   virtual int getPersistence() const = 0;
   int getDamageForRobot(const Robot* robot) const;
