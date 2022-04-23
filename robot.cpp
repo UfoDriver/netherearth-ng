@@ -535,19 +535,19 @@ void Robot::processOperatorForward(NETHER* nether, unsigned char*)
       (int(pos.y * 256) % 128) == 0) {
     switch(angle) {
     case 0:
-      if (nether->ai.worseMapTerrain(int((pos.x + 0.5) / 0.5), int((pos.y - 0.5) / 0.5), 1, 2) > T_HOLE)
+      if (nether->ai.worseMapTerrain(int((pos.x + 0.5) / 0.5), int((pos.y - 0.5) / 0.5), 1, 2) > Map::T_HOLE)
         op = Robot::OPERATOR::NONE;
       break;
     case 90:
-      if (nether->ai.worseMapTerrain(int((pos.x - 0.5) / 0.5), int((pos.y + 0.5) / 0.5), 2, 1) > T_HOLE)
+      if (nether->ai.worseMapTerrain(int((pos.x - 0.5) / 0.5), int((pos.y + 0.5) / 0.5), 2, 1) > Map::T_HOLE)
         op = Robot::OPERATOR::NONE;
       break;
     case 180:
-      if (nether->ai.worseMapTerrain(int((pos.x - 1.0) / 0.5), int((pos.y - 0.5) / 0.5), 1, 2) > T_HOLE)
+      if (nether->ai.worseMapTerrain(int((pos.x - 1.0) / 0.5), int((pos.y - 0.5) / 0.5), 1, 2) > Map::T_HOLE)
         op = Robot::OPERATOR::NONE;
       break;
     case 270:
-      if (nether->ai.worseMapTerrain(int((pos.x - 0.5) / 0.5), int((pos.y - 1.0) / 0.5), 2, 1) > T_HOLE)
+      if (nether->ai.worseMapTerrain(int((pos.x - 0.5) / 0.5), int((pos.y - 1.0) / 0.5), 2, 1) > Map::T_HOLE)
         op = Robot::OPERATOR::NONE;
       break;
     }

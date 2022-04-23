@@ -23,6 +23,18 @@ class Robot;
 class Map
 {
 public:
+  enum TERRAIN {
+    T_GRASS,
+    T_SAND,
+    T_MOUNTAINS,
+    T_HOLE,
+    T_BUILDING,
+    T_SHIP,
+    T_ROBOT,
+    T_EROBOT,
+    T_OUT
+  };
+
   explicit Map(NETHER* nether) : width{0}, height{0}, nether{nether} {}
 
   std::vector<int> map;
@@ -34,7 +46,7 @@ public:
   int getHeight() const { return height; }
   float getMaxZ(float x[2], float y[2]) const;
   float getMaxZ(const Vector& position) const;
-  int getTerrain(float x, float y);
+  TERRAIN getTerrain(float x, float y);
 
   bool loadMap(const std::string& filename);
 

@@ -1,7 +1,9 @@
 #include <algorithm>
 #include <bitset>
+
 #include "ai.h"
 #include "constants.h"
+#include "map.h"
 #include "nether.h"
 #include "robot.h"
 
@@ -52,7 +54,7 @@ void AI::makePrecomputations()
   for (const auto& b: scene->map.buildings) {
     for (const auto& block: b->blocks)
     fillZone(discreetmap, scene->map.getWidth() * 2,
-             T_BUILDING, int(block.pos.x / 0.5), int(block.pos.y / 0.5), 2, 2);
+             Map::T_BUILDING, int(block.pos.x / 0.5), int(block.pos.y / 0.5), 2, 2);
   }
 }
 
@@ -71,7 +73,7 @@ int AI::robotHere(const Vector& pos)
   int y = int(pos.y/0.5);
   int robot = discreetmap[y * (scene->map.getWidth() * 2) + x];
 
-  if (robot != T_ROBOT && robot != T_EROBOT) robot = 0;
+  if (robot != Map::T_ROBOT && robot != Map::T_EROBOT) robot = 0;
   return robot;
 }
 
@@ -117,9 +119,9 @@ void AI::newRobot(const Vector& pos, const int owner)
   int x, y, dx, dy;
   robotZone(pos,&x,&y,&dx,&dy);
   if (owner == 0)
-    fillZone(discreetmap, scene->map.getWidth() * 2, T_ROBOT, x, y, dx, dy);
+    fillZone(discreetmap, scene->map.getWidth() * 2, Map::T_ROBOT, x, y, dx, dy);
   else
-    fillZone(discreetmap, scene->map.getWidth() * 2, T_EROBOT, x, y, dx, dy);
+    fillZone(discreetmap, scene->map.getWidth() * 2, Map::T_EROBOT, x, y, dx, dy);
 }
 
 
@@ -132,12 +134,12 @@ void AI::moveRobot(const Vector& oldpos, const Vector& newpos, const int owner)
 
 int AI::worseMapTerrain(const int x, const int y, const int dx, const int dy)
 {
-  int t = T_GRASS, t2;
+  int t = Map::T_GRASS, t2;
   for (int i = 0; i < dx; i++) {
     for (int j = 0; j < dy; j++) {
       if (x + i < 0 || x + i >= scene->map.getWidth() * 2 ||
           y + j < 0 || y + j >= scene->map.getHeight() * 2)
-        return T_OUT;
+        return Map::T_OUT;
       t2 = discreetmap[(y + j) * (scene->map.getWidth() * 2) + x + i];
       if (t2 > t) t = t2;
     }
@@ -613,7 +615,7 @@ void AI::availableOperators(const Robot& robot, std::vector<AIOperator>& l)
 
   for (int i = 0; i < 4; i++) {
     int terrain = worseMapTerrain(x + xd2[i], y + yd2[i], 2 + xd3[i], 2 + yd3[i]);
-    if (terrain <= T_HOLE && robot.walkable(terrain)) {
+    if (terrain <= Map::T_HOLE && robot.walkable(terrain)) {
       /* Rotation cost: */
       int dif = dangle[i] - robot.getAngle();
       if (dif > 360) dif -= 360;
@@ -656,7 +658,7 @@ bool AI::expandOperators(const int x, const int y, const int angle, const Robot&
 		int newpos = previous+xd[i]+yd[i]*(scene->map.getWidth()*2);
 		if (newpos!=searchmap[previous].previous) {
 			terrain=worseMapTerrain(x+xd2[i],y+yd2[i],2+xd3[i],2+yd3[i]);
-			if (terrain<=T_HOLE &&
+			if (terrain<=Map::T_HOLE &&
 				robot.walkable(terrain)) {
 				cost=oldcost;
 
@@ -1009,7 +1011,7 @@ Robot::OPERATOR AI::programAdvance(const Robot& robot, const int player)
   }
 
   /* Reconstruct the decreet map: */
-  if (type == T_ROBOT)
+  if (type == Map::T_ROBOT)
     newRobot(robot.pos, 0);
   else
     newRobot(robot.pos, 2);
@@ -1046,7 +1048,7 @@ Robot::OPERATOR AI::programRetreat(const Robot& robot, const int player)
   }
 
   /* Reconstruct the decreet map: */
-  if (type == T_ROBOT)
+  if (type == Map::T_ROBOT)
     newRobot(robot.pos, 0);
   else
     newRobot(robot.pos, 1);
@@ -1191,7 +1193,7 @@ Robot::OPERATOR AI::programStopDefend(const Robot& robot, Vector *program_goal, 
   }
 
   /* Reconstruct the decreet map: */
-  if (type == T_ROBOT)
+  if (type == Map::T_ROBOT)
     newRobot(robot.pos, 0);
   else
     newRobot(robot.pos, 1);
@@ -1224,7 +1226,7 @@ Robot::OPERATOR AI::programCapture(const Robot& robot, Vector *program_goal, con
         if (robot.program.parameter.as_int == RobotProgram::WARBASES &&
             b->type == Building::TYPE::WARBASE &&
             b->owner != player &&
-            worseMapTerrain(int((b->pos.x + 2.0) / 0.5), int(b->pos.y / 0.5), 2, 2) <= T_HOLE) {
+            worseMapTerrain(int((b->pos.x + 2.0) / 0.5), int(b->pos.y / 0.5), 2, 2) <= Map::T_HOLE) {
           distance = float(((b->pos + Vector(2.5, 0.5, 0)) - robot.pos).norma());
           if (!anygoal || distance < minimumdistance) {
             anygoal = true;
@@ -1235,7 +1237,7 @@ Robot::OPERATOR AI::programCapture(const Robot& robot, Vector *program_goal, con
         if (robot.program.parameter.as_int == RobotProgram::NEUTRAL_FACTORIES &&
             (b->type == Building::TYPE::FACTORY)
             && b->owner == 0 &&
-            worseMapTerrain(int((b->pos.x + 1.0) / 0.5), int(b->pos.y / 0.5), 2, 2) <= T_HOLE) {
+            worseMapTerrain(int((b->pos.x + 1.0) / 0.5), int(b->pos.y / 0.5), 2, 2) <= Map::T_HOLE) {
           distance = float(((b->pos + Vector(1.5, 0.5,0 )) - robot.pos).norma());
           if (!anygoal || distance < minimumdistance) {
             anygoal = true;
@@ -1247,7 +1249,7 @@ Robot::OPERATOR AI::programCapture(const Robot& robot, Vector *program_goal, con
             (b->type == Building::TYPE::FACTORY) &&
             b->owner!=0 &&
             b->owner!=player &&
-            worseMapTerrain(int((b->pos.x + 1.0) / 0.5), int(b->pos.y / 0.5), 2, 2) <= T_HOLE) {
+            worseMapTerrain(int((b->pos.x + 1.0) / 0.5), int(b->pos.y / 0.5), 2, 2) <= Map::T_HOLE) {
           distance=float(((b->pos + Vector(1.5, 0.5, 0)) - robot.pos).norma());
           if (!anygoal || distance < minimumdistance) {
             anygoal = true;
@@ -1274,7 +1276,7 @@ Robot::OPERATOR AI::programCapture(const Robot& robot, Vector *program_goal, con
   }
 
   /* Reconstruct the decreet map: */
-  if (type==T_ROBOT)
+  if (type==Map::T_ROBOT)
     newRobot(robot.pos,0);
   else
     newRobot(robot.pos, 1);
@@ -1305,7 +1307,7 @@ Robot::OPERATOR AI::programDestroy(const Robot& robot, Vector *program_goal, con
         if (robot.program.parameter.as_int == RobotProgram::WARBASES &&
             b->type == Building::TYPE::WARBASE &&
             b->owner!=player &&
-            worseMapTerrain(int((b->pos.x + 2.0) / 0.5), int(b->pos.y / 0.5), 2, 2) <= T_HOLE) {
+            worseMapTerrain(int((b->pos.x + 2.0) / 0.5), int(b->pos.y / 0.5), 2, 2) <= Map::T_HOLE) {
           distance = float(((b->pos + Vector(2.5, 0.5, 0)) - robot.pos).norma());
           if (!anygoal || distance < minimumdistance) {
             anygoal = true;
@@ -1315,7 +1317,7 @@ Robot::OPERATOR AI::programDestroy(const Robot& robot, Vector *program_goal, con
         }
         if (robot.program.parameter.as_int == RobotProgram::ENEMY_FACTORIES
             && (b->type == Building::TYPE::FACTORY) && b->owner != 0 && b->owner != player &&
-            worseMapTerrain(int((b->pos.x + 1.0) / 0.5), int(b->pos.y / 0.5), 2, 2) <= T_HOLE) {
+            worseMapTerrain(int((b->pos.x + 1.0) / 0.5), int(b->pos.y / 0.5), 2, 2) <= Map::T_HOLE) {
           distance=float(((b->pos + Vector(1.5, 0.5, 0)) - robot.pos).norma());
           if (!anygoal || distance < minimumdistance) {
             anygoal = true;
@@ -1482,7 +1484,7 @@ Robot::OPERATOR AI::programDestroy(const Robot& robot, Vector *program_goal, con
   }
 
   /* Reconstruct the decreet map: */
-  if (type == T_ROBOT)
+  if (type == Map::T_ROBOT)
     newRobot(robot.pos, 0);
   else
     newRobot(robot.pos, 1);
@@ -1557,21 +1559,21 @@ int AI::realShotPaths(const int x, const int y, const int player, const int pers
 	int rsp=0;
 
 	for (int i = 2;i < int((persistence*BULLET_SPEED)/0.5)+2 && (x+i<scene->map.getWidth()*2); i++) {
-		if (discreetmap[x+i+y*(scene->map.getWidth()*2)]==T_BUILDING ||
-			discreetmap[x+i+(y+1)*(scene->map.getWidth()*2)]==T_BUILDING) break;
+		if (discreetmap[x+i+y*(scene->map.getWidth()*2)]==Map::T_BUILDING ||
+			discreetmap[x+i+(y+1)*(scene->map.getWidth()*2)]==Map::T_BUILDING) break;
 		if (player==1) {
-			if (discreetmap[x+i+y*(scene->map.getWidth()*2)]==T_ROBOT ||
-				discreetmap[x+i+(y+1)*(scene->map.getWidth()*2)]==T_ROBOT) break;
-			if (discreetmap[x+i+y*(scene->map.getWidth()*2)]==T_EROBOT ||
-				discreetmap[x+i+(y+1)*(scene->map.getWidth()*2)]==T_EROBOT) {
+			if (discreetmap[x+i+y*(scene->map.getWidth()*2)]==Map::T_ROBOT ||
+				discreetmap[x+i+(y+1)*(scene->map.getWidth()*2)]==Map::T_ROBOT) break;
+			if (discreetmap[x+i+y*(scene->map.getWidth()*2)]==Map::T_EROBOT ||
+				discreetmap[x+i+(y+1)*(scene->map.getWidth()*2)]==Map::T_EROBOT) {
 				rsp|=1;
 				break;
 			} /* if */ 
 		} else {
-			if (discreetmap[x+i+y*(scene->map.getWidth()*2)]==T_EROBOT ||
-				discreetmap[x+i+(y+1)*(scene->map.getWidth()*2)]==T_EROBOT) break;
-			if (discreetmap[x+i+y*(scene->map.getWidth()*2)]==T_ROBOT ||
-				discreetmap[x+i+(y+1)*(scene->map.getWidth()*2)]==T_ROBOT) {
+			if (discreetmap[x+i+y*(scene->map.getWidth()*2)]==Map::T_EROBOT ||
+				discreetmap[x+i+(y+1)*(scene->map.getWidth()*2)]==Map::T_EROBOT) break;
+			if (discreetmap[x+i+y*(scene->map.getWidth()*2)]==Map::T_ROBOT ||
+				discreetmap[x+i+(y+1)*(scene->map.getWidth()*2)]==Map::T_ROBOT) {
 				rsp|=1;
 				break;
 			} /* if */ 
@@ -1579,21 +1581,21 @@ int AI::realShotPaths(const int x, const int y, const int player, const int pers
 	} /* for */ 
 
 	for (int i = 1;i < int((persistence*BULLET_SPEED)/0.5)+1 && (x-i>=0); i++) {
-		if (discreetmap[x-i+y*(scene->map.getWidth()*2)]==T_BUILDING ||
-			discreetmap[x-i+(y+1)*(scene->map.getWidth()*2)]==T_BUILDING) break;
+		if (discreetmap[x-i+y*(scene->map.getWidth()*2)]==Map::T_BUILDING ||
+			discreetmap[x-i+(y+1)*(scene->map.getWidth()*2)]==Map::T_BUILDING) break;
 		if (player==1) {
-			if (discreetmap[x-i+y*(scene->map.getWidth()*2)]==T_ROBOT ||
-				discreetmap[x-i+(y+1)*(scene->map.getWidth()*2)]==T_ROBOT) break;
-			if (discreetmap[x-i+y*(scene->map.getWidth()*2)]==T_EROBOT ||
-				discreetmap[x-i+(y+1)*(scene->map.getWidth()*2)]==T_EROBOT) {
+			if (discreetmap[x-i+y*(scene->map.getWidth()*2)]==Map::T_ROBOT ||
+				discreetmap[x-i+(y+1)*(scene->map.getWidth()*2)]==Map::T_ROBOT) break;
+			if (discreetmap[x-i+y*(scene->map.getWidth()*2)]==Map::T_EROBOT ||
+				discreetmap[x-i+(y+1)*(scene->map.getWidth()*2)]==Map::T_EROBOT) {
 				rsp|=4;
 				break;
 			} /* if */ 
 		} else {
-			if (discreetmap[x-i+y*(scene->map.getWidth()*2)]==T_EROBOT ||
-				discreetmap[x-i+(y+1)*(scene->map.getWidth()*2)]==T_EROBOT) break;
-			if (discreetmap[x-i+y*(scene->map.getWidth()*2)]==T_ROBOT ||
-				discreetmap[x-i+(y+1)*(scene->map.getWidth()*2)]==T_ROBOT) {
+			if (discreetmap[x-i+y*(scene->map.getWidth()*2)]==Map::T_EROBOT ||
+				discreetmap[x-i+(y+1)*(scene->map.getWidth()*2)]==Map::T_EROBOT) break;
+			if (discreetmap[x-i+y*(scene->map.getWidth()*2)]==Map::T_ROBOT ||
+				discreetmap[x-i+(y+1)*(scene->map.getWidth()*2)]==Map::T_ROBOT) {
 				rsp|=4;
 				break;
 			} /* if */ 
@@ -1601,21 +1603,21 @@ int AI::realShotPaths(const int x, const int y, const int player, const int pers
 	} /* for */ 
 
 	for (int i = 2; i < int((persistence*BULLET_SPEED)/0.5)+2 && (y+i<scene->map.getHeight()*2); i++) {
-		if (discreetmap[x+(y+i)*(scene->map.getWidth()*2)]==T_BUILDING ||
-			discreetmap[(x+1)+(y+i)*(scene->map.getWidth()*2)]==T_BUILDING) break;
+		if (discreetmap[x+(y+i)*(scene->map.getWidth()*2)]==Map::T_BUILDING ||
+			discreetmap[(x+1)+(y+i)*(scene->map.getWidth()*2)]==Map::T_BUILDING) break;
 		if (player==1) {
-			if (discreetmap[x+(y+i)*(scene->map.getWidth()*2)]==T_ROBOT ||
-				discreetmap[(x+1)+(y+i)*(scene->map.getWidth()*2)]==T_ROBOT) break;
-			if (discreetmap[x+(y+i)*(scene->map.getWidth()*2)]==T_EROBOT ||
-				discreetmap[(x+1)+(y+i)*(scene->map.getWidth()*2)]==T_EROBOT) {
+			if (discreetmap[x+(y+i)*(scene->map.getWidth()*2)]==Map::T_ROBOT ||
+				discreetmap[(x+1)+(y+i)*(scene->map.getWidth()*2)]==Map::T_ROBOT) break;
+			if (discreetmap[x+(y+i)*(scene->map.getWidth()*2)]==Map::T_EROBOT ||
+				discreetmap[(x+1)+(y+i)*(scene->map.getWidth()*2)]==Map::T_EROBOT) {
 				rsp|=2;
 				break;
 			} /* if */ 
 		} else {
-			if (discreetmap[x+(y+i)*(scene->map.getWidth()*2)]==T_EROBOT ||
-				discreetmap[(x+1)+(y+i)*(scene->map.getWidth()*2)]==T_EROBOT) break;
-			if (discreetmap[x+(y+i)*(scene->map.getWidth()*2)]==T_ROBOT ||
-				discreetmap[(x+1)+(y+i)*(scene->map.getWidth()*2)]==T_ROBOT) {
+			if (discreetmap[x+(y+i)*(scene->map.getWidth()*2)]==Map::T_EROBOT ||
+				discreetmap[(x+1)+(y+i)*(scene->map.getWidth()*2)]==Map::T_EROBOT) break;
+			if (discreetmap[x+(y+i)*(scene->map.getWidth()*2)]==Map::T_ROBOT ||
+				discreetmap[(x+1)+(y+i)*(scene->map.getWidth()*2)]==Map::T_ROBOT) {
 				rsp|=2;
 				break;
 			} /* if */ 
@@ -1623,21 +1625,21 @@ int AI::realShotPaths(const int x, const int y, const int player, const int pers
 	} /* for */ 
 
 	for (int i = 1; i < int((persistence*BULLET_SPEED)/0.5)+1 && (y-i>=0); i++) {
-		if (discreetmap[x+(y-i)*(scene->map.getWidth()*2)]==T_BUILDING ||
-			discreetmap[(x+1)+(y-i)*(scene->map.getWidth()*2)]==T_BUILDING) break;
+		if (discreetmap[x+(y-i)*(scene->map.getWidth()*2)]==Map::T_BUILDING ||
+			discreetmap[(x+1)+(y-i)*(scene->map.getWidth()*2)]==Map::T_BUILDING) break;
 		if (player==1) {
-			if (discreetmap[x+(y-i)*(scene->map.getWidth()*2)]==T_ROBOT ||
-				discreetmap[(x+1)+(y-i)*(scene->map.getWidth()*2)]==T_ROBOT) break;
-			if (discreetmap[x+(y-i)*(scene->map.getWidth()*2)]==T_EROBOT ||
-				discreetmap[(x+1)+(y-i)*(scene->map.getWidth()*2)]==T_EROBOT) {
+			if (discreetmap[x+(y-i)*(scene->map.getWidth()*2)]==Map::T_ROBOT ||
+				discreetmap[(x+1)+(y-i)*(scene->map.getWidth()*2)]==Map::T_ROBOT) break;
+			if (discreetmap[x+(y-i)*(scene->map.getWidth()*2)]==Map::T_EROBOT ||
+				discreetmap[(x+1)+(y-i)*(scene->map.getWidth()*2)]==Map::T_EROBOT) {
 				rsp|=8;
 				break;
 			} /* if */ 
 		} else {
-			if (discreetmap[x+(y-i)*(scene->map.getWidth()*2)]==T_EROBOT ||
-				discreetmap[(x+1)+(y-i)*(scene->map.getWidth()*2)]==T_EROBOT) break;
-			if (discreetmap[x+(y-i)*(scene->map.getWidth()*2)]==T_ROBOT ||
-				discreetmap[(x+1)+(y-i)*(scene->map.getWidth()*2)]==T_ROBOT) {
+			if (discreetmap[x+(y-i)*(scene->map.getWidth()*2)]==Map::T_EROBOT ||
+				discreetmap[(x+1)+(y-i)*(scene->map.getWidth()*2)]==Map::T_EROBOT) break;
+			if (discreetmap[x+(y-i)*(scene->map.getWidth()*2)]==Map::T_ROBOT ||
+				discreetmap[(x+1)+(y-i)*(scene->map.getWidth()*2)]==Map::T_ROBOT) {
 				rsp|=8;
 				break;
 			} /* if */ 

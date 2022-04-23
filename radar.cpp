@@ -63,28 +63,28 @@ void Radar::draw(const int width, const int height, const int split, const int s
             y + starty < (nether->scene.map.getHeight() * 2) &&
             nether->ai.discreetmapSize()) {
           switch(nether->ai.discreetmapValue(x + startx + (y + starty) * (nether->scene.map.getWidth() * 2))) {
-          case T_GRASS:
+          case Map::T_GRASS:
             glColor3f(0.0, 1.0, 0.0);
             break;
-          case T_SAND:
+          case Map::T_SAND:
             glColor3f(0.2, 0.9, 0.0);
             break;
-          case T_MOUNTAINS:
+          case Map::T_MOUNTAINS:
             glColor3f(0.4, 0.8, 0.0);
             break;
-          case T_HOLE:
+          case Map::T_HOLE:
             glColor3f(0.0, 0.8, 0.0);
             break;
-          case T_BUILDING:
+          case Map::T_BUILDING:
             glColor3f(0.0, 0.0, 0.0);
             break;
-          case T_SHIP:
+          case Map::T_SHIP:
             glColor3f(1.0f, 1.0f, 1.0f);
             break;
-          case T_ROBOT:
+          case Map::T_ROBOT:
             glColor3f(0.0, 0.0, 1.0f);
             break;
-          case T_EROBOT:
+          case Map::T_EROBOT:
             glColor3f(1.0f, 0.0, 0.0);
             break;
           }

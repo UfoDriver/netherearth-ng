@@ -97,22 +97,11 @@ float Map::getMaxZ(const Vector& position) const
   x[1] = position.x + 0.5;
   y[0] = position.y - 0.5;
   y[1] = position.y + 0.5;
-
-  for (int i = int(x[0]); float(i) < x[1]; i++) {
-    for (int j = int(y[0]); float(j) < y[1]; j++) {
-      if (i >= 0 && i < width &&
-          j >= 0 && j < height) {
-        int o = map[i + j * width];
-        z = std::max(Resources::tiles[o].cmc.z[0], z);
-        z = std::max(Resources::tiles[o].cmc.z[1], z);
-      }
-    }
-  }
-  return z;
+  return getMaxZ(x, y);
 }
 
 
-int Map::getTerrain(float x, float y)
+Map::TERRAIN Map::getTerrain(float x, float y)
 {
   switch (map[int(x) + int(y) * width]) {
   case 0:
