@@ -12,7 +12,7 @@
 #include "vector.h"
 
 
-class Building;
+class BuildingBlock;
 class Bullet;
 class NETHER;
 class Ship;
@@ -77,7 +77,7 @@ public:
   bool hasPhasers() const { return pieces[2]; }
   bool hasNuclear() const { return pieces[3]; }
   bool hasElectronics() const { return pieces[4]; }
-  bool checkCollision(const std::vector<std::unique_ptr<Building>>& buildings,
+  bool checkCollision(const std::vector<std::shared_ptr<BuildingBlock>>& buildingBlocks,
                       const Robots& robots, bool complete, Ship* ship) const;
 
   void cycle(NETHER* nether);
@@ -145,7 +145,7 @@ private:
   void processProgram(NETHER* nether, unsigned char* keyboard);
   void processDirectInput(NETHER* nether, unsigned char* keyboard);
 
-  bool checkCollision(const std::vector<std::unique_ptr<Building>>& buildings) const;
+  bool checkCollision(const std::vector<std::shared_ptr<BuildingBlock>>& buildingBlocks) const;
   bool checkCollision(const Robots& robots) const;
   bool checkCollision(Ship* ship) const;
 

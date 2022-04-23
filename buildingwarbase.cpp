@@ -28,20 +28,20 @@ BuildingWarbase::BuildingWarbase(const Vector &position) :
      {{-1, 2, 0}, BuildingBlock::TYPE::WALL4},
      {{0, 2, 0}, BuildingBlock::TYPE::WALL5}};
 
-  std::transform(WARBASE_TEMPLATE.cbegin(), WARBASE_TEMPLATE.cend(), std::back_inserter(blocks),
-                 [this](const BuildingBlock& block) {
-                   BuildingBlock b(block);
-                   b.pos = b.pos + pos;
-                   return b;
-                 });
+  std::transform(
+    WARBASE_TEMPLATE.cbegin(), WARBASE_TEMPLATE.cend(), std::back_inserter(blocks),
+    [this](const BuildingBlock& block) {
+      std::shared_ptr<BuildingBlock> b {new BuildingBlock(block) };
+      b->pos = b->pos + pos;
+      return b;
+    }
+  );
   flagTile = Resources::buildingTiles[6];
 }
 
 
 void BuildingWarbase::draw(const bool shadows, const Vector& light) const
 {
-  Building::draw(shadows, light);
-
   glPushMatrix();
   glTranslatef(pos.x, pos.y, pos.z);
 

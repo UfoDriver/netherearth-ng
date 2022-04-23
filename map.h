@@ -54,8 +54,7 @@ public:
   void nuclearExplosionAt(const Vector& position);
 
   std::vector<std::unique_ptr<Building>> buildings;
-
-  std::vector<std::shared_ptr<BuildingBlock>> buidlingBlocks;
+  std::vector<std::shared_ptr<BuildingBlock>> buildingBlocks;
 
   bool cycle();
 

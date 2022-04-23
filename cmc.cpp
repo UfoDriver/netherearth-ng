@@ -684,23 +684,6 @@ bool plane_collision(float *pa,float *va,float *wa,float *pb,float *vb,float *wb
 } /* plane_collision */ 
 
 
-std::ostream& operator<<(std::ostream& out, const CMC& cmc)
-{
-  out << cmc.x[0] << ' ' << cmc.x[1] << '\n'
-      << cmc.y[0] << ' ' << cmc.y[1] << '\n'
-      << cmc.z[0] << ' ' << cmc.z[1] << '\n';
-  return out;
-}
-
-std::istream& operator>>(std::istream& in, CMC& cmc)
-{
-  in >> cmc.x[0] >> cmc.x[1];
-  in >> cmc.y[0] >> cmc.y[1];
-  in >> cmc.z[0] >> cmc.z[1];
-
-  return in;
-}
-
 sexp::Value CMC::toSexp() const
 {
   return sexp::Value::list(

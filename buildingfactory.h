@@ -29,7 +29,7 @@ public:
   {
     return true;
   }
-  bool collisionCheck(const CMC& other, float* m2) const override;
+  // bool collisionCheck(const CMC& other, float* m2) const override;
   sexp::Value toSexp() const override;
 
 

@@ -16,6 +16,4 @@ public:
   bool used;
 };
 
-std::ostream& operator<<(std::ostream& out, const AIOperator& op);
-
 #endif // AI_OPERATOR_H

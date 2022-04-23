@@ -31,43 +31,6 @@ Bullet::Bullet(TYPE type, Vector position, Robot *robot):
 }
 
 
-Bullet* Bullet::read(std::istream& in, const std::vector<Robot*>& robots)
-{
-  int i, j;
-  int type_;
-  Vector pos;
-  int step;
-  int angle;
-  Robot* owner;
-
-  in >> type_ >> step >> angle;
-  in >> pos;
-  in >> j >> i;
-
-  if (i >= 0)
-    owner = robots[i];
-  else
-    owner = 0;
-
-  Bullet* bullet;
-  switch (TYPE(type_)) {
-  case TYPE::CANNONS:
-    bullet = new BulletCannon(pos, owner);
-    break;
-  case TYPE::MISSILES:
-    bullet = new BulletMissile(pos, owner);
-    break;
-  case TYPE::PHASERS:
-    bullet = new BulletPhaser(pos, owner);
-    break;
-  }
-  bullet->angle = angle;
-  bullet->step = step;
-  in >> bullet->cmc;
-  return bullet;
-}
-
-
 void Bullet::drawParticles(std::vector<Particle>& particles) const
 {
   Vector particlePos, sp1;
@@ -106,7 +69,7 @@ void Bullet::drawParticles(std::vector<Particle>& particles) const
 }
 
 
-bool Bullet::checkCollision(const std::vector<std::unique_ptr<Building>>& buildings,
+bool Bullet::checkCollision(const std::vector<std::shared_ptr<BuildingBlock>>& buildingBlocks,
                             const Robots& robots, std::shared_ptr<Robot> &r)
 {
   float m1[16] = {1, 0, 0, 0,
@@ -118,7 +81,7 @@ bool Bullet::checkCollision(const std::vector<std::unique_ptr<Building>>& buildi
                   0, 0, 1, 0,
                   0, 0, 0, 1};
 
-  for (const auto& b: buildings) {
+  for (const auto& b: buildingBlocks) {
     if (b->pos.aboutToCollide3D(pos, COLISION_TEST_THRESHOLD)) {
       m2[12] = b->pos.x;
       m2[13] = b->pos.y;

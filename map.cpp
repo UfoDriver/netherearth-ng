@@ -11,6 +11,7 @@
 #include <sexp/util.hpp>
 #include <sexp/value.hpp>
 
+#include "buildingblock.h"
 #include "bulletcannon.h"
 #include "bulletmissile.h"
 #include "bulletphaser.h"
@@ -25,6 +26,7 @@ void Map::resize(const int newWidth, const int newHeight)
 {
   width = newWidth;
   height = newHeight;
+  buildingBlocks.clear();
   buildings.clear();
   map.clear();
   map.resize(width * height, 0);
@@ -61,10 +63,14 @@ void Map::draw(const Camera& camera, const Vector& light, const bool shadows)
     glPopMatrix();
   }
 
+  for (const auto& block: buildingBlocks) {
+    if (camera.canSee(block->pos)) {
+      block->draw(shadows, light);
+    }
+  }
+
   for (const auto& building: buildings) {
-    // Probably it's faster to open widen camera radius a bit and use building position
-    if (std::any_of(building->blocks.cbegin(), building->blocks.cend(),
-                    [camera](const auto& bb) { return camera.canSee(bb.pos);})) {
+    if (camera.canSee(building->pos)) {
       building->draw(shadows, light);
     }
   }
@@ -209,21 +215,22 @@ bool Map::cycle()
 
 void Map::nuclearExplosionAt(const Vector& position)
 {
-  /* Find buildings to destroy: */
-  buildings.erase(std::remove_if(buildings.begin(), buildings.end(),
-                                 [position, this](auto& b) {
-                                   float distance = (b->pos - (position - Vector(0.5, 0.5, 0.5))).norma();
-                                   if (distance <= NUCLEAR_RADIUS) {
-                                     nether->ai.removeBuilding(b->pos);
-                                     return true;
-                                   } else {
-                                     return false;
-                                   }
-                                 }),
-                  buildings.end());
+  buildings.erase(
+    std::remove_if(buildings.begin(), buildings.end(),
+                   [position, this](auto& b) {
+                     float distance = (b->pos - (position - Vector(0.5, 0.5, 0.5))).norma();
+                     if (distance <= NUCLEAR_RADIUS) {
+                       nether->ai.removeBuilding(b->pos);
+                       return true;
+                     } else {
+                       return false;
+                     }
+                   }),
+    buildings.end());
 
   nether->stats.requestRecomputing();
 }
+
 
 void Map::processMapSectionSexp(const sexp::Value& cons)
 {
@@ -251,6 +258,7 @@ void Map::processMapSectionSexp(const sexp::Value& cons)
       Building *b = Building::getFromSexp(building);
       if (b) {
         buildings.emplace_back(b);
+        buildingBlocks.insert(buildingBlocks.end(), b->blocks.begin(), b->blocks.end());
       }
     }
   }

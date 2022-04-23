@@ -20,7 +20,7 @@ Ship::Ship(const std::string &model, const std::string &texturesDir, NETHER *net
 }
 
 
-bool Ship::checkCollision(const std::vector<std::unique_ptr<Building>>& buildings,
+bool Ship::checkCollision(const std::vector<std::shared_ptr<BuildingBlock>>& buildingBlocks,
                           const std::vector<std::shared_ptr<Robot>>& robots)
 {
   float m1[16] = {1, 0, 0, 0,
@@ -33,7 +33,7 @@ bool Ship::checkCollision(const std::vector<std::unique_ptr<Building>>& building
                   0, 0, 0, 1};
 
   /* Collision with buildings: */
-  for (const auto& b: buildings) {
+  for (const auto& b: buildingBlocks) {
     if (b->pos.aboutToCollide3D(pos, COLISION_TEST_THRESHOLD)) {
       if (b->collisionCheck(cmc, m1)) return true;
     }
@@ -59,6 +59,7 @@ void Ship::draw(const bool shadows, const Vector& light, const Map& map, const s
   glTranslatef(pos.x, pos.y, pos.z);
   if (!shadows)
     Shadow3DObject::draw(Color(0.7, 0.7, 0.7));
+  // cmc.draw(Color(255, 0, 0));
   glPopMatrix();
 
   if (shadows) {
@@ -142,25 +143,25 @@ void Ship::cycle(unsigned char* keyboard)
   }
 
   if (pos != old_shipp) {
-    if (checkCollision(nether->scene.map.buildings, nether->scene.robots)) {
+    if (checkCollision(nether->scene.map.buildingBlocks, nether->scene.robots)) {
       timemoving = 0;
       Vector p = pos;
       pos.x = old_shipp.x;
       pos.y = old_shipp.y;
-      if (p.z != old_shipp.z && checkCollision(nether->scene.map.buildings, nether->scene.robots)) {
+      if (p.z != old_shipp.z && checkCollision(nether->scene.map.buildingBlocks, nether->scene.robots)) {
         pos.z = old_shipp.z;
         landed = true;
       } else {
         pos.z = p.z;
       }
       pos.x = p.x;
-      if (p.x != old_shipp.x && checkCollision(nether->scene.map.buildings, nether->scene.robots)) {
+      if (p.x != old_shipp.x && checkCollision(nether->scene.map.buildingBlocks, nether->scene.robots)) {
         pos.x = old_shipp.x;
       } else {
         pos.x = p.x;
       }
       pos.y = p.y;
-      if (p.y != old_shipp.y && checkCollision(nether->scene.map.buildings, nether->scene.robots)) {
+      if (p.y != old_shipp.y && checkCollision(nether->scene.map.buildingBlocks, nether->scene.robots)) {
         pos.y = old_shipp.y;
       } else {
         pos.y = p.y;

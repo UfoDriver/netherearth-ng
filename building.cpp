@@ -31,34 +31,6 @@ std::unordered_map<std::string, Building::SUBTYPE> Building::factories_map =
   };
 
 
-void Building::draw(const bool shadows, const Vector& light) const
-{
-  for (const BuildingBlock& b : blocks) {
-    glPushMatrix();
-    glTranslatef(float(b.pos.x), float(b.pos.y), float(b.pos.z));
-    b.draw(shadows, light);
-    glPopMatrix();
-  }
-}
-
-
-bool Building::collisionCheck(const CMC& other, float* m2) const
-{
-  float m1[16] = {1, 0, 0, 0,
-                  0, 1, 0, 0,
-                  0, 0, 1, 0,
-                  0, 0, 0, 1};
-
-  return std::any_of(blocks.cbegin(), blocks.cend(),
-                     [other, &m1, m2](const BuildingBlock& block) {
-                       m1[12] = block.pos.x;
-                       m1[13] = block.pos.y;
-                       m1[14] = block.pos.z;
-                       return block.getCMC().collision_simple(m1, other, m2);
-                     });
-}
-
-
 Color Building::getFlagColor() const
 {
   switch (owner) {

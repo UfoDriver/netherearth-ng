@@ -12,26 +12,29 @@
 
 class BuildingBlock {
 public:
-  enum class TYPE {FENCE,
-                   WALL1,
-                   WALL2,
-                   WALL3,
-                   WALL4,
-                   WALL5,
-                   WALL6,
-                   FACTORY_ELECTRONICS,
-                   FACTORY_NUCLEAR,
-                   FACTORY_PHASERS,
-                   FACTORY_MISSILES,
-                   FACTORY_CANNONS,
-                   FACTORY_CHASSIS,
-                   WARBASE};
+  enum class TYPE {
+    FENCE,
+    WALL1,
+    WALL2,
+    WALL3,
+    WALL4,
+    WALL5,
+    WALL6,
+    FACTORY_ELECTRONICS,
+    FACTORY_NUCLEAR,
+    FACTORY_PHASERS,
+    FACTORY_MISSILES,
+    FACTORY_CANNONS,
+    FACTORY_CHASSIS,
+    WARBASE
+  };
+
   BuildingBlock(Vector position, TYPE type);
-  explicit BuildingBlock(std::istream& in);
 
   void draw(const bool shadows, const Vector& light) const;
-  static const std::vector<std::unique_ptr<BuildingBlock>> readMapFile(std::istream& inFile);
+  static const std::vector<std::shared_ptr<BuildingBlock>> readMapFile(std::istream& inFile);
 
+  bool collisionCheck(const CMC& other, float* m2) const;
   CMC getCMC() const;
   CMC getExtraCMC() const;
   bool collidesWith(const Vector& position, const CMC& cmc) const;
@@ -42,7 +45,5 @@ public:
 private:
   Shadow3DObject tile;
 };
-
-std::ostream& operator<<(std::ostream& out, const BuildingBlock& bulding);
 
 #endif // BUILDINGBLOCK_H

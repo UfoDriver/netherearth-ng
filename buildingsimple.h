@@ -15,16 +15,17 @@ public:
   BuildingSimple(const Vector& position, BuildingBlock::TYPE blockType)
     : Building(position, TYPE::SIMPLE)
   {
-    blocks.emplace_back(position, blockType);
+    blocks.push_back(std::shared_ptr<BuildingBlock>(new BuildingBlock(position, blockType)));
   }
   BuildingSimple(const sexp::Value& sexp)
     : Building({0, 0, 0}, TYPE::SIMPLE)
   {
     pos = Vector(sexp::cdar(sexp));
-    blocks.emplace_back(pos, BuildingBlock::TYPE::WALL1);
+    blocks.push_back(std::shared_ptr<BuildingBlock>(new BuildingBlock(pos, (BuildingBlock::TYPE)sexp::cddar(sexp).as_int())));
   }
   Vector getCapturePoint() const override {return Vector();}
   bool isCapturable() const override {return false;}
+  void draw(const bool shadows, const Vector& light) const override {};
 
   sexp::Value toSexp() const override;
 };

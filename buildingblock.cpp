@@ -43,25 +43,9 @@ BuildingBlock::BuildingBlock(Vector position, TYPE type) :
 }
 
 
-BuildingBlock::BuildingBlock(std::istream& in)
+const std::vector<std::shared_ptr<BuildingBlock>> BuildingBlock::readMapFile(std::istream& inFile)
 {
-  int type_;
-  int owner, status;
-  in >> type_ >> owner >> status >> pos;
-  type = BuildingBlock::TYPE(type_);
-}
-
-
-std::ostream& operator<<(std::ostream& out, const BuildingBlock& building)
-{
-  return out << int(building.type) << ' ' << '?' << ' ' << '?' << '\n'
-             << building.pos;
-}
-
-
-const std::vector<std::unique_ptr<BuildingBlock>> BuildingBlock::readMapFile(std::istream& inFile)
-{
-  std::vector<std::unique_ptr<BuildingBlock>> acc;
+  std::vector<std::shared_ptr<BuildingBlock>> acc;
   std::string buffer;
   float x, y;
   inFile >> buffer >> x >> y;
@@ -137,12 +121,17 @@ const std::vector<std::unique_ptr<BuildingBlock>> BuildingBlock::readMapFile(std
 
 void BuildingBlock::draw(const bool shadows, const Vector&) const
 {
+  glPushMatrix();
+  glTranslatef(float(pos.x), float(pos.y), float(pos.z));
+
   if (!shadows) {
     tile.draw(Color(0.2f, 0.2f, 0.2f));
   } else {
     glTranslatef(0, 0, 0.05f);
     tile.drawShadow(Color(0, 0, 0, 0.5));
   }
+  // getCMC().draw(Color(0, 255, 0));
+  glPopMatrix();
 }
 
 
@@ -201,4 +190,17 @@ CMC BuildingBlock::getExtraCMC() const
   default:
     return CMC();
   }
+}
+
+
+bool BuildingBlock::collisionCheck(const CMC& other, float* m2) const
+{
+  float m1[16] = {
+    1, 0, 0, 0,
+    0, 1, 0, 0,
+    0, 0, 1, 0,
+    pos.x, pos.y, pos.z, 1
+  };
+
+  return getCMC().collision_simple(m1, other, m2);
 }

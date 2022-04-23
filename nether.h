@@ -58,7 +58,6 @@ public:
 
   bool saveGame(const std::string& filename);
   bool loadGame(const std::string& filename);
-  bool saveDebugReport(const std::string& filename);
 
   void requestStatsRecomputing() { stats.requestRecomputing(); }
 

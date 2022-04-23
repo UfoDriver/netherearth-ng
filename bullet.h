@@ -10,7 +10,7 @@
 #include "particle.h"
 #include "robots.h"
 
-class Building;
+class BuildingBlock;
 class Robot;
 class Piece3DObject;
 
@@ -28,13 +28,11 @@ public:
 
   virtual void draw(bool shadow, std::vector<Particle>& particles) const = 0;
 
-  bool checkCollision(const std::vector<std::unique_ptr<Building>>& buildings,
+  bool checkCollision(const std::vector<std::shared_ptr<BuildingBlock>>& buildings,
                       const Robots& robots, std::shared_ptr<Robot> &r);
 
   virtual int getPersistence() const = 0;
   int getDamageForRobot(const Robot* robot) const;
-
-  static Bullet* read(std::istream& in, const std::vector<Robot*>& robot);
 
   TYPE type;
   int step;

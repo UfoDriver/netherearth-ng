@@ -185,7 +185,6 @@ bool OptionsScreen::cycle(unsigned char *keyboard)
       case 4:
         {
           nether->saveGame(generateFilename(selectedOption - 1));
-          nether->saveDebugReport("debugreport.txt");
           nether->setGameState(NETHER::STATE::PAUSE);
           selectedOption = 2;
         }

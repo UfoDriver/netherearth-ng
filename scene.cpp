@@ -54,7 +54,7 @@ void Scene::cycleBullets()
                             bullet->step++;
 
                             std::shared_ptr<Robot> r;
-                            if (bullet->step >= bullet->getPersistence() || bullet->checkCollision(map.buildings, robots, r)) {
+                            if (bullet->step >= bullet->getPersistence() || bullet->checkCollision(map.buildingBlocks, robots, r)) {
                               ret = true;
                               if (bullet->step < bullet->getPersistence()) {
                                 explosions.emplace_back(bullet->pos, 0);

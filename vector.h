@@ -56,7 +56,4 @@ public:
   bool fromSexp(const sexp::Value&);
 };
 
-std::ostream& operator<<(std::ostream& out, const Vector& vector);
-std::istream& operator>>(std::istream& in, Vector& vector);
-
 #endif // VECTOR_H

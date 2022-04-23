@@ -10,7 +10,7 @@
 #include "bulletcannon.h"
 #include "bulletmissile.h"
 #include "bulletphaser.h"
-#include "building.h"
+#include "buildingblock.h"
 #include "constants.h"
 #include "nether.h"
 #include "piece3dobject.h"
@@ -300,19 +300,19 @@ bool Robot::walkable(int terrain) const
 }
 
 
-bool Robot::checkCollision(const std::vector<std::unique_ptr<Building>>& buildings,
+bool Robot::checkCollision(const std::vector<std::shared_ptr<BuildingBlock>>& buildingBlocks,
                            const Robots& robots, bool complete, Ship* ship) const
 {
   if (checkCollision(ship)) return true;
   if (!complete) return false;
 
   return
-    checkCollision(buildings) or
+    checkCollision(buildingBlocks) or
     checkCollision(robots);
 }
 
 
-bool Robot::checkCollision(const std::vector<std::unique_ptr<Building>>& buildings) const
+bool Robot::checkCollision(const std::vector<std::shared_ptr<BuildingBlock>>& buildingBlocks) const
 {
   float m1[16] = {1, 0, 0, 0,
                   0, 1, 0, 0,
@@ -322,7 +322,7 @@ bool Robot::checkCollision(const std::vector<std::unique_ptr<Building>>& buildin
                   0, 1, 0, 0,
                   0, 0, 1, 0,
                   0, 0, 0, 1};
-  for (const auto& b: buildings) {
+  for (const auto& b: buildingBlocks) {
     if (b->pos.aboutToCollide3D(pos, COLISION_TEST_THRESHOLD)) {
       m2[12] = b->pos.x;
       m2[13] = b->pos.y;
@@ -511,7 +511,7 @@ void Robot::dispatchOperator(NETHER* nether, unsigned char* keyboard)
     break;
   }
 
-  if (checkCollision(nether->scene.map.buildings) or
+  if (checkCollision(nether->scene.map.buildingBlocks) or
       checkCollision(nether->scene.robots) or
       checkCollision(&nether->scene.ship) or
       !walkable(nether->scene.map.worseTerrain(pos))) {

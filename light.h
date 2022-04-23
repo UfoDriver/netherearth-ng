@@ -27,8 +27,4 @@ private:
   float pos[4] = {0, 0, 0, 0};
 };
 
-std::ostream& operator<<(std::ostream& out, const Light& light);
-std::istream& operator>>(std::istream& in, Light& light);
-
-
 #endif // LIGHT_H

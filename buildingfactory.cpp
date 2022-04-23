@@ -21,12 +21,14 @@ BuildingFactory::BuildingFactory(const Vector& position, SUBTYPE subtype)
      {{1, -1, 0}, BuildingBlock::TYPE::WALL2},
      {{1, 1, 0}, BuildingBlock::TYPE::WALL2}};
 
-  std::transform(FACTORY_TEMPLATE.cbegin(), FACTORY_TEMPLATE.cend(), std::back_inserter(blocks),
-                 [this](const BuildingBlock& block) {
-                   BuildingBlock b(block);
-                   b.pos = b.pos + pos;
-                   return b;
-                 });
+  std::transform(
+    FACTORY_TEMPLATE.cbegin(), FACTORY_TEMPLATE.cend(), std::back_inserter(blocks),
+    [this](const BuildingBlock& block) {
+      std::shared_ptr<BuildingBlock> b {new BuildingBlock(block)};
+      b->pos = b->pos + pos;
+      return b;
+    }
+  );
 
   switch (subtype) {
   case Building::SUBTYPE::ELECTRONICS:
@@ -58,7 +60,7 @@ BuildingFactory::BuildingFactory(const Vector& position, SUBTYPE subtype)
 
 void BuildingFactory::draw(const bool shadows, const Vector& light) const
 {
-  Building::draw(shadows, light);
+  // Building::draw(shadows, light);
 
   glPushMatrix();
   glTranslatef(pos.x, pos.y, pos.z);
@@ -90,19 +92,19 @@ void BuildingFactory::draw(const bool shadows, const Vector& light) const
 }
 
 
-bool BuildingFactory::collisionCheck(const CMC& other, float* m2) const
-{
-  if (Building::collisionCheck(other, m2)) return true;
+// bool BuildingFactory::collisionCheck(const CMC& other, float* m2) const
+// {
+//   if (Building::collisionCheck(other, m2)) return true;
 
-  float m1[16] = {1, 0, 0, 0,
-                  0, 1, 0, 0,
-                  0, 0, 1, 0,
-                  0, 0, 0, 1};
-  m1[12] = pos.x + 0.5;
-  m1[13] = pos.y + 0.5;
-  m1[14] = pos.z + 1;
-  return typeTile.cmc.collision_simple(m1, other, m2);
-}
+//   float m1[16] = {1, 0, 0, 0,
+//                   0, 1, 0, 0,
+//                   0, 0, 1, 0,
+//                   0, 0, 0, 1};
+//   m1[12] = pos.x + 0.5;
+//   m1[13] = pos.y + 0.5;
+//   m1[14] = pos.z + 1;
+//   return typeTile.cmc.collision_simple(m1, other, m2);
+// }
 
 
 sexp::Value BuildingFactory::toSexp() const

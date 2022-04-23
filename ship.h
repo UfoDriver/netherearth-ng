@@ -10,7 +10,7 @@
 #include "resources.h"
 
 
-class Building;
+class BuildingBlock;
 class Map;
 class NETHER;
 class Robot;
@@ -28,7 +28,7 @@ public:
     UP
   };
   Ship(const std::string& model, const std::string& texturesDir, NETHER* nether);
-  bool checkCollision(const std::vector<std::unique_ptr<Building>>& buildings, const std::vector<std::shared_ptr<Robot>>& robots);
+  bool checkCollision(const std::vector<std::shared_ptr<BuildingBlock>>& buildingBlocks, const std::vector<std::shared_ptr<Robot>>& robots);
   void draw(const bool shadows, const Vector& light, const Map& map, const std::shared_ptr<Robot> controlled);
   bool landedHere(const Vector& position) const;
   void cycle(unsigned char* keyboard);

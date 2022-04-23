@@ -124,21 +124,6 @@ bool Vector::aboutToCollide3D(const Vector& vector, float threshold) const
 }
 
 
-std::ostream& operator<<(std::ostream& out, const Vector& vector)
-{
-  out << std::setw(8) << float(vector.x)
-      << std::setw(8) << float(vector.y)
-      << std::setw(8) << float(vector.z)
-      << '\n';
-  return out;
-}
-
-std::istream& operator>>(std::istream& in, Vector& vector)
-{
-  return in >> vector.x >> vector.y >> vector.z;
-}
-
-
 sexp::Value Vector::toSexp() const
 {
   return sexp::Value::list(
