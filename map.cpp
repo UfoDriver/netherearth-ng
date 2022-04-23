@@ -207,11 +207,8 @@ bool Map::cycle()
 }
 
 
-void Map::nuclearExplosionAt(std::shared_ptr<Robot> robot, const Vector& position)
+void Map::nuclearExplosionAt(const Vector& position)
 {
-  /* Robot destroyed: */
-  nether->detachShip(robot);
-
   /* Find buildings to destroy: */
   buildings.erase(std::remove_if(buildings.begin(), buildings.end(),
                                  [position, this](auto& b) {

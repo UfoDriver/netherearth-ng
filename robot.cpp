@@ -650,7 +650,7 @@ void Robot::processOperatorPhasers(NETHER *nether, unsigned char *)
 
 void Robot::processOperatorNuclear(NETHER *nether, unsigned char *)
 {
-  nether->scene.map.nuclearExplosionAt(std::shared_ptr<Robot>(this), pos);
+  nether->scene.map.nuclearExplosionAt(pos);
   nether->scene.nuclearExplosionAt(pos);
 }
 

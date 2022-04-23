@@ -51,9 +51,10 @@ public:
   bool loadMap(const std::string& filename);
 
   int worseTerrain(const Vector& position);
-  void nuclearExplosionAt(std::shared_ptr<Robot> robot, const Vector& position);
+  void nuclearExplosionAt(const Vector& position);
 
   std::vector<std::unique_ptr<Building>> buildings;
+
   std::vector<std::shared_ptr<BuildingBlock>> buidlingBlocks;
 
   bool cycle();

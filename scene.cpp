@@ -101,7 +101,7 @@ void Scene::draw(const Camera& camera, const Vector& light, const bool shadows)
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
   map.draw(camera, light, shadows);
-  ship.draw(shadows, light, map, nether->getControlled());
+  ship.draw(shadows, light, map, nether->getControlledRobot());
 
   // if (explosions.size()) {
   //   int minstep = std::accumulate(explosions.cbegin(), explosions.cend(), 128,
@@ -163,6 +163,8 @@ void Scene::nuclearExplosionAt(const Vector& position)
                               [explosion, this] (auto& r) {
                                 float distance=(r->pos - explosion.pos).norma();
                                 if (distance <= NUCLEAR_RADIUS) {
+                                  if (nether->getControlledRobot() == r)
+                                    nether->detachShip(r);
                                   nether->ai.killRobot(r->pos);
                                   return true;
                                 } else {

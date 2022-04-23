@@ -62,7 +62,7 @@ public:
 
   void requestStatsRecomputing() { stats.requestRecomputing(); }
 
-  std::shared_ptr<Robot> getControlled() const { return controlled; }
+  std::shared_ptr<Robot> getControlledRobot() const { return controlled; }
 
   STATE getGameState() const { return gameState; };
   void setGameState(STATE newState) { gameState = newState; }
