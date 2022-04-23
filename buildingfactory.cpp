@@ -11,8 +11,6 @@ BuildingFactory::BuildingFactory(const Vector& position, SUBTYPE subtype)
   : Building(position, TYPE::FACTORY)
 {
   this->subtype = subtype;
-  // @TODO temporary position correction before maps are updated (if ever)
-  pos = pos + Vector(0, 1, 0);
 
   // @TODO somehow out of the method it makes sigfault
   const std::vector<BuildingBlock> FACTORY_TEMPLATE

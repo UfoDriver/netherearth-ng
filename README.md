@@ -37,9 +37,8 @@
 ~~No sound~~
 ~~Firing breaks the game~~
 ~~Correct warbase positions in map files~~
+~~Correct factory positions in map files~~
 
-
-Correct factory positions in map files
-
+Mouse zooming does not work
 Quiting the game leads to segfault (double free or corruption)
 Game speed seems too high
