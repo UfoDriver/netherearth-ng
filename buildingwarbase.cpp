@@ -6,8 +6,8 @@
 #include "resources.h"
 
 
-BuildingWarbase::BuildingWarbase(const Vector &position) :
-  Building(position, TYPE::WARBASE)
+BuildingWarbase::BuildingWarbase(const Vector &position)
+  : Building(position, TYPE::WARBASE)
 {
   // @TODO somehow out of the method it makes sigfault
   const std::vector<BuildingBlock> WARBASE_TEMPLATE
@@ -33,6 +33,7 @@ BuildingWarbase::BuildingWarbase(const Vector &position) :
     [this](const BuildingBlock& block) {
       std::shared_ptr<BuildingBlock> b {new BuildingBlock(block) };
       b->pos = b->pos + pos;
+      b->building = std::shared_ptr<Building>(this);
       return b;
     }
   );
@@ -43,7 +44,6 @@ BuildingWarbase::BuildingWarbase(const Vector &position) :
 void BuildingWarbase::draw(const bool shadows, const Vector& light) const
 {
   glPushMatrix();
-  glTranslatef(pos.x, pos.y, pos.z);
 
   if (shadows) {
     glTranslatef(float(-light.x), float(-light.y) - 2, 0.05f);

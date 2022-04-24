@@ -32,10 +32,10 @@ public:
   // bool collisionCheck(const CMC& other, float* m2) const override;
   sexp::Value toSexp() const override;
 
+  Piece3DObject typeTile;
 
 private:
   Shadow3DObject flagTile;
-  Piece3DObject typeTile;
 };
 
 #endif // BUILDINGFACTORY_H

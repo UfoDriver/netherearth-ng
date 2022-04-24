@@ -31,7 +31,6 @@ public:
     : pos{position}, type{type}, owner{owner}, status{status} {}
   virtual ~Building() {}
 
-  static Building* getFromMapFile(std::istream& inFile);
   static Building* getFromSexp(const sexp::Value& sexp);
 
   virtual Vector getCapturePoint() const = 0;
@@ -55,8 +54,8 @@ public:
   Building::SUBTYPE subtype = SUBTYPE::UNKNOWN;
   std::vector<std::shared_ptr<BuildingBlock>> blocks;
 
-  static std::unordered_map<std::string, BuildingBlock::TYPE> simple_buildings_map;
-  static std::unordered_map<std::string, Building::SUBTYPE> factories_map;
+  const static std::unordered_map<std::string, BuildingBlock::TYPE> SIMPLE_BUILDING_MAP;
+  const static std::unordered_map<std::string, Building::SUBTYPE> FACTORIES_MAP;
 };
 
 

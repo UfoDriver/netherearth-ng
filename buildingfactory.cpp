@@ -25,6 +25,7 @@ BuildingFactory::BuildingFactory(const Vector& position, SUBTYPE subtype)
     FACTORY_TEMPLATE.cbegin(), FACTORY_TEMPLATE.cend(), std::back_inserter(blocks),
     [this](const BuildingBlock& block) {
       std::shared_ptr<BuildingBlock> b {new BuildingBlock(block)};
+      b->building = std::shared_ptr<Building>(this);
       b->pos = b->pos + pos;
       return b;
     }
@@ -58,12 +59,10 @@ BuildingFactory::BuildingFactory(const Vector& position, SUBTYPE subtype)
   typeTile.textured = false;
 }
 
+
 void BuildingFactory::draw(const bool shadows, const Vector& light) const
 {
-  // Building::draw(shadows, light);
-
   glPushMatrix();
-  glTranslatef(pos.x, pos.y, pos.z);
 
   if (!shadows) {
     glPushMatrix();

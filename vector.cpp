@@ -57,7 +57,7 @@ Vector Vector::operator/(double ctnt)
 }
 
 
-bool Vector::operator==(const Vector &v)
+bool Vector::operator==(const Vector &v) const
 {
   return x == v.x && y == v.y && z == v.z;
 }
@@ -69,7 +69,7 @@ bool Vector::compare2D(const Vector& v) const
 }
 
 
-bool Vector::operator!=(const Vector &v)
+bool Vector::operator!=(const Vector &v) const
 {
   return x != v.x || y != v.y || z != v.z;
 }

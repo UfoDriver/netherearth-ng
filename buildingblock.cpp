@@ -1,12 +1,15 @@
 #include <GL/gl.h>
+#include <memory>
 
+#include "building.h"
 #include "buildingblock.h"
+#include "buildingfactory.h"
 #include "constants.h"
 #include "resources.h"
 
 
-BuildingBlock::BuildingBlock(Vector position, TYPE type) :
-    pos{position}, type{type}
+BuildingBlock::BuildingBlock(Vector position, TYPE type, std::shared_ptr<Building> building)
+  : pos{position}, type{type}, building{building}
 {
   switch (type) {
   case TYPE::FENCE:
@@ -43,83 +46,7 @@ BuildingBlock::BuildingBlock(Vector position, TYPE type) :
 }
 
 
-const std::vector<std::shared_ptr<BuildingBlock>> BuildingBlock::readMapFile(std::istream& inFile)
-{
-  std::vector<std::shared_ptr<BuildingBlock>> acc;
-  std::string buffer;
-  float x, y;
-  inFile >> buffer >> x >> y;
-
-  if (buffer == "fence") {
-    acc.emplace_back(new BuildingBlock(Vector(x, y, 0), BuildingBlock::TYPE::FENCE));
-  } else if (buffer == "wall1") {
-    acc.emplace_back(new BuildingBlock(Vector(x, y, 0), BuildingBlock::TYPE::WALL1));
-  } else if (buffer == "wall2") {
-    acc.emplace_back(new BuildingBlock(Vector(x, y, 0), BuildingBlock::TYPE::WALL2));
-  } else if (buffer == "wall3") {
-    acc.emplace_back(new BuildingBlock(Vector(x, y, 0), BuildingBlock::TYPE::WALL3));
-  } else if (buffer == "wall4") {
-    acc.emplace_back(new BuildingBlock(Vector(x, y, 0), BuildingBlock::TYPE::WALL4));
-  } else if (buffer == "wall6") {
-    acc.emplace_back(new BuildingBlock(Vector(x, y, 0), BuildingBlock::TYPE::WALL6));
-  } else if (buffer == "factory") {
-    BuildingBlock::TYPE obj[4] = {BuildingBlock::TYPE::WALL4,
-                                  BuildingBlock::TYPE::WALL4,
-                                  BuildingBlock::TYPE::WALL2,
-                                  BuildingBlock::TYPE::WALL2};
-    float xo[4] = {0, 0, 1, 1};
-    float yo[4] = {0, 2, 0, 2};
-    std::string buffer2;
-    inFile >> buffer2;
-    for (int i = 0; i < 4; i++) {
-      acc.emplace_back(new BuildingBlock(Vector(x + xo[i], y + yo[i], 0), obj[i]));
-    }
-
-    BuildingBlock* b = new BuildingBlock(Vector(x, y + 1, 0), BuildingBlock::TYPE::FACTORY_ELECTRONICS);
-    if (buffer2 == "electronics") b->type = BuildingBlock::TYPE::FACTORY_ELECTRONICS;
-    if (buffer2 == "nuclear") b->type = BuildingBlock::TYPE::FACTORY_NUCLEAR;
-    if (buffer2 == "phasers") b->type = BuildingBlock::TYPE::FACTORY_PHASERS;
-    if (buffer2 == "missiles") b->type = BuildingBlock::TYPE::FACTORY_MISSILES;
-    if (buffer2 == "cannons") b->type = BuildingBlock::TYPE::FACTORY_CANNONS;
-    if (buffer2 == "chassis") b->type = BuildingBlock::TYPE::FACTORY_CHASSIS;
-    acc.emplace_back(b);
-  } else if (buffer == "warbase") {
-    BuildingBlock::TYPE obj[15] = {BuildingBlock::TYPE::WALL4,
-                                   BuildingBlock::TYPE::WALL5,
-                                   BuildingBlock::TYPE::WALL4,
-                                   BuildingBlock::TYPE::WALL1,
-                                   BuildingBlock::TYPE::WALL1,
-                                   BuildingBlock::TYPE::WALL2,
-                                   BuildingBlock::TYPE::WALL4,
-                                   BuildingBlock::TYPE::WARBASE,
-                                   BuildingBlock::TYPE::WALL2,
-                                   BuildingBlock::TYPE::WALL4,
-                                   BuildingBlock::TYPE::WALL1,
-                                   BuildingBlock::TYPE::WALL1,
-                                   BuildingBlock::TYPE::WALL2,
-                                   BuildingBlock::TYPE::WALL4,
-                                   BuildingBlock::TYPE::WALL5};
-    float xo[15] = {0.5, 1.5,
-                    0, 1, 2, 3,
-                    0.5, 1.5, 2.5,
-                    0, 1, 2, 3,
-                    0.5, 1.5};
-    float yo[15] = {0, 0,
-                    1, 1, 1, 1,
-                    2, 2, 2,
-                    3, 3, 3, 3,
-                    4, 4};
-    int owner = 0;
-    inFile >> owner;
-    for(int i = 0; i < 15; i++) {
-      acc.emplace_back(new BuildingBlock(Vector(x + xo[i], y + yo[i], 0), obj[i]));
-    }
-  }
-  return acc;
-}
-
-
-void BuildingBlock::draw(const bool shadows, const Vector&) const
+void BuildingBlock::draw(const bool shadows, const Vector& light) const
 {
   glPushMatrix();
   glTranslatef(float(pos.x), float(pos.y), float(pos.z));
@@ -130,7 +57,13 @@ void BuildingBlock::draw(const bool shadows, const Vector&) const
     glTranslatef(0, 0, 0.05f);
     tile.drawShadow(Color(0, 0, 0, 0.5));
   }
-  // getCMC().draw(Color(0, 255, 0));
+
+  if (isMainBuildingBlock()) {
+    building->draw(shadows, light);
+    // getCMC().draw(Color(255, 0, 0));
+  } else {
+    // getCMC().draw(Color(0, 255, 0));
+  }
   glPopMatrix();
 }
 
@@ -162,7 +95,15 @@ bool BuildingBlock::collidesWith(const Vector& position, const CMC& cmc) const
 
 CMC BuildingBlock::getCMC() const
 {
-  return tile.cmc;
+  if (isMainBuildingBlock() && building->subtype != Building::SUBTYPE::UNKNOWN) {
+    CMC ret(tile.cmc);
+    CMC typeTileCNC {(dynamic_cast<BuildingFactory*>(building.get())->typeTile.cmc)};
+    // @TODO: cnc expand does not work or I don't know how to use it right
+    ret.z[1] += typeTileCNC.z[1] - typeTileCNC.z[0];
+    return ret;
+  } else {
+    return tile.cmc;
+  }
 }
 
 
@@ -203,4 +144,10 @@ bool BuildingBlock::collisionCheck(const CMC& other, float* m2) const
   };
 
   return getCMC().collision_simple(m1, other, m2);
+}
+
+
+bool BuildingBlock::isMainBuildingBlock() const
+{
+  return building && pos == building->pos;
 }

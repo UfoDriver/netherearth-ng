@@ -10,6 +10,7 @@
 #include <sexp/parser.hpp>
 #include <sexp/util.hpp>
 #include <sexp/value.hpp>
+#include <utility>
 
 #include "buildingblock.h"
 #include "bulletcannon.h"
@@ -66,12 +67,6 @@ void Map::draw(const Camera& camera, const Vector& light, const bool shadows)
   for (const auto& block: buildingBlocks) {
     if (camera.canSee(block->pos)) {
       block->draw(shadows, light);
-    }
-  }
-
-  for (const auto& building: buildings) {
-    if (camera.canSee(building->pos)) {
-      building->draw(shadows, light);
     }
   }
 }

@@ -10,6 +10,9 @@
 #include "vector.h"
 
 
+class Building;
+
+
 class BuildingBlock {
 public:
   enum class TYPE {
@@ -29,10 +32,9 @@ public:
     WARBASE
   };
 
-  BuildingBlock(Vector position, TYPE type);
+  BuildingBlock(Vector position, TYPE type, std::shared_ptr<Building> building=nullptr);
 
   void draw(const bool shadows, const Vector& light) const;
-  static const std::vector<std::shared_ptr<BuildingBlock>> readMapFile(std::istream& inFile);
 
   bool collisionCheck(const CMC& other, float* m2) const;
   CMC getCMC() const;
@@ -42,7 +44,10 @@ public:
   Vector pos;
   TYPE type;
 
+  std::shared_ptr<Building> building;
+
 private:
+  bool isMainBuildingBlock() const;
   Shadow3DObject tile;
 };
 

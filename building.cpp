@@ -11,7 +11,7 @@
 #include "sexp/value.hpp"
 
 
-std::unordered_map<std::string, BuildingBlock::TYPE> Building::simple_buildings_map =
+const std::unordered_map<std::string, BuildingBlock::TYPE> Building::SIMPLE_BUILDING_MAP =
     {
      {"fence", BuildingBlock::TYPE::FENCE},
      {"wall1", BuildingBlock::TYPE::WALL1},
@@ -20,7 +20,7 @@ std::unordered_map<std::string, BuildingBlock::TYPE> Building::simple_buildings_
      {"wall4", BuildingBlock::TYPE::WALL4},
      {"wall6", BuildingBlock::TYPE::WALL6}};
 
-std::unordered_map<std::string, Building::SUBTYPE> Building::factories_map =
+const std::unordered_map<std::string, Building::SUBTYPE> Building::FACTORIES_MAP =
   {
     {"electronics", Building::SUBTYPE::ELECTRONICS},
     {"nuclear", Building::SUBTYPE::NUCLEAR},
@@ -43,28 +43,6 @@ Color Building::getFlagColor() const
   }
 }
 
-Building* Building::getFromMapFile(std::istream& inFile)
-{
-  Building* building = nullptr;
-
-  std::string buffer;
-  Vector position{0, 0, 0};
-  inFile >> buffer >> position.x >> position.y;
-
-  if (buffer == "factory") {
-    std::string buffer2;
-    inFile >> buffer2;
-    building = new BuildingFactory(position, factories_map.at(buffer2));
-  } else if (buffer == "warbase") {
-    building = new BuildingWarbase(position);
-    inFile >> building->owner;
-  } else if (buffer != "") {
-    building = new BuildingSimple(position, simple_buildings_map.at(buffer));
-  }
-
-  return building;
-}
-
 
 Building* Building::getFromSexp(const sexp::Value& sexp)
 {
@@ -76,12 +54,12 @@ Building* Building::getFromSexp(const sexp::Value& sexp)
   position.y = sexp::cddar(sexp).as_float();
 
   if (buildingType == "factory") {
-    building = new BuildingFactory(position, factories_map.at(sexp::cdddar(sexp).as_string()));
+    building = new BuildingFactory(position, FACTORIES_MAP.at(sexp::cdddar(sexp).as_string()));
   } else if (buildingType == "warbase") {
     building = new BuildingWarbase(position);
     building->owner = sexp::cdddar(sexp).as_int();
   } else if (buildingType != "") {
-    building = new BuildingSimple(position, simple_buildings_map.at(buildingType));
+    building = new BuildingSimple(position, SIMPLE_BUILDING_MAP.at(buildingType));
   }
 
   return building;

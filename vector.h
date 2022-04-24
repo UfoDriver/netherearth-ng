@@ -35,8 +35,8 @@ public:
 
   Vector operator/(double ctnt);
 
-  bool operator==(const Vector &v);
-  bool operator!=(const Vector &v);
+  bool operator==(const Vector &v) const;
+  bool operator!=(const Vector &v) const;
 
   bool compare2D(const Vector &v) const;
   bool zero();
