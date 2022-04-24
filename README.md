@@ -43,3 +43,4 @@ Mouse zooming does not work
 Quiting the game leads to segfault (double free or corruption)
 Game speed seems too high
 AI levels (with electronics etc) should be different objects. Probably the same with bipods/tracks/antigravs
+Statistics (display only?) shows wrong data

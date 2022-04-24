@@ -254,6 +254,7 @@ void Map::processMapSectionSexp(const sexp::Value& cons)
       if (b) {
         buildings.emplace_back(b);
         buildingBlocks.insert(buildingBlocks.end(), b->blocks.begin(), b->blocks.end());
+        b->blocks.clear();
       }
     }
   }

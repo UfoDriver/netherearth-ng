@@ -51,11 +51,9 @@ void AI::makePrecomputations()
     }
   }
 
-  for (const auto& b: scene->map.buildings) {
-    for (const auto& block: b->blocks)
+  for (const auto& block: scene->map.buildingBlocks)
     fillZone(discreetmap, scene->map.getWidth() * 2,
              Map::T_BUILDING, int(block->pos.x / 0.5), int(block->pos.y / 0.5), 2, 2);
-  }
 }
 
 

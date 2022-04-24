@@ -21,15 +21,9 @@ public:
 
   void draw(const bool shadows, const Vector& light) const override;
 
-  Vector getCapturePoint() const override
-  {
-      return pos + Vector(1, 0, 0);
-  }
-  bool isCapturable() const override
-  {
-    return true;
-  }
-  // bool collisionCheck(const CMC& other, float* m2) const override;
+  Vector getCapturePoint() const override {return pos + Vector(1, 0, 0);}
+  bool isCapturable() const override {return true;}
+
   sexp::Value toSexp() const override;
 
   Piece3DObject typeTile;

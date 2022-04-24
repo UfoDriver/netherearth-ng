@@ -91,21 +91,6 @@ void BuildingFactory::draw(const bool shadows, const Vector& light) const
 }
 
 
-// bool BuildingFactory::collisionCheck(const CMC& other, float* m2) const
-// {
-//   if (Building::collisionCheck(other, m2)) return true;
-
-//   float m1[16] = {1, 0, 0, 0,
-//                   0, 1, 0, 0,
-//                   0, 0, 1, 0,
-//                   0, 0, 0, 1};
-//   m1[12] = pos.x + 0.5;
-//   m1[13] = pos.y + 0.5;
-//   m1[14] = pos.z + 1;
-//   return typeTile.cmc.collision_simple(m1, other, m2);
-// }
-
-
 sexp::Value BuildingFactory::toSexp() const
 {
   return sexp::Value::list(
