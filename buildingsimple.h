@@ -15,7 +15,9 @@ public:
   BuildingSimple(const Vector& position, BuildingBlock::TYPE blockType)
     : Building(position, TYPE::SIMPLE)
   {
-    blocks.push_back(std::shared_ptr<BuildingBlock>(new BuildingBlock(position, blockType)));
+    std::shared_ptr<BuildingBlock> b {new BuildingBlock(position, blockType)};
+    blocks.push_back(b);
+    b->building = std::shared_ptr<Building>(this);
   }
   BuildingSimple(const sexp::Value& sexp)
     : Building({0, 0, 0}, TYPE::SIMPLE)
