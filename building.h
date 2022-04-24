@@ -36,8 +36,6 @@ public:
   virtual Vector getCapturePoint() const = 0;
   virtual bool isCapturable() const = 0;
   virtual void draw(const bool shadows, const Vector& light) const = 0;
-  /// @HERE REMOVE
-  // virtual bool collisionCheck(const CMC& other, float* m2) const;
 
   virtual sexp::Value toSexp() const = 0;
   static Building* fromSexp(const sexp::Value&);

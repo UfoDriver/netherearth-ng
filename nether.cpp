@@ -342,19 +342,16 @@ bool NETHER::loadGame(const std::string& filename)
     } else if (sexp::car(value).as_string() == "ship") {
       scene.ship.fromSexp(value);
     } else if (sexp::car(value).as_string() == "buildings") {
-      // @TODO: check if memory leak in clear
       scene.map.buildings.clear();
       for (const sexp::Value& building: sexp::ListAdapter(sexp::cdr(value))) {
         scene.map.buildings.emplace_back(Building::fromSexp(building));
       }
     } else if (sexp::car(value).as_string() == "robots") {
-      // @TODO: memory leak, robots should be destroyed first
       scene.robots.clear();
       for (const sexp::Value& robot: sexp::ListAdapter(sexp::cdr(value))) {
         scene.robots.emplace_back(new Robot(robot));
       }
     } else if (sexp::car(value).as_string() == "bullets") {
-      // @TODO: check if memory leak in .clear()
       scene.bullets.clear();
       for (const sexp::Value& bullet: sexp::ListAdapter(sexp::cdr(value))) {
         scene.bullets.emplace_back(Bullet::fromSexp(bullet));

@@ -8,18 +8,18 @@
 
 
 BuildingFactory::BuildingFactory(const Vector& position, SUBTYPE subtype)
-  : Building(position, TYPE::FACTORY)
+  : Building{position, TYPE::FACTORY}
 {
   this->subtype = subtype;
 
   // @TODO somehow out of the method it makes sigfault
-  const std::vector<BuildingBlock> FACTORY_TEMPLATE
-    {
-     {{0, -1, 0}, BuildingBlock::TYPE::WALL4},
-     {{0, 1, 0}, BuildingBlock::TYPE::WALL4},
-     {{0, 0, 0}, BuildingBlock::TYPE::WALL5},
-     {{1, -1, 0}, BuildingBlock::TYPE::WALL2},
-     {{1, 1, 0}, BuildingBlock::TYPE::WALL2}};
+  const std::vector<BuildingBlock> FACTORY_TEMPLATE {
+    {{0, -1, 0}, BuildingBlock::TYPE::WALL4},
+    {{0, 1, 0}, BuildingBlock::TYPE::WALL4},
+    {{0, 0, 0}, BuildingBlock::TYPE::WALL5},
+    {{1, -1, 0}, BuildingBlock::TYPE::WALL2},
+    {{1, 1, 0}, BuildingBlock::TYPE::WALL2}
+  };
 
   std::transform(
     FACTORY_TEMPLATE.cbegin(), FACTORY_TEMPLATE.cend(), std::back_inserter(blocks),

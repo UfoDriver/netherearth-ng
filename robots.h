@@ -49,7 +49,6 @@ private:
 };
 
 
-// @TODO std::unique_ptr?
 class Robots : public std::vector<std::shared_ptr<Robot>> {
 public:
   int getRobotCount(unsigned short int owner);
