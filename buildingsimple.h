@@ -12,18 +12,9 @@
 class BuildingSimple : public Building
 {
 public:
-  BuildingSimple(const Vector& position, BuildingBlock::TYPE blockType)
-    : Building(position, TYPE::SIMPLE), buildingBlockType {blockType}
-  {
-    blocks.emplace_back(new BuildingBlock(position, blockType));
-  }
-  BuildingSimple(const sexp::Value& sexp)
-    : Building({0, 0, 0}, TYPE::SIMPLE)
-  {
-    pos = Vector(sexp::cdar(sexp));
-    buildingBlockType = (BuildingBlock::TYPE)sexp::cddar(sexp).as_int();
-    blocks.emplace_back(new BuildingBlock(pos, buildingBlockType, std::shared_ptr<Building>(this)));
-  }
+  BuildingSimple(const Vector& position, BuildingBlock::TYPE blockType);
+  BuildingSimple(const sexp::Value& sexp);
+
   Vector getCapturePoint() const override {return Vector();}
   bool isCapturable() const override {return false;}
   void draw(const bool shadows, const Vector& light) const override {};
