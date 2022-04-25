@@ -68,31 +68,6 @@ void BuildingBlock::draw(const bool shadows, const Vector& light) const
 }
 
 
-bool BuildingBlock::collidesWith(const Vector& position, const CMC& cmc) const
-{
-  float m1[16] = {1, 0, 0, 0,
-                  0, 1, 0, 0,
-                  0, 0, 1, 0,
-                  pos.x, pos.y, pos.z, 1};
-  float m2[16] = {1, 0, 0, 0,
-                  0, 1, 0, 0,
-                  0, 0, 1, 0,
-                  position.x, position.y, position.z, 1};
-
-
-  if (getCMC().collision_simple(m1, cmc, m2)) return true;
-
-  if (type >= TYPE::FACTORY_ELECTRONICS && type <= TYPE::FACTORY_CHASSIS) {
-    m1[12] = pos.x + 0.5;
-    m1[13] = pos.y + 0.5;
-    m1[14] = pos.z + 1;
-    return getExtraCMC().collision_simple(m1, cmc, m2);
-  }
-
-  return false;
-}
-
-
 CMC BuildingBlock::getCMC() const
 {
   if (isMainBuildingBlock() && building->subtype != Building::SUBTYPE::UNKNOWN) {
@@ -103,33 +78,6 @@ CMC BuildingBlock::getCMC() const
     return ret;
   } else {
     return tile.cmc;
-  }
-}
-
-
-CMC BuildingBlock::getExtraCMC() const
-{
-  switch (type) {
-  case TYPE::FACTORY_ELECTRONICS:
-    return Resources::pieceTiles[0][7].cmc;
-    break;
-  case TYPE::FACTORY_NUCLEAR:
-    return Resources::pieceTiles[0][6].cmc;
-    break;
-  case TYPE::FACTORY_PHASERS:
-    return Resources::pieceTiles[0][5].cmc;
-    break;
-  case TYPE::FACTORY_MISSILES:
-    return Resources::pieceTiles[0][4].cmc;
-    break;
-  case TYPE::FACTORY_CANNONS:
-    return Resources::pieceTiles[0][3].cmc;
-    break;
-  case TYPE::FACTORY_CHASSIS:
-    return Resources::pieceTiles[0][1].cmc;
-    break;
-  default:
-    return CMC();
   }
 }
 

@@ -38,8 +38,6 @@ public:
 
   bool collisionCheck(const CMC& other, float* m2) const;
   CMC getCMC() const;
-  CMC getExtraCMC() const;
-  bool collidesWith(const Vector& position, const CMC& cmc) const;
 
   Vector pos;
   TYPE type;
