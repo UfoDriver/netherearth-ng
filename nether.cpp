@@ -37,7 +37,7 @@ extern int level;
 extern bool show_radar;
 
 
-NETHER::NETHER(const std::string& mapname): scene(this, mapname), ai(this, &scene), menu(this), radar(this),
+NETHER::NETHER(const std::string& mapname): scene(this, mapname), ai(&scene, &stats), menu(this), radar(this),
                                             optionsScreen(this), constructionScreen(this),
                                             camera(0, 0, 0, 0), controlled(nullptr)
 {
@@ -86,7 +86,6 @@ bool NETHER::gamecycle()
   SDLMod modifiers = SDL_GetModState();
   unsigned char* sdlKeyboard = SDL_GetKeyState(NULL);
   unsigned char keyboard[SDLK_LAST];
-  if (modifiers & KMOD_CTRL) debug();
 
   for (int i = 0; i < SDLK_LAST; i++) {
     keyboard[i] = sdlKeyboard[i];
@@ -471,9 +470,4 @@ bool NETHER::cycle(unsigned char *keyboard)
   if (gameStarted > 0) gameStarted--;
 
   return true;
-}
-
-
-void NETHER::debug()
-{
 }

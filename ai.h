@@ -8,20 +8,25 @@
 #include "vector.h"
 
 class AIOperator;
-class NETHER;
 class Scene;
+class Stats;
 
+/*
+  @TODO Robot AI (finding enemies etc.) should be separated from game AI (creating robots, strategy)
+*/
 
 class AI
 {
 public:
-  enum class STATE {EXPANDING,
-                    FIGHTING,
-                    DEFENDING,
-                    CONQUERING,
-                    DESTROYING};
+  enum class STATE {
+    EXPANDING,
+    FIGHTING,
+    DEFENDING,
+    CONQUERING,
+    DESTROYING
+  };
 
-  AI(NETHER* nether, Scene* scene): nether{nether}, scene{scene} {};
+  AI(Scene* scene, Stats* stats): scene{scene}, stats{stats} {};
   void makePrecomputations();
   void deletePrecomputations();
   void enemy();
@@ -60,8 +65,8 @@ private:
   std::vector<AIOperator> searchmap;
   std::vector<int> attackmap;
 
-  NETHER* nether;
   Scene* scene;
+  Stats* stats;
 };
 
 

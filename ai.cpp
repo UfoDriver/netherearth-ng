@@ -2,10 +2,12 @@
 #include <bitset>
 
 #include "ai.h"
+#include "ai_operator.h"
 #include "constants.h"
 #include "map.h"
-#include "nether.h"
 #include "robot.h"
+#include "scene.h"
+#include "stats.h"
 
 extern int level;
 
@@ -224,7 +226,7 @@ void AI::enemy()
         if (b->type == Building::TYPE::WARBASE && b->owner == 2) {
 
           tmpr->pos=b->pos+Vector(2.5,0.5,0);
-          if (!tmpr->checkCollision(scene->map.buildingBlocks, scene->robots, true, &nether->scene.ship)) {
+          if (!tmpr->checkCollision(scene->map.buildingBlocks, scene->robots, true, &scene->ship)) {
             /* Find the closest WARBASE to the available FACTORIES: */ 
             if (closest_to_factories_warbase==0 ||
                 (closest_to_factories_warbase->pos-b->pos).norma()<distance_to_factories) {
@@ -273,7 +275,7 @@ void AI::enemy()
 	/* If the warbase in danger id blocked, build robots from another warbase: */ 
 	if (in_danger_warbase!=0) {
 		tmpr->pos=in_danger_warbase->pos+Vector(2.0,0.5,0);
-		if (tmpr->checkCollision(scene->map.buildingBlocks, scene->robots, true, &nether->scene.ship)) in_danger_warbase=closest_to_enemy_warbase;
+		if (tmpr->checkCollision(scene->map.buildingBlocks, scene->robots, true, &scene->ship)) in_danger_warbase=closest_to_enemy_warbase;
 	} /* if */ 
 
 	delete tmpr;
@@ -362,19 +364,19 @@ void AI::enemy()
 			/* Try to make better robots as time passes: */ 
 			switch(level) {
 			case 0:
-				if (nrobots[0]>=1 && nether->stats.resources[1][0]+nether->stats.resources[1][6]<20) return;
-				if (nrobots[0]>=1 && nether->stats.resources[1][0]+nether->stats.resources[1][6]<25) return;
-				if (nrobots[0]>=2 && nether->stats.resources[1][0]+nether->stats.resources[1][6]<30) return;
+				if (nrobots[0]>=1 && stats->resources[1][0]+stats->resources[1][6]<20) return;
+				if (nrobots[0]>=1 && stats->resources[1][0]+stats->resources[1][6]<25) return;
+				if (nrobots[0]>=2 && stats->resources[1][0]+stats->resources[1][6]<30) return;
 				break;
 			case 1:
-				if (nrobots[0]>=1 && nether->stats.resources[1][0]+nether->stats.resources[1][6]<20) return;
-				if (nrobots[0]>=2 && nether->stats.resources[1][0]+nether->stats.resources[1][6]<25) return;
-				if (nrobots[0]>=3 && nether->stats.resources[1][0]+nether->stats.resources[1][6]<30) return;
+				if (nrobots[0]>=1 && stats->resources[1][0]+stats->resources[1][6]<20) return;
+				if (nrobots[0]>=2 && stats->resources[1][0]+stats->resources[1][6]<25) return;
+				if (nrobots[0]>=3 && stats->resources[1][0]+stats->resources[1][6]<30) return;
 				break;
 			default:
-				if (nrobots[0]>=2 && nether->stats.resources[1][0]+nether->stats.resources[1][6]<20) return;
-				if (nrobots[0]>=3 && nether->stats.resources[1][0]+nether->stats.resources[1][6]<25) return;
-				if (nrobots[0]>=4 && nether->stats.resources[1][0]+nether->stats.resources[1][6]<30) return;
+				if (nrobots[0]>=2 && stats->resources[1][0]+stats->resources[1][6]<20) return;
+				if (nrobots[0]>=3 && stats->resources[1][0]+stats->resources[1][6]<25) return;
+				if (nrobots[0]>=4 && stats->resources[1][0]+stats->resources[1][6]<30) return;
 				break;
 			} /* switch */  
 
@@ -401,7 +403,7 @@ void AI::enemy()
 				/* I've enough attacking robots, let's build a conquering one: */ 
 //				fprintf(fp,"Trying to BUILD a robot to CONQUER WARBASES \n");
 				
-				if (nether->stats.resources[1][0]+nether->stats.resources[1][6]<40) return;
+				if (stats->resources[1][0]+stats->resources[1][6]<40) return;
 				Robot *r=enemyNewRobot(STATE::CONQUERING,closest_to_enemy_warbase->pos+Vector(2.5,0.5,0));
 				if (r!=0) {
 
@@ -416,19 +418,19 @@ void AI::enemy()
 				/* Try to make better robots as time passes: */ 
 				switch(level) {
 				case 0:
-					if (nrobots[1]>=1 && nether->stats.resources[1][0]+nether->stats.resources[1][6]<20) return;
-					if (nrobots[1]>=1 && nether->stats.resources[1][0]+nether->stats.resources[1][6]<25) return;
-					if (nrobots[1]>=2 && nether->stats.resources[1][0]+nether->stats.resources[1][6]<30) return;
+					if (nrobots[1]>=1 && stats->resources[1][0]+stats->resources[1][6]<20) return;
+					if (nrobots[1]>=1 && stats->resources[1][0]+stats->resources[1][6]<25) return;
+					if (nrobots[1]>=2 && stats->resources[1][0]+stats->resources[1][6]<30) return;
 					break;
 				case 1:
-					if (nrobots[1]>=1 && nether->stats.resources[1][0]+nether->stats.resources[1][6]<20) return;
-					if (nrobots[1]>=2 && nether->stats.resources[1][0]+nether->stats.resources[1][6]<25) return;
-					if (nrobots[1]>=3 && nether->stats.resources[1][0]+nether->stats.resources[1][6]<30) return;
+					if (nrobots[1]>=1 && stats->resources[1][0]+stats->resources[1][6]<20) return;
+					if (nrobots[1]>=2 && stats->resources[1][0]+stats->resources[1][6]<25) return;
+					if (nrobots[1]>=3 && stats->resources[1][0]+stats->resources[1][6]<30) return;
 					break;
 				default:
-					if (nrobots[1]>=2 && nether->stats.resources[1][0]+nether->stats.resources[1][6]<20) return;
-					if (nrobots[1]>=3 && nether->stats.resources[1][0]+nether->stats.resources[1][6]<25) return;
-					if (nrobots[1]>=4 && nether->stats.resources[1][0]+nether->stats.resources[1][6]<30) return;
+					if (nrobots[1]>=2 && stats->resources[1][0]+stats->resources[1][6]<20) return;
+					if (nrobots[1]>=3 && stats->resources[1][0]+stats->resources[1][6]<25) return;
+					if (nrobots[1]>=4 && stats->resources[1][0]+stats->resources[1][6]<30) return;
 					break;
 				} /* switch */ 
 
@@ -454,16 +456,16 @@ Robot* AI::enemyNewRobot(const STATE state, const Vector& pos)
 {
 	int traction=0;
     std::bitset<5> pieces {false};
-	int rg=nether->stats.resources[1][R_GENERAL];
+	int rg=stats->resources[1][Stats::R_GENERAL];
 
-	if (rg+nether->stats.resources[1][R_CHASSIS]>30 &&
+	if (rg+stats->resources[1][Stats::R_CHASSIS]>30 &&
 			(level>=2 ||
 			(level==1 && (rand()%2)==0) ||
 			(level==0 && (rand()%4)==0))) {
 		traction=2;
 		rg-=10;
 	} else {
-		if (rg+nether->stats.resources[1][R_CHASSIS]>20 &&
+		if (rg+stats->resources[1][Stats::R_CHASSIS]>20 &&
 			(level>=2 ||
 			(level==1 && (rand()%2)==0) ||
 			(level==0 && (rand()%4)==0))) {
@@ -477,13 +479,13 @@ Robot* AI::enemyNewRobot(const STATE state, const Vector& pos)
 
 	switch(state) {
 	case STATE::EXPANDING:
-		if (rg+nether->stats.resources[1][R_CANNONS]+nether->stats.resources[1][R_MISSILES]+nether->stats.resources[1][R_PHASERS]>40 &&
+		if (rg+stats->resources[1][Stats::R_CANNONS]+stats->resources[1][Stats::R_MISSILES]+stats->resources[1][Stats::R_PHASERS]>40 &&
 			(level>=2 ||
 			(level==1 && (rand()%2)==0) ||
 			(level==0 && (rand()%4)==0))) {
 			pieces[2]=true;
 		} else {
-			if (rg+nether->stats.resources[1][R_CANNONS]+nether->stats.resources[1][R_MISSILES]+nether->stats.resources[1][R_PHASERS]>20 &&
+			if (rg+stats->resources[1][Stats::R_CANNONS]+stats->resources[1][Stats::R_MISSILES]+stats->resources[1][Stats::R_PHASERS]>20 &&
 				(level>=2 ||
 				(level==1 && (rand()%2)==0) ||
 				(level==0 && (rand()%4)==0))) {
@@ -493,50 +495,50 @@ Robot* AI::enemyNewRobot(const STATE state, const Vector& pos)
 			} /* if */ 
 		} /* if */ 
 
-		if (rg+nether->stats.resources[1][R_ELECTRONICS]>10) pieces[4]=true;
+		if (rg+stats->resources[1][Stats::R_ELECTRONICS]>10) pieces[4]=true;
 		break;
 	case STATE::DEFENDING:
-		if (rg+nether->stats.resources[1][R_PHASERS]>20 &&
+      if (rg+stats->resources[1][Stats::R_PHASERS]>20 &&
 			(level>=2 ||
 			(level==1 && (rand()%2)==0) ||
 			(level==0 && (rand()%4)==0))) pieces[2]=true;
-		if (rg+nether->stats.resources[1][R_MISSILES]>20 &&
+		if (rg+stats->resources[1][Stats::R_MISSILES]>20 &&
 			(level>=2 ||
 			(level==1 && (rand()%2)==0) ||
 			(level==0 && (rand()%4)==0))) pieces[1]=true;
-		if (rg+nether->stats.resources[1][R_CANNONS]>20 &&
+		if (rg+stats->resources[1][Stats::R_CANNONS]>20 &&
 			(level>=2 ||
 			(level==1 && (rand()%2)==0) ||
 			(level==0 && (rand()%4)==0))) pieces[0]=true;
 		if (!pieces[0] && !pieces[1] && !pieces[2]) pieces[0]=true;
 
-		if (rg+nether->stats.resources[1][R_ELECTRONICS]>30) pieces[4]=true;
+		if (rg+stats->resources[1][Stats::R_ELECTRONICS]>30) pieces[4]=true;
 		break;
 	case STATE::FIGHTING:
-		if (rg+nether->stats.resources[1][R_PHASERS]>20 &&
+		if (rg+stats->resources[1][Stats::R_PHASERS]>20 &&
 			(level>=2 ||
 			(level==1 && (rand()%2)==0) ||
 			(level==0 && (rand()%4)==0))) pieces[2]=true;
-		if (rg+nether->stats.resources[1][R_MISSILES]>20 &&
+		if (rg+stats->resources[1][Stats::R_MISSILES]>20 &&
 			(level>=2 ||
 			(level==1 && (rand()%2)==0) ||
 			(level==0 && (rand()%4)==0))) pieces[1]=true;
-		if (rg+nether->stats.resources[1][R_CANNONS]>20 &&
+		if (rg+stats->resources[1][Stats::R_CANNONS]>20 &&
 			(level>=2 ||
 			(level==1 && (rand()%2)==0) ||
 			(level==0 && (rand()%4)==0))) pieces[0]=true;
 		if (!pieces[0] && !pieces[1] && !pieces[2]) pieces[0]=true;
 
-		if (rg+nether->stats.resources[1][R_ELECTRONICS]>20) pieces[4]=true;
+		if (rg+stats->resources[1][Stats::R_ELECTRONICS]>20) pieces[4]=true;
 		break;
 	case STATE::CONQUERING:
-		if (rg+nether->stats.resources[1][R_CANNONS]+nether->stats.resources[1][R_MISSILES]+nether->stats.resources[1][R_PHASERS]>40 &&
+		if (rg+stats->resources[1][Stats::R_CANNONS]+stats->resources[1][Stats::R_MISSILES]+stats->resources[1][Stats::R_PHASERS]>40 &&
 			(level>=2 ||
 			(level==1 && (rand()%2)==0) ||
 			(level==0 && (rand()%4)==0))) {
 			pieces[2]=true;
 		} else {
-			if (rg+nether->stats.resources[1][R_CANNONS]+nether->stats.resources[1][R_MISSILES]+nether->stats.resources[1][R_PHASERS]>20 &&
+			if (rg+stats->resources[1][Stats::R_CANNONS]+stats->resources[1][Stats::R_MISSILES]+stats->resources[1][Stats::R_PHASERS]>20 &&
 				(level>=2 ||
 				(level==1 && (rand()%2)==0) ||
 				(level==0 && (rand()%4)==0))) {
@@ -546,17 +548,17 @@ Robot* AI::enemyNewRobot(const STATE state, const Vector& pos)
 			} /* if */ 
 		} /* if */ 
 
-		if (rg+nether->stats.resources[1][R_ELECTRONICS]>10) pieces[4]=true;
+		if (rg+stats->resources[1][Stats::R_ELECTRONICS]>10) pieces[4]=true;
 		break;
 	case STATE::DESTROYING:
-		if (rg+nether->stats.resources[1][R_NUCLEAR]>40) pieces[3]=true;
-		if (rg+nether->stats.resources[1][R_CANNONS]+nether->stats.resources[1][R_MISSILES]+nether->stats.resources[1][R_PHASERS]>40 &&
+		if (rg+stats->resources[1][Stats::R_NUCLEAR]>40) pieces[3]=true;
+		if (rg+stats->resources[1][Stats::R_CANNONS]+stats->resources[1][Stats::R_MISSILES]+stats->resources[1][Stats::R_PHASERS]>40 &&
 			(level>=2 ||
 			(level==1 && (rand()%2)==0) ||
 			(level==0 && (rand()%4)==0))) {
 			pieces[2]=true;
 		} else {
-			if (rg+nether->stats.resources[1][R_CANNONS]+nether->stats.resources[1][R_MISSILES]+nether->stats.resources[1][R_PHASERS]>20 &&
+			if (rg+stats->resources[1][Stats::R_CANNONS]+stats->resources[1][Stats::R_MISSILES]+stats->resources[1][Stats::R_PHASERS]>20 &&
 				(level>=2 ||
 				(level==1 && (rand()%2)==0) ||
 				(level==0 && (rand()%4)==0))) {
@@ -566,7 +568,7 @@ Robot* AI::enemyNewRobot(const STATE state, const Vector& pos)
 			} /* if */ 
 		} /* if */ 
 
-		if (rg+nether->stats.resources[1][R_ELECTRONICS]>10 &&
+		if (rg+stats->resources[1][Stats::R_ELECTRONICS]>10 &&
 			(level>=2 ||
 			(level==1 && (rand()%2)==0) ||
 			(level==0 && (rand()%4)==0))) pieces[4]=true;
@@ -579,7 +581,7 @@ Robot* AI::enemyNewRobot(const STATE state, const Vector& pos)
 		r->setTraction(traction);
 		r->setPieces(pieces);
 
-        if (!nether->stats.canBuildRobot(1, *r)) {
+        if (!stats->canBuildRobot(1, *r)) {
           return 0;
         }
 
@@ -591,11 +593,11 @@ Robot* AI::enemyNewRobot(const STATE state, const Vector& pos)
 		r->op=Robot::OPERATOR::NONE;
 		r->calculateCMC(Resources::pieceTiles[1]);
 
-		if (!r->checkCollision(scene->map.buildingBlocks, scene->robots, true, &nether->scene.ship)) {
+		if (!r->checkCollision(scene->map.buildingBlocks, scene->robots, true, &scene->ship)) {
 			scene->robots.push_back(r);
 			newRobot(r->pos,0);
 
-            nether->stats.spendRobotResources(1, *r);
+            stats->spendRobotResources(1, *r);
 			return r.get();
 		} /* if */ 
 	}
@@ -826,8 +828,10 @@ Robot::OPERATOR AI::searchEngine(const Robot& robot, const int goaltype, const V
 		} /* if */ 
 
 		resetSearch(robot.pos,depth);
-		if (bestop!=0) return bestop->first_robotop;
-				  else return Robot::OPERATOR::NONE;
+		if (bestop!=0)
+          return bestop->first_robotop;
+		else
+          return Robot::OPERATOR::NONE;
 	} /* if */ 
 
 	/* CAPTURE PROGRAM: */ 
@@ -888,8 +892,10 @@ Robot::OPERATOR AI::searchEngine(const Robot& robot, const int goaltype, const V
 		} /* if */ 
 
 		resetSearch(robot.pos,depth);
-		if (bestop!=0) return bestop->first_robotop;
-				  else return Robot::OPERATOR::NONE;
+        if (bestop!=0)
+          return bestop->first_robotop;
+        else
+          return Robot::OPERATOR::NONE;
 	} /* if */ 
 
 
@@ -958,8 +964,10 @@ Robot::OPERATOR AI::searchEngine(const Robot& robot, const int goaltype, const V
 		} /* if */ 
 
 		resetSearch(robot.pos, depth);
-		if (bestop!=0) return bestop->first_robotop;
-				  else return Robot::OPERATOR::NONE;
+        if (bestop!=0)
+          return bestop->first_robotop;
+        else
+          return Robot::OPERATOR::NONE;
 	} /* if */ 
 
 	return Robot::OPERATOR::NONE;

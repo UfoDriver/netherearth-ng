@@ -33,15 +33,6 @@
 
 /* GAME STATES: */
 
-enum RESOURCES {R_GENERAL,
-                R_ELECTRONICS,
-                R_NUCLEAR,
-                R_PHASERS,
-                R_MISSILES,
-                R_CANNONS,
-                R_CHASSIS};
-
-
 class NETHER {
 public:
   enum class STATE {PLAYING,
@@ -72,7 +63,6 @@ public:
   float getAnimationTimer() const { return animationTimer; }
   void addNewRobot(std::shared_ptr<Robot> robot, int player);
   void detachShip(std::shared_ptr<Robot> robot);
-  void debug();
   Menu::TYPE getActiveMenu() { return menu.getActiveMenu(); }
 
   std::array<std::pair<int, int>, 7> getBuildingStats() const;

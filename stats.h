@@ -17,6 +17,16 @@ class Robot;
 class Stats
 {
 public:
+  enum RESOURCES {
+    R_GENERAL,
+    R_ELECTRONICS,
+    R_NUCLEAR,
+    R_PHASERS,
+    R_MISSILES,
+    R_CANNONS,
+    R_CHASSIS
+  };
+
   Stats(): day{0}, hour{0}, minute{0}, second{0}, resources{{20, 0}, {20, 0}},
            stats{{0}, {0}}, needsRecomputing(true) {}
   void recompute(const std::vector<std::unique_ptr<Building>>& buildings);
