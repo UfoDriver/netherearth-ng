@@ -9,8 +9,13 @@
 BuildingWarbase::BuildingWarbase(const Vector &position)
   : Building(position, TYPE::WARBASE)
 {
-  // @TODO somehow out of the method it makes sigfault
-  const std::vector<BuildingBlock> WARBASE_TEMPLATE {
+  flagTile = Resources::buildingTiles[6];
+}
+
+
+const std::vector<BuildingBlock> BuildingWarbase::getTemplate() const
+{
+  return std::vector<BuildingBlock> {
     {{-1, -2, 0}, BuildingBlock::TYPE::WALL4},
     {{0, -2, 0}, BuildingBlock::TYPE::WALL5},
     {{-1.5, -1, 0}, BuildingBlock::TYPE::WALL4},
@@ -27,17 +32,6 @@ BuildingWarbase::BuildingWarbase(const Vector &position)
     {{-1, 2, 0}, BuildingBlock::TYPE::WALL4},
     {{0, 2, 0}, BuildingBlock::TYPE::WALL5}
   };
-
-  std::transform(
-    WARBASE_TEMPLATE.cbegin(), WARBASE_TEMPLATE.cend(), std::back_inserter(blocks),
-    [this](const BuildingBlock& block) {
-      std::shared_ptr<BuildingBlock> b {new BuildingBlock(block) };
-      b->pos = b->pos + pos;
-      b->building = std::shared_ptr<Building>(this);
-      return b;
-    }
-  );
-  flagTile = Resources::buildingTiles[6];
 }
 
 

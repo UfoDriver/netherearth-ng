@@ -12,25 +12,6 @@ BuildingFactory::BuildingFactory(const Vector& position, SUBTYPE subtype)
 {
   this->subtype = subtype;
 
-  // @TODO somehow out of the method it makes sigfault
-  const std::vector<BuildingBlock> FACTORY_TEMPLATE {
-    {{0, -1, 0}, BuildingBlock::TYPE::WALL4},
-    {{0, 1, 0}, BuildingBlock::TYPE::WALL4},
-    {{0, 0, 0}, BuildingBlock::TYPE::WALL5},
-    {{1, -1, 0}, BuildingBlock::TYPE::WALL2},
-    {{1, 1, 0}, BuildingBlock::TYPE::WALL2}
-  };
-
-  std::transform(
-    FACTORY_TEMPLATE.cbegin(), FACTORY_TEMPLATE.cend(), std::back_inserter(blocks),
-    [this](const BuildingBlock& block) {
-      std::shared_ptr<BuildingBlock> b {new BuildingBlock(block)};
-      b->building = std::shared_ptr<Building>(this);
-      b->pos = b->pos + pos;
-      return b;
-    }
-  );
-
   switch (subtype) {
   case Building::SUBTYPE::ELECTRONICS:
     typeTile = Resources::pieceTiles[0][7];
@@ -57,6 +38,18 @@ BuildingFactory::BuildingFactory(const Vector& position, SUBTYPE subtype)
   flagTile = Resources::buildingTiles[6];
   // TODO: temporary mutable for building factory tile
   typeTile.textured = false;
+}
+
+
+const std::vector<BuildingBlock> BuildingFactory::getTemplate() const
+{
+  return std::vector<BuildingBlock> {
+    {{0, -1, 0}, BuildingBlock::TYPE::WALL4},
+    {{0, 1, 0}, BuildingBlock::TYPE::WALL4},
+    {{0, 0, 0}, BuildingBlock::TYPE::WALL5},
+    {{1, -1, 0}, BuildingBlock::TYPE::WALL2},
+    {{1, 1, 0}, BuildingBlock::TYPE::WALL2}
+  };
 }
 
 

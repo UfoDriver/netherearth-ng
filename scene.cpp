@@ -81,7 +81,7 @@ void Scene::cycleBullets()
 void Scene::cycleRobots(unsigned char* keyboard)
 {
   for (std::shared_ptr<Robot> r: robots) {
-    r->cycle(nether.get());
+    r->cycle(*this);
     r->dispatchOperator(nether.get(), keyboard);
   }
 }

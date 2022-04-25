@@ -273,7 +273,7 @@ bool NETHER::saveGame(const std::string& filename)
   }
 
   sexp::Value bulletList = sexp::Value::nil();
-  for (const std::unique_ptr<Bullet>& bullet: scene.bullets) {
+  for (const std::shared_ptr<Bullet>& bullet: scene.bullets) {
     bulletList = sexp::Value::cons(bullet->toSexp(), std::move(bulletList));
   }
 

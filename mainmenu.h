@@ -12,10 +12,12 @@ class C3DObject;
 class MainMenu
 {
 public:
-  enum class ACTION {NONE,
-                     START,
-                     RESTARTVIDEO,
-                     QUIT};
+  enum class ACTION {
+    NONE,
+    START,
+    RESTARTVIDEO,
+    QUIT
+  };
 
   MainMenu();
   ACTION cycle(int width, int height);

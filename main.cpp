@@ -1,14 +1,17 @@
+#include <memory>
 #ifdef _WIN32
 #include <windows.h>
 #include <windowsx.h>
 #endif
 
+#include <iostream>
+#include <memory.h>
+#include <string>
+
 #include <GL/gl.h>
 #include <GL/glut.h>
 #include <SDL/SDL.h>
 #include <SDL/SDL_mixer.h>
-#include <iostream>
-#include <string>
 
 #include "mainmenu.h"
 #include "nether.h"
@@ -126,7 +129,7 @@ int main(int argc, char** argv)
   SDL_Surface* screen_sfc = initialization((fullscreen ? SDL_FULLSCREEN : 0));
   if (!screen_sfc) return 0;
 
-  NETHER* game = 0;
+  std::unique_ptr<NETHER> game {nullptr};
 
   glutInit(&argc, argv);
 
@@ -195,14 +198,14 @@ int main(int argc, char** argv)
 
         if (game) {
           if (!game->gamecycle()) {
-            delete game;
+            game.reset();
             game = 0;
             mainMenu.reset();
           }
         } else {
           MainMenu::ACTION val = mainMenu.cycle(SCREEN_X, SCREEN_Y);
           if (val == MainMenu::ACTION::START) {
-            game = new NETHER(mainMenu.getMapPath());
+            game.reset(new NETHER(mainMenu.getMapPath()));
           }
           if (val == MainMenu::ACTION::QUIT) quit = true;
           if (val == MainMenu::ACTION::RESTARTVIDEO) {
@@ -243,7 +246,7 @@ int main(int argc, char** argv)
     }
   }
 
-  delete game;
+  game.reset();
   finalize();
   return 0;
 }

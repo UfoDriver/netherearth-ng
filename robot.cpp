@@ -51,7 +51,7 @@ bool Robot::valid() const
 }
 
 
-bool Robot::bulletHit(const std::unique_ptr<Bullet>& bullet)
+bool Robot::bulletHit(const std::shared_ptr<Bullet>& bullet)
 {
   int damage = bullet->getDamageForRobot(this);
   strength -= damage;
@@ -424,7 +424,7 @@ void Robot::copyDesign(const Robot& robot)
 }
 
 
-void Robot::cycle(NETHER* nether)
+void Robot::cycle(Scene& scene)
 {
   if (animation.electronics) {
     animation.electronics = (animation.electronics + 6) % 360;
@@ -436,7 +436,7 @@ void Robot::cycle(NETHER* nether)
 
   if (op == OPERATOR::FORWARD) {
     if (traction == 0) { // Bipod
-      animation.chassis = (animation.chassis + int(movingSpeed(nether->scene.map.worseTerrain(pos)) / 0.00390625)) % 64;
+      animation.chassis = (animation.chassis + int(movingSpeed(scene.map.worseTerrain(pos)) / 0.00390625)) % 64;
     }
 
     if (traction == 1) { // Tracks
@@ -470,7 +470,7 @@ void Robot::cycle(NETHER* nether)
           particlePos.x += ((rand() % 2) == 0 ? -0.5 : 0.5);
           break;
         }
-        nether->scene.particles.emplace_back(particlePos, particleSpeed, Vector(0, 0, 0.05), 0, 0.3, color, 1.0, 0.0, 20 + (rand() % 10));
+        scene.particles.emplace_back(particlePos, particleSpeed, Vector(0, 0, 0.05), 0, 0.3, color, 1.0, 0.0, 20 + (rand() % 10));
       }
     }
   } else if (traction == 0) {

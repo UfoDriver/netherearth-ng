@@ -9,3 +9,11 @@ sexp::Value BuildingSimple::toSexp() const
     sexp::Value::integer((int)type)
   );
 }
+
+
+const std::vector<BuildingBlock> BuildingSimple::getTemplate() const
+{
+  return std::vector<BuildingBlock> {
+    {{0, 0, 0}, buildingBlockType},
+  };
+}

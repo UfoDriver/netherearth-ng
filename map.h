@@ -36,6 +36,7 @@ public:
   };
 
   explicit Map(NETHER* nether) : width{0}, height{0}, nether{nether} {}
+  ~Map();
 
   std::vector<int> map;
 
@@ -53,7 +54,7 @@ public:
   int worseTerrain(const Vector& position);
   void nuclearExplosionAt(const Vector& position);
 
-  std::vector<std::unique_ptr<Building>> buildings;
+  std::vector<std::shared_ptr<Building>> buildings;
   std::vector<std::shared_ptr<BuildingBlock>> buildingBlocks;
 
   bool cycle();

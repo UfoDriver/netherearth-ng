@@ -38,6 +38,7 @@ public:
   virtual void draw(const bool shadows, const Vector& light) const = 0;
 
   virtual sexp::Value toSexp() const = 0;
+  virtual const std::vector<BuildingBlock> getTemplate() const = 0;
   static Building* fromSexp(const sexp::Value&);
 
   Vector pos;
@@ -51,6 +52,7 @@ public:
   int status;
   Building::SUBTYPE subtype = SUBTYPE::UNKNOWN;
   std::vector<std::shared_ptr<BuildingBlock>> blocks;
+  virtual void applyTemplate();
 
   const static std::unordered_map<std::string, BuildingBlock::TYPE> SIMPLE_BUILDING_MAP;
   const static std::unordered_map<std::string, Building::SUBTYPE> FACTORIES_MAP;

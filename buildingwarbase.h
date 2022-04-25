@@ -22,6 +22,8 @@ public:
   Vector getCapturePoint() const override {return pos + Vector(2, 0, 0);}
   bool isCapturable() const override {return true;}
 
+  virtual const std::vector<BuildingBlock> getTemplate() const override;
+
   sexp::Value toSexp() const override;
 
 private:

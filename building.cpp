@@ -62,7 +62,22 @@ Building* Building::getFromSexp(const sexp::Value& sexp)
     building = new BuildingSimple(position, SIMPLE_BUILDING_MAP.at(buildingType));
   }
 
+  building->applyTemplate();
   return building;
+}
+
+
+void Building::applyTemplate()
+{
+  std::vector<BuildingBlock> buildingTemplate {getTemplate()};
+  std::transform(
+    buildingTemplate.cbegin(), buildingTemplate.cend(), std::back_inserter(blocks),
+    [this](const BuildingBlock& block) {
+      std::shared_ptr<BuildingBlock> b {new BuildingBlock(block) };
+      b->pos = b->pos + pos;
+      return b;
+    }
+  );
 }
 
 

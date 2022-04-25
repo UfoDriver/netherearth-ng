@@ -16,6 +16,7 @@ class BuildingBlock;
 class Bullet;
 class NETHER;
 class Ship;
+class Scene;
 
 
 struct AnimationState {
@@ -68,7 +69,7 @@ public:
   Robot(const sexp::Value& sexp) { Robot(-1); fromSexp(sexp); }
 
   bool valid() const;
-  bool bulletHit(const std::unique_ptr<Bullet>& bullet);
+  bool bulletHit(const std::shared_ptr<Bullet>& bullet);
   void draw(Vector lightposv, bool shadows) const;
   int cost() const;
   bool operator==(const Robot& other) const { return id == other.id; };
@@ -80,7 +81,7 @@ public:
   bool checkCollision(const std::vector<std::shared_ptr<BuildingBlock>>& buildingBlocks,
                       const Robots& robots, bool complete, Ship* ship) const;
 
-  void cycle(NETHER* nether);
+  void cycle(Scene& scene);
   int getId() const { return id; }
 
   float movingSpeed(int terrain) const;

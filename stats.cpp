@@ -7,7 +7,7 @@
 #include "stats.h"
 
 
-void Stats::recompute(const std::vector<std::unique_ptr<Building>>& buildings)
+void Stats::recompute(const std::vector<std::shared_ptr<Building>>& buildings)
 {
   if (!needsRecomputing) return;
 

@@ -43,7 +43,6 @@ public:
   TYPE type;
 
   std::shared_ptr<Building> building;
-
 private:
   bool isMainBuildingBlock() const;
   Shadow3DObject tile;

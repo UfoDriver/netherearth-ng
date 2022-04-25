@@ -33,7 +33,7 @@ public:
 
 
   std::vector<Explosion> explosions;
-  std::vector<std::unique_ptr<Bullet>> bullets;
+  std::vector<std::shared_ptr<Bullet>> bullets;
   std::vector<Particle> particles;
   Map map;
 
