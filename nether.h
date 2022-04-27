@@ -35,11 +35,13 @@
 
 class NETHER {
 public:
-  enum class STATE {PLAYING,
-                    CONSTRUCTION,
-                    PAUSE,
-                    SAVINGGAME,
-                    LOADINGGAME};
+  enum class STATE {
+    PLAYING,
+    CONSTRUCTION,
+    PAUSE,
+    SAVINGGAME,
+    LOADINGGAME
+  };
 
   explicit NETHER(const std::string& mapname);
   ~NETHER();

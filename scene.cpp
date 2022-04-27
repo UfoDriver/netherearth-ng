@@ -82,7 +82,7 @@ void Scene::cycleRobots(unsigned char* keyboard)
 {
   for (std::shared_ptr<Robot> r: robots) {
     r->cycle(*this);
-    r->dispatchOperator(nether.get(), keyboard);
+    r->dispatchOperator(nether, keyboard);
   }
 }
 
@@ -103,6 +103,7 @@ void Scene::draw(const Camera& camera, const Vector& light, const bool shadows)
   map.draw(camera, light, shadows);
   ship.draw(shadows, light, map, nether->getControlledRobot());
 
+  // @TODO: look at the nuclear explosion
   // if (explosions.size()) {
   //   int minstep = std::accumulate(explosions.cbegin(), explosions.cend(), 128,
   //                                 [](const int acc, const auto& e) {

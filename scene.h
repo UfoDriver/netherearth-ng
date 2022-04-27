@@ -47,7 +47,7 @@ private:
   void cycleBullets();
   void cycleRobots(unsigned char *keyboard);
 
-  std::shared_ptr<NETHER> nether;
+  NETHER* nether;
 };
 
 #endif // SCENE_H

@@ -37,9 +37,10 @@ extern int level;
 extern bool show_radar;
 
 
-NETHER::NETHER(const std::string& mapname): scene(this, mapname), ai(&scene, &stats), menu(this), radar(this),
-                                            optionsScreen(this), constructionScreen(this),
-                                            camera(0, 0, 0, 0), controlled(nullptr)
+NETHER::NETHER(const std::string& mapname)
+  : scene{this, mapname}, ai{&scene, &stats}, menu{*this}, radar{this},
+    optionsScreen{this}, constructionScreen{this},
+    camera{0, 0, 0, 0}, controlled{nullptr}
 {
   if (shadows == 1) {
     light.set(-1000, -3000, 5000, 1);
@@ -72,9 +73,9 @@ NETHER::NETHER(const std::string& mapname): scene(this, mapname), ai(&scene, &st
 
 NETHER::~NETHER()
 {
+  ai.deletePrecomputations();
   scene.map.resize(0, 0);
   Resources::instance()->deleteObjects();
-  ai.deletePrecomputations();
 }
 
 

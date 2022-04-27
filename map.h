@@ -36,7 +36,6 @@ public:
   };
 
   explicit Map(NETHER* nether) : width{0}, height{0}, nether{nether} {}
-  ~Map();
 
   std::vector<int> map;
 

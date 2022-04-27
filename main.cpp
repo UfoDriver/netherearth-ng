@@ -124,12 +124,14 @@ int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 int main(int argc, char** argv)
 {
 #endif
-
   MainMenu mainMenu;
   SDL_Surface* screen_sfc = initialization((fullscreen ? SDL_FULLSCREEN : 0));
-  if (!screen_sfc) return 0;
+  if (!screen_sfc) {
+    std::cerr << "Cannot create SDL surface" << std::endl;
+    return 0;
+  }
 
-  std::unique_ptr<NETHER> game {nullptr};
+  NETHER* game {nullptr};
 
   glutInit(&argc, argv);
 
@@ -141,38 +143,36 @@ int main(int argc, char** argv)
     while (SDL_PollEvent(&event)) {
       switch (event.type) {
       case SDL_KEYDOWN:
-        if (event.key.keysym.sym == SDLK_F12) quit = true;
-        if (event.key.keysym.sym == SDLK_RETURN) {
-          SDLMod modifiers = SDL_GetModState();
+        if (event.key.keysym.sym == SDLK_F12) {
+          quit = true;
+          break;
+        }
+        if (event.key.keysym.sym == SDLK_RETURN && (SDL_GetModState() & KMOD_ALT) != 0) {
+          /* Toggle FULLSCREEN mode: */
+          if (game) {
+            Resources::instance()->refreshDisplayLists();
+            game->scene.ship.refresh_display_lists();
+          }
+          mainMenu.refreshDisplayLists();
+          if (game) Resources::instance()->deleteObjects();
+          fullscreen = !fullscreen;
+          SDL_QuitSubSystem(SDL_INIT_VIDEO);
+          SDL_InitSubSystem(SDL_INIT_VIDEO);
+          if (SDL_WasInit(SDL_INIT_VIDEO)) {
+            SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+            SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+            SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+            SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
+            SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+            SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 1);
 
-          if ((modifiers & KMOD_ALT) != 0) {
-            /* Toogle FULLSCREEN mode: */
-            if (game != 0) {
-              Resources::instance()->refreshDisplayLists();
-              game->scene.ship.refresh_display_lists();
-            }
-            mainMenu.refreshDisplayLists();
-            if (game != 0) Resources::instance()->deleteObjects();
-            fullscreen = !fullscreen;
-            SDL_QuitSubSystem(SDL_INIT_VIDEO);
-            SDL_InitSubSystem(SDL_INIT_VIDEO);
-            if (SDL_WasInit(SDL_INIT_VIDEO)) {
-              SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
-              SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
-              SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
-              SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
-              SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-              SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 1);
-
-              screen_sfc = SDL_SetVideoMode(SCREEN_X, SCREEN_Y, COLOUR_DEPTH,
-                                            SDL_OPENGL | (fullscreen ? SDL_FULLSCREEN : 0));
-              if (game)
-                Resources::instance()->loadObjects();
-              SDL_WM_SetCaption("Nether Earth REMAKE v0.5", 0);
-              SDL_ShowCursor(SDL_DISABLE);
-            } else {
-              quit = true;
-            }
+            screen_sfc = SDL_SetVideoMode(SCREEN_X, SCREEN_Y, COLOUR_DEPTH,
+                                          SDL_OPENGL | (fullscreen ? SDL_FULLSCREEN : 0));
+            if (game) Resources::instance()->loadObjects();
+            SDL_WM_SetCaption("Nether Earth REMAKE v0.5", 0);
+            SDL_ShowCursor(SDL_DISABLE);
+          } else {
+            quit = true;
           }
         }
         break;
@@ -198,14 +198,16 @@ int main(int argc, char** argv)
 
         if (game) {
           if (!game->gamecycle()) {
-            game.reset();
-            game = 0;
+            delete game;
+            game = nullptr;
             mainMenu.reset();
           }
         } else {
           MainMenu::ACTION val = mainMenu.cycle(SCREEN_X, SCREEN_Y);
           if (val == MainMenu::ACTION::START) {
-            game.reset(new NETHER(mainMenu.getMapPath()));
+            std::cerr << "Creating instance of NETHER" << std::endl;
+            if (game) delete game;
+            game = new NETHER(mainMenu.getMapPath());
           }
           if (val == MainMenu::ACTION::QUIT) quit = true;
           if (val == MainMenu::ACTION::RESTARTVIDEO) {
@@ -246,7 +248,8 @@ int main(int argc, char** argv)
     }
   }
 
-  game.reset();
+  if (game) delete game;
   finalize();
+
   return 0;
 }

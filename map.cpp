@@ -27,8 +27,8 @@ void Map::resize(const int newWidth, const int newHeight)
 {
   width = newWidth;
   height = newHeight;
-  buildingBlocks.clear();
   buildings.clear();
+  buildingBlocks.clear();
   map.clear();
   map.resize(width * height, 0);
 }
@@ -250,10 +250,16 @@ void Map::processMapSectionSexp(const sexp::Value& cons)
   } else if (sexp::car(cons).as_string() == "buildings") {
     std::cerr << "Got buildings" << std::endl;
     for (const sexp::Value& building: sexp::ListAdapter(sexp::cdr(cons))) {
-      Building *b = Building::getFromSexp(building);
+      std::shared_ptr<Building> b { Building::getFromSexp(building) };
       if (b) {
-        buildings.emplace_back(b);
-        buildingBlocks.insert(buildingBlocks.end(), b->blocks.begin(), b->blocks.end());
+        buildings.push_back(b);
+        std::transform(
+                       b->blocks.begin(), b->blocks.end(), std::back_inserter(buildingBlocks),
+          [b](std::shared_ptr<BuildingBlock>& block) {
+            block->building = b;
+            return block;
+          }
+        );
         b->blocks.clear();
       }
     }

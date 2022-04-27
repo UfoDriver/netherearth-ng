@@ -38,9 +38,9 @@
 ~~Firing breaks the game~~
 ~~Correct warbase positions in map files~~
 ~~Correct factory positions in map files~~
+~~Quiting the game leads to segfault (double free or corruption)~~
 
 Mouse zooming does not work - because it was keyboard only
-Quiting the game leads to segfault (double free or corruption)
 Game speed seems too high
 AI levels (with electronics etc) should be different objects. Probably the same with bipods/tracks/antigravs
 Statistics (display only?) shows wrong data

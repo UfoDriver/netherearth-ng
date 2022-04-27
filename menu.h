@@ -50,18 +50,20 @@ const std::initializer_list<StatusButton> MENU
 class Menu
 {
 public:
-  enum class TYPE {GENERAL,
-                   ROBOT,
-                   DIRECTCONTROL,
-                   COMBATMODE,
-                   DIRECTCONTROL2,
-                   ORDERS,
-                   SELECTDISTANCE,
-                   TARGET_DESTROY,
-                   TARGET_CAPTURE,
-                   ALL};
+  enum class TYPE {
+    GENERAL,
+    ROBOT,
+    DIRECTCONTROL,
+    COMBATMODE,
+    DIRECTCONTROL2,
+    ORDERS,
+    SELECTDISTANCE,
+    TARGET_DESTROY,
+    TARGET_CAPTURE,
+    ALL
+  };
 
-  explicit Menu(NETHER *nether) : nether{nether} {};
+  explicit Menu(NETHER& nether) : nether{nether} {};
 
   void draw(int width, int height);
   void cycle(unsigned char *keyboard);
@@ -85,11 +87,8 @@ private:
 
   TYPE activeMenu {TYPE::GENERAL};
   StatusButton::NAME activeButton {StatusButton::NAME::COMBAT1};
-  NETHER *nether;
+  NETHER& nether;
   std::vector<StatusButton> buttons {MENU};
-
-  friend std::ostream &operator<<(std::ostream &out, const Menu &menu);
-  friend std::istream &operator>>(std::istream &in, Menu &menu);
 };
 
 #endif // MENU_H
