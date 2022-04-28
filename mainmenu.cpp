@@ -43,6 +43,37 @@ char *strupr(char *in)
  }
 #endif
 
+
+std::vector<std::pair<int, int>> SCREEN_SIZES {
+  {320, 240},
+  {400, 300},
+  {640, 480},
+  {800, 600},
+  {1024, 768},
+  {1280, 1024},
+  {1366, 768},
+  {1600, 900},
+  {1920, 1080},
+  {2560, 1440},
+  {3440, 1440},
+  {3840, 2160}
+};
+
+
+// Function name is really awful
+template <typename Container, typename Value>
+typename Container::const_iterator
+find_next_pair_looped(const Container& container, Value value)
+{
+  typename Container::const_iterator found_value =
+    std::find_if(container.cbegin(), container.cend(),
+                 [value](const auto& pair) {
+                   return pair.first == value;
+                 });
+  return found_value == container.cend() ? container.begin() : found_value;
+}
+
+
 extern int SCREEN_X;
 extern int SCREEN_Y;
 extern int COLOUR_DEPTH;
@@ -157,35 +188,13 @@ MainMenu::ACTION MainMenu::cycle(int, int)
     break;
   case 3:
     if (keyboard[SDLK_1] && !old_keyboard[SDLK_1]) {
-      switch(SCREEN_X) {
-      case 320:
-        SCREEN_X = 400;
-        SCREEN_Y = 300;
-        break;
-      case 400:
-        SCREEN_X = 640;
-        SCREEN_Y = 480;
-        break;
-      case 640:
-        SCREEN_X = 800;
-        SCREEN_Y = 600;
-        break;
-      case 800:
-        SCREEN_X = 1024;
-        SCREEN_Y = 768;
-        break;
-      case 1024:
-        SCREEN_X = 1366;
-        SCREEN_Y = 768;
-        break;
-      case 1366:
-        SCREEN_X = 320;
-        SCREEN_Y = 240;
-        break;
-      default:
-        SCREEN_X = 640;
-        SCREEN_Y = 480;
+      auto screen_size {find_next_pair_looped(SCREEN_SIZES, SCREEN_X)};
+      screen_size++;
+      if (screen_size == SCREEN_SIZES.cend()) {
+        screen_size = SCREEN_SIZES.cbegin();
       }
+      SCREEN_X = screen_size->first;
+      SCREEN_Y = screen_size->second;
       retval = ACTION::RESTARTVIDEO;
       saveConfiguration();
     }
@@ -361,12 +370,11 @@ void MainMenu::draw(int width, int height)
   case 3:
     glColor3f(0.5, 0.5, 1.0);
     glTranslatef(0, 3.5, 0);
-    if (SCREEN_X == 320) scaledglprintf(0.005, 0.005, "1 - RESOLUTION:  320x240");
-    if (SCREEN_X == 400) scaledglprintf(0.005, 0.005, "1 - RESOLUTION:  400x300");
-    if (SCREEN_X == 640) scaledglprintf(0.005, 0.005, "1 - RESOLUTION:  640x480");
-    if (SCREEN_X == 800) scaledglprintf(0.005, 0.005, "1 - RESOLUTION:  800x600");
-    if (SCREEN_X == 1024) scaledglprintf(0.005, 0.005, "1 - RESOLUTION: 1024x768");
-    if (SCREEN_X == 1366) scaledglprintf(0.005, 0.005, "1 - RESOLUTION: 1366x768");
+
+    {
+      auto screen_size {find_next_pair_looped(SCREEN_SIZES, SCREEN_X)};
+      scaledglprintf(0.005, 0.005, "1 - RESOLUTION:  %dx%d", screen_size->first, screen_size->second);
+    }
 
     glTranslatef(0, -1, 0);
     if (COLOUR_DEPTH == 8) scaledglprintf(0.005, 0.005, "2 - COLOR DEPTH:  8bit  ");
