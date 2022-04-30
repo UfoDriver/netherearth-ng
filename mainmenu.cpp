@@ -373,40 +373,40 @@ void MainMenu::draw(int width, int height)
 
     {
       auto screen_size {find_next_pair_looped(SCREEN_SIZES, SCREEN_X)};
-      scaledglprintf(0.005, 0.005, "1 - RESOLUTION:  %dx%d", screen_size->first, screen_size->second);
+      scaledglprintf(0.005, 0.005, "1 - RESOLUTION: %4dx%-4d", screen_size->first, screen_size->second);
     }
 
     glTranslatef(0, -1, 0);
-    if (COLOUR_DEPTH == 8) scaledglprintf(0.005, 0.005, "2 - COLOR DEPTH:  8bit  ");
-    if (COLOUR_DEPTH == 16) scaledglprintf(0.005, 0.005, "2 - COLOR DEPTH: 16bit  ");
-    if (COLOUR_DEPTH == 24) scaledglprintf(0.005, 0.005, "2 - COLOR DEPTH: 24bit  ");
-    if (COLOUR_DEPTH == 32) scaledglprintf(0.005, 0.005, "2 - COLOR DEPTH: 32bit  ");
+    if (COLOUR_DEPTH == 8) scaledglprintf(0.005, 0.005, "2 - COLOR DEPTH:  8bit   ");
+    if (COLOUR_DEPTH == 16) scaledglprintf(0.005, 0.005, "2 - COLOR DEPTH: 16bit   ");
+    if (COLOUR_DEPTH == 24) scaledglprintf(0.005, 0.005, "2 - COLOR DEPTH: 24bit   ");
+    if (COLOUR_DEPTH == 32) scaledglprintf(0.005, 0.005, "2 - COLOR DEPTH: 32bit   ");
     glTranslatef(0, -1, 0);
     if (fullscreen)
-      scaledglprintf(0.005, 0.005, "3 - FULLSCREEN          ");
+      scaledglprintf(0.005, 0.005, "3 - WINDOWED             ");
     else
-      scaledglprintf(0.005, 0.005, "3 - WINDOWED            ");
+      scaledglprintf(0.005, 0.005, "3 - FULLSCREEN           ");
     glTranslatef(0, -1, 0);
-    if (shadows == 0) scaledglprintf(0.005, 0.005, "4 - SHADOWS: OFF        ");
-    if (shadows == 1) scaledglprintf(0.005, 0.005, "4 - SHADOWS: ON - DIAG  ");
-    if (shadows == 2) scaledglprintf(0.005, 0.005, "4 - SHADOWS: ON - VERT  ");
+    if (shadows == 0) scaledglprintf(0.005, 0.005, "4 - SHADOWS: OFF         ");
+    if (shadows == 1) scaledglprintf(0.005, 0.005, "4 - SHADOWS: ON - DIAG   ");
+    if (shadows == 2) scaledglprintf(0.005, 0.005, "4 - SHADOWS: ON - VERT   ");
     glTranslatef(0, -1, 0);
     if (sound)
-      scaledglprintf(0.005, 0.005, "5 - SOUND: ON           ");
+      scaledglprintf(0.005, 0.005, "5 - SOUND: ON            ");
     else
-      scaledglprintf(0.005, 0.005, "5 - SOUND: OFF          ");
+      scaledglprintf(0.005, 0.005, "5 - SOUND: OFF           ");
     glTranslatef(0, -1, 0);
-    if (level == 0) scaledglprintf(0.005, 0.005, "6 - LEVEL: EASY         ");
-    if (level == 1) scaledglprintf(0.005, 0.005, "6 - LEVEL: NORMAL       ");
-    if (level == 2) scaledglprintf(0.005, 0.005, "6 - LEVEL: HARD         ");
-    if (level == 3) scaledglprintf(0.005, 0.005, "6 - LEVEL: IMPOSSIBLE   ");
+    if (level == 0) scaledglprintf(0.005, 0.005, "6 - LEVEL: EASY          ");
+    if (level == 1) scaledglprintf(0.005, 0.005, "6 - LEVEL: NORMAL        ");
+    if (level == 2) scaledglprintf(0.005, 0.005, "6 - LEVEL: HARD          ");
+    if (level == 3) scaledglprintf(0.005, 0.005, "6 - LEVEL: IMPOSSIBLE    ");
     glTranslatef(0, -1, 0);
     if (show_radar)
-      scaledglprintf(0.005, 0.005, "7 - RADAR: ON           ");
+      scaledglprintf(0.005, 0.005, "7 - RADAR: OFF           ");
     else
-      scaledglprintf(0.005, 0.005, "7 - RADAR: OFF          ");
+      scaledglprintf(0.005, 0.005, "7 - RADAR: ON            ");
     glTranslatef(0, -1, 0);
-    scaledglprintf(0.005, 0.005, "8 - BACK                ");
+    scaledglprintf(0.005, 0.005, "8 - BACK                 ");
     break;
   case 7:
     {
