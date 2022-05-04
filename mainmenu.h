@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include "config.h"
 
 class C3DObject;
 
@@ -15,15 +16,15 @@ public:
   enum class ACTION {
     NONE,
     START,
-    RESTARTVIDEO,
-    QUIT
+    RESTART_VIDEO,
+    QUIT,
+    SET_FULLSCREEN,
+    SET_SOUND,
   };
 
-  MainMenu();
+  MainMenu(Config& config);
   ACTION cycle(int width, int height);
   void draw(int width, int height);
-  void loadConfiguration();
-  void saveConfiguration();
   void refreshDisplayLists();
   std::string getMapPath();
   void reset()
@@ -40,6 +41,8 @@ private:
   void populateMaps();
   std::vector<std::string> mapnames;
   std::vector<std::string>::iterator mapnameIter {mapnames.begin()};
+
+  Config config;
 };
 
 #endif // MAINMENU_H

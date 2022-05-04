@@ -74,20 +74,10 @@ find_next_pair_looped(const Container& container, Value value)
 }
 
 
-extern int SCREEN_X;
-extern int SCREEN_Y;
-extern int COLOUR_DEPTH;
-extern bool fullscreen;
-extern int shadows;
-extern bool sound;
-extern int level;
-extern int up_key,down_key,left_key,right_key,fire_key,pause_key;
-extern bool show_radar;
-
-
-MainMenu::MainMenu()
+MainMenu::MainMenu(Config& config)
+  : config(config)
 {
-  loadConfiguration();
+  config.load();
   title = new C3DObject("models/tittle.asc", "textures/");
   title->normalize(7.0);
 }
@@ -154,7 +144,7 @@ MainMenu::ACTION MainMenu::cycle(int, int)
     break;
   case 1:
     substatus++;
-    if ((keyboard[fire_key] && !old_keyboard[fire_key]) ||
+    if ((keyboard[config.keyFire] && !old_keyboard[config.keyFire]) ||
         (keyboard[SDLK_1] && !old_keyboard[SDLK_1])) {
       status = 4;
       substatus = 0;
@@ -172,7 +162,7 @@ MainMenu::ACTION MainMenu::cycle(int, int)
         ++mapnameIter;
         if (mapnameIter == mapnames.end()) mapnameIter = mapnames.begin();
       }
-      saveConfiguration();
+      config.save();
     }
     if (keyboard[SDLK_5] && !old_keyboard[SDLK_5]) {
       status = 5;
@@ -188,53 +178,53 @@ MainMenu::ACTION MainMenu::cycle(int, int)
     break;
   case 3:
     if (keyboard[SDLK_1] && !old_keyboard[SDLK_1]) {
-      auto screen_size {find_next_pair_looped(SCREEN_SIZES, SCREEN_X)};
+      auto screen_size {find_next_pair_looped(SCREEN_SIZES, config.screenX)};
       screen_size++;
       if (screen_size == SCREEN_SIZES.cend()) {
         screen_size = SCREEN_SIZES.cbegin();
       }
-      SCREEN_X = screen_size->first;
-      SCREEN_Y = screen_size->second;
-      retval = ACTION::RESTARTVIDEO;
-      saveConfiguration();
+      config.screenX = screen_size->first;
+      config.screenY = screen_size->second;
+      retval = ACTION::RESTART_VIDEO;
+      config.save();
     }
     if (keyboard[SDLK_2] && !old_keyboard[SDLK_2]) {
-      switch (COLOUR_DEPTH) {
+      switch (config.colorDepth) {
       case 8:
-        COLOUR_DEPTH = 16;
+        config.colorDepth = 16;
         break;
       case 16:
-        COLOUR_DEPTH = 24;
+        config.colorDepth = 24;
         break;
       case 24:
-        COLOUR_DEPTH = 32;
+        config.colorDepth = 32;
         break;
       default:
-        COLOUR_DEPTH = 8;
+        config.colorDepth = 8;
       }
-      retval = ACTION::RESTARTVIDEO;
-      saveConfiguration();
+      retval = ACTION::RESTART_VIDEO;
+      config.save();
     }
     if (keyboard[SDLK_3] && !old_keyboard[SDLK_3]) {
-      fullscreen = !fullscreen;
-      retval = ACTION::RESTARTVIDEO;
-      saveConfiguration();
+      config.fullscreenMode = !config.fullscreenMode;
+      retval = ACTION::RESTART_VIDEO;
+      config.save();
     }
     if (keyboard[SDLK_4] && !old_keyboard[SDLK_4]) {
-      shadows = ++shadows % 3;
-      saveConfiguration();
+      config.shadows = ++config.shadows % 3;
+      config.save();
     }
     if (keyboard[SDLK_5] && !old_keyboard[SDLK_5]) {
-      sound = !sound;
-      saveConfiguration();
+      config.sound = !config.sound;
+      config.save();
     }
     if (keyboard[SDLK_6] && !old_keyboard[SDLK_6]) {
-      level = (++level) % 4;
-      saveConfiguration();
+      config.level = (++config.level) % 4;
+      config.save();
     }
     if (keyboard[SDLK_7] && !old_keyboard[SDLK_7]) {
-      show_radar = !show_radar;
-      saveConfiguration();
+      config.showRadar = !config.showRadar;
+      config.save();
     }
     if (keyboard[SDLK_8] && !old_keyboard[SDLK_8]) {
       status = 0;
@@ -266,29 +256,29 @@ MainMenu::ACTION MainMenu::cycle(int, int)
         if (keyboard[i] && !old_keyboard[i]) {
           switch (substatus) {
           case 0:
-            up_key = i;
+            config.keyUp = i;
             break;
           case 1:
-            down_key = i;
+            config.keyDown = i;
             break;
           case 2:
-            left_key = i;
+            config.keyLeft = i;
             break;
           case 3:
-            right_key = i;
+            config.keyRight = i;
             break;
           case 4:
-            fire_key = i;
+            config.keyFire = i;
             break;
           case 5:
-            pause_key = i;
+            config.keyPause = i;
             break;
           }
           substatus++;
           if (substatus == 7) {
             status = 0;
             substatus = 0;
-            saveConfiguration();
+            config.save();
           }
         }
       }
@@ -372,36 +362,33 @@ void MainMenu::draw(int width, int height)
     glTranslatef(0, 3.5, 0);
 
     {
-      auto screen_size {find_next_pair_looped(SCREEN_SIZES, SCREEN_X)};
+      auto screen_size {find_next_pair_looped(SCREEN_SIZES, config.screenX)};
       scaledglprintf(0.005, 0.005, "1 - RESOLUTION: %4dx%-4d", screen_size->first, screen_size->second);
     }
 
     glTranslatef(0, -1, 0);
-    if (COLOUR_DEPTH == 8) scaledglprintf(0.005, 0.005, "2 - COLOR DEPTH:  8bit   ");
-    if (COLOUR_DEPTH == 16) scaledglprintf(0.005, 0.005, "2 - COLOR DEPTH: 16bit   ");
-    if (COLOUR_DEPTH == 24) scaledglprintf(0.005, 0.005, "2 - COLOR DEPTH: 24bit   ");
-    if (COLOUR_DEPTH == 32) scaledglprintf(0.005, 0.005, "2 - COLOR DEPTH: 32bit   ");
+    scaledglprintf(0.005, 0.005, "2 - COLOR DEPTH: %2dbit   ", config.colorDepth);
     glTranslatef(0, -1, 0);
-    if (fullscreen)
+    if (config.fullscreenMode)
       scaledglprintf(0.005, 0.005, "3 - WINDOWED             ");
     else
       scaledglprintf(0.005, 0.005, "3 - FULLSCREEN           ");
     glTranslatef(0, -1, 0);
-    if (shadows == 0) scaledglprintf(0.005, 0.005, "4 - SHADOWS: OFF         ");
-    if (shadows == 1) scaledglprintf(0.005, 0.005, "4 - SHADOWS: ON - DIAG   ");
-    if (shadows == 2) scaledglprintf(0.005, 0.005, "4 - SHADOWS: ON - VERT   ");
+    if (config.shadows == 0) scaledglprintf(0.005, 0.005, "4 - SHADOWS: OFF         ");
+    if (config.shadows == 1) scaledglprintf(0.005, 0.005, "4 - SHADOWS: ON - DIAG   ");
+    if (config.shadows == 2) scaledglprintf(0.005, 0.005, "4 - SHADOWS: ON - VERT   ");
     glTranslatef(0, -1, 0);
-    if (sound)
+    if (config.sound)
       scaledglprintf(0.005, 0.005, "5 - SOUND: ON            ");
     else
       scaledglprintf(0.005, 0.005, "5 - SOUND: OFF           ");
     glTranslatef(0, -1, 0);
-    if (level == 0) scaledglprintf(0.005, 0.005, "6 - LEVEL: EASY          ");
-    if (level == 1) scaledglprintf(0.005, 0.005, "6 - LEVEL: NORMAL        ");
-    if (level == 2) scaledglprintf(0.005, 0.005, "6 - LEVEL: HARD          ");
-    if (level == 3) scaledglprintf(0.005, 0.005, "6 - LEVEL: IMPOSSIBLE    ");
+    if (config.level == 0) scaledglprintf(0.005, 0.005, "6 - LEVEL: EASY          ");
+    if (config.level == 1) scaledglprintf(0.005, 0.005, "6 - LEVEL: NORMAL        ");
+    if (config.level == 2) scaledglprintf(0.005, 0.005, "6 - LEVEL: HARD          ");
+    if (config.level == 3) scaledglprintf(0.005, 0.005, "6 - LEVEL: IMPOSSIBLE    ");
     glTranslatef(0, -1, 0);
-    if (show_radar)
+    if (config.showRadar)
       scaledglprintf(0.005, 0.005, "7 - RADAR: OFF           ");
     else
       scaledglprintf(0.005, 0.005, "7 - RADAR: ON            ");
@@ -420,35 +407,35 @@ void MainMenu::draw(int width, int height)
         glColor3f(0.5, 0.5, 1.0);
       else
         glColor3f(1.0, 0.0, 0.0);
-      sprintf(tmp, "PRESS A KEY FOR UP: %s", strupr(SDL_GetKeyName((SDLKey) up_key)));
+      sprintf(tmp, "PRESS A KEY FOR UP: %s", strupr(SDL_GetKeyName((SDLKey) config.keyUp)));
       scaledglprintf(0.005, 0.005, tmp);
       glTranslatef(0, -1, 0);
       if (substatus != 1)
         glColor3f(0.5, 0.5, 1.0);
       else
         glColor3f(1.0, 0.0, 0.0);
-      sprintf(tmp, "PRESS A KEY FOR DOWN: %s", strupr(SDL_GetKeyName((SDLKey) down_key)));
+      sprintf(tmp, "PRESS A KEY FOR DOWN: %s", strupr(SDL_GetKeyName((SDLKey) config.keyDown)));
       scaledglprintf(0.005, 0.005, tmp);
       glTranslatef(0, -1, 0);
       if (substatus != 2)
         glColor3f(0.5, 0.5, 1.0);
       else
         glColor3f(1.0, 0.0, 0.0);
-      sprintf(tmp,"PRESS A KEY FOR LEFT: %s", strupr(SDL_GetKeyName((SDLKey) left_key)));
+      sprintf(tmp,"PRESS A KEY FOR LEFT: %s", strupr(SDL_GetKeyName((SDLKey) config.keyLeft)));
       scaledglprintf(0.005, 0.005, tmp);
       glTranslatef(0, -1, 0);
       if (substatus != 3)
         glColor3f(0.5, 0.5, 1.0);
       else
         glColor3f(1.0, 0.0, 0.0);
-      sprintf(tmp, "PRESS A KEY FOR RIGHT: %s", strupr(SDL_GetKeyName((SDLKey) right_key)));
+      sprintf(tmp, "PRESS A KEY FOR RIGHT: %s", strupr(SDL_GetKeyName((SDLKey) config.keyRight)));
       scaledglprintf(0.005, 0.005, tmp);
       glTranslatef(0, -1, 0);
       if (substatus != 4)
         glColor3f(0.5, 0.5, 1.0);
       else
         glColor3f(1.0, 0.0, 0.0);
-      sprintf(tmp, "PRESS A KEY FOR FIRE: %s", strupr(SDL_GetKeyName((SDLKey) fire_key)));
+      sprintf(tmp, "PRESS A KEY FOR FIRE: %s", strupr(SDL_GetKeyName((SDLKey) config.keyFire)));
       scaledglprintf(0.005, 0.005, tmp);
 
       glTranslatef(0, -1, 0);
@@ -456,7 +443,7 @@ void MainMenu::draw(int width, int height)
         glColor3f(0.5, 0.5, 1.0);
       else
         glColor3f(1.0, 0.0, 0.0);
-      sprintf(tmp, "PRESS A KEY FOR PAUSE/MENU: %s", strupr(SDL_GetKeyName((SDLKey) pause_key)));
+      sprintf(tmp, "PRESS A KEY FOR PAUSE/MENU: %s", strupr(SDL_GetKeyName((SDLKey) config.keyPause)));
       scaledglprintf(0.005, 0.005, tmp);
 
       glColor3f(0.5, 0.5, 1.0);
@@ -485,32 +472,4 @@ void MainMenu::refreshDisplayLists()
 std::string MainMenu::getMapPath()
 {
   return "maps/" + *mapnameIter + ".map";
-}
-
-void MainMenu::loadConfiguration(void)
-{
-    std::string mapname;
-    std::ifstream configFile("nether.cfg");
-    configFile >> SCREEN_X >> SCREEN_Y >> fullscreen >> shadows
-               >> up_key >> down_key >> left_key >> right_key >> fire_key >> pause_key
-               >> sound >> level >> mapname;
-
-    populateMaps();
-    mapnameIter = std::find(mapnames.begin(), mapnames.end(), mapname);
-    if (mapnameIter == mapnames.end()) {
-      mapnameIter = mapnames.begin();
-    }
-}
-
-
-void MainMenu::saveConfiguration(void)
-{
-  std::ofstream configFile("nether.cfg");
-  configFile << SCREEN_X << ' ' << SCREEN_Y << std::endl
-             << fullscreen << ' ' << shadows  << std::endl
-             << up_key << ' ' << down_key << ' ' << left_key << ' ' << right_key << ' '
-             << fire_key << ' ' << pause_key << std::endl
-             << sound << std::endl
-             << level << std::endl
-             << *mapnameIter << std::endl;
 }

@@ -39,8 +39,10 @@ target_sources (${PROJECT_NAME}
       bulletphaser.cpp
       camera.cpp
       cmc.cpp
+      config.cpp
       constructionscreen.cpp
       explosion.cpp
+      game.cpp
       glprintf.cpp
       light.cpp
       main.cpp

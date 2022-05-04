@@ -45,3 +45,4 @@ Game speed seems too high
 AI levels (with electronics etc) should be different objects. Probably the same with bipods/tracks/antigravs
 Statistics (display only?) shows wrong data
 Chances that game save/load is broken
+Switching fullscreen mode during the game breaks building drawing
