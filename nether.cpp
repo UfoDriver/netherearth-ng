@@ -1,3 +1,4 @@
+#include "soundmanager.h"
 #include <bitset>
 #ifdef _WIN32
 #include "windows.h"
@@ -29,18 +30,14 @@
 #include "shadow3dobject.h"
 
 
-extern int frames_per_sec;
 extern int shadows;
-extern bool sound;
 extern int up_key, down_key, left_key, right_key, fire_key, pause_key;
-extern int level;
-extern bool show_radar;
 
 
-NETHER::NETHER(const std::string& mapname)
-  : scene{this, mapname}, ai{&scene, &stats}, menu{*this}, radar{this},
+NETHER::NETHER(const std::string& mapname, Config& config)
+  : scene{this, mapname}, config{config}, ai{&scene, &stats, config.level}, menu{*this}, radar{this},
     optionsScreen{this}, constructionScreen{this},
-    camera{0, 0, 0, 0}, controlled{nullptr}
+    camera{0, 0, 0, 0}, controlled{nullptr}, sManager{config.sound}
 {
   if (shadows == 1) {
     light.set(-1000, -3000, 5000, 1);
@@ -145,7 +142,7 @@ void NETHER::draw(int width, int height)
   int split = int((width * 25.0F) / 32.0F);
   int splity = 0;
 
-  if (show_radar)
+  if (config.showRadar)
     splity = int((height * 2.0F) / 15.0F) + 1;
   else
     splity = 0;
@@ -247,7 +244,9 @@ void NETHER::draw(int width, int height)
     else Resources::messageTiles[1].draw(Color(1.0, 1.0, 1.0));
   }
 
-  radar.draw(width, height, split, splity);
+  if (config.showRadar) {
+    radar.draw(width, height, split, splity);
+  }
   menu.draw(width, height);
 }
 
@@ -415,9 +414,9 @@ bool NETHER::cycle(unsigned char *keyboard)
 
   /* ENEMY Artificial Intelligence: */
   if (stats.second == 0) {
-    if (level == 0 && (stats.hour & 0x01) == 0 && stats.minute == 0) ai.enemy();
-    if (level == 1 && stats.minute == 0) ai.enemy();
-    if (level >= 2 && (stats.minute == 0 || stats.minute == 30)) ai.enemy();
+    if (config.level == 0 && (stats.hour & 0x01) == 0 && stats.minute == 0) ai.enemy();
+    if (config.level == 1 && stats.minute == 0) ai.enemy();
+    if (config.level >= 2 && (stats.minute == 0 || stats.minute == 30)) ai.enemy();
   }
 
   /* GAME Cycle: */
@@ -426,7 +425,7 @@ bool NETHER::cycle(unsigned char *keyboard)
     scene.ship.cycle(keyboard);
   menu.cycle(keyboard);
   camera.updateViewportForShip(scene.ship.pos, scene.map.getWidth(), scene.map.getHeight());
-  if (stats.tick(level)) {
+  if (stats.tick(config.level)) {
     menu.updateTime(stats);
   }
 

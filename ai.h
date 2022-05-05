@@ -26,7 +26,7 @@ public:
     DESTROYING
   };
 
-  AI(Scene* scene, Stats* stats): scene{scene}, stats{stats} {};
+  AI(Scene* scene, Stats* stats, int level): scene{scene}, stats{stats}, level{level} {};
   void makePrecomputations();
   void deletePrecomputations();
   void enemy();
@@ -67,6 +67,7 @@ private:
 
   Scene* scene;
   Stats* stats;
+  int level;
 };
 
 

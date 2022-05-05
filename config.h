@@ -3,19 +3,26 @@
 
 #include <string>
 
+#include <SDL/SDL.h>
+
 
 struct Config {
-  int screenX;
-  int screenY;
-  int colorDepth;
-  int shadows;
-  bool sound;
-  int level;
-  int keyUp, keyDown, keyLeft, keyRight, keyFire, keyPause;
+  int screenX {320};
+  int screenY {240};
+  int colorDepth {8};
+  int shadows {0};
+  bool sound {false};
+  int level {1};
+  int keyUp {SDLK_UP},
+    keyDown {SDLK_DOWN},
+    keyLeft {SDLK_LEFT},
+    keyRight {SDLK_RIGHT},
+    keyFire {SDLK_z},
+    keyPause {SDLK_h};
 
-  bool fullscreenMode;
-  bool showRadar;
-  std::string mapname;
+  bool fullscreenMode {false};
+  bool showRadar {true};
+  std::string mapname {"original"};
 
   void load();
   void save();

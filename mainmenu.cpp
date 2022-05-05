@@ -21,11 +21,12 @@
 #include "3dobject.h"
 #include "cmc.h"
 #include "glprintf.h"
+#include "mainmenu.h"
 #include "myglutaux.h"
 #include "piece3dobject.h"
 #include "shadow3dobject.h"
+#include "utils.h"
 #include "vector.h"
-#include "mainmenu.h"
 
 
 #ifndef __WINDOWS__
@@ -44,38 +45,8 @@ char *strupr(char *in)
 #endif
 
 
-std::vector<std::pair<int, int>> SCREEN_SIZES {
-  {320, 240},
-  {400, 300},
-  {640, 480},
-  {800, 600},
-  {1024, 768},
-  {1280, 1024},
-  {1366, 768},
-  {1600, 900},
-  {1920, 1080},
-  {2560, 1440},
-  {3440, 1440},
-  {3840, 2160}
-};
-
-
-// Function name is really awful
-template <typename Container, typename Value>
-typename Container::const_iterator
-find_next_pair_looped(const Container& container, Value value)
-{
-  typename Container::const_iterator found_value =
-    std::find_if(container.cbegin(), container.cend(),
-                 [value](const auto& pair) {
-                   return pair.first == value;
-                 });
-  return found_value == container.cend() ? container.begin() : found_value;
-}
-
-
 MainMenu::MainMenu(Config& config)
-  : config(config)
+  : config{config}
 {
   config.load();
   title = new C3DObject("models/tittle.asc", "textures/");
@@ -112,15 +83,17 @@ void MainMenu::populateMaps()
     }
   }
 #else
-  std::transform(std::filesystem::directory_iterator("maps/"),
-                 std::filesystem::directory_iterator(),
-                 std::back_inserter(mapnames),
-                 [](auto& entry) {
-                   if (entry.path().extension() == ".map")
-                     return entry.path().stem().string();
-                   else
-                     return std::string();
-                 });
+  std::transform(
+    std::filesystem::directory_iterator("maps/"),
+    std::filesystem::directory_iterator(),
+    std::back_inserter(mapnames),
+    [](auto& entry) {
+      if (entry.path().extension() == ".map")
+        return entry.path().stem().string();
+      else
+        return std::string();
+    }
+  );
   mapnames.erase(std::remove(mapnames.begin(), mapnames.end(), ""), mapnames.end());
 #endif
 }
@@ -185,8 +158,9 @@ MainMenu::ACTION MainMenu::cycle(int, int)
       }
       config.screenX = screen_size->first;
       config.screenY = screen_size->second;
-      retval = ACTION::RESTART_VIDEO;
       config.save();
+      std::cerr << "Trying to restart video to " << config.screenX << ':' << config.screenY << std::endl;
+      retval = ACTION::RESTART_VIDEO;
     }
     if (keyboard[SDLK_2] && !old_keyboard[SDLK_2]) {
       switch (config.colorDepth) {

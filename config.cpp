@@ -18,27 +18,27 @@ void Config::load()
     return;
   }
 
-  while (!(config = config.get_cdr()).is_nil()) {
-    if (config.get_car().as_string() == "screen") {
-      screenX = sexp::list_ref(config, 1).as_int();
-      screenY = sexp::list_ref(config, 2).as_int();
-      colorDepth = sexp::list_ref(config, 3).as_int();
-      fullscreenMode = sexp::list_ref(config, 4).as_bool();
-    } else if (config.get_car().as_string() == "options") {
-      sound = sexp::list_ref(config, 1).as_bool();
-      level = sexp::list_ref(config, 2).as_int();
-      shadows = sexp::list_ref(config, 3).as_int();
-      fullscreenMode = sexp::list_ref(config, 4).as_bool();
-      mapname = sexp::list_ref(config, 5).as_string();
-    } else if (config.get_car().as_string() == "keys") {
-      keyUp = sexp::list_ref(config, 1).as_int();
-      keyDown = sexp::list_ref(config, 2).as_int();
-      keyLeft = sexp::list_ref(config, 3).as_int();
-      keyRight = sexp::list_ref(config, 4).as_int();
-      keyFire = sexp::list_ref(config, 5).as_int();
-      keyPause = sexp::list_ref(config, 6).as_int();
+  for (const sexp::Value& section: sexp::ListAdapter(config.get_cdr())) {
+    if (section.get_car().as_string() == "screen") {
+      screenX = sexp::list_ref(section, 1).as_int();
+      screenY = sexp::list_ref(section, 2).as_int();
+      colorDepth = sexp::list_ref(section, 3).as_int();
+      fullscreenMode = sexp::list_ref(section, 4).as_bool();
+    } else if (section.get_car().as_string() == "options") {
+      sound = sexp::list_ref(section, 1).as_bool();
+      level = sexp::list_ref(section, 2).as_int();
+      shadows = sexp::list_ref(section, 3).as_int();
+      fullscreenMode = sexp::list_ref(section, 4).as_bool();
+      mapname = sexp::list_ref(section, 5).as_string();
+    } else if (section.get_car().as_string() == "keys") {
+      keyUp = sexp::list_ref(section, 1).as_int();
+      keyDown = sexp::list_ref(section, 2).as_int();
+      keyLeft = sexp::list_ref(section, 3).as_int();
+      keyRight = sexp::list_ref(section, 4).as_int();
+      keyFire = sexp::list_ref(section, 5).as_int();
+      keyPause = sexp::list_ref(section, 6).as_int();
     } else {
-      std::cerr << "Unknown config section " << config.get_car().as_string() << std::endl;
+      std::cerr << "Unknown section section " << section.get_car().as_string() << std::endl;
     }
   }
 }

@@ -24,9 +24,7 @@ void Explosion::draw(const Vector& lightposv, bool shadows) const
   glDepthMask(GL_FALSE);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable(GL_BLEND);
-  // @TODO: fix -> Somehow solid sphere dumps core
-  // glutSolidSphere(exp.getRadius(), 8, 8);
-  glutWireSphere(getRadius(), 8, 8);
+  glutSolidSphere(getRadius(), 8, 8);
   glDisable(GL_BLEND);
   glDepthMask(GL_TRUE);
   glPopMatrix();

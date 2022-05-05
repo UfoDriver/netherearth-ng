@@ -16,8 +16,6 @@
 Game::Game()
   : mainMenu{config}
 {
-  config.load();
-
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
     std::cerr << "Video initialization failed: " << SDL_GetError() << std::endl;
     initFailed = true;
@@ -224,14 +222,15 @@ bool Game::processMenu()
   switch (mainMenu.cycle(config.screenX, config.screenY)) {
   case MainMenu::ACTION::START:
     if (nether) delete nether;
-    nether = new NETHER(mainMenu.getMapPath());
+    nether = new NETHER(mainMenu.getMapPath(), config);
     return true;
   case MainMenu::ACTION::QUIT:
     return false;
   case MainMenu::ACTION::RESTART_VIDEO:
-    if (!restartVideo())
+    if (!restartVideo()) {
       std::cerr << "Failed to restart video" << std::endl;
       return false;
+    }
   default:
     return true;
   }

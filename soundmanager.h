@@ -8,7 +8,7 @@
 
 class SoundManager {
 public:
-  SoundManager();
+  SoundManager(bool soundEnabled);
   ~SoundManager();
 
   void playShot(const Vector& ship, const Vector& where) const;
@@ -20,6 +20,7 @@ public:
 private:
   void playSound(const Mix_Chunk* sample) const;
   int withVolume(const Vector& shipPos, const Vector& pos) const;
+  bool soundEnabled;
 
   Mix_Chunk *S_shot, *S_explosion, *S_select, *S_wrong, *S_construction;
 };

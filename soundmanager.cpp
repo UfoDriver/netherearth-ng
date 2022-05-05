@@ -4,10 +4,8 @@
 #include "soundmanager.h"
 
 
-extern bool sound;
-
-
-SoundManager::SoundManager()
+SoundManager::SoundManager(bool soundEnabled)
+  : soundEnabled{soundEnabled}
 {
   S_shot = Mix_LoadWAV("sound/shot.wav");
   S_explosion = Mix_LoadWAV("sound/explosion.wav");
@@ -34,14 +32,14 @@ SoundManager::~SoundManager()
 
 void SoundManager::playShot(const Vector& shipPos, const Vector& where) const
 {
-  if (S_shot != 0 && sound)
+  if (S_shot != 0 && soundEnabled)
     Mix_Volume(Mix_PlayChannel(-1, S_shot, 0), withVolume(shipPos, where));
 }
 
 
 void SoundManager::playExplosion(const Vector& shipPos, const Vector& where) const
 {
-  if (S_explosion != 0 && sound)
+  if (S_explosion != 0 && soundEnabled)
     Mix_Volume(Mix_PlayChannel(-1, S_explosion, 0), withVolume(shipPos, where));
 }
 
@@ -66,7 +64,7 @@ void SoundManager::playConstruction() const
 
 void SoundManager::playSound(const Mix_Chunk* sample) const
 {
-  if (sample && sound) {
+  if (sample && soundEnabled) {
     Mix_Volume(Mix_PlayChannel(-1, const_cast<Mix_Chunk*>(sample), 0), 128);
   }
 }

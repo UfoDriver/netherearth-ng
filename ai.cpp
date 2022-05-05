@@ -9,8 +9,6 @@
 #include "scene.h"
 #include "stats.h"
 
-extern int level;
-
 const int xd[4] = { 1, 0,-1, 0};
 const int yd[4]={ 0, 1, 0,-1};
 const int xd2[4] = { 0, 0,-1, 0};

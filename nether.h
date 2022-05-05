@@ -13,6 +13,7 @@
 #include "bullet.h"
 #include "camera.h"
 #include "cmc.h"
+#include "config.h"
 #include "constructionscreen.h"
 #include "explosion.h"
 #include "light.h"
@@ -43,7 +44,7 @@ public:
     LOADINGGAME
   };
 
-  explicit NETHER(const std::string& mapname);
+  explicit NETHER(const std::string& mapname, Config& config);
   ~NETHER();
 
   bool gamecycle();
@@ -94,6 +95,7 @@ private:
   float animationTimer;
   int gameFinished;
   int gameStarted;
+  Config& config;
 
   std::shared_ptr<Robot> controlled;
 
