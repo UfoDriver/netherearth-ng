@@ -6,6 +6,7 @@
 
 #include "bullet.h"
 #include "camera.h"
+#include "config.h"
 #include "explosion.h"
 #include "map.h"
 #include "robots.h"
@@ -27,7 +28,7 @@ public:
   void clear();
 
   void draw(const Camera& camera, const Vector& light, const bool shadows);
-  bool cycle(unsigned char* keyboard);
+  bool cycle(const Config& config, unsigned char* keyboard);
 
   void nuclearExplosionAt(const Vector& position);
 
@@ -45,7 +46,7 @@ public:
 
 private:
   void cycleBullets();
-  void cycleRobots(unsigned char *keyboard);
+  void cycleRobots(const Config& config, unsigned char *keyboard);
 
   NETHER* nether;
 };

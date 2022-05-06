@@ -20,8 +20,6 @@
 #include "nether.h"
 #include "resources.h"
 
-extern int up_key, down_key, left_key, right_key, fire_key, pause_key;
-
 
 void Map::resize(const int newWidth, const int newHeight)
 {

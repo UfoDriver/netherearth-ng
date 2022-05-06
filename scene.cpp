@@ -24,10 +24,10 @@ Scene::~Scene()
 }
 
 
-bool Scene::cycle(unsigned char* keyboard)
+bool Scene::cycle(const Config& config, unsigned char* keyboard)
 {
   map.cycle();
-  cycleRobots(keyboard);
+  cycleRobots(config, keyboard);
   cycleBullets();
 
   explosions.erase(std::remove_if(explosions.begin(), explosions.end(),
@@ -78,11 +78,11 @@ void Scene::cycleBullets()
 }
 
 
-void Scene::cycleRobots(unsigned char* keyboard)
+void Scene::cycleRobots(const Config& config, unsigned char* keyboard)
 {
   for (std::shared_ptr<Robot> r: robots) {
     r->cycle(*this);
-    r->dispatchOperator(nether, keyboard);
+    r->dispatchOperator(nether, config, keyboard);
   }
 }
 

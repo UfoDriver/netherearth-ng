@@ -3,6 +3,7 @@
 
 #include <string>
 
+class Config;
 class Light;
 class NETHER;
 
@@ -13,7 +14,7 @@ public:
   explicit OptionsScreen(NETHER* nether): selectedOption(0), nether(nether) {}
 
   void draw(int w, int h, const Light& light);
-  bool cycle(unsigned char *keyboard);
+  bool cycle(const Config& config, unsigned char *keyboard);
   void open();
 
 private:

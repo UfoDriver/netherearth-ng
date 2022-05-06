@@ -3,12 +3,11 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
+#include "config.h"
 #include "glprintf.h"
 #include "light.h"
 #include "nether.h"
 #include "optionsscreen.h"
-
-extern int up_key, down_key, left_key, right_key, fire_key, pause_key;
 
 
 void OptionsScreen::draw(int w, int h, const Light& light)
@@ -138,11 +137,11 @@ void OptionsScreen::draw(int w, int h, const Light& light)
 }
 
 
-bool OptionsScreen::cycle(unsigned char *keyboard)
+bool OptionsScreen::cycle(const Config& config, unsigned char *keyboard)
 {
   switch (nether->getGameState()) {
   case NETHER::STATE::PAUSE:
-    if (keyboard[fire_key] > 1) {
+    if (keyboard[config.keyFire] > 1) {
       switch(selectedOption) {
       case 0:
         nether->setGameState(NETHER::STATE::PLAYING);
@@ -161,19 +160,19 @@ bool OptionsScreen::cycle(unsigned char *keyboard)
       }
     }
 
-    if (keyboard[down_key] > 1) {
+    if (keyboard[config.keyDown] > 1) {
       selectedOption++;
       if (selectedOption >= 4) selectedOption = 0;
     }
 
-    if (keyboard[up_key] > 1) {
+    if (keyboard[config.keyUp] > 1) {
       selectedOption--;
       if (selectedOption < 0) selectedOption = 3;
     }
     break;
 
   case NETHER::STATE::SAVINGGAME:
-    if (keyboard[fire_key] > 1) {
+    if (keyboard[config.keyFire] > 1) {
       switch(selectedOption) {
       case 0:
         nether->setGameState(NETHER::STATE::PAUSE);
@@ -191,19 +190,19 @@ bool OptionsScreen::cycle(unsigned char *keyboard)
       }
     }
 
-    if (keyboard[down_key] > 1) {
+    if (keyboard[config.keyDown] > 1) {
       selectedOption++;
       if (selectedOption >= 5) selectedOption = 0;
     }
 
-    if (keyboard[up_key] > 1) {
+    if (keyboard[config.keyUp] > 1) {
       selectedOption--;
       if (selectedOption < 0) selectedOption = 4;
     }
     break;
 
   case NETHER::STATE::LOADINGGAME:
-    if (keyboard[fire_key] > 1) {
+    if (keyboard[config.keyFire] > 1) {
       switch (selectedOption) {
       case 0:
         nether->setGameState(NETHER::STATE::PAUSE);
@@ -224,12 +223,12 @@ bool OptionsScreen::cycle(unsigned char *keyboard)
       }
     }
 
-    if (keyboard[down_key] > 1) {
+    if (keyboard[config.keyDown] > 1) {
       selectedOption++;
       if (selectedOption >= 5) selectedOption=0;
     }
 
-    if (keyboard[up_key] > 1) {
+    if (keyboard[config.keyUp] > 1) {
       selectedOption--;
       if (selectedOption < 0) selectedOption = 4;
     }

@@ -26,8 +26,6 @@
 #include "vector.h"
 
 
-extern int up_key, down_key, left_key, right_key, fire_key, pause_key;
-
 const char *BUILDINGLABELS[] = {
   "%i WARBASES %i",
   "%i ELECTR'S %i",
@@ -287,7 +285,7 @@ void Menu::drawStatus()
 }
 
 
-void Menu::cycle(unsigned char* keyboard)
+void Menu::cycle(const Config& config, unsigned char* keyboard)
 {
   switch (activeMenu) {
   case Menu::TYPE::GENERAL:
@@ -296,7 +294,7 @@ void Menu::cycle(unsigned char* keyboard)
   case Menu::TYPE::ROBOT:
     /* Browsing through the ROBOT MENU: */
     {
-      if (handleKeys(keyboard)) {
+      if (handleKeys(config, keyboard)) {
         switch (activeButton) {
         case StatusButton::NAME::ROBOT1:
           {
@@ -330,7 +328,7 @@ void Menu::cycle(unsigned char* keyboard)
 
   case Menu::TYPE::DIRECTCONTROL:
     /* Direct control of a robot by the user: */
-    if (keyboard[fire_key] > 1) {
+    if (keyboard[config.keyFire] > 1) {
       findButton(activeButton).untoggle();
       activeMenu = Menu::TYPE::ROBOT;
     }
@@ -338,7 +336,7 @@ void Menu::cycle(unsigned char* keyboard)
 
   case Menu::TYPE::DIRECTCONTROL2:
     /* Direct control of a robot by the user: */
-    if (keyboard[fire_key] > 1) {
+    if (keyboard[config.keyFire] > 1) {
       findButton(activeButton).untoggle();
       activeMenu = Menu::TYPE::COMBATMODE;
     }
@@ -347,7 +345,7 @@ void Menu::cycle(unsigned char* keyboard)
   case Menu::TYPE::COMBATMODE:
     /* Browsing through the COMBAT MENU: */
     {
-      if (handleKeys(keyboard)) {
+      if (handleKeys(config, keyboard)) {
         switch (activeButton) {
         case StatusButton::NAME::COMBAT1:
           /* Fire Nuclear: */
@@ -400,7 +398,7 @@ void Menu::cycle(unsigned char* keyboard)
   case Menu::TYPE::ORDERS:
     /* Browsing through the ORDERS MENU: */
     {
-      if (handleKeys(keyboard)) {
+      if (handleKeys(config, keyboard)) {
         switch (activeButton) {
         case StatusButton::NAME::ORDERS1:
           /* STOP & DEFEND: */
@@ -443,17 +441,17 @@ void Menu::cycle(unsigned char* keyboard)
 
   case Menu::TYPE::SELECTDISTANCE:
     {
-      if (keyboard[up_key] > 1) {
+      if (keyboard[config.keyUp] > 1) {
         nether.getControlledRobot()->program.parameter.as_int =
           std::min(190, nether.getControlledRobot()->program.parameter.as_int + 10);
         nether.getControlledRobot()->program.goal = Vector(-1, -1, -1);
       }
-      if (keyboard[down_key] > 1) {
+      if (keyboard[config.keyDown] > 1) {
         nether.getControlledRobot()->program.parameter.as_int =
           std::max(0, nether.getControlledRobot()->program.parameter.as_int - 10);
         nether.getControlledRobot()->program.goal = Vector(-1, -1, -1);
       }
-      if (keyboard[fire_key] > 1) {
+      if (keyboard[config.keyFire] > 1) {
         if (nether.getControlledRobot()->program.parameter.as_int == 0)
           nether.getControlledRobot()->program.type = RobotProgram::STOPDEFEND;
         nether.getControlledRobot()->program.goal = Vector(-1, -1, -1);
@@ -467,7 +465,7 @@ void Menu::cycle(unsigned char* keyboard)
   case Menu::TYPE::TARGET_DESTROY:
     /* Browsing through the SELECT TARGET FOR DESTROYING MENU: */
     {
-      if (handleKeys(keyboard)) {
+      if (handleKeys(config, keyboard)) {
         switch (activeButton) {
         case StatusButton::NAME::TARGET1:
           if (nether.getControlledRobot()->hasCannons() ||
@@ -515,7 +513,7 @@ void Menu::cycle(unsigned char* keyboard)
   case Menu::TYPE::TARGET_CAPTURE:
     /* Browsing through the SELECT TARGET FOR CAPTURING MENU: */
     {
-      if (handleKeys(keyboard)) {
+      if (handleKeys(config, keyboard)) {
         switch (activeButton) {
         case StatusButton::NAME::TARGET11:
           activateMenu(Menu::TYPE::ROBOT, StatusButton::NAME::ROBOT2);
@@ -695,22 +693,22 @@ void Menu::activateMenu(TYPE newMenu, StatusButton::NAME newActiveButton)
 }
 
 
-bool Menu::handleKeys(unsigned char* keyboard)
+bool Menu::handleKeys(const Config& config, unsigned char* keyboard)
 {
-  if (keyboard[up_key] > 1 || keyboard[down_key] > 1) {
+  if (keyboard[config.keyUp] > 1 || keyboard[config.keyDown] > 1) {
     int index = 0;
     for (auto& b : buttons) {
       if (b.id == activeButton)
         break;
       index++;
     }
-    if (keyboard[up_key] > 1) {
+    if (keyboard[config.keyUp] > 1) {
       for (index = (index - 1 + buttons.size()) % buttons.size();
            !buttons[index].isInteractive();
            index = (index - 1 + buttons.size()) % buttons.size());
     }
 
-    if (keyboard[down_key] > 1) {
+    if (keyboard[config.keyDown] > 1) {
       for (index = ++index % buttons.size();
            !buttons[index].isInteractive();
            index = ++index % buttons.size());
@@ -729,7 +727,7 @@ bool Menu::handleKeys(unsigned char* keyboard)
     }
   }
 
-  return keyboard[fire_key] > 1;
+  return keyboard[config.keyFire] > 1;
 }
 
 

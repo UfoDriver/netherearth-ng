@@ -19,9 +19,6 @@
 #include "ship.h"
 
 
-extern int up_key, down_key, left_key, right_key, fire_key, pause_key;
-
-
 const float Robot::MOVING_SPEED[4][3] = {
   {0.0078125, 0.015625, 0.03125},
   {0.00390625, 0.0078125, 0.03125},
@@ -479,7 +476,7 @@ void Robot::cycle(Scene& scene)
 }
 
 
-void Robot::dispatchOperator(NETHER* nether, unsigned char* keyboard)
+void Robot::dispatchOperator(NETHER* nether, const Config& config, unsigned char* keyboard)
 {
   Vector oldPos {pos};
   pos.z = nether->scene.map.getMaxZ(pos);
@@ -507,7 +504,7 @@ void Robot::dispatchOperator(NETHER* nether, unsigned char* keyboard)
     processOperatorNuclear(nether, keyboard);
     break;
   case OPERATOR::NONE:
-    processOperatorNone(nether, keyboard);
+    processOperatorNone(nether, config, keyboard);
     break;
   }
 
@@ -655,14 +652,14 @@ void Robot::processOperatorNuclear(NETHER *nether, unsigned char *)
 }
 
 
-void Robot::processOperatorNone(NETHER* nether, unsigned char* keyboard)
+void Robot::processOperatorNone(NETHER* nether, const Config& config, unsigned char* keyboard)
 {
   if (!shipover) {
     processProgram(nether, keyboard);
   } else {
     if (nether->getActiveMenu() == Menu::TYPE::DIRECTCONTROL ||
         nether->getActiveMenu() == Menu::TYPE::DIRECTCONTROL2)
-      processDirectInput(nether, keyboard);
+      processDirectInput(nether, config, keyboard);
   }
 }
 
@@ -706,9 +703,9 @@ void Robot::processProgram(NETHER* nether, unsigned char*)
 }
 
 
-void Robot::processDirectInput(NETHER*, unsigned char* keyboard)
+void Robot::processDirectInput(NETHER*, const Config& config, unsigned char* keyboard)
 {
-  if (keyboard[right_key]) {
+  if (keyboard[config.keyRight]) {
     if (angle == 0) {
       op = Robot::OPERATOR::FORWARD;
     } else {
@@ -718,7 +715,7 @@ void Robot::processDirectInput(NETHER*, unsigned char* keyboard)
         op = Robot::OPERATOR::LEFT;
     }
   }
-  if (keyboard[left_key]) {
+  if (keyboard[config.keyLeft]) {
     if (angle == 180) {
       op = Robot::OPERATOR::FORWARD;
     } else {
@@ -728,7 +725,7 @@ void Robot::processDirectInput(NETHER*, unsigned char* keyboard)
         op = Robot::OPERATOR::LEFT;
     }
   }
-  if (keyboard[up_key]) {
+  if (keyboard[config.keyUp]) {
     if (angle == 90) {
       op = Robot::OPERATOR::FORWARD;
     } else {
@@ -738,7 +735,7 @@ void Robot::processDirectInput(NETHER*, unsigned char* keyboard)
         op = Robot::OPERATOR::LEFT;
     }
   }
-  if (keyboard[down_key]) {
+  if (keyboard[config.keyDown]) {
     if (angle == 270) {
       op = Robot::OPERATOR::FORWARD;
     } else {

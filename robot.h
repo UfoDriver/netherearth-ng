@@ -14,6 +14,7 @@
 
 class BuildingBlock;
 class Bullet;
+class Config;
 class NETHER;
 class Ship;
 class Scene;
@@ -90,7 +91,7 @@ public:
 
   int npieces() const { return pieces.count(); }
   unsigned short getOwner() { return owner; }
-  void dispatchOperator(NETHER* nether, unsigned char* keyboard);
+  void dispatchOperator(NETHER* nether, const Config& config, unsigned char* keyboard);
 
   void setPieces(std::bitset<5> newPieces) { pieces = newPieces; }
   std::bitset<5> getPieces() const { return pieces; }
@@ -142,9 +143,9 @@ private:
   void processOperatorMissiles(NETHER* nether, unsigned char* keyboard);
   void processOperatorPhasers(NETHER* nether, unsigned char* keyboard);
   void processOperatorNuclear(NETHER* nether, unsigned char* keyboard);
-  void processOperatorNone(NETHER* nether, unsigned char* keyboard);
+  void processOperatorNone(NETHER* nether, const Config& config, unsigned char* keyboard);
   void processProgram(NETHER* nether, unsigned char* keyboard);
-  void processDirectInput(NETHER* nether, unsigned char* keyboard);
+  void processDirectInput(NETHER* nether, const Config& config, unsigned char* keyboard);
 
   bool checkCollision(const std::vector<std::shared_ptr<BuildingBlock>>& buildingBlocks) const;
   bool checkCollision(const Robots& robots) const;

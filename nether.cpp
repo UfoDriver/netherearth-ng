@@ -31,7 +31,6 @@
 
 
 extern int shadows;
-extern int up_key, down_key, left_key, right_key, fire_key, pause_key;
 
 
 NETHER::NETHER(const std::string& mapname, Config& config)
@@ -94,15 +93,15 @@ bool NETHER::gamecycle()
 
   switch(gameState) {
   case NETHER::STATE::PLAYING:
-    retval = cycle(keyboard) && scene.cycle(keyboard);
+    retval = cycle(keyboard) && scene.cycle(config, keyboard);
     break;
   case NETHER::STATE::CONSTRUCTION:
-    retval = constructionScreen.cycle(keyboard);
+    retval = constructionScreen.cycle(config, keyboard);
     break;
   case NETHER::STATE::PAUSE:
   case NETHER::STATE::SAVINGGAME:
   case NETHER::STATE::LOADINGGAME:
-    retval = optionsScreen.cycle(keyboard);
+    retval = optionsScreen.cycle(config, keyboard);
     break;
   }
 
@@ -422,8 +421,8 @@ bool NETHER::cycle(unsigned char *keyboard)
   /* GAME Cycle: */
   scene.ship.landed = false;
   if (menu.getActiveMenu() == Menu::TYPE::GENERAL)
-    scene.ship.cycle(keyboard);
-  menu.cycle(keyboard);
+    scene.ship.cycle(config, keyboard);
+  menu.cycle(config, keyboard);
   camera.updateViewportForShip(scene.ship.pos, scene.map.getWidth(), scene.map.getHeight());
   if (stats.tick(config.level)) {
     menu.updateTime(stats);
@@ -454,9 +453,9 @@ bool NETHER::cycle(unsigned char *keyboard)
     }
   }
 
-  scene.cycle(keyboard);
+  scene.cycle(config, keyboard);
 
-  if (gameState == NETHER::STATE::PLAYING && keyboard[pause_key] > 1) {
+  if (gameState == NETHER::STATE::PLAYING && keyboard[config.keyPause] > 1) {
     optionsScreen.open();
   }
 

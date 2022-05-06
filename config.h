@@ -1,6 +1,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#include <SDL/SDL_keysym.h>
 #include <string>
 
 #include <SDL/SDL.h>
@@ -13,12 +14,12 @@ struct Config {
   int shadows {0};
   bool sound {false};
   int level {1};
-  int keyUp {SDLK_UP},
-    keyDown {SDLK_DOWN},
-    keyLeft {SDLK_LEFT},
-    keyRight {SDLK_RIGHT},
-    keyFire {SDLK_z},
-    keyPause {SDLK_h};
+  int keyUp {SDLK_q},
+    keyDown {SDLK_a},
+    keyLeft {SDLK_o},
+    keyRight {SDLK_p},
+    keyFire {SDLK_SPACE},
+    keyPause {SDLK_ESCAPE};
 
   bool fullscreenMode {false};
   bool showRadar {true};

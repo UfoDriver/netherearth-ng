@@ -10,8 +10,6 @@
 #include "robot.h"
 #include "ship.h"
 
-extern int up_key, down_key, left_key, right_key, fire_key, pause_key;
-
 
 Ship::Ship(const std::string &model, const std::string &texturesDir, NETHER *nether)
     : Shadow3DObject(model, texturesDir), nether{nether} {
@@ -94,7 +92,7 @@ bool Ship::landedHere(const Vector& position) const
 }
 
 
-void Ship::cycle(unsigned char* keyboard)
+void Ship::cycle(const Config& config, unsigned char* keyboard)
 {
   float x[2], y[2];
   float minz;
@@ -176,19 +174,19 @@ void Ship::cycle(unsigned char* keyboard)
   if ((int(pos.z * 8) % 4) == 0)
     op3 = Ship::OPS::NONE;
 
-  if (keyboard[left_key]) {
+  if (keyboard[config.keyLeft]) {
     op = Ship::OPS::LEFT;
   }
-  if (keyboard[right_key]) {
+  if (keyboard[config.keyRight]) {
     op = Ship::OPS::RIGHT;
   }
-  if (keyboard[up_key]) {
+  if (keyboard[config.keyUp]) {
     op2 = Ship::OPS::FORWARD;
   }
-  if (keyboard[down_key]) {
+  if (keyboard[config.keyDown]) {
     op2 = Ship::OPS::BACKWARD;
   }
-  if (keyboard[fire_key]) {
+  if (keyboard[config.keyFire]) {
     op3 = Ship::OPS::UP;
   }
 }

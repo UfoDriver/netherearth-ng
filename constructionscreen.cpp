@@ -9,8 +9,6 @@
 #include "myglutaux.h"
 #include "nether.h"
 
-extern int up_key, down_key, left_key, right_key, fire_key;
-
 
 ConstructionScreen::MENU operator++(ConstructionScreen::MENU &m, int) {
   using IntType = typename std::underlying_type<ConstructionScreen::MENU>::type;
@@ -26,33 +24,33 @@ ConstructionScreen::MENU operator--(ConstructionScreen::MENU &m, int) {
 }
 
 
-bool ConstructionScreen::cycle(unsigned char *keyboard)
+bool ConstructionScreen::cycle(const Config& config, unsigned char *keyboard)
 {
-  if (menuPointer == MENU::START && keyboard[right_key] > 1)
+  if (menuPointer == MENU::START && keyboard[config.keyRight] > 1)
     menuPointer = MENU::BIPOD;
-  if (menuPointer == MENU::EXIT && keyboard[right_key] > 1)
+  if (menuPointer == MENU::EXIT && keyboard[config.keyRight] > 1)
     menuPointer = MENU::START;
-  if (menuPointer == MENU::START && keyboard[left_key] > 1)
+  if (menuPointer == MENU::START && keyboard[config.keyLeft] > 1)
     menuPointer = MENU::EXIT;
-  if (menuPointer >= MENU::BIPOD && keyboard[left_key] > 1)
+  if (menuPointer >= MENU::BIPOD && keyboard[config.keyLeft] > 1)
     menuPointer = MENU::START;
 
-  if (menuPointer >= MENU::BIPOD && menuPointer < MENU::ELECTRONICS && keyboard[up_key] > 1)
+  if (menuPointer >= MENU::BIPOD && menuPointer < MENU::ELECTRONICS && keyboard[config.keyUp] > 1)
     menuPointer++;
-  if (menuPointer > MENU::BIPOD && menuPointer <= MENU::ELECTRONICS && keyboard[down_key] > 1)
+  if (menuPointer > MENU::BIPOD && menuPointer <= MENU::ELECTRONICS && keyboard[config.keyDown] > 1)
     menuPointer--;
 
-  if (menuPointer >= MENU::BIPOD && keyboard[fire_key] > 1) {
+  if (menuPointer >= MENU::BIPOD && keyboard[config.keyFire] > 1) {
     constructRobot();
   }
 
-  if (menuPointer == MENU::EXIT && keyboard[fire_key] > 1) {
+  if (menuPointer == MENU::EXIT && keyboard[config.keyFire] > 1) {
     staple.reset();
     nether->setGameState(NETHER::STATE::PLAYING);
     nether->scene.ship.pos.z = 2.0;
   }
 
-  if (menuPointer == MENU::START && keyboard[fire_key] > 1) {
+  if (menuPointer == MENU::START && keyboard[config.keyFire] > 1) {
     buildRobot();
   }
   return true;

@@ -11,6 +11,7 @@
 
 
 class BuildingBlock;
+class Config;
 class Map;
 class NETHER;
 class Robot;
@@ -31,7 +32,7 @@ public:
   bool checkCollision(const std::vector<std::shared_ptr<BuildingBlock>>& buildingBlocks, const std::vector<std::shared_ptr<Robot>>& robots);
   void draw(const bool shadows, const Vector& light, const Map& map, const std::shared_ptr<Robot> controlled);
   bool landedHere(const Vector& position) const;
-  void cycle(unsigned char* keyboard);
+  void cycle(const Config& config, unsigned char* keyboard);
 
   Vector pos {4.0, 2.0, 3.0};
   bool landed {false};

@@ -1,6 +1,7 @@
 #ifndef CONSTRUCTIONSCREEN_H
 #define CONSTRUCTIONSCREEN_H
 
+#include "config.h"
 #include "light.h"
 #include "robot.h"
 
@@ -25,7 +26,7 @@ private:
 public:
   explicit ConstructionScreen(NETHER* nether): menuPointer(MENU::EXIT), staple(nullptr),
                                                nether(nether) {}
-  bool cycle(unsigned char *keyboard);
+  bool cycle(const Config& config, unsigned char *keyboard);
   void draw(int width, int height, const Light& light);
   void open(const Vector& factoryPos);
 

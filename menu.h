@@ -8,6 +8,7 @@
 
 #include <sexp/value.hpp>
 
+#include "config.h"
 #include "statusbutton.h"
 
 
@@ -66,8 +67,8 @@ public:
   explicit Menu(NETHER& nether) : nether{nether} {};
 
   void draw(int width, int height);
-  void cycle(unsigned char *keyboard);
-  bool handleKeys(unsigned char *keyboard);
+  void cycle(const Config& config, unsigned char *keyboard);
+  bool handleKeys(const Config& config, unsigned char *keyboard);
   void updateTime(const Stats &stats);
 
   void activateMenu(TYPE newMenu, StatusButton::NAME activeButton);
