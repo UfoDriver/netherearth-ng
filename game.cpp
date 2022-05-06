@@ -177,7 +177,7 @@ void Game::toggleFullscreen()
 
     sdl_surface = SDL_SetVideoMode(config.screenX, config.screenY, config.colorDepth,
                                   SDL_OPENGL | (config.fullscreenMode ? SDL_FULLSCREEN : 0));
-    if (nether) Resources::instance()->loadObjects();
+    if (nether) Resources::instance()->loadObjects(config.shadows);
     SDL_WM_SetCaption("Nether Earth REMAKE v0.5", 0);
     SDL_ShowCursor(SDL_DISABLE);
   }
@@ -207,7 +207,7 @@ bool Game::restartVideo()
 
     sdl_surface = SDL_SetVideoMode(config.screenX, config.screenY, config.colorDepth,
                                    SDL_OPENGL | (config.fullscreenMode ? SDL_FULLSCREEN : 0));
-    if (nether) Resources::instance()->loadObjects();
+    if (nether) Resources::instance()->loadObjects(config.shadows);
     SDL_WM_SetCaption("Nether Earth REMAKE v0.5", 0);
     SDL_ShowCursor(SDL_DISABLE);
     return true;

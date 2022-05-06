@@ -12,7 +12,7 @@ class Resources {
 public:
   static Resources* instance();
   void refreshDisplayLists();
-  void loadObjects();
+  void loadObjects(int shadows);
   void deleteObjects();
 
   static std::vector<Shadow3DObject> buildingTiles;

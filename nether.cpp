@@ -30,21 +30,18 @@
 #include "shadow3dobject.h"
 
 
-extern int shadows;
-
-
 NETHER::NETHER(const std::string& mapname, Config& config)
   : scene{this, mapname}, config{config}, ai{&scene, &stats, config.level}, menu{*this}, radar{this},
     optionsScreen{this}, constructionScreen{this},
     camera{0, 0, 0, 0}, controlled{nullptr}, sManager{config.sound}
 {
-  if (shadows == 1) {
+  if (config.shadows == 1) {
     light.set(-1000, -3000, 5000, 1);
   } else {
     light.set(0, 0, 5000, 1);
   }
 
-  Resources::instance()->loadObjects();
+  Resources::instance()->loadObjects(config.shadows);
 
   scene.map.loadMap(mapname);
 
@@ -174,7 +171,7 @@ void NETHER::draw(int width, int height)
   glScissor(0, splity, split, height - splity);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
   drawGame(false);
-  if (shadows) {
+  if (config.shadows) {
     /* Set STENCIL Buffer: */
     glStencilMask(1);
     glEnable(GL_STENCIL_TEST);

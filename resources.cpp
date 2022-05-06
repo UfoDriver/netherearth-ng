@@ -1,8 +1,6 @@
 #include "constants.h"
 #include "resources.h"
 
-extern int shadows;
-
 
 Resources* Resources::instance()
 {
@@ -33,7 +31,7 @@ void Resources::refreshDisplayLists()
 }
 
 
-void Resources::loadObjects()
+void Resources::loadObjects(int shadows)
 {
   const char *tnames[12]={"models/grass1.ase","models/rough.ase","models/rocks.ase","models/heavyrocks.ase",
                     "models/hole1.asc","models/hole2.asc","models/hole3.asc",
