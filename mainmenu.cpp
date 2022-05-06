@@ -51,6 +51,8 @@ MainMenu::MainMenu(Config& config)
   config.load();
   title = new C3DObject("models/tittle.asc", "textures/");
   title->normalize(7.0);
+  populateMaps();
+  advanceTo(colorDepthIterator, config.colorDepth);
 }
 
 
@@ -96,6 +98,9 @@ void MainMenu::populateMaps()
   );
   mapnames.erase(std::remove(mapnames.begin(), mapnames.end(), ""), mapnames.end());
 #endif
+
+  mapnameIter = CircularIterator<std::vector<std::string>::iterator>(mapnames.begin(), mapnames.end());
+  advanceTo(mapnameIter, config.mapname);
 }
 
 
@@ -131,10 +136,7 @@ MainMenu::ACTION MainMenu::cycle(int, int)
       substatus = 0;
     }
     if (keyboard[SDLK_4] && !old_keyboard[SDLK_4]) {
-      if (mapnames.size()) {
-        ++mapnameIter;
-        if (mapnameIter == mapnames.end()) mapnameIter = mapnames.begin();
-      }
+      ++mapnameIter;
       config.save();
     }
     if (keyboard[SDLK_5] && !old_keyboard[SDLK_5]) {
@@ -163,19 +165,8 @@ MainMenu::ACTION MainMenu::cycle(int, int)
       retval = ACTION::RESTART_VIDEO;
     }
     if (keyboard[SDLK_2] && !old_keyboard[SDLK_2]) {
-      switch (config.colorDepth) {
-      case 8:
-        config.colorDepth = 16;
-        break;
-      case 16:
-        config.colorDepth = 24;
-        break;
-      case 24:
-        config.colorDepth = 32;
-        break;
-      default:
-        config.colorDepth = 8;
-      }
+      colorDepthIterator++;
+      config.colorDepth = *colorDepthIterator;
       retval = ACTION::RESTART_VIDEO;
       config.save();
     }
@@ -363,9 +354,9 @@ void MainMenu::draw(int width, int height)
     if (config.level == 3) scaledglprintf(0.005, 0.005, "6 - LEVEL: IMPOSSIBLE    ");
     glTranslatef(0, -1, 0);
     if (config.showRadar)
-      scaledglprintf(0.005, 0.005, "7 - RADAR: OFF           ");
-    else
       scaledglprintf(0.005, 0.005, "7 - RADAR: ON            ");
+    else
+      scaledglprintf(0.005, 0.005, "7 - RADAR: OFF           ");
     glTranslatef(0, -1, 0);
     scaledglprintf(0.005, 0.005, "8 - BACK                 ");
     break;

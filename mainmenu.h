@@ -6,6 +6,8 @@
 #include <vector>
 
 #include "config.h"
+#include "utils.h"
+
 
 class C3DObject;
 
@@ -57,12 +59,13 @@ private:
   unsigned char old_keyboard[SDLK_LAST];
   void populateMaps();
   std::vector<std::string> mapnames {"original"};
-  std::vector<std::string>::iterator mapnameIter {mapnames.begin()};
-
-  // CircularIterator<std::vector<std::string>::iterator> mapnameIter {mapnames.begin(), mapnames.end()};
-  // CircularIterator<std::vector<int>::iterator> colorDepths {COLOR_DEPTHS.begin(), COLOR_DEPTHS.end()};
-
   Config& config;
+
+  CircularIterator<std::vector<std::string>::iterator>
+  mapnameIter{mapnames.begin(), mapnames.end()};
+
+  CircularIterator<std::vector<int>::iterator>
+  colorDepthIterator{COLOR_DEPTHS.begin(), COLOR_DEPTHS.end()};
 };
 
 #endif // MAINMENU_H

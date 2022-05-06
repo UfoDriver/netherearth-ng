@@ -25,6 +25,7 @@ public:
     this->operator++();
     return oldValue;
   }
+
   CircularIterator& operator--(void) = delete;
   const CircularIterator operator--(int) = delete;
 
@@ -32,6 +33,17 @@ private:
   BaseIter begin;
   BaseIter end;
 };
+
+
+template<class CircularIterator, class T>
+void advanceTo(CircularIterator &iterator, const T& value)
+{
+  CircularIterator start{iterator};
+  do {
+    iterator++;
+    if (*iterator == value) return;
+  } while (iterator != start);
+}
 
 
 // Function name is really awful
